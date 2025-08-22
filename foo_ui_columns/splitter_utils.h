@@ -8,18 +8,18 @@ namespace cui::splitter_utils {
 
 pfc::array_t<uint8_t> serialise_splitter_item(const uie::splitter_item_full_v3_impl_t* item);
 pfc::array_t<uint8_t> serialise_splitter_item(const uie::splitter_item_t* item);
-std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(std::span<uint8_t> data);
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(std::span<const uint8_t> data);
 
 CLIPFORMAT get_splitter_item_clipboard_format();
+bool is_splitter_item_in_clipboard();
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipboard_safe(HWND wnd);
+void set_splitter_clipboard(std::span<const uint8_t> data);
 
 template <typename SplitterItem>
 void copy_splitter_item_to_clipboard(const SplitterItem* item)
 {
     auto data = serialise_splitter_item(item);
-    if (!uih::set_clipboard_data(get_splitter_item_clipboard_format(), {data.get_ptr(), data.get_size()})) {
-        auto message = "Error setting clipboard data: "s + helpers::get_last_win32_error_message().get_ptr();
-        throw exception_io(message.c_str());
-    }
+    set_splitter_clipboard({data.get_ptr(), data.get_size()});
 }
 
 template <typename SplitterItem>
@@ -34,9 +34,6 @@ bool copy_splitter_item_to_clipboard_safe(HWND wnd, const SplitterItem* item, bo
         return false;
     }
 }
-
-bool is_splitter_item_in_clipboard();
-std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipboard_safe(HWND wnd);
 
 template <class T>
 std::optional<T> get_config_item(uie::splitter_window::ptr splitter, size_t index, GUID item)

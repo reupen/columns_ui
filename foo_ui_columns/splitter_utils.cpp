@@ -6,6 +6,16 @@
 
 namespace cui::splitter_utils {
 
+namespace {
+
+namespace clipboard_state {
+
+std::vector<uint8_t> data;
+
+}
+
+} // namespace
+
 auto normalise_splitter_item(const uie::splitter_item_t* item)
 {
     auto normalised_item = std::make_unique<uie::splitter_item_full_v3_impl_t>();
@@ -143,18 +153,24 @@ CLIPFORMAT get_splitter_item_clipboard_format()
 
 bool is_splitter_item_in_clipboard()
 {
-    return IsClipboardFormatAvailable(get_splitter_item_clipboard_format()) != 0;
+    return !clipboard_state::data.empty() || IsClipboardFormatAvailable(get_splitter_item_clipboard_format());
 }
 
 std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipboard()
 {
     if (!is_splitter_item_in_clipboard())
         throw exception_io("Clipboard does not contain a panel");
-    const auto data = uih::get_clipboard_data(get_splitter_item_clipboard_format());
+
+    auto data = uih::get_clipboard_data(get_splitter_item_clipboard_format());
+
+    if (!data)
+        data = clipboard_state::data;
+
     if (!data) {
-        auto message = "Error getting data from clipboard: "s + helpers::get_last_win32_error_message().get_ptr();
+        const auto message = "Error getting data from clipboard: "s + helpers::get_last_win32_error_message().get_ptr();
         throw exception_io(message.c_str());
     }
+
     return deserialise_splitter_item({data->data(), data->size()});
 }
 
@@ -166,6 +182,17 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipbo
         dark::modeless_info_box(wnd, "Error – Paste panel", ex.what(), uih::InfoBoxType::Error);
     }
     return {};
+}
+
+void set_splitter_clipboard(std::span<const uint8_t> data)
+{
+    clipboard_state::data.clear();
+    ranges::copy(data, std::back_inserter(clipboard_state::data));
+
+    if (!uih::set_clipboard_data(get_splitter_item_clipboard_format(), data)) {
+        auto message = "Error setting clipboard data: "s + helpers::get_last_win32_error_message().get_ptr();
+        throw exception_io(message.c_str());
+    }
 }
 
 } // namespace cui::splitter_utils
