@@ -67,6 +67,7 @@ public:
     void refresh_child();
     void relinquish_child();
 
+    bool has_child() const;
     uie::splitter_item_ptr get_child() const;
     void set_child(const uie::splitter_item_t* item);
 
