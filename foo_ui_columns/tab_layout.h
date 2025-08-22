@@ -8,6 +8,7 @@ class LayoutTabNode {
 public:
     using ptr = std::shared_ptr<LayoutTabNode>;
 
+    bool empty() const;
     bool have_item(const GUID& p_guid);
     void build();
 
