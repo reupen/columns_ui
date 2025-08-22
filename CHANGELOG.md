@@ -67,6 +67,12 @@
 - A ‘Cut’ command was added to the live editing context menu.
   [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
 
+- The live editing ‘Copy’ and ‘Paste’ commands (as well as the new ‘Cut’
+  command) now all operate on an internal clipboard in addition to the Windows
+  clipboard, to protect against accidentally overwriting the Windows clipboard
+  with something else before a panel is pasted.
+  [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
+
 - Some updates were made to pre-existing menu items in the live editing context
   menu. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
@@ -83,6 +89,12 @@
 
 - A ‘Cut’ command was added to the layout tree context menu in Preferences.
   [#1302](https://github.com/reupen/columns_ui/pull/1302)
+
+- The ‘Copy’ and ‘Paste’ commands (as well as the new ‘Cut’ command) in the
+  layout tree now all operate on an internal clipboard in addition to the
+  Windows clipboard, to protect against accidentally overwriting the Windows
+  clipboard with something else before a panel is pasted.
+  [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
 
 - Unknown panels (such as uninstalled panels) are now preserved when copied and
   pasted in the Layout tree in Preferences.
