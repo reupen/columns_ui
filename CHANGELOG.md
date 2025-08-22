@@ -64,6 +64,9 @@
   [[#1325](https://github.com/reupen/columns_ui/pull/1325),
   [#1331](https://github.com/reupen/columns_ui/pull/1331)]
 
+- A ‘Cut’ command was added to the live editing context menu.
+  [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
+
 - Some updates were made to pre-existing menu items in the live editing context
   menu. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
 

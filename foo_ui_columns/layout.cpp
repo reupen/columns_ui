@@ -845,6 +845,14 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         if (move_submenu.size() > 0)
             menu.append_submenu(std::move(move_submenu), L"Move to");
 
+        const auto cut_id = commands.add([&] {
+            if (cui::splitter_utils::copy_splitter_item_to_clipboard_safe(
+                    cui::main_window.get_wnd(), splitter_item.get_ptr())) {
+                parent_splitter->remove_panel(leaf);
+            }
+        });
+        menu.append_command(cut_id, L"Cut");
+
         const auto copy_id = commands.add([&] {
             cui::splitter_utils::copy_splitter_item_to_clipboard_safe(
                 cui::main_window.get_wnd(), splitter_item.get_ptr());
