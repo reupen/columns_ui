@@ -24,7 +24,9 @@ void LayoutTabNode::build()
     assert(m_window.is_empty());
     assert(m_children.empty());
 
-    if (uie::window::create_by_guid(m_item->get_ptr()->get_panel_guid(), m_window)) {
+    const auto panel_id = m_item->get_ptr()->get_panel_guid();
+
+    if (panel_id != GUID{} && uie::window::create_by_guid(panel_id, m_window)) {
         stream_writer_memblock config;
         m_item->get_ptr()->get_panel_config(&config);
         m_window->get_name(m_name);
@@ -45,6 +47,11 @@ void LayoutTabNode::build()
             child->build();
         }
     }
+}
+
+bool LayoutTabNode::empty() const
+{
+    return m_item->get_ptr()->get_panel_guid() == GUID{};
 }
 
 bool LayoutTabNode::have_item(const GUID& p_guid)
@@ -96,6 +103,9 @@ void LayoutTab::populate_tree(HWND wnd, const LayoutTabNode::ptr& node, HTREEITE
 std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
     HWND wnd_tree, const LayoutTabNode::ptr& node, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
+    if (ti_parent == TVI_ROOT && node->empty())
+        return {};
+
     std::unordered_map<HTREEITEM, LayoutTabNode::ptr> node_map;
     const auto ti_item = insert_item_in_tree_view(wnd_tree, node->m_name, ti_parent, ti_after, node->m_expanded);
 
@@ -114,8 +124,16 @@ std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
 void LayoutTab::remove_node(HWND wnd, HTREEITEM ti)
 {
     HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
-    if (!ti_parent)
+
+    if (!ti_parent) {
+        TreeView_DeleteAllItems(m_wnd_tree);
+        m_node_root = std::make_shared<LayoutTabNode>();
+        *m_node_root->m_item = new uie::splitter_item_simple_t;
+        m_node_map.clear();
+        m_changed = true;
+        on_tree_selection_change(nullptr);
         return;
+    }
 
     auto p_parent_node = m_node_map.at(ti_parent);
     unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
@@ -220,6 +238,9 @@ bool LayoutTab::_fix_single_instance_recur(uie::splitter_window_ptr& p_window)
 
 bool LayoutTab::fix_paste_item(uie::splitter_item_full_v3_impl_t& item)
 {
+    if (m_node_root->empty())
+        return true;
+
     uie::window::ptr p_window;
     if (!uie::window::create_by_guid(item.get_panel_guid(), p_window))
         return true;
@@ -248,10 +269,17 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
     auto p_node = std::make_shared<LayoutTabNode>();
     auto splitter_item = splitter_utils::get_splitter_item_from_clipboard_safe(wnd);
 
-    if (!splitter_item || !fix_paste_item(*splitter_item))
+    if (!splitter_item || !(ti_parent || m_node_root->empty()) || !fix_paste_item(*splitter_item))
         return;
 
     *p_node->m_item = splitter_item.release();
+
+    if (!ti_parent) {
+        m_node_root = p_node;
+        build_node_and_populate_tree(wnd, m_node_root);
+        m_changed = true;
+        return;
+    }
 
     auto p_parent = m_node_map.at(ti_parent);
     service_ptr_t<uie::splitter_window> p_splitter;
@@ -749,7 +777,7 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
 
     SendMessage(m_wnd_tree, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&ti));
 
-    if (ti.hItem) {
+    if (ti.hItem || m_node_root->empty()) {
         const auto panels = panel_utils::get_panel_info();
 
         enum {
@@ -765,13 +793,15 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
         const auto id_add_child_base = ID_REPLACE_ROOT_BASE + gsl::narrow<uint32_t>(panels.size());
         const auto id_splitter_type_base = id_add_child_base + gsl::narrow<uint32_t>(panels.size());
 
-        HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti.hItem);
+        HTREEITEM ti_parent = ti.hItem ? TreeView_GetParent(m_wnd_tree, ti.hItem) : nullptr;
 
-        SendMessage(m_wnd_tree, TVM_SELECTITEM, TVGN_CARET, reinterpret_cast<LPARAM>(ti.hItem));
+        if (ti.hItem)
+            SendMessage(m_wnd_tree, TVM_SELECTITEM, TVGN_CARET, reinterpret_cast<LPARAM>(ti.hItem));
 
-        unsigned index = tree_view_get_child_index(m_wnd_tree, ti.hItem);
+        std::optional panel_index
+            = ti.hItem ? std::make_optional(tree_view_get_child_index(m_wnd_tree, ti.hItem)) : std::nullopt;
 
-        auto p_node = m_node_map.at(ti.hItem);
+        auto p_node = ti.hItem ? m_node_map.at(ti.hItem) : m_node_root;
         LayoutTabNode::ptr p_parent_node;
 
         service_ptr_t<uie::splitter_window> p_splitter;
@@ -818,7 +848,7 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
             menu.append_submenu(std::move(change_splitter_menu), L"Splitter type");
         }
 
-        if (!ti_parent) {
+        if (!ti.hItem) {
             uih::Menu change_base_menu;
 
             for (auto&& group : grouped_panels) {
@@ -831,39 +861,48 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
                 change_base_menu.append_submenu(std::move(popup), category);
             }
 
-            menu.append_submenu(std::move(change_base_menu), L"Replace base");
+            menu.append_submenu(std::move(change_base_menu), L"Add panel");
         }
 
         if (ti_parent) {
             if (menu.size() > 0)
                 menu.append_separator();
 
-            if (p_parent_node && index)
+            if (p_parent_node && *panel_index && *panel_index > 0)
                 menu.append_command(ID_MOVE_UP, L"Move up");
 
-            if (p_parent_node && index + 1 < p_parent_node->m_splitter->get_panel_count())
+            if (p_parent_node && panel_index && *panel_index + 1 < p_parent_node->m_splitter->get_panel_count())
                 menu.append_command(ID_MOVE_DOWN, L"Move down");
-
-            menu.append_command(ID_REMOVE, L"Remove");
         }
 
-        if (menu.size() > 0)
+        if (ti.hItem)
+            menu.append_command(ID_REMOVE, L"Remove");
+
+        const auto item_in_clipboard = splitter_utils::is_splitter_item_in_clipboard();
+
+        if (menu.size() > 0 && (ti.hItem || item_in_clipboard))
             menu.append_separator();
 
-        if (ti_parent)
+        if (ti.hItem) {
             menu.append_command(ID_CUT, L"Cut");
+            menu.append_command(ID_COPY, L"Copy");
+        }
 
-        menu.append_command(ID_COPY, L"Copy");
-
-        if (splitter_utils::is_splitter_item_in_clipboard() && p_splitter.is_valid()
-            && p_node->m_children.size() < p_splitter->get_maximum_panel_count())
+        if (item_in_clipboard
+            && (!ti.hItem
+                || (p_splitter.is_valid() && p_node->m_children.size() < p_splitter->get_maximum_panel_count()))) {
             menu.append_command(ID_PASTE, L"Paste");
+        }
 
         menu_helpers::win32_auto_mnemonics(menu.get());
 
         switch (const auto cmd = menu.run(wnd, pt)) {
         case ID_REMOVE:
-            remove_node(wnd, ti.hItem);
+            if (ti_parent || !p_splitter.is_valid()
+                || cui::dark::modal_info_box(wnd, "Remove root panel",
+                    "This will remove the root panel, including all children. Do you want to continue?",
+                    uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo))
+                remove_node(wnd, ti.hItem);
             break;
         case ID_MOVE_UP:
             move_item(wnd, ti.hItem, true);

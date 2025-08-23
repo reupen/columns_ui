@@ -1022,6 +1022,9 @@ void TabStackPanel::on_active_tab_changed(int signed_index_to, bool from_interac
 
 std::optional<size_t> TabStackPanel::get_active_tab_index() const
 {
+    if (!m_wnd_tabs)
+        return {};
+
     const auto tab_sel_index = TabCtrl_GetCurSel(m_wnd_tabs);
 
     if (tab_sel_index == -1)
@@ -1078,26 +1081,29 @@ std::vector<TabStackPanel::Panel::Ptr>::iterator TabStackPanel::find_active_pane
 void TabStackPanel::remove_panel(std::vector<Panel::Ptr>::iterator iter, bool should_destroy) noexcept
 {
     const auto panel = *iter;
-    const auto is_active_tab = m_active_child_wnd && m_active_child_wnd == panel->m_wnd;
-    const auto active_tab_index = get_active_tab_index();
 
-    const auto active_iter = std::ranges::find(m_active_panels, panel);
+    if (get_wnd()) {
+        const auto is_active_tab = m_active_child_wnd && m_active_child_wnd == panel->m_wnd;
+        const auto active_tab_index = get_active_tab_index();
 
-    if (active_iter != m_active_panels.end()) {
-        if (is_active_tab && active_tab_index) {
-            if (m_active_panels.size() > 1 && !m_refresh_children_in_progress) {
-                const auto new_active_tab
-                    = *active_tab_index + 1 == m_active_panels.size() ? *active_tab_index - 1 : *active_tab_index + 1;
+        const auto active_iter = std::ranges::find(m_active_panels, panel);
 
-                TabCtrl_SetCurSel(m_wnd_tabs, new_active_tab);
-                on_active_tab_changed(gsl::narrow<int>(new_active_tab), false);
-            } else {
-                m_active_child_wnd = nullptr;
+        if (active_iter != m_active_panels.end()) {
+            if (is_active_tab && active_tab_index) {
+                if (m_active_panels.size() > 1 && !m_refresh_children_in_progress) {
+                    const auto new_active_tab = *active_tab_index + 1 == m_active_panels.size() ? *active_tab_index - 1
+                                                                                                : *active_tab_index + 1;
+
+                    TabCtrl_SetCurSel(m_wnd_tabs, new_active_tab);
+                    on_active_tab_changed(gsl::narrow<int>(new_active_tab), false);
+                } else {
+                    m_active_child_wnd = nullptr;
+                }
             }
-        }
 
-        TabCtrl_DeleteItem(m_wnd_tabs, std::distance(m_active_panels.begin(), active_iter));
-        m_active_panels.erase(active_iter);
+            TabCtrl_DeleteItem(m_wnd_tabs, std::distance(m_active_panels.begin(), active_iter));
+            m_active_panels.erase(active_iter);
+        }
     }
 
     if (should_destroy) {

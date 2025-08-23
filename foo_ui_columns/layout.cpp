@@ -530,10 +530,13 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
     data.set_size(size);
     p_reader->read(data.get_ptr(), size, p_abort);
 
-    panels.add_item(guid);
-
     p_out.m_guid = guid;
     p_out.m_name = name;
+
+    if (guid == GUID{})
+        return true;
+
+    panels.add_item(guid);
 
     if (mode == cui::fcl::type_public) {
         uie::window_ptr wnd;
@@ -586,11 +589,18 @@ void LayoutWindow::export_config(
             if (mode == cui::fcl::type_public) {
                 p_out->write_lendian_t(item->get_panel_guid(), p_abort);
                 p_out->write_string(name, p_abort);
-                uie::window_ptr ptr;
-                if (!uie::window::create_by_guid(item->get_panel_guid(), ptr))
-                    throw cui::fcl::exception_missing_panel();
-                panels.add_item(item->get_panel_guid());
-                {
+
+                const auto panel_id = item->get_panel_guid();
+
+                if (panel_id == GUID{}) {
+                    p_out->write_lendian_t(0u, p_abort);
+                } else {
+                    uie::window_ptr ptr;
+                    if (!uie::window::create_by_guid(item->get_panel_guid(), ptr))
+                        throw cui::fcl::exception_missing_panel();
+
+                    panels.add_item(panel_id);
+
                     stream_writer_memblock writer;
                     stream_writer_memblock data;
                     item->get_panel_config(&data);
@@ -606,23 +616,30 @@ void LayoutWindow::export_config(
             } else {
                 p_out->write_lendian_t(item->get_panel_guid(), p_abort);
                 p_out->write_string(name, p_abort);
-                panels.add_item(item->get_panel_guid());
-                stream_writer_memblock writer;
-                item->get_panel_config(&writer);
 
-                uie::window_ptr ptr;
-                if (!uie::window::create_by_guid(item->get_panel_guid(), ptr))
-                    throw cui::fcl::exception_missing_panel();
-                {
-                    try {
-                        ptr->set_config_from_ptr(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
-                    } catch (const exception_io&) {
+                const auto panel_id = item->get_panel_guid();
+
+                if (panel_id == GUID{}) {
+                    p_out->write_lendian_t(0u, p_abort);
+                } else {
+                    panels.add_item(panel_id);
+                    stream_writer_memblock writer;
+                    item->get_panel_config(&writer);
+
+                    uie::window_ptr ptr;
+                    if (!uie::window::create_by_guid(panel_id, ptr))
+                        throw cui::fcl::exception_missing_panel();
+                    {
+                        try {
+                            ptr->set_config_from_ptr(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
+                        } catch (const exception_io&) {
+                        }
+                        __get_panel_list_recur(ptr, panels);
                     }
-                    __get_panel_list_recur(ptr, panels);
-                }
 
-                p_out->write_lendian_t((uint32_t)writer.m_data.get_size(), p_abort);
-                p_out->write(writer.m_data.get_ptr(), (uint32_t)writer.m_data.get_size(), p_abort);
+                    p_out->write_lendian_t((uint32_t)writer.m_data.get_size(), p_abort);
+                    p_out->write(writer.m_data.get_ptr(), (uint32_t)writer.m_data.get_size(), p_abort);
+                }
             }
         } catch (const pfc::exception& ex) {
             pfc::string_formatter formatter;
@@ -633,25 +650,25 @@ void LayoutWindow::export_config(
 
 void LayoutWindow::create_child()
 {
+    if (m_child_guid == GUID{} || !uie::window::create_by_guid(m_child_guid, m_child))
+        return;
+
     RECT rc;
     GetClientRect(get_wnd(), &rc);
 
-    if (uie::window::create_by_guid(m_child_guid, m_child)) {
-        try {
-            abort_callback_dummy p_abort;
-            m_child->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
-        } catch (const exception_io& ex) {
-            console::formatter formatter;
-            formatter << "Error setting panel config: " << ex.what();
-        }
+    try {
+        abort_callback_dummy p_abort;
+        m_child->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
+    } catch (const exception_io& ex) {
+        console::formatter formatter;
+        formatter << "Error setting panel config: " << ex.what();
+    }
 
-        m_child_wnd = m_child->create_or_transfer_window(get_wnd(),
-            uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()),
-            ui_helpers::window_position_t(rc));
+    m_child_wnd = m_child->create_or_transfer_window(get_wnd(),
+        uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()), ui_helpers::window_position_t(rc));
 
-        if (m_child_wnd) {
-            SetWindowLongPtr(m_child_wnd, GWL_STYLE, GetWindowLongPtr(m_child_wnd, GWL_STYLE) | WS_CLIPSIBLINGS);
-        }
+    if (m_child_wnd) {
+        SetWindowLongPtr(m_child_wnd, GWL_STYLE, GetWindowLongPtr(m_child_wnd, GWL_STYLE) | WS_CLIPSIBLINGS);
     }
 }
 void LayoutWindow::destroy_child()
@@ -669,6 +686,11 @@ void LayoutWindow::relinquish_child()
     m_child_wnd = nullptr;
     m_child.release();
     m_child_data.set_size(0);
+}
+
+bool LayoutWindow::has_child() const
+{
+    return m_child_guid != GUID{};
 }
 
 void LayoutWindow::refresh_child()
@@ -699,10 +721,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
 
     size_t hierarchy_count = p_data.m_hierarchy.get_count();
 
-    if (hierarchy_count == 0)
-        uBugCheck();
-
-    uie::window::ptr leaf = p_data.m_hierarchy[hierarchy_count - 1];
+    uie::window::ptr leaf = hierarchy_count > 0 ? p_data.m_hierarchy[hierarchy_count - 1] : uie::window::ptr{};
 
     uie::splitter_window_ptr leaf_splitter;
 
@@ -714,19 +733,26 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     if (hierarchy_count >= 2)
         p_data.m_hierarchy[hierarchy_count - 2]->service_query_t(parent_splitter);
 
-    RECT rc{};
-    GetRelativeRect(leaf->get_wnd(), HWND_DESKTOP, &rc);
+    std::optional<RECT> overlay_rect;
 
-    HWND overlay_wnd = m_trans_fill.create(get_wnd(), uih::WindowPosition(rc));
+    if (leaf.is_valid() || hierarchy_count == 0) {
+        RECT rect{};
+        GetRelativeRect(leaf.is_valid() ? leaf->get_wnd() : get_wnd(), HWND_DESKTOP, &rect);
+        overlay_rect = rect;
+    }
 
-    cui::helpers::WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
-    WindowEnum.run();
+    if (overlay_rect) {
+        const auto overlay_wnd = m_trans_fill.create(get_wnd(), uih::WindowPosition(*overlay_rect));
 
-    if (const auto count_owned = WindowEnum.m_wnd_list.get_count(); count_owned > 0)
-        SetWindowPos(overlay_wnd, WindowEnum.m_wnd_list[count_owned - 1], 0, 0, 0, 0,
-            SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+        cui::helpers::WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
+        WindowEnum.run();
 
-    ShowWindow(overlay_wnd, SW_SHOWNOACTIVATE);
+        if (const auto count_owned = WindowEnum.m_wnd_list.get_count(); count_owned > 0)
+            SetWindowPos(overlay_wnd, WindowEnum.m_wnd_list[count_owned - 1], 0, 0, 0, 0,
+                SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+
+        ShowWindow(overlay_wnd, SW_SHOWNOACTIVATE);
+    }
 
     const auto leaf_supported_panels = leaf_splitter.is_valid() ? get_supported_panel_info(leaf_splitter)
                                                                 : std::vector<cui::panel_utils::PanelInfo>();
@@ -737,9 +763,14 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     uih::Menu menu;
     uih::MenuCommandCollector commands;
 
-    pfc::string8 temp;
-    leaf->get_name(temp);
-    menu.append_command(0, mmh::to_utf16(temp.c_str()), {.is_disabled = true});
+    if (hierarchy_count > 0) {
+        pfc::string8 leaf_name;
+        if (leaf.is_valid())
+            leaf->get_name(leaf_name);
+        else
+            leaf_name = "Unknown panel";
+        menu.append_command(0, mmh::to_utf16(leaf_name.c_str()), {.is_disabled = true});
+    }
 
     size_t index = pfc_infinite;
     const auto leaf_found_in_parent
@@ -747,7 +778,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     const auto splitter_item_in_clipboard = cui::splitter_utils::is_splitter_item_in_clipboard();
     const auto can_add_panel_to_leaf
         = leaf_splitter.is_valid() && leaf_splitter->get_panel_count() < leaf_splitter->get_maximum_panel_count();
-    const auto leaf_id = leaf->get_extension_guid();
+    const auto leaf_id = leaf.is_valid() ? leaf->get_extension_guid() : GUID{};
 
     uie::splitter_item_ptr splitter_item;
 
@@ -806,7 +837,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         }
     }
 
-    if (hierarchy_count == 1) {
+    if (hierarchy_count <= 1) {
         if (leaf_splitter.is_valid()) {
             const auto handle_change_root_splitter = [&](GUID panel_id) {
                 const auto config = convert_splitter_and_get_config(get_wnd(), leaf_splitter, panel_id);
@@ -825,10 +856,53 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
                 L"Splitter type");
         }
 
-        const auto handle_replace_root = [&](GUID panel_id) { set_child(create_splitter_item(panel_id).get_ptr()); };
+        if (has_child()) {
+            const auto cut_id = commands.add([&] {
+                const auto root_splitter_item = get_child();
 
-        menu.append_submenu(
-            create_panels_menu(parent_supported_panels, commands, handle_replace_root), L"Replace base");
+                if (cui::splitter_utils::copy_splitter_item_to_clipboard_safe(
+                        cui::main_window.get_wnd(), root_splitter_item.get_ptr())) {
+                    set_child(create_splitter_item(GUID{}).get_ptr());
+                }
+            });
+            menu.append_command(cut_id, L"Cut");
+
+            const auto copy_id = commands.add([&] {
+                const auto root_splitter_item = get_child();
+
+                cui::splitter_utils::copy_splitter_item_to_clipboard_safe(
+                    cui::main_window.get_wnd(), root_splitter_item.get_ptr());
+            });
+            menu.append_command(copy_id, L"Copy");
+        } else {
+            const auto handle_set_root = [&](GUID panel_id) {
+                if (!has_child())
+                    set_child(create_splitter_item(panel_id).get_ptr());
+            };
+
+            menu.append_submenu(create_panels_menu(parent_supported_panels, commands, handle_set_root), L"Add panel");
+        }
+
+        if (splitter_item_in_clipboard && !has_child()) {
+            const auto paste_id = commands.add([&] {
+                if (const auto clipboard_splitter_item
+                    = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd())) {
+                    set_child(clipboard_splitter_item.get());
+                }
+            });
+
+            menu.append_command(paste_id, L"Paste");
+        }
+
+        if (has_child())
+            menu.append_command(commands.add([&] {
+                if (!leaf_splitter.is_valid()
+                    || cui::dark::modal_info_box(get_wnd(), "Remove root panel",
+                        "This will remove the root panel, including all children. Do you want to continue?",
+                        uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo))
+                    set_child(create_splitter_item(GUID{}).get_ptr());
+            }),
+                L"Remove");
     }
 
     if (leaf_found_in_parent) {
@@ -876,8 +950,9 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     if (parent_splitter.is_valid()) {
         menu.append_separator();
 
-        parent_splitter->get_name(temp);
-        menu.append_command(0, mmh::to_utf16(temp.c_str()), {.is_disabled = true});
+        pfc::string8 parent_name;
+        parent_splitter->get_name(parent_name);
+        menu.append_command(0, mmh::to_utf16(parent_name.c_str()), {.is_disabled = true});
 
         if (parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count()) {
             const auto handle_add_parent_child
@@ -901,7 +976,8 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     menu_helpers::win32_auto_mnemonics(menu.get());
 
     const auto cmd = menu.run(get_wnd(), p_data.m_point);
-    m_trans_fill.destroy();
+    if (overlay_rect)
+        m_trans_fill.destroy();
 
     commands.execute(cmd);
 }
@@ -951,10 +1027,9 @@ bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPAR
             return false;
 
         uie::splitter_window_v2_ptr splitter_v2;
-        if (!m_child.is_valid())
-            return false;
 
-        m_child->service_query_t(splitter_v2);
+        if (m_child.is_valid())
+            m_child->service_query_t(splitter_v2);
 
         const auto is_rbutton_down = wp == WM_RBUTTONDOWN || wp == WM_NCRBUTTONDOWN;
         const auto is_rbutton_up = wp == WM_RBUTTONUP || wp == WM_NCRBUTTONUP;
@@ -969,7 +1044,7 @@ bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPAR
         if (is_rbutton_down) {
             SendMessage(lpmhs->hwnd, WM_CANCELMODE, NULL, NULL);
         } else {
-            if (!splitter_v2.is_valid())
+            if (!splitter_v2.is_valid() && m_child.is_valid())
                 hierarchy.add_item(m_child);
 
             if (!m_trans_fill.get_wnd())

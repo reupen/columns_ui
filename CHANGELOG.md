@@ -57,53 +57,41 @@
   This requires main menu commands to implement the `mainmenu_commands_v3`
   service interface in the foobar2000 SDK.
 
-#### Live editing
+#### Layout editing
 
 - Commands for moving a panel to the previous or next position in its parent
   splitter were added to the live editing context menu.
   [[#1325](https://github.com/reupen/columns_ui/pull/1325),
   [#1331](https://github.com/reupen/columns_ui/pull/1331)]
 
-- A ‘Cut’ command was added to the live editing context menu.
-  [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
+- A ‘Cut’ command was added to the context menus for live editing and the layout
+  tree in Preferences. [[#1302](https://github.com/reupen/columns_ui/pull/1302),
+  [#1332](https://github.com/reupen/columns_ui/pull/1332)]
 
-- The live editing ‘Copy’ and ‘Paste’ commands (as well as the new ‘Cut’
-  command) now all operate on an internal clipboard in addition to the Windows
-  clipboard, to protect against accidentally overwriting the Windows clipboard
-  with something else before a panel is pasted.
-  [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
+- Commands to cut, copy or paste panels now all operate on an internal clipboard
+  in addition to the Windows clipboard, to protect against accidentally
+  overwriting the Windows clipboard with something else before a panel is
+  pasted. [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
 
-- Some updates were made to pre-existing menu items in the live editing context
-  menu. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
-
-  This includes changes to the labels and position of some menu items and
-  indicating the current splitter type in the renamed ‘Splitter type’ submenu.
-
-#### Preferences
-
-- Some updates were made to the layout tree context menu in Preferences.
-  [[#1311](https://github.com/reupen/columns_ui/pull/1311)]
+- Some updates were made to pre-existing menu items in the context menus for
+  live editing and the layout tree in Preferences.
+  [[#1311](https://github.com/reupen/columns_ui/pull/1311),
+  [#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
   This includes changes to the labels and position of some menu items and
   indicating the current splitter type in the renamed ‘Splitter type’ submenu.
 
-- A ‘Cut’ command was added to the layout tree context menu in Preferences.
-  [#1302](https://github.com/reupen/columns_ui/pull/1302)
-
-- The ‘Copy’ and ‘Paste’ commands (as well as the new ‘Cut’ command) in the
-  layout tree now all operate on an internal clipboard in addition to the
-  Windows clipboard, to protect against accidentally overwriting the Windows
-  clipboard with something else before a panel is pasted.
-  [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
+- Removing the root panel is now allowed, and the previous ‘Change base’ command
+  has been removed. [[#1333](https://github.com/reupen/columns_ui/pull/1333)]
 
 - Unknown panels (such as uninstalled panels) are now preserved when copied and
   pasted in the Layout tree in Preferences.
-  [#1302](https://github.com/reupen/columns_ui/pull/1302)
+  [[#1302](https://github.com/reupen/columns_ui/pull/1302)]
+
+#### Other
 
 - The Main preferences tab was split into a Setup tab and a Main window tab.
   [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
-
-#### Other
 
 - The use of hardware acceleration for built-in panels that use Direct2D can now
   be turned off or on in Preferences.
