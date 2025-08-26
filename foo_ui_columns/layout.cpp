@@ -770,6 +770,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         else
             leaf_name = "Unknown panel";
         menu.append_command(0, mmh::to_utf16(leaf_name.c_str()), {.is_disabled = true});
+        menu.append_separator();
     }
 
     size_t index = pfc_infinite;
@@ -814,7 +815,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
                 = [&](GUID panel_id) { leaf_splitter->add_panel(create_splitter_item(panel_id).get_ptr()); };
 
             menu.append_submenu(
-                create_panels_menu(leaf_supported_panels, commands, handle_add_leaf_child), L"Add panel");
+                create_panels_menu(leaf_supported_panels, commands, handle_add_leaf_child), L"Add child");
         }
 
         if (parent_splitter.is_valid()) {
@@ -854,6 +855,8 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
             menu.append_submenu(
                 create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_change_root_splitter),
                 L"Splitter type");
+
+            menu.append_separator();
         }
 
         if (has_child()) {
@@ -894,7 +897,9 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
             menu.append_command(paste_id, L"Paste");
         }
 
-        if (has_child())
+        if (has_child()) {
+            menu.append_separator();
+
             menu.append_command(commands.add([&] {
                 if (!leaf_splitter.is_valid()
                     || cui::dark::modal_info_box(get_wnd(), "Remove root panel",
@@ -903,9 +908,13 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
                     set_child(create_splitter_item(GUID{}).get_ptr());
             }),
                 L"Remove");
+        }
     }
 
     if (leaf_found_in_parent) {
+        if (menu.size() > 2)
+            menu.append_separator();
+
         uih::Menu move_submenu;
 
         if (index > 0)
@@ -918,6 +927,10 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
 
         if (move_submenu.size() > 0)
             menu.append_submenu(std::move(move_submenu), L"Move to");
+
+        menu.append_command(commands.add([&] { parent_splitter->remove_panel(leaf); }), L"Remove");
+
+        menu.append_separator();
 
         const auto cut_id = commands.add([&] {
             if (cui::splitter_utils::copy_splitter_item_to_clipboard_safe(
@@ -941,36 +954,32 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
                 }
             });
 
-            menu.append_command(paste_add_id, L"Paste (add)");
+            menu.append_command(paste_add_id, L"Paste as child");
         }
 
-        menu.append_command(commands.add([&] { parent_splitter->remove_panel(leaf); }), L"Remove");
-    }
-
-    if (parent_splitter.is_valid()) {
-        menu.append_separator();
-
-        pfc::string8 parent_name;
-        parent_splitter->get_name(parent_name);
-        menu.append_command(0, mmh::to_utf16(parent_name.c_str()), {.is_disabled = true});
-
-        if (parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count()) {
-            const auto handle_add_parent_child
-                = [&](GUID panel_id) { parent_splitter->add_panel(create_splitter_item(panel_id).get_ptr()); };
-
-            menu.append_submenu(
-                create_panels_menu(parent_supported_panels, commands, handle_add_parent_child), L"Add panel");
-
-            if (leaf_found_in_parent && splitter_item_in_clipboard) {
+        if (parent_splitter.is_valid()
+            && parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count()) {
+            if (splitter_item_in_clipboard) {
                 const auto paste_insert_id = commands.add([&] {
                     if (const auto clipboard_splitter_item
                         = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd()))
                         parent_splitter->insert_panel(index + 1, clipboard_splitter_item.get());
                 });
 
-                menu.append_command(paste_insert_id, L"Paste (insert)");
+                menu.append_command(paste_insert_id, L"Paste after");
             }
         }
+    }
+
+    if (parent_splitter.is_valid() && parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count()) {
+        if (leaf_found_in_parent)
+            menu.append_separator();
+
+        const auto handle_add_parent_child
+            = [&](GUID panel_id) { parent_splitter->add_panel(create_splitter_item(panel_id).get_ptr()); };
+
+        menu.append_submenu(
+            create_panels_menu(parent_supported_panels, commands, handle_add_parent_child), L"Add sibling");
     }
 
     menu_helpers::win32_auto_mnemonics(menu.get());
