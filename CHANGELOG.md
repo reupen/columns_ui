@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.1.0-alpha.1
 
 ### Features
 
@@ -166,6 +166,13 @@
 - The symbol used for the active layout preset in the View/Layout menu was
   corrected to be a filled circle rather than a tick.
   [[#1326](https://github.com/reupen/columns_ui/pull/1326)]
+
+### Removals
+
+- The option to have a linear vertical scale in the spectrum analyser was
+  removed. [[#1338](https://github.com/reupen/columns_ui/pull/1338)]
+
+  This is because it had little purpose.
 
 ### Internal changes
 

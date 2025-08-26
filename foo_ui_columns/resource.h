@@ -227,7 +227,6 @@
 #define IDC_FRAME_COMBO                 1101
 #define IDC_SCALE                       1102
 #define IDC_CHANGE_FRAME                1103
-#define IDC_VERTICAL_SCALE              1103
 #define IDC_CHANGE_SEL_FORE             1106
 #define IDC_CHANGE_SEL_INACTIVE_FORE    1110
 #define IDC_CHANGE_TEXT_FORE            1116

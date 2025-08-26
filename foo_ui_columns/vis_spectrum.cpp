@@ -10,9 +10,22 @@ namespace cui::toolbars::spectrum_analyser {
 
 namespace {
 
-const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
-    .checkbox_ids = {IDC_BARS},
-    .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE, IDC_VERTICAL_SCALE}};
+enum {
+    MODE_STANDARD,
+    MODE_BARS,
+};
+
+enum {
+    scale_linear,
+    scale_logarithmic,
+};
+
+const dark::DialogDarkModeConfig dark_mode_config{
+    .button_ids = {IDOK, IDCANCEL}, .checkbox_ids = {IDC_BARS}, .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE}};
+
+// Legacy settings are longer used (the values are preserved in case Columns UI is downgraded)
+cfg_int cfg_legacy_vertical_scale(
+    {0x3323c764, 0x875a, 0x4464, {0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c}}, scale_logarithmic);
 
 cfg_int cfg_legacy_spectrum_analyser_background_colour(
     GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}},
@@ -87,45 +100,28 @@ constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, uns
     return std::make_tuple(source_start, source_end);
 }
 
-constexpr int calculate_y_position(audio_sample value, int y_count, bool is_log)
+constexpr int calculate_y_position(audio_sample value, int y_count)
 {
-    if (is_log) {
-        constexpr auto min_db = -80.f;
-        constexpr auto max_db = 0.f;
+    constexpr auto min_db = -80.f;
+    constexpr auto max_db = 0.f;
 
-        const auto db = [&] {
-            if (value <= 0)
-                return min_db;
+    const auto db = [&] {
+        if (value <= 0)
+            return min_db;
 
-            return std::clamp(20.f * log10(gsl::narrow_cast<float>(value)), min_db, max_db);
-        }();
+        return std::clamp(20.f * log10(gsl::narrow_cast<float>(value)), min_db, max_db);
+    }();
 
-        const auto percentage = (db - min_db) / (max_db - min_db);
-        return std::clamp(static_cast<int>(std::lround(percentage * y_count)), 0, y_count);
-    }
-
-    const auto clamped_value = std::clamp(gsl::narrow_cast<float>(value), 0.f, 1.f);
-    return std::clamp(static_cast<int>(std::lround(y_count * clamped_value)), 0, y_count);
+    const auto percentage = (db - min_db) / (max_db - min_db);
+    return std::clamp(static_cast<int>(std::lround(percentage * y_count)), 0, y_count);
 }
 
 } // namespace
 
-enum {
-    MODE_STANDARD,
-    MODE_BARS,
-};
-
-enum {
-    scale_linear,
-    scale_logarithmic,
-};
-
 constexpr GUID scale_config_id = {0xdfa4e08c, 0x325f, 0x4b32, {0x91, 0xeb, 0xcd, 0x9f, 0xd5, 0xd0, 0xad, 0x14}};
-constexpr GUID vertical_scale_config_id = {0x3323c764, 0x875a, 0x4464, {0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c}};
 
-cfg_int cfg_vis_mode(GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}}, MODE_BARS);
-cfg_int cfg_scale(scale_config_id, scale_logarithmic);
-cfg_int cfg_vertical_scale(vertical_scale_config_id, scale_logarithmic);
+cfg_uint cfg_vis_mode(GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}}, MODE_BARS);
+cfg_uint cfg_scale(scale_config_id, scale_logarithmic);
 
 class SpectrumAnalyserVisualisation
     : public ui_extension::visualisation
@@ -137,16 +133,12 @@ public:
     static void s_refresh_all(bool include_inactive = false);
 
     bool b_active{false};
-    unsigned mode;
+    unsigned mode{cfg_vis_mode};
     short m_bar_width{3};
     short m_bar_gap{1};
 
-    uint32_t m_scale;
-    uint32_t m_vertical_scale;
-
-    SpectrumAnalyserVisualisation();
-
-    ~SpectrumAnalyserVisualisation();
+    uint32_t m_scale{cfg_scale};
+    uint32_t m_vertical_scale{scale_logarithmic};
 
     static const GUID extension_guid;
 
@@ -245,15 +237,6 @@ private:
     void on_volume_change(float p_new_val) override {}
 };
 
-SpectrumAnalyserVisualisation::SpectrumAnalyserVisualisation()
-    : mode(cfg_vis_mode)
-    , m_scale(cfg_scale)
-    , m_vertical_scale(cfg_vertical_scale)
-{
-}
-
-SpectrumAnalyserVisualisation::~SpectrumAnalyserVisualisation() = default;
-
 void SpectrumAnalyserVisualisation::s_flush_brushes()
 {
     s_foreground_brush.reset();
@@ -313,16 +296,14 @@ class SpectrumAnalyserConfigData {
 public:
     unsigned mode;
     uint32_t m_scale;
-    uint32_t m_vertical_scale;
     SpectrumAnalyserVisualisation* ptr;
     unsigned frame;
     bool b_show_frame;
 
-    SpectrumAnalyserConfigData(unsigned p_mode, uint32_t scale, uint32_t vertical_scale,
-        SpectrumAnalyserVisualisation* p_spec, bool p_show_frame = false, unsigned p_frame = 0)
+    SpectrumAnalyserConfigData(unsigned p_mode, uint32_t scale, SpectrumAnalyserVisualisation* p_spec,
+        bool p_show_frame = false, unsigned p_frame = 0)
         : mode(p_mode)
         , m_scale(scale)
-        , m_vertical_scale(vertical_scale)
         , ptr(p_spec)
         , frame(p_frame)
         , b_show_frame(p_show_frame)
@@ -355,10 +336,6 @@ static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWN
         ComboBox_AddString(wnd_combo, _T("Logarithmic"));
         ComboBox_SetCurSel(wnd_combo, state.m_scale);
 
-        wnd_combo = GetDlgItem(wnd, IDC_VERTICAL_SCALE);
-        ComboBox_AddString(wnd_combo, _T("Linear"));
-        ComboBox_AddString(wnd_combo, _T("Logarithmic"));
-        ComboBox_SetCurSel(wnd_combo, state.m_vertical_scale);
         return TRUE;
     }
     case WM_CTLCOLORSTATIC:
@@ -377,9 +354,6 @@ static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWN
         case IDC_SCALE | (CBN_SELCHANGE << 16):
             state.m_scale = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             break;
-        case IDC_VERTICAL_SCALE | (CBN_SELCHANGE << 16):
-            state.m_vertical_scale = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-            break;
         case IDOK:
             EndDialog(wnd, 1);
             return TRUE;
@@ -394,7 +368,7 @@ static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWN
 
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
-    SpectrumAnalyserConfigData param(mode, m_scale, m_vertical_scale, this);
+    SpectrumAnalyserConfigData param(mode, m_scale, this);
     const auto dialog_result = modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
         [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
 
@@ -403,8 +377,6 @@ bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
         cfg_vis_mode = param.mode;
         m_scale = param.m_scale;
         cfg_scale = param.m_scale;
-        m_vertical_scale = param.m_vertical_scale;
-        cfg_vertical_scale = param.m_vertical_scale;
         if (b_active) {
             clear();
         }
@@ -455,8 +427,7 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                             value = std::max(value, bin_value);
                         }
 
-                        const auto y_pos = calculate_y_position(
-                            value, (rc_client->bottom + 1) / 2, m_vertical_scale == scale_logarithmic);
+                        const auto y_pos = calculate_y_position(value, (rc_client->bottom + 1) / 2);
 
                         RECT bar_rect{};
                         bar_rect.left = 1 + bar_index * m_bar_width;
@@ -484,8 +455,7 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                         value = std::max(value, bin_value);
                     }
 
-                    const auto y_pos
-                        = calculate_y_position(value, rc_client->bottom, m_vertical_scale == scale_logarithmic);
+                    const auto y_pos = calculate_y_position(value, rc_client->bottom);
 
                     RECT line{};
                     line.left = x;
@@ -621,8 +591,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
             }
         }
 
-        SpectrumAnalyserConfigData param(
-            p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale, p_temp.get_ptr(), true, get_frame_style());
+        SpectrumAnalyserConfigData param(p_temp->mode, p_temp->m_scale, p_temp.get_ptr(), true, get_frame_style());
 
         const auto dialog_result = modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
             [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
@@ -632,8 +601,6 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
             cfg_vis_mode = param.mode;
             p_temp->m_scale = param.m_scale;
             cfg_scale = param.m_scale;
-            p_temp->m_vertical_scale = param.m_vertical_scale;
-            cfg_vertical_scale = param.m_vertical_scale;
             set_frame_style(param.frame);
             cfg_vis_edge = param.frame;
 
