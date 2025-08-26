@@ -724,7 +724,7 @@ void LayoutWindow::run_live_edit_base_delayed(HWND wnd, POINT pt, pfc::list_t<ui
     PostMessage(get_wnd(), MSG_EDIT_PANEL, NULL, NULL);
 }
 
-void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
+void LayoutWindow::run_live_edit_base(LiveEditData p_data)
 {
     if (m_trans_fill.get_wnd())
         return;
@@ -993,10 +993,13 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         }
     }
 
-    if (parent_splitter.is_valid() && parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count()) {
-        if (index_in_parent)
-            menu.append_separator();
+    const auto has_add_sibling_submenu
+        = parent_splitter.is_valid() && parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count();
 
+    if (index_in_parent && (has_add_sibling_submenu || hierarchy_count > 1))
+        menu.append_separator();
+
+    if (has_add_sibling_submenu) {
         const auto handle_add_sibling = [&](GUID panel_id) {
             const auto new_splitter_item = create_splitter_item(panel_id);
 
@@ -1007,6 +1010,16 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         };
 
         menu.append_submenu(create_panels_menu(parent_supported_panels, commands, handle_add_sibling), L"Add sibling");
+    }
+
+    if (hierarchy_count > 1) {
+        const auto edit_parent_id = commands.add([&] {
+            m_live_edit_data = p_data;
+            m_live_edit_data.m_hierarchy.remove_by_idx(hierarchy_count - 1);
+            PostMessage(get_wnd(), MSG_EDIT_PANEL, NULL, NULL);
+        });
+
+        menu.append_command(edit_parent_id, L"Edit parent");
     }
 
     menu_helpers::win32_auto_mnemonics(menu.get());
@@ -1110,10 +1123,9 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_SETFOCUS:
         PostMessage(wnd, MSG_LAYOUT_SET_FOCUS, 0, 0);
         break;
-    case MSG_EDIT_PANEL: {
-        run_live_edit_base(m_live_edit_data);
-        m_live_edit_data.reset();
-    } break;
+    case MSG_EDIT_PANEL:
+        run_live_edit_base(std::move(m_live_edit_data));
+        break;
     case MSG_LAYOUT_SET_FOCUS:
         set_focus();
         break;
