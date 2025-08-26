@@ -964,6 +964,8 @@ void LayoutWindow::run_live_edit_base(LiveEditData p_data)
         });
         menu.append_command(copy_id, L"Copy");
 
+        uih::Menu paste_submenu;
+
         if (splitter_item_in_clipboard && can_add_panel_to_leaf) {
             const auto paste_add_id = commands.add([&] {
                 if (const auto clipboard_splitter_item
@@ -972,25 +974,27 @@ void LayoutWindow::run_live_edit_base(LiveEditData p_data)
                 }
             });
 
-            menu.append_command(paste_add_id, L"Paste as child");
+            paste_submenu.append_command(paste_add_id, L"As child");
         }
 
         if (parent_splitter.is_valid()
             && parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count()) {
             if (splitter_item_in_clipboard) {
-                const auto paste_insert_id = commands.add([&] {
+                const auto paste_item = [&](size_t offset) {
                     const auto clipboard_splitter_item
                         = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd());
 
-                    const auto index = get_index_in_parent();
+                    if (const auto index = get_index_in_parent(); index && clipboard_splitter_item)
+                        parent_splitter->insert_panel(*index + offset, clipboard_splitter_item.get());
+                };
 
-                    if (index && clipboard_splitter_item)
-                        parent_splitter->insert_panel(*index + 1, clipboard_splitter_item.get());
-                });
-
-                menu.append_command(paste_insert_id, L"Paste after");
+                paste_submenu.append_command(commands.add([&] { paste_item(0); }), L"Before");
+                paste_submenu.append_command(commands.add([&] { paste_item(1); }), L"After");
             }
         }
+
+        if (paste_submenu.size() > 0)
+            menu.append_submenu(std::move(paste_submenu), L"Paste");
     }
 
     const auto has_add_sibling_submenu
