@@ -9,7 +9,9 @@ MainThreadD2D1Factory create_main_thread_factory();
 
 wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2D1DeviceContext>& device_context,
     const wil::com_ptr<ID2D1ColorContext>& source_color_context,
-    const wil::com_ptr<ID2D1ColorContext>& dest_color_context);
+    const wil::com_ptr<ID2D1ColorContext>& dest_color_context,
+    std::optional<D2D1_COLORMANAGEMENT_RENDERING_INTENT> source_rendering_intent = {},
+    std::optional<D2D1_COLORMANAGEMENT_RENDERING_INTENT> dest_rendering_intent = {});
 
 wil::com_ptr<ID2D1Effect> create_scale_effect(
     const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_VECTOR_2F scale);
