@@ -59,6 +59,14 @@
 
 #### Layout editing
 
+- The context menus for live editing and the layout tree in Preferences were
+  reorganised. [[#1311](https://github.com/reupen/columns_ui/pull/1311),
+  [#1325](https://github.com/reupen/columns_ui/pull/1325)]
+
+  This includes changes to the labels and position of some menu items, adding
+  separators and indicating the current splitter type in the renamed ‘Splitter
+  type’ submenu.
+
 - Commands for moving a panel to the previous or next position in its parent
   splitter were added to the live editing context menu.
   [[#1325](https://github.com/reupen/columns_ui/pull/1325),
@@ -68,18 +76,24 @@
   tree in Preferences. [[#1302](https://github.com/reupen/columns_ui/pull/1302),
   [#1332](https://github.com/reupen/columns_ui/pull/1332)]
 
+- A ‘Paste/Before’ command was added to the live editing context menu.
+  [[#1335](https://github.com/reupen/columns_ui/pull/1335)]
+
+- An ‘Edit parent’ command was added to the live editing context menu.
+  [[#1335](https://github.com/reupen/columns_ui/pull/1335)]
+
+  This closes the menu for the current panel and shows the live editing menu for
+  the parent splitter.
+
+- The ‘Add sibling’ (previously ‘Add panel’ underneath the name of the parent
+  splitter) command in the live editing context menu now adds the new panel
+  directly after the panel the menu is being shown for.
+  [[#1335](https://github.com/reupen/columns_ui/pull/1335)]
+
 - Commands to cut, copy or paste panels now all operate on an internal clipboard
   in addition to the Windows clipboard, to protect against accidentally
   overwriting the Windows clipboard with something else before a panel is
   pasted. [[#1332](https://github.com/reupen/columns_ui/pull/1332)]
-
-- Some updates were made to pre-existing menu items in the context menus for
-  live editing and the layout tree in Preferences.
-  [[#1311](https://github.com/reupen/columns_ui/pull/1311),
-  [#1325](https://github.com/reupen/columns_ui/pull/1325)]
-
-  This includes changes to the labels and position of some menu items and
-  indicating the current splitter type in the renamed ‘Splitter type’ submenu.
 
 - Removing the root panel is now allowed, and the previous ‘Change base’ command
   has been removed. [[#1333](https://github.com/reupen/columns_ui/pull/1333)]

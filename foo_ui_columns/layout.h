@@ -95,20 +95,17 @@ public:
     }
 
 private:
-    class LiveEditData {
-    public:
+    struct LiveEditData {
         pfc::list_t<uie::window::ptr> m_hierarchy;
-        POINT m_point;
-        HWND m_wnd;
-
-        void reset() { m_hierarchy.remove_all(); }
+        POINT m_point{};
+        HWND m_wnd{};
     };
 
     void enter_layout_editing_mode();
     void exit_layout_editing_mode();
     uih::TranslucentFillWindow m_trans_fill;
     void run_live_edit_base_delayed(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr>& p_hierarchy);
-    void run_live_edit_base(const LiveEditData& p_data);
+    void run_live_edit_base(LiveEditData p_data);
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
