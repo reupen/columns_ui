@@ -364,8 +364,8 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
     if (uie::window::create_by_guid(p_guid, window) && window->service_query_t(splitter)) {
         const auto count = std::min(old_node->m_children.size(), splitter->get_maximum_panel_count());
         if (count == old_node->m_children.size()
-            || dark::modal_info_box(wnd, "Change splitter type",
-                "The number of child items will not fit in the selected splitter type. Do you want to continue?",
+            || dark::modal_info_box(wnd, "Change container type",
+                "The number of child items will not fit in the selected container type. Do you want to continue?",
                 uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo)) {
             for (unsigned n = 0; n < count; n++)
                 splitter->add_panel(old_node->m_children[n]->m_item->get_ptr());
@@ -845,7 +845,7 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
                 }
             }
 
-            menu.append_submenu(std::move(change_splitter_menu), L"Splitter type");
+            menu.append_submenu(std::move(change_splitter_menu), L"Container type");
         }
 
         if (!ti.hItem) {
