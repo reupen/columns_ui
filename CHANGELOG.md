@@ -123,10 +123,10 @@
 
 ### Bug fixes
 
-- The built-in spectrum analyser visualisation now uses the same frequency scale
-  as the Default UI Spectrum visualisation, and the scale is standardised for
-  all playback sample rates.
-  [[#1276](https://github.com/reupen/columns_ui/pull/1276)]
+- The built-in spectrum analyser visualisation now uses a more conventional
+  frequency scale, with the scale standardised for all playback sample rates.
+  [[#1276](https://github.com/reupen/columns_ui/pull/1276),
+  [#1338](https://github.com/reupen/columns_ui/pull/1338)]
 
   This applies only when the horizontal axis is set to use a logarithmic scale.
 

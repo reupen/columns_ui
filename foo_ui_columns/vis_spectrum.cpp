@@ -59,7 +59,7 @@ constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, uns
 
     if (is_log) {
         constexpr auto start_freq = 50.f;
-        constexpr auto end_freq = 25'000.f;
+        constexpr auto end_freq = 22'050.f;
         constexpr auto freq_ratio = end_freq / start_freq;
         const auto nyquist_freq = static_cast<float>(sample_rate) / 2.f;
 
