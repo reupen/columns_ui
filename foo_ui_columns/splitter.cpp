@@ -10,7 +10,7 @@ class HorizontalSplitterPanel : public FlatSplitterPanel {
     {
         return {L"{72FACC90-BB7E-4733-8449-D7537232AD26}", true, CS_DBLCLKS};
     }
-    void get_name(pfc::string_base& p_out) const override { p_out = "Horizontal splitter"; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Row"; }
     const GUID& get_extension_guid() const override
     {
         // {8FA0BC24-882A-4fff-8A3B-215EA7FBD07F}
@@ -25,7 +25,7 @@ class VerticalSplitterPanel : public FlatSplitterPanel {
     {
         return {L"{77653A44-66D1-49e0-9A7A-1C71898C0441}", true, CS_DBLCLKS};
     }
-    void get_name(pfc::string_base& p_out) const override { p_out = "Vertical splitter"; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Column"; }
     const GUID& get_extension_guid() const override
     {
         // {77653A44-66D1-49e0-9A7A-1C71898C0441}
