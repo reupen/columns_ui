@@ -37,7 +37,9 @@ MainThreadD2D1Factory create_main_thread_factory()
 
 wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2D1DeviceContext>& device_context,
     const wil::com_ptr<ID2D1ColorContext>& source_color_context,
-    const wil::com_ptr<ID2D1ColorContext>& dest_color_context)
+    const wil::com_ptr<ID2D1ColorContext>& dest_color_context,
+    std::optional<D2D1_COLORMANAGEMENT_RENDERING_INTENT> source_rendering_intent,
+    std::optional<D2D1_COLORMANAGEMENT_RENDERING_INTENT> dest_rendering_intent)
 {
     wil::com_ptr<ID2D1Effect> colour_management_effect;
     THROW_IF_FAILED(device_context->CreateEffect(CLSID_D2D1ColorManagement, &colour_management_effect));
@@ -55,6 +57,16 @@ wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2
     if (dest_color_context) {
         THROW_IF_FAILED(colour_management_effect->SetValue(
             D2D1_COLORMANAGEMENT_PROP_DESTINATION_COLOR_CONTEXT, dest_color_context.get()));
+    }
+
+    if (source_rendering_intent) {
+        THROW_IF_FAILED(colour_management_effect->SetValue(
+            D2D1_COLORMANAGEMENT_PROP_SOURCE_RENDERING_INTENT, *source_rendering_intent));
+    }
+
+    if (dest_rendering_intent) {
+        THROW_IF_FAILED(colour_management_effect->SetValue(
+            D2D1_COLORMANAGEMENT_PROP_DESTINATION_RENDERING_INTENT, *dest_rendering_intent));
     }
 
     return colour_management_effect;

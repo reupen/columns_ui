@@ -792,12 +792,16 @@ void ArtworkPanel::create_effects()
     wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
     wil::com_ptr<ID2D1ColorContext> working_colour_context;
 
+    const auto rendering_intent = is_advanced_colour
+        ? std::make_optional(D2D1_COLORMANAGEMENT_RENDERING_INTENT_RELATIVE_COLORIMETRIC)
+        : std::nullopt;
+
     if (is_advanced_colour) {
         THROW_IF_FAILED(
             m_d2d_device_context->CreateColorContext(D2D1_COLOR_SPACE_SCRGB, nullptr, 0, &working_colour_context));
 
-        const auto working_colour_management_effect
-            = d2d::create_colour_management_effect(m_d2d_device_context, image_colour_context, working_colour_context);
+        const auto working_colour_management_effect = d2d::create_colour_management_effect(
+            m_d2d_device_context, image_colour_context, working_colour_context, rendering_intent, rendering_intent);
         working_colour_management_effect->SetInputEffect(0, scale_effect.get());
 
         const auto is_hdr_image = m_artwork_decoder.is_float();
@@ -831,7 +835,8 @@ void ArtworkPanel::create_effects()
     }
 
     const auto colour_management_effect = d2d::create_colour_management_effect(m_d2d_device_context,
-        working_colour_context ? working_colour_context : image_colour_context, dest_colour_context);
+        working_colour_context ? working_colour_context : image_colour_context, dest_colour_context, rendering_intent,
+        rendering_intent);
 
     colour_management_effect->SetInputEffect(
         0, white_level_adjustment_effect ? white_level_adjustment_effect.get() : scale_effect.get());
