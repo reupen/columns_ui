@@ -615,7 +615,7 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    LTEXT           "Horizontal and vertical splitters",IDC_TITLE1,7,4,313,16
+    LTEXT           "Rows and columns",IDC_TITLE1,7,4,313,16
     CONTROL         "Allow resizing of locked panels",IDC_ALLOW_LOCKED_PANEL_RESIZING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,116,10
     LTEXT           "Divider width",-1,7,50,47,8

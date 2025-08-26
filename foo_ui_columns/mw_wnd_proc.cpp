@@ -5,6 +5,7 @@
 #include "setup_dialog.h"
 #include "get_msg_hook.h"
 #include "main_window.h"
+#include "panel_utils.h"
 #include "rebar.h"
 #include "status_bar.h"
 #include "system_tray.h"
@@ -349,16 +350,23 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         } else if ((HWND)wp == rebar::g_rebar) {
             if (rebar::g_rebar_window) {
-                enum {
+                enum : uint32_t {
                     IDM_LOCK = 1,
                     IDM_CLOSE,
                     IDM_BASE
                 };
 
-                ui_extension::window_info_list_simple moo;
+                pfc::list_t<uie::window::ptr> windows;
 
-                service_enum_t<ui_extension::window> e;
-                uie::window_ptr l;
+                for (const auto& window : uie::window::enumerate()) {
+                    const auto is_toolbar = (window->get_type() & ui_extension::type_toolbar) != 0;
+
+                    if (rebar::g_rebar_window->check_band(window->get_extension_guid())
+                        || (is_toolbar && window->is_available(&rebar::get_rebar_host())))
+                        windows.add_item(window);
+                }
+
+                const auto panel_info = panel_utils::get_panel_info(windows);
 
                 POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
 
@@ -372,8 +380,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 POINT pt_client = pt;
 
                 ScreenToClient(rebar::g_rebar_window->wnd_rebar, &pt_client);
-
-                unsigned IDM_EXT_BASE = IDM_BASE + 1;
 
                 RBHITTESTINFO rbht;
                 rbht.pt = pt_client;
@@ -391,46 +397,26 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 HMENU menu = CreatePopupMenu();
 
-                if (e.first(l))
-                    do {
-                        if (rebar::g_rebar_window->check_band(l->get_extension_guid())
-                            || ((l->get_type() & ui_extension::type_toolbar)
-                                && l->is_available(&rebar::get_rebar_host()))) {
-                            ui_extension::window_info_simple info;
+                for (auto&& group : panel_utils::get_grouped_panel_info(panel_info)) {
+                    uih::Menu category_menu;
 
-                            l->get_name(info.name);
-                            l->get_category(info.category);
-                            info.guid = l->get_extension_guid();
-                            info.prefer_multiple_instances = l->get_prefer_multiple_instances();
-
-                            moo.add_item(info);
-
-                            l.release();
-                        }
-                    } while (e.next(l));
-
-                moo.sort_by_category_and_name();
-
-                const auto count_exts = moo.get_count();
-                HMENU popup = nullptr;
-                for (size_t n = 0; n < count_exts; n++) {
-                    if (!n || uStringCompare(moo[n - 1].category, moo[n].category)) {
-                        if (n)
-                            uAppendMenu(
-                                menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), moo[n - 1].category);
-                        popup = CreatePopupMenu();
+                    for (auto&& [index, panel] : group) {
+                        category_menu.append_command(IDM_BASE + gsl::narrow<uint32_t>(index), panel.name,
+                            {.is_checked = rebar::g_rebar_window->check_band(panel.id)});
                     }
-                    uAppendMenu(popup, (MF_STRING | (rebar::g_rebar_window->check_band(moo[n].guid) ? MF_CHECKED : 0)),
-                        IDM_BASE + n, moo[n].name);
-                    if (n == count_exts - 1)
-                        uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), moo[n].category);
-                    IDM_EXT_BASE++;
+
+                    const auto& category = group.front().second.category;
+
+                    AppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(category_menu.detach()),
+                        category.c_str());
                 }
 
                 uAppendMenu(menu, MF_SEPARATOR, 0, "");
                 uAppendMenu(menu, (((cfg_lock) ? MF_CHECKED : 0) | MF_STRING), IDM_LOCK, "Lock the toolbars");
                 if (idx_hit != -1)
                     uAppendMenu(menu, (MF_STRING), IDM_CLOSE, "Remove toolbar");
+
+                const auto IDM_EXT_BASE = IDM_BASE + gsl::narrow<uint32_t>(panel_info.size());
 
                 if (p_ext.is_valid()) {
                     p_ext->get_menu_items(*extension_menu_nodes.get_ptr());
@@ -460,20 +446,21 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     if (cmd == IDM_CLOSE) {
                         rebar::g_rebar_window->delete_band(idx_hit);
-                    } else if (cmd > 0 && cmd - IDM_BASE < moo.get_count()) {
+                    } else if (cmd > 0 && cmd - IDM_BASE < panel_info.size()) {
+                        const auto& panel = panel_info[cmd - IDM_BASE];
                         bool shift_down = (GetAsyncKeyState(VK_SHIFT) & (1 << 31)) != 0;
                         //                bool ctrl_down = (GetAsyncKeyState(VK_CONTROL) & (1 << 31)) != 0;
 
-                        if (!shift_down && !moo[cmd - IDM_BASE].prefer_multiple_instances
-                            && rebar::g_rebar_window->check_band(moo[cmd - IDM_BASE].guid)) {
-                            rebar::g_rebar_window->delete_band(moo[cmd - IDM_BASE].guid);
+                        if (!shift_down && !panel.prefers_multiple_instances
+                            && rebar::g_rebar_window->check_band(panel.id)) {
+                            rebar::g_rebar_window->delete_band(panel.id);
                         } else {
                             if (idx_hit != -1)
-                                rebar::g_rebar_window->insert_band(idx_hit + 1, moo[cmd - IDM_BASE].guid,
-                                    rebar::g_rebar_window->cache.get_width(moo[cmd - IDM_BASE].guid));
+                                rebar::g_rebar_window->insert_band(
+                                    idx_hit + 1, panel.id, rebar::g_rebar_window->cache.get_width(panel.id));
                             else
-                                rebar::g_rebar_window->add_band(moo[cmd - IDM_BASE].guid,
-                                    rebar::g_rebar_window->cache.get_width(moo[cmd - IDM_BASE].guid));
+                                rebar::g_rebar_window->add_band(
+                                    panel.id, rebar::g_rebar_window->cache.get_width(panel.id));
                         }
                     }
                 }

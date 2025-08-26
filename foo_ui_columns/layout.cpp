@@ -60,8 +60,8 @@ std::optional<pfc::array_t<uint8_t>> convert_splitter_and_get_config(
 
     const auto panel_count = old_splitter->get_panel_count();
     if (panel_count > new_splitter->get_maximum_panel_count()
-        && !cui::dark::modal_info_box(wnd, "Change splitter type",
-            "The number of child items will not fit in the selected splitter type. Do you want to "
+        && !cui::dark::modal_info_box(wnd, "Change container type",
+            "The number of child items will not fit in the selected container type. Do you want to "
             "continue?",
             uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo))
         return {};
@@ -78,7 +78,7 @@ std::optional<pfc::array_t<uint8_t>> convert_splitter_and_get_config(
     try {
         new_splitter->get_config(&conf, fb2k::noAbort);
     } catch (const std::exception& ex) {
-        console::print("Columns UI – error changing splitter type: ", ex.what());
+        console::print("Columns UI – error changing container type: ", ex.what());
         return {};
     }
 
@@ -852,7 +852,7 @@ void LayoutWindow::run_live_edit_base(LiveEditData p_data)
             };
 
             menu.append_submenu(
-                create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_command), L"Splitter type");
+                create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_command), L"Container type");
         }
     }
 
@@ -872,7 +872,7 @@ void LayoutWindow::run_live_edit_base(LiveEditData p_data)
 
             menu.append_submenu(
                 create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_change_root_splitter),
-                L"Splitter type");
+                L"Container type");
 
             menu.append_separator();
         }

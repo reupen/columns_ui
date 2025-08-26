@@ -77,10 +77,10 @@
   [#1332](https://github.com/reupen/columns_ui/pull/1332)]
 
 - A ‘Paste/Before’ command was added to the live editing context menu.
-  [[#1335](https://github.com/reupen/columns_ui/pull/1335)]
+  [[#1336](https://github.com/reupen/columns_ui/pull/1336)]
 
 - An ‘Edit parent’ command was added to the live editing context menu.
-  [[#1335](https://github.com/reupen/columns_ui/pull/1335)]
+  [[#1336](https://github.com/reupen/columns_ui/pull/1336)]
 
   This closes the menu for the current panel and shows the live editing menu for
   the parent splitter.
@@ -88,7 +88,7 @@
 - The ‘Add sibling’ (previously ‘Add panel’ underneath the name of the parent
   splitter) command in the live editing context menu now adds the new panel
   directly after the panel the menu is being shown for.
-  [[#1335](https://github.com/reupen/columns_ui/pull/1335)]
+  [[#1336](https://github.com/reupen/columns_ui/pull/1336)]
 
 - Commands to cut, copy or paste panels now all operate on an internal clipboard
   in addition to the Windows clipboard, to protect against accidentally
@@ -101,6 +101,12 @@
 - Unknown panels (such as uninstalled panels) are now preserved when copied and
   pasted in the Layout tree in Preferences.
   [[#1302](https://github.com/reupen/columns_ui/pull/1302)]
+
+- The ‘Splitters’ panel category was renamed ‘Containers’.
+  [[#1337](https://github.com/reupen/columns_ui/pull/1337)]
+
+- ‘Horizontal splitter’ and ‘Vertical splitter’ were renamed ‘Row’ and ‘Column’
+  respectively. [[#1337](https://github.com/reupen/columns_ui/pull/1337)]
 
 #### Other
 

@@ -8,6 +8,7 @@ public:
     std::wstring name;
     std::wstring category;
     bool is_single_instance{};
+    bool prefers_multiple_instances{};
     uint32_t type{};
 };
 
@@ -24,11 +25,11 @@ std::vector<PanelInfo> get_panel_info(const WindowIterable& windows = uie::windo
         window->get_name(name);
         info.name = mmh::to_utf16(name.c_str());
 
-        pfc::string8 category;
-        window->get_category(category);
+        const auto category = uie::utils::get_remapped_category(window);
         info.category = mmh::to_utf16(category.c_str());
 
         info.is_single_instance = window->get_is_single_instance();
+        info.prefers_multiple_instances = window->get_prefer_multiple_instances();
         info.type = window->get_type();
 
         panels.emplace_back(std::move(info));
