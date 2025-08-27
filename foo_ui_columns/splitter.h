@@ -135,7 +135,7 @@ private:
         bool m_autohide{false};
         HWND m_wnd{nullptr};
         HWND m_wnd_child{nullptr};
-        bool m_show_caption{true};
+        bool m_show_caption{};
         pfc::array_t<uint8_t> m_child_data;
         SizeLimit m_size_limits;
         uie::window_ptr m_child;

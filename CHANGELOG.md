@@ -109,6 +109,9 @@
 - ‘Horizontal splitter’ and ‘Vertical splitter’ were renamed ‘Row’ and ‘Column’
   respectively. [[#1337](https://github.com/reupen/columns_ui/pull/1337)]
 
+- Captions are no longer enabled by default when adding panels to row and column
+  containers. [[#1341](https://github.com/reupen/columns_ui/pull/1341)]
+
 #### Other
 
 - The Main preferences tab was split into a Setup tab and a Main window tab.
