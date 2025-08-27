@@ -109,6 +109,9 @@
 - ‘Horizontal splitter’ and ‘Vertical splitter’ were renamed ‘Row’ and ‘Column’
   respectively. [[#1337](https://github.com/reupen/columns_ui/pull/1337)]
 
+- Captions are no longer enabled by default when adding panels to row and column
+  containers. [[#1341](https://github.com/reupen/columns_ui/pull/1341)]
+
 #### Other
 
 - The Main preferences tab was split into a Setup tab and a Main window tab.
@@ -163,6 +166,10 @@
 - A bug where using the ‘Paste (insert)’ live editing command in a Tab stack
   inserted the panel in the wrong position until foobar2000 was restarted was
   fixed. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
+
+- Copying panels from a Tab stack and pasting them in a row or column container
+  no longer results in the panel having a zero width or height.
+  [[#1341](https://github.com/reupen/columns_ui/pull/1341)]
 
 - The symbol used for the active layout preset in the View/Layout menu was
   corrected to be a filled circle rather than a tick.
