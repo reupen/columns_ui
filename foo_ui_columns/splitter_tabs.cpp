@@ -167,9 +167,9 @@ uie::splitter_item_full_v2_t* TabStackPanel::Panel::create_splitter_item()
     ret->m_locked = false;
     ret->m_hidden = false;
     ret->m_show_toggle_area = false;
-    ret->m_size = 0;
-    ret->m_show_caption = true;
-    ret->m_size_v2 = 0;
+    ret->m_size = 150;
+    ret->m_show_caption = false;
+    ret->m_size_v2 = 150;
     ret->m_size_v2_dpi = USER_DEFAULT_SCREEN_DPI;
     return ret;
 }

@@ -167,6 +167,10 @@
   inserted the panel in the wrong position until foobar2000 was restarted was
   fixed. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
+- Copying panels from a Tab stack and pasting them in a row or column container
+  no longer results in the panel having a zero width or height.
+  [[#1341](https://github.com/reupen/columns_ui/pull/1341)]
+
 - The symbol used for the active layout preset in the View/Layout menu was
   corrected to be a filled circle rather than a tick.
   [[#1326](https://github.com/reupen/columns_ui/pull/1326)]
