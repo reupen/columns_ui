@@ -32,7 +32,7 @@
   [#1314](https://github.com/reupen/columns_ui/pull/1314)]
 
 - When right-clicking in the Artwork view, a dedicated context menu is now shown
-  (rather than the parent splitter’s context menu with Artwork view items
+  (rather than the parent container’s context menu with Artwork view items
   appended). [[#1312](https://github.com/reupen/columns_ui/pull/1312)]
 
 #### Playlist view
@@ -62,16 +62,19 @@
 
 #### Layout editing
 
+- The ‘Splitters’ panel category was renamed ‘Containers’.
+  [[#1337](https://github.com/reupen/columns_ui/pull/1337)]
+
 - The context menus for live editing and the layout tree in Preferences were
   reorganised. [[#1311](https://github.com/reupen/columns_ui/pull/1311),
   [#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
   This includes changes to the labels and position of some menu items, adding
-  separators and indicating the current splitter type in the renamed ‘Splitter
+  separators and indicating the current container type in the renamed ‘Container
   type’ submenu.
 
 - Commands for moving a panel to the previous or next position in its parent
-  splitter were added to the live editing context menu.
+  container were added to the live editing context menu.
   [[#1325](https://github.com/reupen/columns_ui/pull/1325),
   [#1331](https://github.com/reupen/columns_ui/pull/1331)]
 
@@ -86,10 +89,10 @@
   [[#1336](https://github.com/reupen/columns_ui/pull/1336)]
 
   This closes the menu for the current panel and shows the live editing menu for
-  the parent splitter.
+  the parent container.
 
 - The ‘Add sibling’ (previously ‘Add panel’ underneath the name of the parent
-  splitter) command in the live editing context menu now adds the new panel
+  container) command in the live editing context menu now adds the new panel
   directly after the panel the menu is being shown for.
   [[#1336](https://github.com/reupen/columns_ui/pull/1336)]
 
@@ -105,9 +108,6 @@
   pasted in the Layout tree in Preferences.
   [[#1302](https://github.com/reupen/columns_ui/pull/1302)]
 
-- The ‘Splitters’ panel category was renamed ‘Containers’.
-  [[#1337](https://github.com/reupen/columns_ui/pull/1337)]
-
 - ‘Horizontal splitter’ and ‘Vertical splitter’ were renamed ‘Row’ and ‘Column’
   respectively. [[#1337](https://github.com/reupen/columns_ui/pull/1337)]
 
@@ -117,11 +117,11 @@
 #### Other
 
 - The Main preferences tab was split into a Setup tab and a Main window tab.
-  [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
+  [[#1309](https://github.com/reupen/columns_ui/pull/1309)]
 
 - The use of hardware acceleration for built-in panels that use Direct2D can now
   be turned off or on in Preferences.
-  [[#1308](https://github.com/reupen/columns_ui/pull/1308),
+  [[#1309](https://github.com/reupen/columns_ui/pull/1309),
   [#1317](https://github.com/reupen/columns_ui/pull/1317)]
 
   Hardware acceleration is now disabled by default due to inconsistent
@@ -149,7 +149,7 @@
 
 - A possible problem where artwork stopped loading in the Artwork view until
   foobar2000 was restarted was fixed.
-  [#1304](https://github.com/reupen/columns_ui/pull/1304)
+  [[#1304](https://github.com/reupen/columns_ui/pull/1304)]
 
 - The Artwork view now correctly updates the shown image after toggling ‘Lock
   artwork type’ straight away.
@@ -158,16 +158,17 @@
 - Various bugs relating to the manipulation of single-instance panels during
   live editing were fixed.
   [[#1315](https://github.com/reupen/columns_ui/pull/1315),
-  [#1322](https://github.com/reupen/columns_ui/pull/1322),
+  [#1323](https://github.com/reupen/columns_ui/pull/1323),
   [#1324](https://github.com/reupen/columns_ui/pull/1324)]
 
 - Removing the active tab in a Tab stack during live editing now switches to
   another tab (rather than leaving no tab active).
   [[#1315](https://github.com/reupen/columns_ui/pull/1315)]
 
-- A bug where using the ‘Paste (insert)’ live editing command in a Tab stack
-  inserted the panel in the wrong position until foobar2000 was restarted was
-  fixed. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
+- A bug where using the ‘Paste (insert)’ (now named ‘Paste/After’) live editing
+  command in a Tab stack inserted the panel in the wrong position until
+  foobar2000 was restarted was fixed.
+  [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
 - Copying panels from a Tab stack and pasting them in a row or column container
   no longer results in the panel having a zero width or height.
@@ -189,7 +190,7 @@
 - Some code was refactored.
   [[#1268](https://github.com/reupen/columns_ui/pull/1268),
   [#1269](https://github.com/reupen/columns_ui/pull/1269),
-  [#1277](https://github.com/reupen/columns_ui/pull/1278),
+  [#1278](https://github.com/reupen/columns_ui/pull/1278),
   [#1306](https://github.com/reupen/columns_ui/pull/1306)]
 
 ## 3.0.1
