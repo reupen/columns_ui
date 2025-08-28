@@ -43,7 +43,7 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, s
     blend_function.AlphaFormat = AC_SRC_ALPHA;
 
     GdiAlphaBlend(context.dc, rc_bitmap.left, rc_bitmap.top, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap),
-        bitmap_dc.get(), 0, 0, bitmap_info.bmWidth, bitmap_info.bmHeight, blend_function);
+        bitmap_dc.get(), 0, 0, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap), blend_function);
 }
 
 void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t index,

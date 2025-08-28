@@ -21,15 +21,16 @@ namespace {
     const auto bitmap_pixel_size = d2d_bitmap->GetPixelSize();
     const auto bitmap_size = d2d_bitmap->GetSize();
 
+    const auto reflection_height_px = show_reflection ? (target_width * 3) / 11 : 0;
+    const auto reflection_height_dip = static_cast<float>(reflection_height_px);
+    const auto target_height_without_reflection = std::max(0, target_height - reflection_height_px);
+
     const auto [render_width_px, render_height_px]
         = cui::utils::calculate_scaled_image_size(static_cast<int>(bitmap_pixel_size.width),
-            static_cast<int>(bitmap_pixel_size.height), target_width, target_height, true, false);
+            static_cast<int>(bitmap_pixel_size.height), target_width, target_height_without_reflection, true, false);
 
     const auto render_width_dip = static_cast<float>(render_width_px);
     const auto render_height_dip = static_cast<float>(render_height_px);
-
-    const auto reflection_height_px = show_reflection ? (target_width * 3) / 11 : 0;
-    const auto reflection_height_dip = static_cast<float>(reflection_height_px);
 
     const auto scale_effect = d2d::create_scale_effect(context->d2d_device_context,
         D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height));
