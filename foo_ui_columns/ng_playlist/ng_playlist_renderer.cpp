@@ -1,6 +1,5 @@
 #include "pch.h"
 
-#include "font_manager_data.h"
 #include "ng_playlist.h"
 
 namespace cui::panels::playlist_view {
@@ -43,7 +42,7 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, s
     blend_function.SourceConstantAlpha = 255;
     blend_function.AlphaFormat = AC_SRC_ALPHA;
 
-    AlphaBlend(context.dc, rc_bitmap.left, rc_bitmap.top, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap),
+    GdiAlphaBlend(context.dc, rc_bitmap.left, rc_bitmap.top, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap),
         bitmap_dc.get(), 0, 0, bitmap_info.bmWidth, bitmap_info.bmHeight, blend_function);
 }
 
