@@ -48,7 +48,8 @@
   [#1292](https://github.com/reupen/columns_ui/pull/1292),
   [#1299](https://github.com/reupen/columns_ui/pull/1299),
   [#1317](https://github.com/reupen/columns_ui/pull/1317),
-  [#1344](https://github.com/reupen/columns_ui/pull/1344)]
+  [#1344](https://github.com/reupen/columns_ui/pull/1344),
+  [#1345](https://github.com/reupen/columns_ui/pull/1345)]
 
 #### Buttons toolbar
 
