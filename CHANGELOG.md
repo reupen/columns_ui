@@ -1,5 +1,13 @@
 # Change log
 
+## 3.1.0-alpha.2
+
+### Bug fixes
+
+- A crash when a playlist view was destroyed (for example, when closing
+  foobar2000) while artwork was loading was fixed.
+  [[#1349](https://github.com/reupen/columns_ui/pull/1349)]
+
 ## 3.1.0-alpha.1
 
 ### Features
