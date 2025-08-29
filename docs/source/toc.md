@@ -54,7 +54,7 @@ hidden:
 maxdepth: 2
 caption: Other functionality
 ---
-other/image-formats
+other/artwork
 other/cli-commands
 other/text-rendering
 ```
