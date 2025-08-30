@@ -332,7 +332,7 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item, HMONI
             m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
 
             m_artwork_manager->request(handle, monitor, cx, cy, cfg_artwork_reflection,
-                [this, self{ptr{this}}, group](
+                [this, self{ptr{this}}, group{PlaylistViewGroup::ptr{group}}](
                     const ArtworkReader* reader) { on_artwork_read_complete(group, reader); });
         }
 
