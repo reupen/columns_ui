@@ -1,5 +1,12 @@
 # Change log
 
+## 3.1.0-alpha.3
+
+### Bug fixes
+
+- A crash when switching playlist while artwork was loading was fixed.
+  [[#1353](https://github.com/reupen/columns_ui/pull/1353)]
+
 ## 3.1.0-alpha.2
 
 ### Bug fixes
