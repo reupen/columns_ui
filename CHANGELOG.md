@@ -38,6 +38,8 @@
   HDR and high bit-depth images but is recommended only if HDR is enabled in
   Windows.
 
+  [Further information on colour management in the Artwork view.](https://columns-ui.readthedocs.io/en/latest/other/artwork.html#colour-management)
+
 - The Artwork view now has a ‘Show in File Explorer’ context menu item and click
   action that shows the file containing the displayed image in File Explorer.
   [[#1307](https://github.com/reupen/columns_ui/pull/1307)]
@@ -56,6 +58,8 @@
   improves support for images with an embedded colour profile and makes image
   colours more consistent with web browsers.
   [[#1286](https://github.com/reupen/columns_ui/pull/1286)]
+
+  [Further information on colour management in the playlist view.](https://columns-ui.readthedocs.io/en/latest/other/artwork.html#colour-management)
 
 - Direct2D is now used to scale artwork and create artwork reflections in the
   playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281),
