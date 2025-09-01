@@ -187,7 +187,7 @@ public:
 private:
     inline static UINT_PTR g_timer_refcount{};
     inline static UINT_PTR g_timer{};
-    inline static visualisation_stream::ptr g_stream;
+    inline static visualisation_stream_v2::ptr s_stream;
     inline static pfc::ptr_list_t<SpectrumAnalyserVisualisation> s_instances;
     inline static pfc::ptr_list_t<SpectrumAnalyserVisualisation> s_active_instances;
     inline static wil::unique_hbrush s_foreground_brush;
@@ -262,10 +262,8 @@ void SpectrumAnalyserVisualisation::enable(const ui_extension::visualisation_hos
     m_bar_gap = uih::scale_dpi_value(1);
 
     if (s_instances.add_item(this) == 0) {
-        visualisation_manager::get()->create_stream(g_stream, visualisation_manager::KStreamFlagNewFFT);
-        visualisation_stream_v2::ptr p_stream_v2;
-        if (g_stream->service_query_t(p_stream_v2))
-            p_stream_v2->set_channel_mode(visualisation_stream_v2::channel_mode_mono);
+        visualisation_manager::get()->create_stream(s_stream, visualisation_manager::KStreamFlagNewFFT);
+        s_stream->set_channel_mode(visualisation_stream_v2::channel_mode_mono);
     }
 
     play_callback_manager::get()->register_callback(
@@ -285,7 +283,7 @@ void SpectrumAnalyserVisualisation::disable()
         g_deregister_stream(this);
 
     if (!s_instances.get_count()) {
-        g_stream.release();
+        s_stream.release();
         s_flush_brushes();
     }
 
@@ -395,81 +393,86 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
     ui_extension::visualisation_host::painter_ptr ps;
     p_host->create_painter(ps);
 
-    HDC dc = ps->get_device_context();
-    const RECT* rc_client = ps->get_area();
+    const auto dc = ps->get_device_context();
+    const auto* rc_client = ps->get_area();
 
-    {
-        paint_background(dc, rc_client);
+    paint_background(dc, rc_client);
 
-        if (g_is_stream_active(this) && p_chunk) {
-            colours::helper colours(colour_client_id);
+    if (!(g_is_stream_active(this) && p_chunk))
+        return;
 
-            if (!s_foreground_brush)
-                s_foreground_brush.reset(CreateSolidBrush(colours.get_colour(colours::colour_text)));
+    const auto channel_count = p_chunk->get_channels();
 
-            const auto data = p_chunk->get_data();
-            const auto sample_count = p_chunk->get_sample_count();
-            const auto channel_count = p_chunk->get_channels();
-            const auto sample_rate = p_chunk->get_sample_rate();
+    // foo_input_sacd interferes with the visualisation API and can cause wrong channel counts
+    if (channel_count != 1) {
+#ifdef _DEBUG
+        console::print("Columns UI – visualisation chunk with incorrect channel count received");
+#endif
+        return;
+    }
 
-            if (channel_count != 1)
-                uBugCheck();
+    const auto data = p_chunk->get_data();
+    const auto sample_count = p_chunk->get_sample_count();
+    const auto sample_rate = p_chunk->get_sample_rate();
 
-            if (mode == MODE_BARS) {
-                if (const int num_bars = rc_client->right / m_bar_width; num_bars > 0) {
-                    for (const auto bar_index : std::ranges::views::iota(0, num_bars)) {
-                        const auto [start_bin, end_bin] = get_fft_bins(
-                            sample_count, bar_index, num_bars, sample_rate, m_scale == scale_logarithmic);
+    colours::helper colours(colour_client_id);
 
-                        audio_sample value{};
-                        for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
-                            const auto bin_value = data[bin_index];
-                            value = std::max(value, bin_value);
-                        }
+    if (!s_foreground_brush)
+        s_foreground_brush.reset(CreateSolidBrush(colours.get_colour(colours::colour_text)));
 
-                        const auto y_pos = calculate_y_position(value, (rc_client->bottom + 1) / 2);
+    if (mode == MODE_BARS) {
+        if (const int num_bars = rc_client->right / m_bar_width; num_bars > 0) {
+            for (const auto bar_index : std::ranges::views::iota(0, num_bars)) {
+                const auto [start_bin, end_bin]
+                    = get_fft_bins(sample_count, bar_index, num_bars, sample_rate, m_scale == scale_logarithmic);
 
-                        RECT bar_rect{};
-                        bar_rect.left = 1 + bar_index * m_bar_width;
-                        bar_rect.right = bar_rect.left + m_bar_width - m_bar_gap;
-                        bar_rect.bottom = rc_client->bottom ? rc_client->bottom - 1 : 0;
-                        bar_rect.top = rc_client->bottom - y_pos * 2;
-
-                        if (bar_rect.bottom > bar_rect.top)
-                            FillRect(dc, &bar_rect, s_foreground_brush.get());
-                    }
-
-                    for (int j = rc_client->bottom; j > rc_client->top; j -= 2) {
-                        RECT fill_rect = {0, j - 1, rc_client->right, j};
-                        FillRect(dc, &fill_rect, s_background_brush.get());
-                    }
+                audio_sample value{};
+                for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
+                    const auto bin_value = data[bin_index];
+                    value = std::max(value, bin_value);
                 }
-            } else {
-                for (int x = 0; x < rc_client->right; x++) {
-                    const auto [start_bin, end_bin]
-                        = get_fft_bins(sample_count, x, rc_client->right, sample_rate, m_scale == scale_logarithmic);
 
-                    audio_sample value{};
-                    for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
-                        const auto bin_value = data[bin_index];
-                        value = std::max(value, bin_value);
-                    }
+                const auto y_pos = calculate_y_position(value, (rc_client->bottom + 1) / 2);
 
-                    const auto y_pos = calculate_y_position(value, rc_client->bottom);
+                RECT bar_rect{};
+                bar_rect.left = 1 + bar_index * m_bar_width;
+                bar_rect.right = bar_rect.left + m_bar_width - m_bar_gap;
+                bar_rect.bottom = rc_client->bottom ? rc_client->bottom - 1 : 0;
+                bar_rect.top = rc_client->bottom - y_pos * 2;
 
-                    RECT line{};
-                    line.left = x;
-                    line.right = x + 1;
-                    line.bottom = rc_client->bottom;
-                    line.top = rc_client->bottom - y_pos;
+                if (bar_rect.bottom > bar_rect.top)
+                    FillRect(dc, &bar_rect, s_foreground_brush.get());
+            }
 
-                    if (line.bottom > line.top)
-                        FillRect(dc, &line, s_foreground_brush.get());
-                }
+            for (int j = rc_client->bottom; j > rc_client->top; j -= 2) {
+                RECT fill_rect = {0, j - 1, rc_client->right, j};
+                FillRect(dc, &fill_rect, s_background_brush.get());
             }
         }
+        return;
     }
-    ps.release();
+
+    for (int x = 0; x < rc_client->right; x++) {
+        const auto [start_bin, end_bin]
+            = get_fft_bins(sample_count, x, rc_client->right, sample_rate, m_scale == scale_logarithmic);
+
+        audio_sample value{};
+        for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
+            const auto bin_value = data[bin_index];
+            value = std::max(value, bin_value);
+        }
+
+        const auto y_pos = calculate_y_position(value, rc_client->bottom);
+
+        RECT line{};
+        line.left = x;
+        line.right = x + 1;
+        line.bottom = rc_client->bottom;
+        line.top = rc_client->bottom - y_pos;
+
+        if (line.bottom > line.top)
+            FillRect(dc, &line, s_foreground_brush.get());
+    }
 }
 
 void SpectrumAnalyserVisualisation::s_refresh_all(bool include_inactive)
@@ -477,12 +480,12 @@ void SpectrumAnalyserVisualisation::s_refresh_all(bool include_inactive)
     bool is_active{};
     audio_chunk_impl p_chunk;
 
-    if (g_stream.is_valid()) {
+    if (s_stream.is_valid()) {
         double time{};
-        g_stream->get_absolute_time(time);
+        s_stream->get_absolute_time(time);
 
         constexpr auto fft_size = 4096u;
-        is_active = g_stream->get_spectrum_absolute(p_chunk, time, fft_size);
+        is_active = s_stream->get_spectrum_absolute(p_chunk, time, fft_size);
     }
 
     const auto& instances = include_inactive ? s_instances : s_active_instances;
