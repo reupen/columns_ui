@@ -1,5 +1,15 @@
 # Change log
 
+## Development version
+
+### Features
+
+- The spectrum analyser now ignores invalid visualisation data caused by certain
+  third-party components interfering with the visualisation API.
+  [[#1358](https://github.com/reupen/columns_ui/pull/1358)]
+
+  (Previous 3.1.0 versions triggered a bug check crash.)
+
 ## 3.1.0-alpha.3
 
 ### Bug fixes
