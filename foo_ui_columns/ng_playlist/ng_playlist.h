@@ -589,11 +589,6 @@ public:
             [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Grouping"; }
-    bool get_help_url(pfc::string_base& p_out) override
-    {
-        p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:grouping";
-        return true;
-    }
 
 private:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);

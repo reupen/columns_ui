@@ -16,12 +16,6 @@ const char* LayoutMiscTab::get_name()
     return "Misc";
 }
 
-bool LayoutMiscTab::get_help_url(pfc::string_base& p_out)
-{
-    p_out = "http://yuo.be/wiki/columns_ui:config:layout";
-    return true;
-}
-
 INT_PTR LayoutMiscTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {

@@ -62,11 +62,6 @@ void TabDarkMode::refresh()
         current_mode == cui::colours::DarkModeStatus::UseSystemSetting ? BST_CHECKED : BST_UNCHECKED);
 }
 
-bool TabDarkMode::get_help_url(pfc::string_base& p_out)
-{
-    return false;
-}
-
 const char* TabDarkMode::get_name()
 {
     return "Mode";

@@ -85,11 +85,6 @@ public:
             [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "System tray"; }
-    bool get_help_url(pfc::string_base& p_out) override
-    {
-        p_out = "http://yuo.be/wiki/columns_ui:config:notification_area";
-        return true;
-    }
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
 

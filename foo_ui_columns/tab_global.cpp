@@ -163,7 +163,7 @@ public:
     const char* get_name() override { return "Globals"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
-        p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:globals";
+        p_out = "https://columns-ui.readthedocs.io/page/playlist-view/global-variables.html";
         return true;
     }
 

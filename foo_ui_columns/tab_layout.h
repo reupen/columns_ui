@@ -26,7 +26,6 @@ class LayoutTab : public PreferencesTab {
 public:
     HWND create(HWND wnd) override;
     const char* get_name() override;
-    bool get_help_url(pfc::string_base& p_out) override;
 
 private:
     static HTREEITEM insert_item_in_tree_view(

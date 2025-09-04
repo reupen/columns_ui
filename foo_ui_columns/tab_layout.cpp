@@ -1022,10 +1022,4 @@ const char* LayoutTab::get_name()
     return "Layout";
 }
 
-bool LayoutTab::get_help_url(pfc::string_base& p_out)
-{
-    p_out = "http://yuo.be/wiki/columns_ui:config:layout";
-    return true;
-}
-
 } // namespace cui::prefs
