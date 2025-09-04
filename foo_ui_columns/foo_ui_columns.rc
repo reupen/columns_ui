@@ -779,6 +779,9 @@ BEGIN
     CONTROL         "Allow Direct2D hardware acceleration in built-in panels",IDC_HARDWARE_ACCELERATION,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,141,313,10
     LTEXT           "This option affects only the artwork view, artwork in the playlist view, and Item details.",IDC_STATIC,7,157,313,15
+    CONTROL         "<a href=""https://columns-ui.readthedocs.io"">Columns UI documentation site</a>",IDC_DOCUMENTATION_LINK,
+                    "SysLink",WS_TABSTOP,7,206,123,13
+    LTEXT           "Documentation",IDC_TITLE3,7,185,313,14
 END
 
 
