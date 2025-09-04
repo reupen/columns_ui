@@ -10,6 +10,17 @@
 
   (Previous 3.1.0 versions triggered a bug check crash.)
 
+- A link to the Columns UI documentation site was added to the Setup tab in
+  preferences. [[#1363](https://github.com/reupen/columns_ui/pull/1363)]
+
+  Additionally, all links to the archived Columns UI wiki were replaced with
+  links to the current documentation site.
+
+- On the Columns tab on the Playlist view preferences page, ‘Size weight’ was
+  renamed ‘Auto-size weight’ and some hint text was added under the playlist
+  filters edit box when playlist filters are enabled for that column.
+  [[#1363](https://github.com/reupen/columns_ui/pull/1363)]
+
 ## 3.1.0-alpha.3
 
 ### Bug fixes

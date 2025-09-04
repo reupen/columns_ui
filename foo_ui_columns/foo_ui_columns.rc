@@ -424,7 +424,7 @@ BEGIN
     EDITTEXT        IDC_NAME,7,37,208,13,ES_AUTOHSCROLL
     LTEXT           "Width",-1,7,61,20,8
     EDITTEXT        IDC_WIDTH,7,71,65,13,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Size weight",-1,78,61,47,8
+    LTEXT           "Auto-size weight",-1,78,61,65,8
     EDITTEXT        IDC_PARTS,78,71,65,13,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "Alignment",-1,150,61,45,8
     COMBOBOX        IDC_ALIGNMENT,150,71,65,78,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -433,6 +433,7 @@ BEGIN
     LTEXT           "Playlist filters",-1,7,130,43,8
     COMBOBOX        IDC_PLAYLIST_FILTER_TYPE,7,140,208,74,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_PLAYLIST_FILTER_STRING,7,157,208,13,ES_AUTOHSCROLL
+    LTEXT           "Case-insensitive. Wildcards (* and ?) allowed. Use a ; to separate multiple patterns.",IDC_PLAYLIST_FILTER_HINT,7,174,208,19
 END
 
 IDD_PREFS_COLUMNS DIALOGEX 0, 0, 327, 272
