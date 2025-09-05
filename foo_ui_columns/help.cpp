@@ -7,7 +7,7 @@ namespace cui::help {
 
 void open_colour_script_help(HWND wnd)
 {
-    helpers::open_web_page(wnd, urls::colour_script_help.data());
+    helpers::open_web_page(wnd, urls::style_script_help.data());
 }
 
 void open_global_variables_help(HWND wnd)

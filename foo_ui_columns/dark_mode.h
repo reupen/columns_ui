@@ -13,6 +13,7 @@ enum class ColourID {
     ComboBoxEditBackground,
     ComboBoxEditText,
     EditBackground,
+    HyperlinkText,
     LayoutBackground,
     PanelCaptionText,
     PanelCaptionBackground,

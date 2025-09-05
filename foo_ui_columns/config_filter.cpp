@@ -216,11 +216,6 @@ public:
             [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Fields"; }
-    bool get_help_url(pfc::string_base& p_out) override
-    {
-        p_out = "http://yuo.be/wiki/columns_ui:config:filter";
-        return true;
-    }
 
 private:
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
@@ -294,11 +289,6 @@ public:
             [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Appearance"; }
-    bool get_help_url(pfc::string_base& p_out) override
-    {
-        p_out = "http://yuo.be/wiki/columns_ui:config:filter";
-        return true;
-    }
 
 private:
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
@@ -404,11 +394,6 @@ public:
             [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Behaviour"; }
-    bool get_help_url(pfc::string_base& p_out) override
-    {
-        p_out = "http://yuo.be/wiki/columns_ui:config:filter";
-        return true;
-    }
 
 private:
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};

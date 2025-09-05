@@ -68,8 +68,9 @@ public:
         EnableWindow(GetDlgItem(wnd, IDC_PARTS), show);
         EnableWindow(GetDlgItem(wnd, IDC_SHOW_COLUMN), show);
         EnableWindow(GetDlgItem(wnd, IDC_ALIGNMENT), show);
-        EnableWindow(
-            GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), show && m_column && m_column->filter_type != FILTER_NONE);
+        const auto enable_filter_pattern_controls = show && m_column && m_column->filter_type != FILTER_NONE;
+        EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), enable_filter_pattern_controls);
+        ShowWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_HINT), enable_filter_pattern_controls ? SW_SHOW : SW_HIDE);
         EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_TYPE), show);
         EnableWindow(GetDlgItem(wnd, IDC_EDITFIELD), show);
     }
@@ -142,7 +143,10 @@ public:
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_FILTER_TYPE: {
                 if (!initialising && m_column) {
                     m_column->filter_type = ((PlaylistFilterType)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
-                    EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), m_column->filter_type != FILTER_NONE);
+                    const auto enable_filter_pattern_controls = m_column->filter_type != FILTER_NONE;
+                    EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), enable_filter_pattern_controls);
+                    ShowWindow(
+                        GetDlgItem(wnd, IDC_PLAYLIST_FILTER_HINT), enable_filter_pattern_controls ? SW_SHOW : SW_HIDE);
                 }
             } break;
             case IDC_SHOW_COLUMN: {

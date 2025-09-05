@@ -34,11 +34,6 @@ public:
     void show_column(size_t index);
 
     const char* get_name() override { return "Columns"; }
-    bool get_help_url(pfc::string_base& p_out) override
-    {
-        p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:columns";
-        return true;
-    }
 
 private:
     class ColumnsListView : public cui::helpers::CoreDarkListView {

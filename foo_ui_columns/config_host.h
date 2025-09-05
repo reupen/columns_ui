@@ -108,7 +108,7 @@ public:
     bool get_help_url(pfc::string_base& p_out) override
     {
         if (!(m_active_tab < (int)m_tabs.size() && m_tabs[m_active_tab]->get_help_url(p_out)))
-            p_out = "http://yuo.be/wiki/columns_ui:manual";
+            p_out = "https://columns-ui.readthedocs.io";
         return true;
     }
 

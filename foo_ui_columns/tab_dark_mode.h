@@ -11,7 +11,6 @@ public:
     void apply() {}
     HWND create(HWND wnd) override;
     const char* get_name() override;
-    bool get_help_url(pfc::string_base& p_out) override;
     bool is_active();
     void refresh();
 

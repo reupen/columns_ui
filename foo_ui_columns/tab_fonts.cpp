@@ -9,12 +9,6 @@ bool TabFonts::is_active() const
     return m_wnd != nullptr;
 }
 
-bool TabFonts::get_help_url(pfc::string_base& p_out)
-{
-    p_out = "http://yuo.be/wiki/columns_ui:config:colours_and_fonts:fonts";
-    return true;
-}
-
 const char* TabFonts::get_name()
 {
     return "Fonts";

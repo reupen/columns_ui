@@ -32,7 +32,11 @@ public:
 
     const char* get_name() override { return "Text rendering"; }
 
-    bool get_help_url(pfc::string_base& p_out) override { return false; }
+    bool get_help_url(pfc::string_base& p_out) override
+    {
+        p_out = "https://columns-ui.readthedocs.io/page/other/text-rendering.html";
+        return true;
+    }
 
 private:
     std::optional<ptrdiff_t> find_family_name(std::wstring_view family_name);

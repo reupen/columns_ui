@@ -267,6 +267,7 @@
 #define IDC_COLOUR_CODE                 1166
 #define IDC_TITLE1                      1168
 #define IDC_TITLE2                      1169
+#define IDC_TITLE3                      1170
 #define IDC_DISPLAY_SCRIPT              1173
 #define IDC_SORTING_SCRIPT              1174
 #define IDC_STYLE_SCRIPT                1175
@@ -307,6 +308,8 @@
 #define IDC_SET_FORMAT_SNIPPET          1203
 #define IDC_USE_ADVANCED_COLOUR         1205
 #define IDC_HARDWARE_ACCELERATION       1207
+#define IDC_DOCUMENTATION_LINK          1208
+#define IDC_PLAYLIST_FILTER_HINT        1209
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -316,7 +319,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1208
+#define _APS_NEXT_CONTROL_VALUE         1210
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

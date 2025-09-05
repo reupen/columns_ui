@@ -15,12 +15,6 @@ bool TabColours::is_active()
     return m_wnd != nullptr;
 }
 
-bool TabColours::get_help_url(pfc::string_base& p_out)
-{
-    p_out = "http://yuo.be/wiki/columns_ui:config:colours_and_fonts:colours";
-    return true;
-}
-
 const char* TabColours::get_name()
 {
     return "Colours";

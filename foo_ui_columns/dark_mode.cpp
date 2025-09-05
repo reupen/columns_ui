@@ -137,6 +137,8 @@ wil::unique_hbrush get_dark_colour_brush(ColourID colour_id)
 int get_light_colour_system_id(ColourID colour_id)
 {
     switch (colour_id) {
+    case ColourID::HyperlinkText:
+        return COLOR_HIGHLIGHT;
     case ColourID::LayoutBackground:
         return COLOR_BTNFACE;
     case ColourID::PanelCaptionText:
@@ -195,6 +197,8 @@ COLORREF get_dark_colour(ColourID colour_id)
         return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::EditBackground:
         return get_base_dark_colour(DarkColourID::DARK_200);
+    case ColourID::HyperlinkText:
+        return RGB(50, 155, 250);
     case ColourID::LayoutBackground:
         return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::PanelCaptionText:

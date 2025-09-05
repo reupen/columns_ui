@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "fcl.h"
 #include "config.h"
+#include "dark_mode.h"
 #include "event_token.h"
 #include "main_window.h"
 
@@ -17,6 +18,16 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             uih::enhance_edit_control(wnd, IDC_STRING);
+
+            const auto documentation_link_wnd = GetDlgItem(wnd, IDC_DOCUMENTATION_LINK);
+
+            LITEM item{};
+            item.mask = LIF_STATE | LIF_ITEMINDEX;
+            item.iLink = 0;
+            item.state = LIS_DEFAULTCOLORS;
+            item.stateMask = LIS_DEFAULTCOLORS;
+            SendMessage(documentation_link_wnd, LM_SETITEM, 0, reinterpret_cast<LPARAM>(&item));
+
             SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
 
             if (config::use_hardware_acceleration)
@@ -24,6 +35,19 @@ public:
 
             if (!main_window.get_wnd())
                 EnableWindow(GetDlgItem(wnd, IDC_QUICKSETUP), FALSE);
+
+            uih::subclass_window(
+                wnd, [documentation_link_wnd](auto _, auto wnd, auto msg, auto wp, auto lp) -> std::optional<LRESULT> {
+                    if (msg == WM_CTLCOLORSTATIC && reinterpret_cast<HWND>(lp) == documentation_link_wnd) {
+                        auto result = DefWindowProc(wnd, msg, wp, lp);
+                        const auto colour
+                            = dark::get_colour(dark::ColourID::HyperlinkText, ui_config_manager::g_is_dark_mode());
+                        SetTextColor(reinterpret_cast<HDC>(wp), colour);
+                        return result;
+                    }
+
+                    return {};
+                });
 
             break;
         }
@@ -46,7 +70,24 @@ public:
 
                 break;
             }
+        case WM_NOTIFY: {
+            const auto nmhdr = reinterpret_cast<LPNMHDR>(lp);
+
+            if (nmhdr->idFrom != IDC_DOCUMENTATION_LINK)
+                break;
+
+            switch (nmhdr->code) {
+            case NM_CLICK:
+            case NM_RETURN: {
+                PNMLINK nmlink = reinterpret_cast<PNMLINK>(lp);
+                helpers::open_web_page(wnd, nmlink->item.szUrl);
+                break;
+            }
+            }
+            break;
         }
+        }
+
         return 0;
     }
 
@@ -58,7 +99,7 @@ public:
 
     const char* get_name() override { return "Setup"; }
 
-    PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
+    PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2, IDC_TITLE3}};
 };
 
 SetupTab setup_tab;
