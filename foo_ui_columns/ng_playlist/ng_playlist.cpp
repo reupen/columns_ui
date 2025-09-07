@@ -747,12 +747,11 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
             track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_data[column_index].m_sort_script, nullptr);
 
             const char* ptr = title.c_str();
-            if (strchr(ptr, 3)) {
-                pfc::string8_fast_aggressive title_without_colour_codes;
-                title_without_colour_codes.prealloc(title.length());
+            std::string title_without_colour_codes;
 
-                titleformat_compiler::remove_color_marks(ptr, title_without_colour_codes);
-                ptr = title_without_colour_codes;
+            if (strchr(ptr, 3)) {
+                title_without_colour_codes = uih::remove_colour_codes(ptr);
+                ptr = title_without_colour_codes.c_str();
             }
 
             data[index].resize(pfc::stringcvt::estimate_utf8_to_wide_quick(ptr));
