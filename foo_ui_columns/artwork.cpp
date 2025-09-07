@@ -282,15 +282,19 @@ void ArtworkPanel::g_on_edge_style_change()
  */
 void ArtworkPanel::on_album_art(album_art_data::ptr data) noexcept
 {
+    if (!g_track_mode_includes_now_playing(m_track_mode))
+        return;
+
     if (!m_artwork_reader || !m_artwork_reader->is_ready()) {
         m_dynamic_artwork_pending = true;
         return;
     }
 
-    if (m_selected_artwork_type_index == 0) {
+    if (m_selected_artwork_type_index == 0 && data.is_valid())
         m_artwork_type_override_index.reset();
+
+    if (get_displayed_artwork_type_index() == 0)
         refresh_image();
-    }
 }
 
 const GUID& ArtworkPanel::get_extension_guid() const
@@ -914,11 +918,8 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason) noexce
 void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
     m_dynamic_artwork_pending = false;
-    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_reader) {
-        const auto data = now_playing_album_art_notify_manager::get()->current();
-
+    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_reader)
         request_artwork(p_track, true);
-    }
 }
 
 void ArtworkPanel::force_reload_artwork()

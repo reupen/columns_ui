@@ -144,21 +144,25 @@ album_art_data_ptr ArtworkReaderManager::get_stub_image(GUID artwork_type_id)
     return {};
 }
 
-album_art_data_ptr ArtworkReaderManager::get_image(const GUID& p_what) const
+album_art_data_ptr ArtworkReaderManager::get_image(const GUID& p_what, bool is_checking_existence_only) const
 {
     if (!is_ready() || m_current_reader->status() != ArtworkReaderStatus::Succeeded)
         return {};
 
     if (p_what == album_art_ids::cover_front && m_current_reader->is_from_playback()) {
-        const auto api = now_playing_album_art_notify_manager::get();
+        auto data = now_playing_album_art_notify_manager::get()->current();
 
-        if (auto data = api->current(); data.is_valid()) {
+        if (!is_checking_existence_only) {
             // Inject the artwork data into m_previous_artwork_data, so that the check
             // whether the artwork has changed when the next track is played (or selected)
             // functions correctly
-            m_previous_artwork_data.insert_or_assign(album_art_ids::cover_front, data);
-            return data;
+            if (data.is_valid())
+                m_previous_artwork_data.insert_or_assign(album_art_ids::cover_front, data);
+            else
+                m_previous_artwork_data.erase(album_art_ids::cover_front);
         }
+
+        return data;
     }
 
     auto&& artwork_data = m_current_reader->get_artwork_data();

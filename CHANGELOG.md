@@ -23,9 +23,9 @@
 
 ### Bug fixes
 
-- The Artwork view now reloads artwork if the panel is showing selection or
-  non-front-cover playing track artwork, and the track the artwork was loaded
-  from is modified. [[#1364](https://github.com/reupen/columns_ui/pull/1364)]
+- The Artwork view now always reloads artwork if the track it’s currently
+  showing artwork for is modified.
+  [[#1364](https://github.com/reupen/columns_ui/pull/1364)]
 
 - The playlist view now reloads the artwork for a group if the first track in
   the group is modified.
