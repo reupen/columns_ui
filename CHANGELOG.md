@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.1.0-beta.1
 
 ### Features
 
@@ -20,6 +20,16 @@
   renamed ‘Auto-size weight’ and some hint text was added under the playlist
   filters edit box when playlist filters are enabled for that column.
   [[#1363](https://github.com/reupen/columns_ui/pull/1363)]
+
+### Bug fixes
+
+- The Artwork view now always reloads artwork if the track it’s currently
+  showing artwork for is modified.
+  [[#1364](https://github.com/reupen/columns_ui/pull/1364)]
+
+- The playlist view now reloads the artwork for a group if the first track in
+  the group is modified.
+  [[#1364](https://github.com/reupen/columns_ui/pull/1364)]
 
 ## 3.1.0-alpha.3
 

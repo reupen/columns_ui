@@ -269,6 +269,7 @@
     <ClCompile Include="dark_mode_active_ui.cpp" />
     <ClCompile Include="dark_mode_dialog.cpp" />
     <ClCompile Include="dark_mode_spin.cpp" />
+    <ClCompile Include="fb2k_callbacks.cpp" />
     <ClCompile Include="file_info_utils.cpp" />
     <ClCompile Include="font_manager.cpp" />
     <ClCompile Include="font_manager_v3.cpp" />
@@ -454,6 +455,7 @@
     <ClInclude Include="dark_mode_active_ui.h" />
     <ClInclude Include="dark_mode_spin.h" />
     <ClInclude Include="event_token.h" />
+    <ClInclude Include="fb2k_callbacks.h" />
     <ClInclude Include="file_info_utils.h" />
     <ClInclude Include="font_manager_data.h" />
     <ClInclude Include="font_picker.h" />

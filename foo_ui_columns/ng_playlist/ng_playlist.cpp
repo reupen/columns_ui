@@ -331,7 +331,7 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item, HMONI
             metadb_handle_ptr handle;
             m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
 
-            m_artwork_manager->request(handle, monitor, cx, cy, cfg_artwork_reflection,
+            m_artwork_manager->request(group, handle, monitor, cx, cy, cfg_artwork_reflection,
                 [this, self{ptr{this}}, group{PlaylistViewGroup::ptr{group}}](
                     const ArtworkReader* reader) { on_artwork_read_complete(group, reader); });
         }
@@ -583,6 +583,24 @@ void PlaylistView::s_destroy_message_window()
 {
     s_message_window->destroy();
     s_message_window.reset();
+}
+
+void PlaylistView::invalidate_artwork_images(size_t start, size_t count)
+{
+    const auto group_count = get_group_count();
+
+    if (group_count == 0 || !get_show_group_info_area())
+        return;
+
+    for (const auto index : std::views::iota(start, start + count)) {
+        const auto group = get_item(index)->get_leaf_group();
+        const auto is_new_group = index == 0 || group != get_item(index - 1)->get_leaf_group();
+
+        if (!is_new_group)
+            continue;
+
+        group->reset_artwork();
+    }
 }
 
 int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)

@@ -4,6 +4,7 @@
 #include "config.h"
 #include "d2d_utils.h"
 #include "d3d_utils.h"
+#include "fb2k_callbacks.h"
 #include "imaging.h"
 #include "tab_setup.h"
 
@@ -232,6 +233,8 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 
 void ArtworkPanel::request_artwork(const metadb_handle_ptr& track, bool is_from_playback)
 {
+    m_current_track = track;
+
     const auto handle_artwork_read
         = [self{service_ptr_t{this}}](bool artwork_changed) { self->on_artwork_loaded(artwork_changed); };
 
@@ -279,15 +282,19 @@ void ArtworkPanel::g_on_edge_style_change()
  */
 void ArtworkPanel::on_album_art(album_art_data::ptr data) noexcept
 {
+    if (!g_track_mode_includes_now_playing(m_track_mode))
+        return;
+
     if (!m_artwork_reader || !m_artwork_reader->is_ready()) {
         m_dynamic_artwork_pending = true;
         return;
     }
 
-    if (m_selected_artwork_type_index == 0) {
+    if (m_selected_artwork_type_index == 0 && data.is_valid())
         m_artwork_type_override_index.reset();
+
+    if (get_displayed_artwork_type_index() == 0)
         refresh_image();
-    }
 }
 
 const GUID& ArtworkPanel::get_extension_guid() const
@@ -333,10 +340,23 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             reset_d2d_device_resources();
             refresh_image();
         });
+
+        m_metadb_io_change_token = fb2k_utils::add_metadb_io_callback(
+            [this, self{service_ptr_t{this}}](metadb_handle_list_cref tracks, bool from_hook) {
+                if (from_hook || m_current_track.is_empty())
+                    return;
+
+                if (size_t index{};
+                    !tracks.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, m_current_track, index))
+                    return;
+
+                soft_reload_selection_artwork();
+            });
         break;
     }
     case WM_DESTROY:
         std::erase(g_windows, this);
+        m_metadb_io_change_token.reset();
         m_use_hardware_acceleration_change_token.reset();
         m_display_change_token.reset();
         ui_selection_manager::get()->unregister_callback(this);
@@ -344,6 +364,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         play_callback_manager::get()->unregister_callback(this);
         now_playing_album_art_notify_manager::get()->remove(this);
         m_selection_handles.remove_all();
+        m_current_track.reset();
         m_show_in_explorer_thread.reset();
         m_artwork_decoder.shut_down();
         if (m_artwork_reader)
@@ -897,11 +918,8 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason) noexce
 void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
     m_dynamic_artwork_pending = false;
-    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_reader) {
-        const auto data = now_playing_album_art_notify_manager::get()->current();
-
+    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_reader)
         request_artwork(p_track, true);
-    }
 }
 
 void ArtworkPanel::force_reload_artwork()
@@ -929,6 +947,19 @@ void ArtworkPanel::force_reload_artwork()
     } else {
         clear_image();
     }
+}
+
+void ArtworkPanel::soft_reload_selection_artwork()
+{
+    if (!m_current_track.is_valid())
+        return;
+
+    const auto is_from_playback = g_track_mode_includes_now_playing(m_track_mode) && play_control::get()->is_playing();
+
+    if (is_from_playback && get_displayed_artwork_type_index() == 0)
+        return;
+
+    request_artwork(m_current_track, is_from_playback);
 }
 
 bool ArtworkPanel::is_core_image_viewer_available() const
@@ -1220,6 +1251,8 @@ void ArtworkPanel::refresh_image()
 
 void ArtworkPanel::clear_image()
 {
+    m_current_track.reset();
+
     reset_effects();
     m_artwork_decoder.reset();
 

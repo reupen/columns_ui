@@ -79,8 +79,8 @@ public:
     void reset();
     void abort_current_task();
 
-    album_art_data_ptr get_image(const GUID& p_what) const;
-    bool has_image(GUID artwork_type_id) const { return get_image(artwork_type_id).is_valid(); }
+    album_art_data_ptr get_image(const GUID& p_what, bool is_checking_existence_only = false) const;
+    bool has_image(GUID artwork_type_id) const { return get_image(artwork_type_id, true).is_valid(); }
     album_art_path_list::ptr get_paths(GUID artwork_type_id) const;
     album_art_data_ptr get_stub_image(GUID artwork_type_id);
 
