@@ -85,6 +85,7 @@ public:
     static void s_on_use_advanced_colour_change();
 
     void force_reload_artwork();
+    void soft_reload_selection_artwork();
     bool is_core_image_viewer_available() const;
     void open_core_image_viewer() const;
     bool is_show_in_file_explorer_available() const;
@@ -166,6 +167,7 @@ private:
 
     EventToken::Ptr m_use_hardware_acceleration_change_token;
     EventToken::Ptr m_display_change_token;
+    EventToken::Ptr m_metadb_io_change_token;
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
     ArtworkDecoder m_artwork_decoder;
     std::optional<std::jthread> m_show_in_explorer_thread;
@@ -178,6 +180,7 @@ private:
     bool m_using_flip_model_swap_chain{};
     bool m_scale_effect_needs_updating{};
     metadb_handle_list m_selection_handles;
+    metadb_handle_ptr m_current_track;
 
     static std::vector<ArtworkPanel*> g_windows;
 };

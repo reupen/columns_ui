@@ -647,6 +647,9 @@
     <ClCompile Include="tab_setup.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
+    <ClCompile Include="fb2k_callbacks.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -967,6 +970,9 @@
       <Filter>Config UI</Filter>
     </ClInclude>
     <ClInclude Include="panel_utils.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="fb2k_callbacks.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

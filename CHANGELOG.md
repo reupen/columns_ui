@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.1.0-beta.1
 
 ### Features
 
@@ -22,6 +22,10 @@
   [[#1363](https://github.com/reupen/columns_ui/pull/1363)]
 
 ### Bug fixes
+
+- The Artwork view now reloads artwork if the panel is showing selection or
+  non-front-cover playing track artwork, and the track the artwork was loaded
+  from is modified. [[#1364](https://github.com/reupen/columns_ui/pull/1364)]
 
 - The playlist view now reloads the artwork for a group if the first track in
   the group is modified.
