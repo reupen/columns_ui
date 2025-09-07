@@ -1,4 +1,5 @@
 #pragma once
+#include "ng_playlist_groups.h"
 
 namespace cui::panels::playlist_view {
 
@@ -30,9 +31,10 @@ class ArtworkReader {
 public:
     using Ptr = std::shared_ptr<ArtworkReader>;
 
-    ArtworkReader(metadb_handle_ptr track, HMONITOR monitor, int width, int height, bool show_reflection,
-        OnArtworkLoadedCallback callback, std::shared_ptr<class ArtworkReaderManager> manager)
-        : m_handle(std::move(track))
+    ArtworkReader(PlaylistViewGroup::ptr group, metadb_handle_ptr track, HMONITOR monitor, int width, int height,
+        bool show_reflection, OnArtworkLoadedCallback callback, std::shared_ptr<class ArtworkReaderManager> manager)
+        : m_group(std::move(group))
+        , m_handle(std::move(track))
         , m_monitor(monitor)
         , m_width(width)
         , m_height(height)
@@ -61,6 +63,8 @@ public:
         core_api::ensure_main_thread();
         return m_abort.is_aborting();
     }
+
+    const PlaylistViewGroup::ptr& get_group() const { return m_group; }
 
     void abort()
     {
@@ -103,6 +107,7 @@ private:
         album_art_data_ptr data, abort_callback& p_abort);
 
     std::unordered_map<GUID, wil::shared_hbitmap> m_bitmaps;
+    PlaylistViewGroup::ptr m_group;
     metadb_handle_ptr m_handle;
     HMONITOR m_monitor{};
     int m_width{};
@@ -134,8 +139,8 @@ public:
 
     void reset() { abort_current_tasks(); }
 
-    void request(const metadb_handle_ptr& p_handle, HMONITOR monitor, int cx, int cy, bool b_reflection,
-        OnArtworkLoadedCallback p_notify);
+    void request(PlaylistViewGroup::ptr group, const metadb_handle_ptr& p_handle, HMONITOR monitor, int cx, int cy,
+        bool b_reflection, OnArtworkLoadedCallback p_notify);
 
     void start_pending_tasks()
     {
@@ -149,6 +154,8 @@ public:
         reader->start(std::move(context));
         m_current_readers.emplace_back(std::move(reader));
     }
+
+    void cancel_for_group(PlaylistViewGroup* group);
 
     void deinitialise()
     {

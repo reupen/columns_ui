@@ -5,6 +5,7 @@
 #include "d3d_utils.h"
 #include "gdi.h"
 #include "imaging.h"
+#include "ng_playlist.h"
 #include "resource_utils.h"
 #include "wcs.h"
 #include "wic.h"
@@ -283,13 +284,31 @@ bool get_default_artwork_placeholder_data(album_art_data_ptr& p_out, abort_callb
     return ret;
 }
 
-void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, HMONITOR monitor, int cx, int cy,
-    bool b_reflection, OnArtworkLoadedCallback callback)
+void ArtworkReaderManager::request(PlaylistViewGroup::ptr group, const metadb_handle_ptr& p_handle, HMONITOR monitor,
+    int cx, int cy, bool b_reflection, OnArtworkLoadedCallback callback)
 {
     auto p_new_reader = std::make_shared<ArtworkReader>(
-        p_handle, monitor, cx, cy, b_reflection, std::move(callback), shared_from_this());
+        std::move(group), p_handle, monitor, cx, cy, b_reflection, std::move(callback), shared_from_this());
     m_pending_readers.emplace_back(std::move(p_new_reader));
     start_pending_tasks();
+}
+
+void ArtworkReaderManager::cancel_for_group(PlaylistViewGroup* group)
+{
+    const auto is_same_group = [group](auto&& item) { return item->get_group() == group; };
+
+    auto matching_current_readers = m_current_readers | std::ranges::views::filter(is_same_group);
+
+    for (auto&& reader : matching_current_readers) {
+        if (!reader->is_running())
+            continue;
+
+        reader->abort();
+        m_aborting_readers.emplace_back(reader);
+    }
+
+    std::erase_if(m_current_readers, is_same_group);
+    std::erase_if(m_pending_readers, is_same_group);
 }
 
 void ArtworkReaderManager::on_reader_done(ArtworkRenderingContext::Ptr context, const ArtworkReader* ptr)

@@ -1,8 +1,29 @@
 #pragma once
 
 #include "common.h"
+#include "ng_playlist_style.h"
 
 namespace cui::panels::playlist_view {
+
+class PlaylistViewGroup : public uih::ListView::Group {
+public:
+    using self_t = PlaylistViewGroup;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
+    SharedCellStyleData::ptr m_style_data;
+
+    bool m_artwork_load_attempted{false};
+    bool m_artwork_load_succeeded{false};
+    wil::shared_hbitmap m_artwork_bitmap;
+
+    void reset_artwork()
+    {
+        m_artwork_bitmap.reset();
+        m_artwork_load_attempted = false;
+        m_artwork_load_succeeded = false;
+    }
+
+    PlaylistViewGroup() = default;
+};
 
 class Group {
 public:
@@ -74,5 +95,7 @@ private:
     }
     pfc::list_t<Group> m_groups;
 };
+
 extern ConfigGroups g_groups;
+
 } // namespace cui::panels::playlist_view

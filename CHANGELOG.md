@@ -21,6 +21,12 @@
   filters edit box when playlist filters are enabled for that column.
   [[#1363](https://github.com/reupen/columns_ui/pull/1363)]
 
+### Bug fixes
+
+- The playlist view now reloads the artwork for a group if the first track in
+  the group is modified.
+  [[#1364](https://github.com/reupen/columns_ui/pull/1364)]
+
 ## 3.1.0-alpha.3
 
 ### Bug fixes

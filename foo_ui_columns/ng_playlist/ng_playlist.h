@@ -2,10 +2,10 @@
 
 #include "core_dark_list_view.h"
 #include "ng_playlist_artwork.h"
+#include "ng_playlist_groups.h"
 #include "ng_playlist_style.h"
 #include "../config.h"
 #include "../list_view_panel.h"
-#include "../win32.h"
 
 namespace cui::panels::playlist_view {
 
@@ -214,31 +214,26 @@ private:
         timer_date_change = TIMER_BASE
     };
 
-    class PlaylistViewGroup : public Group {
-    public:
-        using self_t = PlaylistViewGroup;
-        using ptr = pfc::refcounted_object_ptr_t<self_t>;
-        SharedCellStyleData::ptr m_style_data;
-
-        bool m_artwork_load_attempted{false};
-        bool m_artwork_load_succeeded{false};
-        // bool m_data_to_bitmap_attempted;
-        // album_art_data_ptr m_artwork_data;
-        wil::shared_hbitmap m_artwork_bitmap; // cached for display
-
-        PlaylistViewGroup() = default;
-    };
-
     class PlaylistViewItem : public Item {
     public:
         using self_t = PlaylistViewItem;
         using ptr = pfc::refcounted_object_ptr_t<self_t>;
         style_data_t m_style_data;
-        PlaylistViewGroup* get_group(size_t index)
+
+        PlaylistViewGroup* get_group(size_t index) const
         {
             return static_cast<PlaylistViewGroup*>(m_groups[index].get_ptr());
         }
-        size_t get_group_count() { return m_groups.size(); }
+
+        PlaylistViewGroup* get_leaf_group() const
+        {
+            if (m_groups.empty())
+                return nullptr;
+
+            return get_group(m_groups.size() - 1);
+        }
+
+        size_t get_group_count() const { return m_groups.size(); }
     };
 
     class PlaylistViewSearchContext : public ListViewSearchContextBase {
@@ -266,7 +261,9 @@ private:
     static void s_destroy_message_window();
     static auto get_artwork_left_right_padding() { return cfg_indent_groups ? 0 : 5_spx; }
 
-    virtual void flush_artwork_images()
+    void invalidate_artwork_images(size_t index, size_t count);
+
+    void flush_artwork_images()
     {
         if (m_artwork_manager) {
             m_artwork_manager->abort_current_tasks();
@@ -278,10 +275,7 @@ private:
             size_t cg = get_item(i)->get_group_count();
             if (cg) {
                 PlaylistViewGroup* ptr = get_item(i)->get_group(cg - 1);
-                // ptr->m_data_to_bitmap_attempted = false;
-                ptr->m_artwork_load_succeeded = false;
-                ptr->m_artwork_load_attempted = false;
-                ptr->m_artwork_bitmap.reset();
+                ptr->reset_artwork();
             }
         }
     }
