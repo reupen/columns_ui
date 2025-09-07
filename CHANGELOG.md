@@ -23,6 +23,10 @@
 
 ### Bug fixes
 
+- A bug where sorting the playlist view by a column containing colour codes did
+  not work as expected on foobar2000 2.0 and newer was fixed.
+  [[#1365](https://github.com/reupen/columns_ui/pull/1365)]
+
 - The Artwork view now always reloads artwork if the track it’s currently
   showing artwork for is modified.
   [[#1364](https://github.com/reupen/columns_ui/pull/1364)]
