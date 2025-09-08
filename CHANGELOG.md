@@ -11,7 +11,8 @@
   (Previous 3.1.0 versions triggered a bug check crash.)
 
 - A link to the Columns UI documentation site was added to the Setup tab in
-  preferences. [[#1363](https://github.com/reupen/columns_ui/pull/1363)]
+  preferences. [[#1363](https://github.com/reupen/columns_ui/pull/1363),
+  [#1366](https://github.com/reupen/columns_ui/pull/1366)]
 
   Additionally, all links to the archived Columns UI wiki were replaced with
   links to the current documentation site.
