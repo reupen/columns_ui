@@ -36,10 +36,10 @@ public:
             if (!main_window.get_wnd())
                 EnableWindow(GetDlgItem(wnd, IDC_QUICKSETUP), FALSE);
 
-            uih::subclass_window(
-                wnd, [documentation_link_wnd](auto _, auto wnd, auto msg, auto wp, auto lp) -> std::optional<LRESULT> {
+            uih::subclass_window(wnd,
+                [documentation_link_wnd](auto wndproc, auto wnd, auto msg, auto wp, auto lp) -> std::optional<LRESULT> {
                     if (msg == WM_CTLCOLORSTATIC && reinterpret_cast<HWND>(lp) == documentation_link_wnd) {
-                        auto result = DefWindowProc(wnd, msg, wp, lp);
+                        const auto result = CallWindowProc(wndproc, wnd, msg, wp, lp);
                         const auto colour
                             = dark::get_colour(dark::ColourID::HyperlinkText, ui_config_manager::g_is_dark_mode());
                         SetTextColor(reinterpret_cast<HDC>(wp), colour);
@@ -70,6 +70,7 @@ public:
 
                 break;
             }
+            break;
         case WM_NOTIFY: {
             const auto nmhdr = reinterpret_cast<LPNMHDR>(lp);
 
