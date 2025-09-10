@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- Missing support for Ctrl+Backspace, and Ctrl+A on older versions of Windows,
+  was added to Filter search and two edit controls in Preferences where support
+  was missing. [[#1372](https://github.com/reupen/columns_ui/pull/1372)]
+
 ## 3.1.0-beta.1
 
 ### Features

@@ -97,6 +97,8 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         Button_SetCheck(GetDlgItem(wnd, IDC_USE_CUSTOM_INDENTATION),
             cfg_use_custom_group_indentation_amount ? BST_CHECKED : BST_UNCHECKED);
 
+        uih::enhance_edit_control(wnd, IDC_INDENTATION_AMOUNT);
+
         SendDlgItemMessage(wnd, IDC_INDENTATION_AMOUNT_SPIN, UDM_SETRANGE32, 0, 256);
         SendDlgItemMessage(wnd, IDC_INDENTATION_AMOUNT_SPIN, UDM_SETPOS32, NULL, cfg_custom_group_indentation_amount);
 
