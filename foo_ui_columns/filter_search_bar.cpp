@@ -531,6 +531,7 @@ void FilterSearchToolbar::create_edit()
 
     SetWindowLongPtr(m_search_editbox, GWLP_USERDATA, (LPARAM)(this));
     SetWindowLongPtr(cbi.hwndItem, GWLP_USERDATA, (LPARAM)(this));
+    uih::enhance_edit_control(cbi.hwndItem);
     m_proc_search_edit = (WNDPROC)SetWindowLongPtr(cbi.hwndItem, GWLP_WNDPROC, (LPARAM)(g_on_search_edit_message));
     Edit_SetCueBannerText(cbi.hwndItem, L"Search Filters");
 

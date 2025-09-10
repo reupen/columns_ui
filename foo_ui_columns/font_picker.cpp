@@ -143,6 +143,8 @@ private:
             m_axis_value_edit = GetDlgItem(m_wnd, IDC_AXIS_VALUE);
             m_axis_value_spin = GetDlgItem(m_wnd, IDC_AXIS_VALUE_SPIN);
 
+            uih::enhance_edit_control(m_axis_value_edit);
+
             for (auto&& axis : m_font_family.axes) {
                 const wchar_t name[5] = {narrow_to_wchar_t(axis.tag), narrow_to_wchar_t(axis.tag >> 8),
                     narrow_to_wchar_t(axis.tag >> 16), narrow_to_wchar_t(axis.tag >> 24), 0};
