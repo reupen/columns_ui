@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "drop_down_list_toolbar.h"
+#include "fb2k_misc.h"
 
 struct OutputFormatToolbarArgs {
     using ID = uint32_t;
@@ -43,9 +44,10 @@ struct OutputFormatToolbarArgs {
         callback_handle
             = api->addCallback([] { DropDownListToolbar<OutputFormatToolbarArgs>::s_refresh_all_items_safe(); });
     }
-    static void on_last_window_destroyed() { callback_handle.release(); }
+    static void on_last_window_destroyed() { callback_handle.reset(); }
     static bool is_available() { return true; }
-    static service_ptr callback_handle;
+
+    inline static cui::fb2k_utils::LeakyServicePtr<> callback_handle;
     static constexpr bool refresh_on_click = false;
     static constexpr auto no_items_text = "Auto"sv;
     static constexpr const wchar_t* class_name{L"columns_ui_output_format_TBWOn9HkOxhkU"};
@@ -55,6 +57,4 @@ struct OutputFormatToolbarArgs {
     static constexpr GUID font_client_id{0x1fb03f29, 0x1a1d, 0x4d11, {0xb5, 0x74, 0xaf, 0x2e, 0xb2, 0x62, 0x48, 0xc2}};
 };
 
-service_ptr OutputFormatToolbarArgs::callback_handle;
-
-ui_extension::window_factory<DropDownListToolbar<OutputFormatToolbarArgs>> output_format_toolbar;
+uie::window_factory<DropDownListToolbar<OutputFormatToolbarArgs>> output_format_toolbar;

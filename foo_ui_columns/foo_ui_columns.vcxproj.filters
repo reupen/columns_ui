@@ -975,6 +975,9 @@
     <ClInclude Include="fb2k_callbacks.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="fb2k_misc.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

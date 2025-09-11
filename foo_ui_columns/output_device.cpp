@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "drop_down_list_toolbar.h"
+#include "fb2k_misc.h"
 
 struct OutputDeviceToolbarArgs {
     using ID = std::tuple<GUID, GUID>;
@@ -55,9 +56,10 @@ struct OutputDeviceToolbarArgs {
         callback_handle
             = api->addCallback([] { DropDownListToolbar<OutputDeviceToolbarArgs>::s_refresh_all_items_safe(); });
     }
-    static void on_last_window_destroyed() { callback_handle.release(); }
+    static void on_last_window_destroyed() { callback_handle.reset(); }
     static bool is_available() { return static_api_test_t<output_manager_v2>(); }
-    static service_ptr callback_handle;
+
+    inline static cui::fb2k_utils::LeakyServicePtr<> callback_handle;
     static constexpr bool refresh_on_click = true;
     static constexpr auto no_items_text = ""sv;
     static constexpr const wchar_t* class_name{L"columns_ui_output_device_DQLvIKXzFVY"};
@@ -67,6 +69,4 @@ struct OutputDeviceToolbarArgs {
     static constexpr GUID font_client_id{0x20772a7b, 0xb5b5, 0x48c7, {0xa7, 0xca, 0x98, 0xde, 0x17, 0xff, 0xfc, 0xb4}};
 };
 
-service_ptr OutputDeviceToolbarArgs::callback_handle;
-
-ui_extension::window_factory<DropDownListToolbar<OutputDeviceToolbarArgs>> output_device_toolbar;
+uie::window_factory<DropDownListToolbar<OutputDeviceToolbarArgs>> output_device_toolbar;
