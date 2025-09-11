@@ -1,12 +1,16 @@
 # Change log
 
-## Development version
+## 3.1.0
 
 ### Bug fixes
 
 - Missing support for Ctrl+Backspace, and Ctrl+A on older versions of Windows,
   was added to Filter search and two edit controls in Preferences where support
   was missing. [[#1372](https://github.com/reupen/columns_ui/pull/1372)]
+
+- Some Output device and Output format toolbar clean-up code was prevented from
+  running on certain types of abnormal process exits, reducing crash log noise
+  in rare cases. [[#1373](https://github.com/reupen/columns_ui/pull/1373)]
 
 ## 3.1.0-beta.1
 
