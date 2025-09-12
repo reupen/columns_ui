@@ -2,6 +2,12 @@
 
 ## 3.1.0
 
+### Features
+
+- The ‘Use alternative emoji font selection logic’ text rendering option was
+  updated to the final Unicode 17.0.0 emoji list.
+  [[#1376](https://github.com/reupen/columns_ui/pull/1376)]
+
 ### Bug fixes
 
 - Playlist view artwork now properly recovers from a graphics card reset when
