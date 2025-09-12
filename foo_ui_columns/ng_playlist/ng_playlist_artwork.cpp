@@ -182,91 +182,81 @@ namespace {
     const std::wstring& display_profile_name, const album_art_data_ptr& data, const int width, const int height,
     bool b_reflection)
 {
-    try {
-        const auto decoder = wic::create_decoder_from_data(data->get_ptr(), data->get_size(), context->wic_factory);
+    const auto decoder = wic::create_decoder_from_data(data->get_ptr(), data->get_size(), context->wic_factory);
 
-        wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
-        THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
+    wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
+    THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
 
-        wil::com_ptr<IWICBitmapSource> converted_bitmap;
-        THROW_IF_FAILED(
-            WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, bitmap_frame_decode.get(), &converted_bitmap));
+    wil::com_ptr<IWICBitmapSource> converted_bitmap;
+    THROW_IF_FAILED(
+        WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, bitmap_frame_decode.get(), &converted_bitmap));
 
-        const auto d2d_colour_context = create_colour_context_for_image(context, bitmap_frame_decode);
+    const auto d2d_colour_context = create_colour_context_for_image(context, bitmap_frame_decode);
 
-        auto bitmap_properties = D2D1::BitmapProperties1();
-        bitmap_properties.colorContext = d2d_colour_context.get();
+    auto bitmap_properties = D2D1::BitmapProperties1();
+    bitmap_properties.colorContext = d2d_colour_context.get();
 
-        wil::com_ptr<ID2D1Bitmap1> d2d_bitmap;
-        const auto hr = context->d2d_device_context->CreateBitmapFromWicBitmap(
-            converted_bitmap.get(), bitmap_properties, &d2d_bitmap);
+    wil::com_ptr<ID2D1Bitmap1> d2d_bitmap;
+    const auto hr = context->d2d_device_context->CreateBitmapFromWicBitmap(
+        converted_bitmap.get(), bitmap_properties, &d2d_bitmap);
 
-        if (hr != E_NOTIMPL)
-            THROW_IF_FAILED(hr);
+    if (hr != E_NOTIMPL)
+        THROW_IF_FAILED(hr);
 
-        if (hr == E_NOTIMPL) {
-            // For lossy images, the Microsoft JXL codec does not support some interface or
-            // method that D2D expects (but making a copy of the bitmap and trying again works fine).
-            // (ID2D1DeviceContext2::CreateImageSourceFromWic() doesn't have this problem.)
-            wil::com_ptr<IWICBitmap> wic_bitmap_copy;
-            THROW_IF_FAILED(context->wic_factory->CreateBitmapFromSource(
-                converted_bitmap.get(), WICBitmapCacheOnDemand, &wic_bitmap_copy));
+    if (hr == E_NOTIMPL) {
+        // For lossy images, the Microsoft JXL codec does not support some interface or
+        // method that D2D expects (but making a copy of the bitmap and trying again works fine).
+        // (ID2D1DeviceContext2::CreateImageSourceFromWic() doesn't have this problem.)
+        wil::com_ptr<IWICBitmap> wic_bitmap_copy;
+        THROW_IF_FAILED(context->wic_factory->CreateBitmapFromSource(
+            converted_bitmap.get(), WICBitmapCacheOnDemand, &wic_bitmap_copy));
 
-            THROW_IF_FAILED(context->d2d_device_context->CreateBitmapFromWicBitmap(
-                wic_bitmap_copy.get(), bitmap_properties, &d2d_bitmap));
-        }
-
-        const auto dest_colour_context = get_or_create_colour_context_for_display(context, display_profile_name);
-        const auto render_rect
-            = render_d2d_bitmap(context, d2d_bitmap, dest_colour_context, width, height, b_reflection);
-
-        const auto render_width = render_rect.right;
-        const auto render_height = render_rect.bottom;
-
-        wil::com_ptr<ID2D1Bitmap1> cpu_bitmap;
-        THROW_IF_FAILED(context->d2d_device_context->CreateBitmap({render_width, render_height}, nullptr, 0,
-            D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_CANNOT_DRAW | D2D1_BITMAP_OPTIONS_CPU_READ,
-                D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)),
-            &cpu_bitmap));
-
-        THROW_IF_FAILED(cpu_bitmap->CopyFromRenderTarget(nullptr, context->d2d_device_context.get(), &render_rect));
-
-        D2D1_MAPPED_RECT mapped_rect{};
-        THROW_IF_FAILED(cpu_bitmap->Map(D2D1_MAP_OPTIONS_READ, &mapped_rect));
-
-        auto _ = gsl::finally([&] { THROW_IF_FAILED(cpu_bitmap->Unmap()); });
-
-        return gdi::create_hbitmap_from_32bpp_data(
-            render_width, render_height, mapped_rect.bits, mapped_rect.pitch * render_height, mapped_rect.pitch);
-    } catch (const std::exception& ex) {
-        fbh::print_to_console("Playlist view – loading image failed: ", ex.what());
-        return nullptr;
+        THROW_IF_FAILED(context->d2d_device_context->CreateBitmapFromWicBitmap(
+            wic_bitmap_copy.get(), bitmap_properties, &d2d_bitmap));
     }
+
+    const auto dest_colour_context = get_or_create_colour_context_for_display(context, display_profile_name);
+    const auto render_rect = render_d2d_bitmap(context, d2d_bitmap, dest_colour_context, width, height, b_reflection);
+
+    const auto render_width = render_rect.right;
+    const auto render_height = render_rect.bottom;
+
+    wil::com_ptr<ID2D1Bitmap1> cpu_bitmap;
+    THROW_IF_FAILED(context->d2d_device_context->CreateBitmap({render_width, render_height}, nullptr, 0,
+        D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_CANNOT_DRAW | D2D1_BITMAP_OPTIONS_CPU_READ,
+            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)),
+        &cpu_bitmap));
+
+    THROW_IF_FAILED(cpu_bitmap->CopyFromRenderTarget(nullptr, context->d2d_device_context.get(), &render_rect));
+
+    D2D1_MAPPED_RECT mapped_rect{};
+    THROW_IF_FAILED(cpu_bitmap->Map(D2D1_MAP_OPTIONS_READ, &mapped_rect));
+
+    auto _ = gsl::finally([&] { THROW_IF_FAILED(cpu_bitmap->Unmap()); });
+
+    return gdi::create_hbitmap_from_32bpp_data(
+        render_width, render_height, mapped_rect.bits, mapped_rect.pitch * render_height, mapped_rect.pitch);
 }
 
 wil::unique_hbitmap get_placeholder_hbitmap(const ArtworkRenderingContext::Ptr& context,
     const std::wstring& display_profile_name, const int width, const int height, bool b_reflection,
     abort_callback& p_abort)
 {
-    album_art_extractor_instance_v2::ptr extractor = album_art_manager_v2::get()->open_stub(p_abort);
-    wil::unique_hbitmap gdi_bitmap;
+    const album_art_extractor_instance_v2::ptr extractor = album_art_manager_v2::get()->open_stub(p_abort);
+    album_art_data_ptr data;
 
     try {
-        const auto data = extractor->query(album_art_ids::cover_front, p_abort);
-        gdi_bitmap = create_hbitmap_from_image_data(context, display_profile_name, data, width, height, b_reflection);
-    } catch (const exception_aborted&) {
-        throw;
-    } catch (exception_io_not_found const&) {
-    } catch (pfc::exception const&) {
+        data = extractor->query(album_art_ids::cover_front, p_abort);
+    } catch (const exception_album_art_not_found&) {
     }
 
-    if (!gdi_bitmap) {
-        if (album_art_data_ptr data; get_default_artwork_placeholder_data(data, p_abort))
-            gdi_bitmap
-                = create_hbitmap_from_image_data(context, display_profile_name, data, width, height, b_reflection);
-    }
+    if (!data.is_valid())
+        get_default_artwork_placeholder_data(data, p_abort);
 
-    return gdi_bitmap;
+    if (!data.is_valid())
+        return nullptr;
+
+    return create_hbitmap_from_image_data(context, display_profile_name, data, width, height, b_reflection);
 }
 
 } // namespace
@@ -397,11 +387,13 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
 
                 render_artwork(context, display_profile_name, data, m_abort);
             } catch (const wil::ResultException& ex) {
-                if (ex.GetErrorCode() != D2DERR_RECREATE_TARGET)
+                if (!d2d::is_device_reset_error(ex.GetErrorCode()))
                     throw;
 
                 m_abort.check();
                 context = ArtworkRenderingContext::s_create(m_width, m_height);
+
+                m_abort.check();
                 render_artwork(context, display_profile_name, data, m_abort);
             }
 
@@ -410,16 +402,11 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
         } catch (const exception_aborted&) {
             m_status = ArtworkReaderStatus::Aborted;
         } catch (const std::exception& ex) {
-            console::print("Playlist view – unexpected error reading artwork: ", ex.what());
+            console::print("Playlist view – error loading artwork: ", ex.what());
             m_status = ArtworkReaderStatus::Failed;
 
-            try {
-                throw;
-            } catch (const wil::ResultException& wil_ex) {
-                if (wil_ex.GetErrorCode() == D2DERR_RECREATE_TARGET)
-                    context.reset();
-            } catch (...) {
-            }
+            if (d2d::is_device_reset_error(wil::ResultFromCaughtException()))
+                context.reset();
         }
 
         if (m_status != ArtworkReaderStatus::Succeeded)
@@ -461,15 +448,14 @@ void ArtworkReader::render_artwork(const ArtworkRenderingContext::Ptr& context,
             = create_hbitmap_from_image_data(context, display_profile_name, data, m_width, m_height, m_show_reflection);
         m_bitmaps.insert_or_assign(artwork_type_id, std::move(bitmap));
         GdiFlush();
+        return;
     }
 
-    if (!m_bitmaps.contains(artwork_type_id)) {
-        auto bm = m_manager->request_nocover_image(
-            context, display_profile_name, m_width, m_height, m_show_reflection, p_abort);
-        if (bm) {
-            m_bitmaps.insert_or_assign(artwork_type_id, std::move(bm));
-            GdiFlush();
-        }
+    auto bm = m_manager->request_nocover_image(
+        context, display_profile_name, m_width, m_height, m_show_reflection, p_abort);
+    if (bm) {
+        m_bitmaps.insert_or_assign(artwork_type_id, std::move(bm));
+        GdiFlush();
     }
 }
 

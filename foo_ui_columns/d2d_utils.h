@@ -2,6 +2,11 @@
 
 namespace cui::d2d {
 
+constexpr bool is_device_reset_error(const HRESULT hr)
+{
+    return hr == D2DERR_RECREATE_TARGET || hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET;
+}
+
 wil::com_ptr<ID2D1Factory1> create_factory(D2D1_FACTORY_TYPE factory_type);
 
 using MainThreadD2D1Factory = std::shared_ptr<wil::com_ptr<ID2D1Factory1>>;
