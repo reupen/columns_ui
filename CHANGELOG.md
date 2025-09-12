@@ -16,6 +16,10 @@
   running on certain types of abnormal process exits, reducing crash log noise
   in rare cases. [[#1373](https://github.com/reupen/columns_ui/pull/1373)]
 
+- A possible problem where some error messages from a library used by Columns UI
+  may have been logged to the console in an incorrect text encoding was fixed.
+  [[#1375](https://github.com/reupen/columns_ui/pull/1375)]
+
 ## 3.1.0-beta.1
 
 ### Features

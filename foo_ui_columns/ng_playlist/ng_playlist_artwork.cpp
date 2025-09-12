@@ -401,8 +401,8 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
             m_status = ArtworkReaderStatus::Succeeded;
         } catch (const exception_aborted&) {
             m_status = ArtworkReaderStatus::Aborted;
-        } catch (const std::exception& ex) {
-            console::print("Playlist view – error loading artwork: ", ex.what());
+        } catch (const std::exception&) {
+            console::print("Playlist view – error loading artwork: ", mmh::get_caught_exception_message().c_str());
             m_status = ArtworkReaderStatus::Failed;
 
             if (d2d::is_device_reset_error(wil::ResultFromCaughtException()))
@@ -433,8 +433,7 @@ album_art_data_ptr ArtworkReader::read_artwork(abort_callback& p_abort)
         throw;
     } catch (exception_io_not_found const&) {
     } catch (pfc::exception const& e) {
-        console::formatter formatter;
-        formatter << "Playlist view – error loading artwork: " << e.what();
+        console::print("Playlist view – error reading artwork: ", e.what());
     }
 
     return {};

@@ -28,8 +28,8 @@ void ButtonsToolbar::ButtonImage::preload(const Button::CustomImage& p_image)
         unsigned height{};
         wic::check_hresult(m_bitmap_source->GetSize(&width, &height));
         m_bitmap_source_size = std::make_tuple(gsl::narrow<int>(width), gsl::narrow<int>(height));
-    } catch (const std::exception& ex) {
-        fbh::print_to_console("Buttons toolbar – loading image failed: ", ex.what());
+    } catch (const std::exception&) {
+        fbh::print_to_console("Buttons toolbar – loading image failed: ", mmh::get_caught_exception_message().c_str());
     }
 }
 
@@ -67,9 +67,9 @@ bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& c
             }
             m_bm = wic::create_hbitmap_from_bitmap_source(m_bitmap_source);
             return resized;
-        } catch (const std::exception& ex) {
-            fbh::print_to_console(
-                "Buttons toolbar – loading image failed. Path: ", full_path.get_ptr(), " Error: ", ex.what());
+        } catch (const std::exception&) {
+            fbh::print_to_console("Buttons toolbar – loading image failed. Path: ", full_path.get_ptr(),
+                " Error: ", mmh::get_caught_exception_message().c_str());
         }
         m_bitmap_source.reset();
     }
@@ -123,8 +123,9 @@ void ButtonsToolbar::ButtonImage::load_default_image(
 
     try {
         m_bm = wic::resize_hbitmap(bitmap.get(), width, height);
-    } catch (const std::exception& ex) {
-        fbh::print_to_console("Buttons toolbar – error resizing default image: ", ex.what());
+    } catch (const std::exception&) {
+        fbh::print_to_console(
+            "Buttons toolbar – error resizing default image: ", mmh::get_caught_exception_message().c_str());
     }
 }
 
