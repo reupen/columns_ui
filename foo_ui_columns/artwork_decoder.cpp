@@ -187,8 +187,8 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
                 }
             }
 
-        } catch (const std::exception& ex) {
-            console::print("Artwork panel – loading image failed: ", ex.what());
+        } catch (const std::exception&) {
+            console::print("Artwork panel – loading image failed: ", mmh::get_caught_exception_message().c_str());
 
             d2d_bitmap.reset();
             d2d_display_colour_context.reset();
