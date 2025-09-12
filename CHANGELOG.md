@@ -4,6 +4,10 @@
 
 ### Bug fixes
 
+- Playlist view artwork now properly recovers from a graphics card reset when
+  Direct2D hardware acceleration is enabled.
+  [[#1374](https://github.com/reupen/columns_ui/pull/1374)]
+
 - Missing support for Ctrl+Backspace, and Ctrl+A on older versions of Windows,
   was added to Filter search and two edit controls in Preferences where support
   was missing. [[#1372](https://github.com/reupen/columns_ui/pull/1372)]

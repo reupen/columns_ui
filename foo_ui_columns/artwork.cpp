@@ -15,11 +15,6 @@ namespace {
 constexpr unsigned MSG_REFRESH_EFFECTS = WM_USER + 3;
 constexpr unsigned MSG_REFRESH_IMAGE = WM_USER + 4;
 
-constexpr bool is_device_reset_error(const HRESULT hr)
-{
-    return hr == D2DERR_RECREATE_TARGET || hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET;
-}
-
 D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustment)
 {
     auto convert_component = [](float value) -> float {
@@ -398,7 +393,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             HRESULT hr = m_dxgi_swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 
-            if (is_device_reset_error(hr)) {
+            if (d2d::is_device_reset_error(hr)) {
                 reset_d2d_device_resources();
                 refresh_image();
             } else if (FAILED(hr))
@@ -486,7 +481,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             THROW_IF_FAILED(m_dxgi_swap_chain->Present(1, 0));
         } catch (...) {
-            if (is_device_reset_error(wil::ResultFromCaughtException())) {
+            if (d2d::is_device_reset_error(wil::ResultFromCaughtException())) {
                 reset_d2d_device_resources();
                 refresh_image();
                 return 0;
@@ -746,7 +741,7 @@ void ArtworkPanel::create_d2d_device_resources()
             }
         }
     } catch (const wil::ResultException& ex) {
-        if (is_device_reset_error(ex.GetErrorCode())) {
+        if (d2d::is_device_reset_error(ex.GetErrorCode())) {
             reset_d2d_device_resources();
             PostMessage(get_wnd(), MSG_REFRESH_IMAGE, 0, 0);
             return;
@@ -1305,7 +1300,7 @@ void ArtworkPanel::queue_decode(const album_art_data::ptr& data)
     const auto monitor = is_advanced_colour_active() ? nullptr : MonitorFromWindow(get_wnd(), MONITOR_DEFAULTTONEAREST);
 
     m_artwork_decoder.decode(m_d2d_device_context, is_advanced_colour_active(), monitor, data, [this, self{ptr{this}}] {
-        if (is_device_reset_error(m_artwork_decoder.get_error_result())) {
+        if (d2d::is_device_reset_error(m_artwork_decoder.get_error_result())) {
             reset_d2d_device_resources();
             PostMessage(get_wnd(), MSG_REFRESH_IMAGE, 0, 0);
             return;
