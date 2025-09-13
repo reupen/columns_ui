@@ -30,6 +30,10 @@
   view, Filter panel and Item properties for very small panel heights was fixed.
   [[#1377](https://github.com/reupen/columns_ui/pull/1377)]
 
+- The colour of the ‘Columns UI documentation site’ hyperlink on the Setup tab
+  in Preferences was corrected on Windows 7.
+  [[#1378](https://github.com/reupen/columns_ui/pull/1378)]
+
 ## 3.1.0-beta.1
 
 ### Features

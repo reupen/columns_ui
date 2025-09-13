@@ -138,7 +138,7 @@ int get_light_colour_system_id(ColourID colour_id)
 {
     switch (colour_id) {
     case ColourID::HyperlinkText:
-        return COLOR_HIGHLIGHT;
+        return COLOR_HOTLIGHT;
     case ColourID::LayoutBackground:
         return COLOR_BTNFACE;
     case ColourID::PanelCaptionText:
