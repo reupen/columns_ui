@@ -26,6 +26,10 @@
   may have been logged to the console in an incorrect text encoding was fixed.
   [[#1375](https://github.com/reupen/columns_ui/pull/1375)]
 
+- A minor bug where the PgUp and PgDn keys did not do anything in the playlist
+  view, Filter panel and Item properties for very small panel heights was fixed.
+  [[#1377](https://github.com/reupen/columns_ui/pull/1377)]
+
 ## 3.1.0-beta.1
 
 ### Features
