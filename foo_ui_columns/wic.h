@@ -28,7 +28,7 @@ wil::com_ptr<IWICBitmapSource> get_image_frame(const wil::com_ptr<IWICBitmapDeco
 wil::unique_hbitmap resize_hbitmap(HBITMAP original_bitmap, int width, int height);
 wil::com_ptr<IWICColorContext> get_bitmap_source_colour_context(const wil::com_ptr<IWICImagingFactory>& imaging_factory,
     const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode);
-
+bool is_auto_colour_space_conversion_pixel_format(REFWICPixelFormatGUID pixel_format);
 BitmapData decode_image_data(const void* data, size_t size);
 
 } // namespace cui::wic
