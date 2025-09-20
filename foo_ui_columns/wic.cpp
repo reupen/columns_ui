@@ -8,6 +8,11 @@ namespace cui::wic {
 
 namespace {
 
+const std::unordered_set auto_colour_space_conversion_pixel_formats{GUID_WICPixelFormat32bppCMYK,
+    GUID_WICPixelFormat40bppCMYKAlpha, GUID_WICPixelFormat64bppCMYK, GUID_WICPixelFormat80bppCMYKAlpha,
+    GUID_WICPixelFormat16bppGrayFixedPoint, GUID_WICPixelFormat16bppGrayHalf, GUID_WICPixelFormat32bppGrayFixedPoint,
+    GUID_WICPixelFormat32bppGrayFloat};
+
 wil::com_ptr<IWICBitmapDecoder> create_decoder_from_path(std::string_view path)
 {
     const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
@@ -118,15 +123,21 @@ wil::com_ptr<IWICColorContext> get_bitmap_source_colour_context(const wil::com_p
 
     unsigned colour_context_count{};
     // Not supported on Wine
-    if (const auto hr = LOG_IF_FAILED(
-            bitmap_frame_decode->GetColorContexts(1, wic_colour_context.addressof(), &colour_context_count));
-        FAILED(hr))
+    if (const auto hr = bitmap_frame_decode->GetColorContexts(1, wic_colour_context.addressof(), &colour_context_count);
+        FAILED(hr)) {
+        LOG_HR_IF(hr, hr != WINCODEC_ERR_UNSUPPORTEDOPERATION);
         return {};
+    }
 
     if (colour_context_count > 0)
         return wic_colour_context;
 
     return {};
+}
+
+bool is_auto_colour_space_conversion_pixel_format(REFWICPixelFormatGUID pixel_format)
+{
+    return auto_colour_space_conversion_pixel_formats.contains(pixel_format);
 }
 
 wil::com_ptr<IWICBitmapSource> create_bitmap_source_from_path(const char* path)

@@ -11,13 +11,10 @@ namespace cui::artwork_panel {
 namespace {
 
 auto get_bitmap_source_pixel_format_info(
-    const wil::com_ptr<IWICImagingFactory>& imaging_factory, const wil::com_ptr<IWICBitmapSource>& bitmap_source)
+    const wil::com_ptr<IWICImagingFactory>& imaging_factory, REFWICPixelFormatGUID pixel_format)
 {
-    WICPixelFormatGUID source_pixel_format{};
-    THROW_IF_FAILED(bitmap_source->GetPixelFormat(&source_pixel_format));
-
     wil::com_ptr<IWICComponentInfo> wic_component_info;
-    THROW_IF_FAILED(imaging_factory->CreateComponentInfo(source_pixel_format, &wic_component_info));
+    THROW_IF_FAILED(imaging_factory->CreateComponentInfo(pixel_format, &wic_component_info));
 
     return wic_component_info.query<IWICPixelFormatInfo2>();
 }
@@ -83,7 +80,10 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
             wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
             THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
 
-            const auto pixel_format_info = get_bitmap_source_pixel_format_info(imaging_factory, bitmap_frame_decode);
+            WICPixelFormatGUID source_pixel_format{};
+            THROW_IF_FAILED(bitmap_frame_decode->GetPixelFormat(&source_pixel_format));
+
+            const auto pixel_format_info = get_bitmap_source_pixel_format_info(imaging_factory, source_pixel_format);
 
             WICPixelFormatNumericRepresentation pixel_format_numeric_representation{};
             THROW_IF_FAILED(pixel_format_info->GetNumericRepresentation(&pixel_format_numeric_representation));
@@ -137,10 +137,13 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
                     return;
             }
 
+            const auto is_auto_colour_space_conversion
+                = wic::is_auto_colour_space_conversion_pixel_format(source_pixel_format);
+
             HRESULT hr{};
 
             // Not implemented on Wine
-            if (wic_colour_context) {
+            if (wic_colour_context && !is_auto_colour_space_conversion) {
                 LOG_IF_FAILED(d2d_render_target->CreateColorContextFromWicColorContext(
                     wic_colour_context.get(), &d2d_image_colour_context));
             } else {

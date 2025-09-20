@@ -136,7 +136,14 @@ namespace {
 [[nodiscard]] wil::com_ptr<ID2D1ColorContext> create_colour_context_for_image(
     const ArtworkRenderingContext::Ptr& context, const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
 {
-    const auto wic_colour_context = wic::get_bitmap_source_colour_context(context->wic_factory, bitmap_frame_decode);
+    WICPixelFormatGUID source_pixel_format{};
+    THROW_IF_FAILED(bitmap_frame_decode->GetPixelFormat(&source_pixel_format));
+
+    const auto is_auto_colour_space_conversion = wic::is_auto_colour_space_conversion_pixel_format(source_pixel_format);
+
+    const auto wic_colour_context = is_auto_colour_space_conversion
+        ? wil::com_ptr<IWICColorContext>()
+        : wic::get_bitmap_source_colour_context(context->wic_factory, bitmap_frame_decode);
 
     wil::com_ptr<ID2D1ColorContext> d2d_colour_context;
 

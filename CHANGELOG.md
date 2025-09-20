@@ -1,5 +1,13 @@
 # Change log
 
+## 3.1.1
+
+### Bug fixes
+
+- A problem where some non-RGB images (such as CMYK images) did not render
+  correctly in the Artwork view and playlist view was fixed.
+  [[#1383](https://github.com/reupen/columns_ui/pull/1383)]
+
 ## 3.1.0
 
 ### Features
