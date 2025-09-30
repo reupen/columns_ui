@@ -48,8 +48,8 @@ std::vector<uint8_t> read_display_colour_profile(const std::wstring& filename)
     profile_desc.dwType = PROFILE_FILENAME;
     profile_desc.pProfileData = const_cast<wchar_t*>(filename.data());
 
-    const auto profile
-        = WcsOpenColorProfile(&profile_desc, nullptr, nullptr, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING, 0);
+    const auto profile = WcsOpenColorProfile(
+        &profile_desc, nullptr, nullptr, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING, DONT_USE_EMBEDDED_WCS_PROFILES);
 
     if (!profile) {
 #if _DEBUG
