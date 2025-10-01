@@ -11,6 +11,7 @@ std::unordered_map<std::wstring, std::wstring> profile_names;
 
 std::mutex profiles_mutex;
 std::unordered_map<std::wstring, std::vector<uint8_t>> profiles;
+std::unordered_set<std::wstring> bad_profile_names;
 
 } // namespace state
 
@@ -94,6 +95,9 @@ std::vector<uint8_t> get_display_colour_profile(const std::wstring& filename)
 
     std::scoped_lock _(state::profiles_mutex);
 
+    if (state::bad_profile_names.contains(filename))
+        return {};
+
     if (const auto iter = state::profiles.find(filename); iter != state::profiles.end())
         return iter->second;
 
@@ -101,6 +105,13 @@ std::vector<uint8_t> get_display_colour_profile(const std::wstring& filename)
     state::profiles.insert_or_assign(filename, std::move(profile_data));
 
     return state::profiles.at(filename);
+}
+
+void mark_display_colour_profile_as_bad(std::wstring_view filename)
+{
+    std::scoped_lock _(state::profiles_mutex);
+
+    state::bad_profile_names.emplace(filename);
 }
 
 void reset_colour_profiles()

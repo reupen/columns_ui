@@ -168,11 +168,8 @@ namespace {
         return d2d_colour_context;
     }
 
-    const auto colour_profile = wcs::get_display_colour_profile(display_profile_name);
-
-    if (!colour_profile.empty())
-        LOG_IF_FAILED(context->d2d_device_context->CreateColorContext(D2D1_COLOR_SPACE_CUSTOM, colour_profile.data(),
-            gsl::narrow<uint32_t>(colour_profile.size()), &d2d_colour_context));
+    d2d_colour_context
+        = utils::create_d2d_colour_context_for_display_profile(context->d2d_device_context, display_profile_name);
 
     if (!d2d_colour_context) {
         // ID2D1DeviceContext::CreateColorContext() isn't implemented on Wine
