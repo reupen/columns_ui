@@ -2,6 +2,7 @@
 
 #include "artwork_decoder.h"
 
+#include "imaging.h"
 #include "wcs.h"
 #include "wic.h"
 #include "win32.h"
@@ -178,11 +179,9 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
             if (monitor) {
                 const auto display_device_key = win32::get_display_device_key(monitor);
                 const auto display_profile_name = wcs::get_display_colour_profile_name(display_device_key.c_str());
-                const auto profile = wcs::get_display_colour_profile(display_profile_name);
 
-                if (!profile.empty())
-                    LOG_IF_FAILED(d2d_render_target->CreateColorContext(D2D1_COLOR_SPACE_CUSTOM, profile.data(),
-                        gsl::narrow<uint32_t>(profile.size()), &d2d_display_colour_context));
+                d2d_display_colour_context
+                    = utils::create_d2d_colour_context_for_display_profile(d2d_render_target, display_profile_name);
 
                 if (!d2d_display_colour_context) {
                     LOG_IF_FAILED(d2d_render_target->CreateColorContext(
