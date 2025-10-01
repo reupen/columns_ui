@@ -1,5 +1,8 @@
 #include "pch.h"
 
+using unique_hprofile = wil::unique_any<HPROFILE, decltype(&::CloseColorProfile), ::CloseColorProfile>;
+constexpr auto cdmp_signature = 0x706d6463u;
+
 namespace cui::wcs {
 
 namespace {
@@ -49,8 +52,8 @@ std::vector<uint8_t> read_display_colour_profile(const std::wstring& filename)
     profile_desc.dwType = PROFILE_FILENAME;
     profile_desc.pProfileData = const_cast<wchar_t*>(filename.data());
 
-    const auto profile = WcsOpenColorProfile(
-        &profile_desc, nullptr, nullptr, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING, DONT_USE_EMBEDDED_WCS_PROFILES);
+    unique_hprofile profile(WcsOpenColorProfile(
+        &profile_desc, nullptr, nullptr, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING, DONT_USE_EMBEDDED_WCS_PROFILES));
 
     if (!profile) {
 #if _DEBUG
@@ -61,13 +64,18 @@ std::vector<uint8_t> read_display_colour_profile(const std::wstring& filename)
         return {};
     }
 
-    auto _ = gsl::finally([profile] { CloseColorProfile(profile); });
+    PROFILEHEADER header{};
+    if (!LOG_IF_WIN32_BOOL_FALSE(GetColorProfileHeader(profile.get(), &header)))
+        return {};
+
+    if (header.phSignature == cdmp_signature)
+        return {};
 
     DWORD data_size{};
-    GetColorProfileFromHandle(profile, nullptr, &data_size);
+    GetColorProfileFromHandle(profile.get(), nullptr, &data_size);
 
     std::vector<uint8_t> profile_data(data_size);
-    if (!LOG_IF_WIN32_BOOL_FALSE(GetColorProfileFromHandle(profile, profile_data.data(), &data_size)))
+    if (!LOG_IF_WIN32_BOOL_FALSE(GetColorProfileFromHandle(profile.get(), profile_data.data(), &data_size)))
         return {};
 
     return profile_data;

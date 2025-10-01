@@ -1,5 +1,19 @@
 # Change log
 
+## 3.1.2
+
+### Bug fixes
+
+- Artwork colour management now correctly handles display ICC profiles
+  containing an embedded
+  [Microsoft CDMP profile](https://learn.microsoft.com/en-gb/windows/win32/wcs/wcs-color-device-model-profile-schema-and-algorithms).
+  [[#1392](https://github.com/reupen/columns_ui/pull/1392),
+  [#1394](https://github.com/reupen/columns_ui/pull/1394),
+  [#1395](https://github.com/reupen/columns_ui/pull/1395)]
+
+  Additionally, standalone CDMP display profiles are now ignored, as this
+  appears to be in line with the Windows 11 Photos app.
+
 ## 3.1.1
 
 ### Bug fixes
