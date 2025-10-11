@@ -1,5 +1,13 @@
 # Change log
 
+## 3.1.3
+
+### Bug fixes
+
+- The Artwork view and playlist view now ignore CMYK colour profiles that have
+  been incorrectly embedded in RGB images.
+  [[#1405](https://github.com/reupen/columns_ui/pull/1405)]
+
 ## 3.1.2
 
 ### Bug fixes

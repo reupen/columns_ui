@@ -2,6 +2,12 @@
 
 namespace cui::wic {
 
+namespace icc {
+
+constexpr auto cmyk_signature = 0x434D594Bu;
+
+}
+
 class wic_error : public std::exception {
 public:
     using std::exception::exception;
@@ -30,5 +36,7 @@ wil::com_ptr<IWICColorContext> get_bitmap_source_colour_context(const wil::com_p
     const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode);
 bool is_auto_colour_space_conversion_pixel_format(REFWICPixelFormatGUID pixel_format);
 BitmapData decode_image_data(const void* data, size_t size);
+
+std::optional<uint32_t> get_icc_colour_space_signature(const wil::com_ptr<IWICColorContext>& colour_context);
 
 } // namespace cui::wic

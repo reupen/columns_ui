@@ -145,9 +145,13 @@ namespace {
         ? wil::com_ptr<IWICColorContext>()
         : wic::get_bitmap_source_colour_context(context->wic_factory, bitmap_frame_decode);
 
+    const auto icc_colour_space
+        = wic_colour_context ? wic::get_icc_colour_space_signature(wic_colour_context) : std::nullopt;
+    const auto has_cmyk_profile = icc_colour_space == wic::icc::cmyk_signature;
+
     wil::com_ptr<ID2D1ColorContext> d2d_colour_context;
 
-    if (wic_colour_context) {
+    if (wic_colour_context && !has_cmyk_profile) {
         LOG_IF_FAILED(context->d2d_device_context->CreateColorContextFromWicColorContext(
             wic_colour_context.get(), &d2d_colour_context));
     } else {

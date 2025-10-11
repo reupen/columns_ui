@@ -93,6 +93,10 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
             THROW_IF_FAILED(pixel_format_info->GetBitsPerPixel(&bpp));
 
             const auto wic_colour_context = wic::get_bitmap_source_colour_context(imaging_factory, bitmap_frame_decode);
+
+            const auto icc_colour_space
+                = wic_colour_context ? wic::get_icc_colour_space_signature(wic_colour_context) : std::nullopt;
+
             is_float = pixel_format_numeric_representation == WICPixelFormatNumericRepresentationFloat;
 
             const auto target_pixel_format = [&] {
@@ -140,11 +144,15 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
 
             const auto is_auto_colour_space_conversion
                 = wic::is_auto_colour_space_conversion_pixel_format(source_pixel_format);
+            const auto has_cmyk_profile = icc_colour_space == wic::icc::cmyk_signature;
 
-            HRESULT hr{};
+#if _DEBUG
+            if (has_cmyk_profile && !is_auto_colour_space_conversion)
+                console::print("Artwork view – image has an unexpected embedded CMYK ICC profile");
+#endif
 
             // Not implemented on Wine
-            if (wic_colour_context && !is_auto_colour_space_conversion) {
+            if (wic_colour_context && !is_auto_colour_space_conversion && !has_cmyk_profile) {
                 LOG_IF_FAILED(d2d_render_target->CreateColorContextFromWicColorContext(
                     wic_colour_context.get(), &d2d_image_colour_context));
             } else {
@@ -153,7 +161,7 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
                     &d2d_image_colour_context));
             }
 
-            hr = d2d_render_target->CreateBitmapFromWicBitmap(wic_bitmap.get(), nullptr, &d2d_bitmap);
+            const HRESULT hr = d2d_render_target->CreateBitmapFromWicBitmap(wic_bitmap.get(), nullptr, &d2d_bitmap);
 
             if (hr != E_NOTIMPL || needs_rescaling)
                 THROW_IF_FAILED(hr);
