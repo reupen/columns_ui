@@ -173,4 +173,29 @@ BitmapData decode_image_data(const void* data, size_t size)
     return decode_bitmap_source(converted_bitmap);
 }
 
+std::optional<uint32_t> get_icc_colour_space_signature(const wil::com_ptr<IWICColorContext>& colour_context)
+{
+    try {
+        WICColorContextType type{};
+        THROW_IF_FAILED(colour_context->GetType(&type));
+
+        if (type != WICColorContextProfile)
+            return {};
+
+        uint32_t profile_size{};
+        THROW_IF_FAILED(colour_context->GetProfileBytes(0, nullptr, &profile_size));
+
+        std::vector<uint8_t> header(profile_size);
+        THROW_IF_FAILED(colour_context->GetProfileBytes(profile_size, header.data(), &profile_size));
+
+        if (profile_size < 20)
+            return {};
+
+        return pfc::decode_big_endian<uint32_t>(&header[16]);
+    }
+    CATCH_LOG()
+
+    return {};
+}
+
 } // namespace cui::wic
