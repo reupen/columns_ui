@@ -13,11 +13,11 @@ wil::com_ptr<ID3D11Device> create_d3d_device(D3D_DRIVER_TYPE driver_type,
         | (driver_type == D3D_DRIVER_TYPE_HARDWARE ? D3D11_CREATE_DEVICE_PREVENT_INTERNAL_THREADING_OPTIMIZATIONS : 0);
 #if CUI_ENABLE_D3D_D2D_DEBUG_LAYER == 1
     const auto hr = D3D11CreateDevice(nullptr, driver_type, nullptr, base_flags | D3D11_CREATE_DEVICE_DEBUG,
-        feature_levels.data(), gsl::narrow<uint32_t>(std::size(feature_levels)), D3D11_SDK_VERSION, &d3d_device,
-        nullptr, device_context);
+        feature_levels.data(), gsl::narrow<uint32_t>(std::size(feature_levels)), D3D11_SDK_VERSION, &device, nullptr,
+        device_context);
 
     if (SUCCEEDED(hr))
-        return d3d_device;
+        return device;
 
     if (hr != DXGI_ERROR_SDK_COMPONENT_MISSING && hr != E_FAIL)
         THROW_HR(hr);
