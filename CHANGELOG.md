@@ -1,5 +1,11 @@
 # Change log
 
+## 3.1.4
+
+- A bug where the Artwork view sometimes did not update in some scenarios, such
+  as the display being in sleep mode, was fixed.
+  [[#1408](https://github.com/reupen/columns_ui/pull/1408)]
+
 ## 3.1.3
 
 ### Bug fixes

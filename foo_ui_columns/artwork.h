@@ -141,6 +141,8 @@ private:
     void update_dxgi_output_desc();
     void create_d2d_device_resources();
     void reset_d2d_device_resources(bool keep_devices = false);
+    void register_occlusion_event();
+    void deregister_occlusion_event();
     void create_effects();
     void refresh_image();
     void clear_image();
@@ -164,6 +166,8 @@ private:
     std::optional<DXGI_OUTPUT_DESC1> m_dxgi_output_desc;
     wil::com_ptr<ID2D1Effect> m_scale_effect;
     wil::com_ptr<ID2D1Effect> m_output_effect;
+    std::optional<DWORD> m_occlusion_status_event_cookie;
+    bool m_is_occlusion_status_timer_active{};
 
     EventToken::Ptr m_use_hardware_acceleration_change_token;
     EventToken::Ptr m_display_change_token;
