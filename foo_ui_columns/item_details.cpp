@@ -7,6 +7,13 @@
 
 namespace cui::panels::item_details {
 
+namespace {
+
+constexpr auto MSG_OCCLUSION_STATUS_CHANGED = WM_USER + 3;
+constexpr auto OCCLUSION_STATUS_TIMER_ID = 700;
+
+} // namespace
+
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
 const GUID g_guid_item_details = {0x59b4f428, 0x26a5, 0x4a51, {0x89, 0xe5, 0x39, 0x45, 0xd3, 0x27, 0xb4, 0xcb}};
 
@@ -612,10 +619,64 @@ void ItemDetails::create_d2d_render_target()
 
 void ItemDetails::reset_d2d_device_resources()
 {
+    deregister_occlusion_event();
     m_d2d_render_target.reset();
     m_d2d_text_brush.reset();
     m_d2d_brush_cache.clear();
     m_text_layout.reset();
+}
+
+void ItemDetails::register_occlusion_event()
+{
+    if (m_is_occlusion_status_timer_active || m_occlusion_status_event_cookie)
+        return;
+
+    if (!m_dxgi_factory)
+        LOG_IF_FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory2), m_dxgi_factory.put_void()));
+
+    if (!m_dxgi_factory)
+        return;
+
+    DWORD occlusion_status_event_cookie{};
+    const auto hr = m_dxgi_factory->RegisterOcclusionStatusWindow(
+        get_wnd(), MSG_OCCLUSION_STATUS_CHANGED, &occlusion_status_event_cookie);
+
+    const auto is_unsupported = hr == E_NOTIMPL || hr == DXGI_ERROR_UNSUPPORTED;
+
+    if (!is_unsupported)
+        LOG_IF_FAILED(hr);
+
+    if (SUCCEEDED(hr)) {
+        m_occlusion_status_event_cookie = occlusion_status_event_cookie;
+    } else if (is_unsupported) {
+        SetTimer(get_wnd(), OCCLUSION_STATUS_TIMER_ID, 1000, nullptr);
+        m_is_occlusion_status_timer_active = true;
+    }
+}
+
+void ItemDetails::deregister_occlusion_event()
+{
+    if (m_is_occlusion_status_timer_active) {
+        KillTimer(get_wnd(), OCCLUSION_STATUS_TIMER_ID);
+        m_is_occlusion_status_timer_active = false;
+    }
+
+    if (m_dxgi_factory && m_occlusion_status_event_cookie) {
+        m_dxgi_factory->UnregisterOcclusionStatus(*m_occlusion_status_event_cookie);
+        m_occlusion_status_event_cookie.reset();
+    }
+}
+
+bool ItemDetails::check_occlusion_status()
+{
+    const auto is_occluded = (m_d2d_render_target->CheckWindowState() & D2D1_WINDOW_STATE_OCCLUDED) != 0;
+
+    if (is_occluded)
+        register_occlusion_event();
+    else
+        deregister_occlusion_event();
+
+    return is_occluded;
 }
 
 void ItemDetails::invalidate_all(bool b_update)
@@ -753,10 +814,12 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_direct_write_context.reset();
         m_last_cx = 0;
         m_last_cy = 0;
+        deregister_occlusion_event();
         m_d2d_render_target.reset();
         m_d2d_text_brush.reset();
         m_d2d_brush_cache.clear();
         m_d2d_factory.reset();
+        m_dxgi_factory.reset();
         break;
     }
     case WM_SETFOCUS:
@@ -859,6 +922,19 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         return 0;
     }
+    case WM_TIMER:
+        if (wp != OCCLUSION_STATUS_TIMER_ID)
+            return 0;
+
+        [[fallthrough]];
+    case MSG_OCCLUSION_STATUS_CHANGED:
+        if (!(m_is_occlusion_status_timer_active || m_occlusion_status_event_cookie))
+            return 0;
+
+        if (m_d2d_render_target && (m_d2d_render_target->CheckWindowState() & D2D1_WINDOW_STATE_OCCLUDED) == 0)
+            invalidate_all();
+
+        return 0;
     case WM_ERASEBKGND:
         return TRUE;
     case WM_PAINT: {
@@ -896,6 +972,11 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         try {
             create_d2d_render_target();
 
+            if (check_occlusion_status()) {
+                ValidateRect(wnd, nullptr);
+                return 0;
+            }
+
             const auto context_1 = m_d2d_render_target.try_query<ID2D1DeviceContext1>();
 
             if (!m_d2d_text_brush) {
@@ -924,6 +1005,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
 
             THROW_IF_FAILED(result);
+
+            check_occlusion_status();
         }
         CATCH_LOG()
 

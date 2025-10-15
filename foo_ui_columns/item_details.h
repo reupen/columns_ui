@@ -257,6 +257,9 @@ private:
     void update_now();
     void create_d2d_render_target();
     void reset_d2d_device_resources();
+    void register_occlusion_event();
+    void deregister_occlusion_event();
+    bool check_occlusion_status();
 
     enum class ScrollbarType {
         vertical = SB_VERT,
@@ -292,11 +295,14 @@ private:
     uih::direct_write::Context::Ptr m_direct_write_context;
     std::optional<uih::direct_write::TextFormat> m_text_format;
     std::optional<uih::direct_write::TextLayout> m_text_layout;
+    wil::com_ptr<IDXGIFactory2> m_dxgi_factory;
     d2d::MainThreadD2D1Factory m_d2d_factory;
     wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
     wil::com_ptr<ID2D1SolidColorBrush> m_d2d_text_brush;
     std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> m_d2d_brush_cache;
     EventToken::Ptr m_use_hardware_acceleration_change_token;
+    bool m_is_occlusion_status_timer_active{};
+    std::optional<DWORD> m_occlusion_status_event_cookie;
 
     std::optional<RECT> m_text_rect{};
 

@@ -1,6 +1,16 @@
 # Change log
 
+## 3.1.5
+
+### Bug fixes
+
+- A bug where Item details sometimes did not update in some scenarios, such as
+  the display being in sleep mode, was fixed.
+  [[#1413](https://github.com/reupen/columns_ui/pull/1413)]
+
 ## 3.1.4
+
+### Bug fixes
 
 - A bug where the Artwork view sometimes did not update in some scenarios, such
   as the display being in sleep mode, was fixed.
