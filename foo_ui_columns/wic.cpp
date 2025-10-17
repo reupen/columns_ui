@@ -198,4 +198,119 @@ std::optional<uint32_t> get_icc_colour_space_signature(const wil::com_ptr<IWICCo
     return {};
 }
 
+namespace {
+
+void collect_metadata(const wil::com_ptr<IWICMetadataQueryReader>& reader, const std::wstring& path,
+    MetadataCollection& collected_metadata)
+{
+    wil::com_ptr<IEnumString> enum_string;
+    THROW_IF_FAILED(reader->GetEnumerator(&enum_string));
+
+    wil::unique_cotaskmem_string current_string;
+    unsigned long read{};
+    while (enum_string->Next(1, &current_string, &read) == S_OK) {
+        // The AVIF codec seems to have some bug where it doesn’t return S_FALSE
+        if (read == 0)
+            break;
+
+        const auto full_path = path + current_string.get();
+
+        wil::unique_prop_variant variant;
+        THROW_IF_FAILED(reader->GetMetadataByName(current_string.get(), &variant));
+
+        MetadataValue value;
+
+        // Only the variant types that have been encountered with real images
+        // are handled here
+        switch (variant.vt) {
+        case VT_UNKNOWN: {
+            wil::com_ptr<IWICMetadataQueryReader> nested_reader;
+            wil::try_com_query_to(variant.punkVal, &nested_reader);
+
+            if (nested_reader)
+                collect_metadata(nested_reader, full_path, collected_metadata);
+            else
+                collected_metadata.emplace_back(full_path, L"Unknown object");
+            continue;
+        }
+        case VT_EMPTY:
+            value = L"<empty>";
+            break;
+        case VT_BSTR:
+            value = variant.bstrVal;
+            break;
+        case VT_LPWSTR:
+            value = variant.pwszVal;
+            break;
+        case VT_LPSTR:
+            value = mmh::to_utf16(variant.pszVal);
+            break;
+        case VT_BOOL:
+            value = static_cast<uint64_t>(variant.boolVal);
+            break;
+        case VT_UI1:
+            value = static_cast<uint64_t>(variant.bVal);
+            break;
+        case VT_UI2:
+            value = static_cast<uint64_t>(variant.uiVal);
+            break;
+        case VT_UI4:
+            value = static_cast<uint64_t>(variant.ulVal);
+            break;
+        case VT_UI8:
+            value = std::format(L"{} ({}/{})", variant.uhVal.QuadPart, variant.uhVal.LowPart, variant.uhVal.HighPart);
+            break;
+        case VT_I1:
+            value = static_cast<int64_t>(variant.cVal);
+            break;
+        case VT_I2:
+            value = static_cast<int64_t>(variant.iVal);
+            break;
+        case VT_I4:
+            value = static_cast<int64_t>(variant.lVal);
+            break;
+        case VT_I8:
+            value = std::format(L"{} ({}/{})", variant.hVal.QuadPart, variant.hVal.LowPart, variant.hVal.HighPart);
+            break;
+        case VT_BLOB:
+            value = fmt::format(L"<binary data, {} bytes>", variant.blob.cbSize);
+            break;
+        case VT_VECTOR | VT_UI1:
+        case VT_VECTOR | VT_UI2:
+        case VT_VECTOR | VT_UI4:
+        case VT_VECTOR | VT_UI8:
+        case VT_VECTOR | VT_I1:
+        case VT_VECTOR | VT_I2:
+        case VT_VECTOR | VT_I4:
+        case VT_VECTOR | VT_I8:
+            // Each vector type has its own union member, but only the element count is
+            // being used here
+            value = fmt::format(L"<vector, {} integers>", variant.caui.cElems);
+            break;
+        default:
+            value = fmt::format(L"unhandled variant type {}", variant.vt);
+            break;
+        }
+
+        collected_metadata.emplace_back(full_path, value);
+    }
+}
+
+} // namespace
+
+MetadataCollection get_image_metadata(const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
+{
+    MetadataCollection collected_metadata;
+
+    wil::com_ptr<IWICMetadataQueryReader> metadata_reader;
+    THROW_IF_FAILED(bitmap_frame_decode->GetMetadataQueryReader(&metadata_reader));
+
+    wil::com_ptr<IEnumString> strings;
+    THROW_IF_FAILED(metadata_reader->GetEnumerator(&strings));
+
+    collect_metadata(metadata_reader, L"", collected_metadata);
+
+    return collected_metadata;
+}
+
 } // namespace cui::wic

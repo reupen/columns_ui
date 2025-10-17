@@ -39,4 +39,8 @@ BitmapData decode_image_data(const void* data, size_t size);
 
 std::optional<uint32_t> get_icc_colour_space_signature(const wil::com_ptr<IWICColorContext>& colour_context);
 
+using MetadataValue = std::variant<std::wstring, int64_t, uint64_t>;
+using MetadataCollection = std::vector<std::tuple<std::wstring, MetadataValue>>;
+MetadataCollection get_image_metadata(const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode);
+
 } // namespace cui::wic
