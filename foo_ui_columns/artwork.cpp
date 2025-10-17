@@ -7,6 +7,7 @@
 #include "fb2k_callbacks.h"
 #include "imaging.h"
 #include "tab_setup.h"
+#include "wic.h"
 
 namespace cui::artwork_panel {
 
@@ -201,6 +202,12 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
         p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Copy path",
             "Copies the path or URL of the shown image to the clipboard.", 0,
             [this, self = ptr{this}] { copy_image_path_to_clipboard(); })));
+
+#ifdef ENABLE_METADATA_VIEWER
+    if (is_show_metadata_available())
+        p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Show metadata",
+            "Shows raw image metadata in a pop-up window.", 0, [this, self = ptr{this}] { show_metadata(); })));
+#endif
 
     p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node(
         "Reload artwork", "Reloads the currently displayed artwork.", 0, [this, self = ptr{this}] {
@@ -525,6 +532,7 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
         ID_OPEN_IMAGE_VIEWER = 1,
         ID_SHOW_IN_FILE_EXPLORER,
         ID_COPY_PATH,
+        ID_SHOW_METADATA,
         ID_RELOAD_ARTWORK,
         ID_PRESERVE_ASPECT_RATIO,
         ID_LOCK_TYPE,
@@ -569,6 +577,11 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
     if (is_copy_image_path_to_clipboard_available())
         menu.append_command(ID_COPY_PATH, L"Copy path");
 
+#ifdef ENABLE_METADATA_VIEWER
+    if (is_show_metadata_available())
+        menu.append_command(ID_SHOW_METADATA, L"Show metadata");
+#endif
+
     if (menu.size() > 0)
         menu.append_separator();
 
@@ -595,6 +608,11 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
     case ID_COPY_PATH:
         copy_image_path_to_clipboard();
         break;
+#ifdef ENABLE_METADATA_VIEWER
+    case ID_SHOW_METADATA:
+        show_metadata();
+        break;
+#endif
     case ID_RELOAD_ARTWORK:
         invalidate_window();
         force_reload_artwork();
@@ -1037,6 +1055,53 @@ void ArtworkPanel::open_core_image_viewer() const
         api->show(GetParent(get_wnd()), data);
     }
 }
+
+#ifdef ENABLE_METADATA_VIEWER
+
+bool ArtworkPanel::is_show_metadata_available() const
+{
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
+    return m_artwork_reader->has_image(artwork_type_id);
+}
+
+void ArtworkPanel::show_metadata() const
+{
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
+    const album_art_data_ptr data = m_artwork_reader->get_image(artwork_type_id);
+
+    if (!data.is_valid())
+        return;
+
+    try {
+        // If this is ever enabled in a release build, the metadata-reading code here
+        // needs to be moved to a background thread
+        const auto imaging_factory = wic::create_factory();
+        const auto decoder = wic::create_decoder_from_data(data->get_ptr(), data->get_size(), imaging_factory);
+
+        wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
+        THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
+
+        const auto metadata = wic::get_image_metadata(bitmap_frame_decode);
+
+        std::wstring msg;
+
+        for (const auto& [key, value] : metadata) {
+            fmt::format_to(std::back_inserter(msg), L"{}: ", key);
+
+            std::visit(
+                [&msg](auto const& variant_value) {
+                    return fmt::format_to(std::back_inserter(msg), L"{}\n", variant_value);
+                },
+                value);
+        }
+
+        popup_message_v2::g_show(core_api::get_main_window(), mmh::to_utf8(msg).c_str(), "Image metadata");
+    }
+    CATCH_LOG()
+}
+
+#endif
+
 bool ArtworkPanel::is_show_in_file_explorer_available() const
 {
     const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];

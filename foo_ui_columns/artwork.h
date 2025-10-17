@@ -4,6 +4,10 @@
 #include "artwork_reader.h"
 #include "system_appearance_manager.h"
 
+#ifdef _DEBUG
+#define ENABLE_METADATA_VIEWER
+#endif
+
 namespace cui::artwork_panel {
 
 enum class ClickAction : int32_t {
@@ -88,6 +92,10 @@ public:
     void soft_reload_selection_artwork();
     bool is_core_image_viewer_available() const;
     void open_core_image_viewer() const;
+#ifdef ENABLE_METADATA_VIEWER
+    bool is_show_metadata_available() const;
+    void show_metadata() const;
+#endif
     bool is_show_in_file_explorer_available() const;
     void show_in_file_explorer();
     bool is_copy_image_path_to_clipboard_available() const;
