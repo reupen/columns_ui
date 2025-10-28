@@ -384,9 +384,10 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_sdr_white_level.reset();
         m_dxgi_output_desc.reset();
         m_output_effect.reset();
-        m_scale_effect.reset();
+        m_transform_effect.reset();
+        m_transform_effect_photo_orientation.reset();
         m_swap_chain_format.reset();
-        m_scale_effect_needs_updating = false;
+        m_transform_effect_needs_updating = false;
         break;
     case WM_ERASEBKGND:
         return FALSE;
@@ -410,8 +411,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 LOG_HR(hr);
         }
 
-        if (m_scale_effect)
-            m_scale_effect_needs_updating = true;
+        if (m_transform_effect)
+            m_transform_effect_needs_updating = true;
 
         invalidate_window();
         break;
@@ -857,7 +858,7 @@ void ArtworkPanel::deregister_occlusion_event()
 void ArtworkPanel::create_effects()
 {
     if (m_output_effect) {
-        update_scale_effect();
+        update_transform_effect();
         return;
     }
 
@@ -870,6 +871,7 @@ void ArtworkPanel::create_effects()
 
     const auto& bitmap = m_artwork_decoder.get_image();
     const auto& image_colour_context = m_artwork_decoder.get_image_colour_context();
+    const auto orientation = m_artwork_decoder.get_photo_orientation().value_or(wic::PhotoOrientation::Normal);
 
     if (!m_d2d_device_context || !bitmap)
         return;
@@ -878,8 +880,12 @@ void ArtworkPanel::create_effects()
         = m_dxgi_output_desc && m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
     const auto is_advanced_colour = is_advanced_colour_active();
 
-    const auto scale_effect = d2d::create_scale_effect(m_d2d_device_context, calculate_scaling_factor(bitmap));
-    scale_effect->SetInput(0, bitmap.get());
+    const auto bitmap_size = bitmap->GetSize();
+    const auto scaling_factor = calculate_scaling_factor(bitmap, orientation);
+    const auto transform_matrix = d2d::create_orientation_transform_matrix(orientation, bitmap_size, scaling_factor);
+
+    const auto transform_effect = d2d::create_2d_affine_transform_effect(m_d2d_device_context, transform_matrix);
+    transform_effect->SetInput(0, bitmap.get());
 
     wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
     wil::com_ptr<ID2D1ColorContext> working_colour_context;
@@ -894,7 +900,7 @@ void ArtworkPanel::create_effects()
 
         const auto working_colour_management_effect = d2d::create_colour_management_effect(
             m_d2d_device_context, image_colour_context, working_colour_context, rendering_intent, rendering_intent);
-        working_colour_management_effect->SetInputEffect(0, scale_effect.get());
+        working_colour_management_effect->SetInputEffect(0, transform_effect.get());
 
         const auto is_hdr_image = m_artwork_decoder.is_float();
 
@@ -931,9 +937,10 @@ void ArtworkPanel::create_effects()
         rendering_intent);
 
     colour_management_effect->SetInputEffect(
-        0, white_level_adjustment_effect ? white_level_adjustment_effect.get() : scale_effect.get());
+        0, white_level_adjustment_effect ? white_level_adjustment_effect.get() : transform_effect.get());
 
-    m_scale_effect = scale_effect;
+    m_transform_effect = transform_effect;
+    m_transform_effect_photo_orientation = orientation;
     m_output_effect = colour_management_effect;
 }
 
@@ -1242,7 +1249,7 @@ void ArtworkPanel::toggle_preserve_aspect_ratio()
 {
     m_preserve_aspect_ratio = !m_preserve_aspect_ratio;
     cfg_preserve_aspect_ratio = m_preserve_aspect_ratio;
-    m_scale_effect_needs_updating = true;
+    m_transform_effect_needs_updating = true;
     invalidate_window();
 }
 
@@ -1382,37 +1389,53 @@ void ArtworkPanel::clear_image()
 
 void ArtworkPanel::reset_effects()
 {
-    m_scale_effect.reset();
+    m_transform_effect.reset();
+    m_transform_effect_photo_orientation.reset();
     m_output_effect.reset();
-    m_scale_effect_needs_updating = false;
+    m_transform_effect_needs_updating = false;
 }
 
-D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const
+D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(
+    const wil::com_ptr<ID2D1Bitmap>& bitmap, wic::PhotoOrientation orientation) const
 {
-    const auto bitmap = image.query<ID2D1Bitmap>();
-
     auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
+
+    const auto are_axes_swapped = orientation == wic::PhotoOrientation::Rotate90
+        || orientation == wic::PhotoOrientation::Rotate270 || orientation == wic::PhotoOrientation::FlipXAndRotate270
+        || orientation == wic::PhotoOrientation::FlipXAndRotate90;
+
+    const auto oriented_bitmap_width = are_axes_swapped ? bitmap_height : bitmap_width;
+    const auto oriented_bitmap_height = are_axes_swapped ? bitmap_width : bitmap_height;
+
     auto [render_target_width, render_target_height] = m_d2d_device_context->GetPixelSize();
 
-    const auto [scaled_width, scaled_height] = cui::utils::calculate_scaled_image_size(gsl::narrow<int>(bitmap_width),
-        gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height),
-        m_preserve_aspect_ratio, true);
+    const auto [scaled_width, scaled_height] = cui::utils::calculate_scaled_image_size(
+        gsl::narrow<int>(oriented_bitmap_width), gsl::narrow<int>(oriented_bitmap_height),
+        gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height), m_preserve_aspect_ratio, true);
 
-    return D2D1::Vector2F(
-        scaled_width / gsl::narrow_cast<float>(bitmap_width), scaled_height / gsl::narrow_cast<float>(bitmap_height));
+    const auto x_scaling_factor = scaled_width / gsl::narrow_cast<float>(oriented_bitmap_width);
+    const auto y_scaling_factor = scaled_height / gsl::narrow_cast<float>(oriented_bitmap_height);
+
+    return D2D1::Vector2F(x_scaling_factor, y_scaling_factor);
 }
 
-void ArtworkPanel::update_scale_effect()
+void ArtworkPanel::update_transform_effect()
 {
-    if (!(m_scale_effect && m_scale_effect_needs_updating))
+    if (!(m_transform_effect && m_transform_effect_needs_updating))
         return;
 
     wil::com_ptr<ID2D1Image> image;
-    m_scale_effect->GetInput(0, &image);
+    m_transform_effect->GetInput(0, &image);
 
-    LOG_IF_FAILED(m_scale_effect->SetValue(D2D1_SCALE_PROP_SCALE, calculate_scaling_factor(image)));
+    const auto bitmap = image.query<ID2D1Bitmap>();
+    const auto bitmap_size = bitmap->GetSize();
+    const auto scaling_factor = calculate_scaling_factor(bitmap, *m_transform_effect_photo_orientation);
+    const auto transform_matrix
+        = d2d::create_orientation_transform_matrix(*m_transform_effect_photo_orientation, bitmap_size, scaling_factor);
 
-    m_scale_effect_needs_updating = false;
+    LOG_IF_FAILED(m_transform_effect->SetValue(D2D1_2DAFFINETRANSFORM_PROP_TRANSFORM_MATRIX, transform_matrix));
+
+    m_transform_effect_needs_updating = false;
 }
 
 void ArtworkPanel::queue_decode(const album_art_data::ptr& data)

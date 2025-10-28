@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Features
+
+- The Artwork view now automatically rotates and/or mirrors images when embedded
+  orientation metadata exists.
+  [[#1425](https://github.com/reupen/columns_ui/pull/1425)]
+
 ## 3.1.5
 
 ### Bug fixes

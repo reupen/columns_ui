@@ -1,4 +1,5 @@
 #pragma once
+#include "wic.h"
 
 namespace cui::d2d {
 
@@ -20,6 +21,12 @@ wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2
 
 wil::com_ptr<ID2D1Effect> create_scale_effect(
     const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_VECTOR_2F scale);
+
+wil::com_ptr<ID2D1Effect> create_2d_affine_transform_effect(
+    const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_MATRIX_3X2_F matrix);
+
+D2D1_MATRIX_3X2_F create_orientation_transform_matrix(
+    wic::PhotoOrientation orientation, D2D1_SIZE_F input_size, D2D1_VECTOR_2F scaling_factor);
 
 wil::com_ptr<ID2D1Effect> create_white_level_adjustment_effect(const wil::com_ptr<ID2D1DeviceContext>& device_context,
     std::optional<float> input_white_level, std::optional<float> output_white_level);

@@ -155,8 +155,9 @@ private:
     void refresh_image();
     void clear_image();
     void reset_effects();
-    D2D1_VECTOR_2F calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const;
-    void update_scale_effect();
+    D2D1_VECTOR_2F calculate_scaling_factor(
+        const wil::com_ptr<ID2D1Bitmap>& bitmap, wic::PhotoOrientation orientation) const;
+    void update_transform_effect();
     void queue_decode(const album_art_data::ptr& data);
     void invalidate_window() const;
     uint32_t get_displayed_artwork_type_index() const;
@@ -172,7 +173,8 @@ private:
     std::optional<DXGI_FORMAT> m_swap_chain_format;
     std::optional<unsigned> m_sdr_white_level;
     std::optional<DXGI_OUTPUT_DESC1> m_dxgi_output_desc;
-    wil::com_ptr<ID2D1Effect> m_scale_effect;
+    wil::com_ptr<ID2D1Effect> m_transform_effect;
+    std::optional<wic::PhotoOrientation> m_transform_effect_photo_orientation;
     wil::com_ptr<ID2D1Effect> m_output_effect;
     std::optional<DWORD> m_occlusion_status_event_cookie;
     bool m_is_occlusion_status_timer_active{};
@@ -190,7 +192,7 @@ private:
     bool m_artwork_type_locked{};
     bool m_dynamic_artwork_pending{};
     bool m_using_flip_model_swap_chain{};
-    bool m_scale_effect_needs_updating{};
+    bool m_transform_effect_needs_updating{};
     metadb_handle_list m_selection_handles;
     metadb_handle_ptr m_current_track;
 

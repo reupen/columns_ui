@@ -38,33 +38,35 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
         wil::com_ptr<ID2D1Bitmap> d2d_bitmap;
         wil::com_ptr<ID2D1ColorContext> d2d_image_colour_context;
         wil::com_ptr<ID2D1ColorContext> d2d_display_colour_context;
+        std::optional<wic::PhotoOrientation> photo_orientation;
         bool is_float{};
         std::optional<HRESULT> error_result;
 
         auto _ = wil::scope_exit([&] {
-            fb2k::inMainThread(
-                [this, d2d_bitmap{std::move(d2d_bitmap)},
-                    d2d_display_colour_context{std::move(d2d_display_colour_context)},
-                    d2d_image_colour_context{std::move(d2d_image_colour_context)}, error_result, is_float,
-                    on_complete{std::move(on_complete)}, stop_token{std::move(stop_token)}, task{std::move(task)}]() {
-                    const auto locked_task = task.lock();
+            fb2k::inMainThread([this, d2d_bitmap{std::move(d2d_bitmap)},
+                                   d2d_display_colour_context{std::move(d2d_display_colour_context)},
+                                   d2d_image_colour_context{std::move(d2d_image_colour_context)}, error_result,
+                                   is_float, on_complete{std::move(on_complete)}, photo_orientation,
+                                   stop_token{std::move(stop_token)}, task{std::move(task)}]() {
+                const auto locked_task = task.lock();
 
-                    if (stop_token.stop_requested()) {
-                        if (locked_task)
-                            std::erase(m_aborting_tasks, locked_task);
-                        return;
-                    }
+                if (stop_token.stop_requested()) {
+                    if (locked_task)
+                        std::erase(m_aborting_tasks, locked_task);
+                    return;
+                }
 
-                    assert(m_current_task == locked_task);
-                    m_current_task.reset();
-                    m_decoded_image = std::move(d2d_bitmap);
-                    m_display_colour_context = std::move(d2d_display_colour_context);
-                    m_image_colour_context = std::move(d2d_image_colour_context);
-                    m_is_float = is_float;
-                    m_error_result = error_result;
+                assert(m_current_task == locked_task);
+                m_current_task.reset();
+                m_decoded_image = std::move(d2d_bitmap);
+                m_display_colour_context = std::move(d2d_display_colour_context);
+                m_image_colour_context = std::move(d2d_image_colour_context);
+                m_photo_orientation = photo_orientation;
+                m_is_float = is_float;
+                m_error_result = error_result;
 
-                    on_complete();
-                });
+                on_complete();
+            });
         });
 
         try {
@@ -80,6 +82,8 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
 
             wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
             THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
+
+            photo_orientation = wic::get_photo_orientation(bitmap_frame_decode);
 
             WICPixelFormatGUID source_pixel_format{};
             THROW_IF_FAILED(bitmap_frame_decode->GetPixelFormat(&source_pixel_format));

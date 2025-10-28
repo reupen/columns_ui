@@ -1,4 +1,5 @@
 #pragma once
+#include "wic.h"
 
 namespace cui::artwork_panel {
 
@@ -30,6 +31,7 @@ public:
         m_decoded_image.reset();
         m_display_colour_context.reset();
         m_image_colour_context.reset();
+        m_photo_orientation.reset();
         m_is_float.reset();
     }
 
@@ -44,6 +46,7 @@ public:
     wil::com_ptr<ID2D1Bitmap> get_image() { return m_decoded_image; }
     wil::com_ptr<ID2D1ColorContext> get_image_colour_context() { return m_image_colour_context; }
     bool has_image() const { return static_cast<bool>(m_decoded_image); }
+    auto get_photo_orientation() const { return m_photo_orientation; }
     bool is_float() const { return m_is_float.value_or(false); }
 
     ArtworkDecoderTask::Ptr m_current_task;
@@ -51,6 +54,7 @@ public:
     wil::com_ptr<ID2D1Bitmap> m_decoded_image;
     wil::com_ptr<ID2D1ColorContext> m_display_colour_context;
     wil::com_ptr<ID2D1ColorContext> m_image_colour_context;
+    std::optional<wic::PhotoOrientation> m_photo_orientation;
     std::optional<bool> m_is_float{};
     std::optional<HRESULT> m_error_result{};
 };

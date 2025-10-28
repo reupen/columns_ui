@@ -62,6 +62,7 @@
 #include <gdiplus.h>
 #include <zmouse.h>
 #include <Uxtheme.h>
+#include <propkey.h>
 #include <wincodec.h>
 #include <strsafe.h>
 #include <strstream>

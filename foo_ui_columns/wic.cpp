@@ -313,4 +313,30 @@ MetadataCollection get_image_metadata(const wil::com_ptr<IWICBitmapFrameDecode>&
     return collected_metadata;
 }
 
+std::optional<PhotoOrientation> get_photo_orientation(const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
+{
+    try {
+        wil::com_ptr<IWICMetadataQueryReader> metadata_reader;
+        THROW_IF_FAILED(bitmap_frame_decode->GetMetadataQueryReader(&metadata_reader));
+
+        wil::unique_prop_variant variant;
+        const auto hr = metadata_reader->GetMetadataByName(L"System.Photo.Orientation", &variant);
+
+        if (hr == WINCODEC_ERR_PROPERTYNOTFOUND)
+            return {};
+
+        THROW_IF_FAILED(hr);
+
+        assert(variant.vt == VT_UI2);
+
+        if (variant.vt != VT_UI2)
+            return {};
+
+        return static_cast<PhotoOrientation>(variant.uiVal);
+    }
+    CATCH_LOG();
+
+    return {};
+}
+
 } // namespace cui::wic

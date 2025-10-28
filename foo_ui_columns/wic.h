@@ -20,6 +20,19 @@ struct BitmapData {
     std::vector<uint8_t> data;
 };
 
+enum class PhotoOrientation {
+    Normal = PHOTO_ORIENTATION_NORMAL,
+    FlipX = PHOTO_ORIENTATION_FLIPHORIZONTAL,
+    Rotate180 = PHOTO_ORIENTATION_ROTATE180,
+    FlipY = PHOTO_ORIENTATION_FLIPVERTICAL,
+    FlipXAndRotate270 = PHOTO_ORIENTATION_TRANSPOSE,
+    // 90° and 270° are swapped for some reason in the names
+    // Windows uses for the values
+    Rotate90 = PHOTO_ORIENTATION_ROTATE270,
+    FlipXAndRotate90 = PHOTO_ORIENTATION_TRANSVERSE,
+    Rotate270 = PHOTO_ORIENTATION_ROTATE90,
+};
+
 void check_hresult(HRESULT hr);
 wil::com_ptr<IWICImagingFactory> create_factory();
 wil::com_ptr<IWICBitmapSource> create_bitmap_source_from_path(const char* path);
@@ -42,5 +55,6 @@ std::optional<uint32_t> get_icc_colour_space_signature(const wil::com_ptr<IWICCo
 using MetadataValue = std::variant<std::wstring, int64_t, uint64_t>;
 using MetadataCollection = std::vector<std::tuple<std::wstring, MetadataValue>>;
 MetadataCollection get_image_metadata(const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode);
+std::optional<PhotoOrientation> get_photo_orientation(const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode);
 
 } // namespace cui::wic
