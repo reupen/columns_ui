@@ -21,7 +21,7 @@ struct BitmapData {
 };
 
 enum class PhotoOrientation {
-    Normal = PHOTO_ORIENTATION_NORMAL,
+    Original = PHOTO_ORIENTATION_NORMAL,
     FlipX = PHOTO_ORIENTATION_FLIPHORIZONTAL,
     Rotate180 = PHOTO_ORIENTATION_ROTATE180,
     FlipY = PHOTO_ORIENTATION_FLIPVERTICAL,
@@ -32,6 +32,12 @@ enum class PhotoOrientation {
     FlipXAndRotate90 = PHOTO_ORIENTATION_TRANSVERSE,
     Rotate270 = PHOTO_ORIENTATION_ROTATE90,
 };
+
+constexpr bool does_orientation_swap_axes(PhotoOrientation orientation)
+{
+    return orientation == PhotoOrientation::Rotate90 || orientation == PhotoOrientation::Rotate270
+        || orientation == PhotoOrientation::FlipXAndRotate270 || orientation == PhotoOrientation::FlipXAndRotate90;
+}
 
 void check_hresult(HRESULT hr);
 wil::com_ptr<IWICImagingFactory> create_factory();

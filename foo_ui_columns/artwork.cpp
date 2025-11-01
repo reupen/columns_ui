@@ -871,7 +871,7 @@ void ArtworkPanel::create_effects()
 
     const auto& bitmap = m_artwork_decoder.get_image();
     const auto& image_colour_context = m_artwork_decoder.get_image_colour_context();
-    const auto orientation = m_artwork_decoder.get_photo_orientation().value_or(wic::PhotoOrientation::Normal);
+    const auto orientation = m_artwork_decoder.get_photo_orientation().value_or(wic::PhotoOrientation::Original);
 
     if (!m_d2d_device_context || !bitmap)
         return;
@@ -1400,10 +1400,7 @@ D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(
 {
     auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
 
-    const auto are_axes_swapped = orientation == wic::PhotoOrientation::Rotate90
-        || orientation == wic::PhotoOrientation::Rotate270 || orientation == wic::PhotoOrientation::FlipXAndRotate270
-        || orientation == wic::PhotoOrientation::FlipXAndRotate90;
-
+    const auto are_axes_swapped = wic::does_orientation_swap_axes(orientation);
     const auto oriented_bitmap_width = are_axes_swapped ? bitmap_height : bitmap_width;
     const auto oriented_bitmap_height = are_axes_swapped ? bitmap_width : bitmap_height;
 

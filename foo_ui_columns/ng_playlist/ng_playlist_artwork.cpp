@@ -16,8 +16,9 @@ namespace cui::panels::playlist_view {
 namespace {
 
 [[nodiscard]] D2D1_RECT_U render_d2d_bitmap(const ArtworkRenderingContext::Ptr& context,
-    const wil::com_ptr<ID2D1Bitmap1>& d2d_bitmap, const wil::com_ptr<ID2D1ColorContext>& dest_colour_context,
-    const int target_width, const int target_height, bool show_reflection)
+    const wil::com_ptr<ID2D1Bitmap1>& d2d_bitmap, wic::PhotoOrientation orientation,
+    const wil::com_ptr<ID2D1ColorContext>& dest_colour_context, const int target_width, const int target_height,
+    bool show_reflection)
 {
     const auto bitmap_pixel_size = d2d_bitmap->GetPixelSize();
     const auto bitmap_size = d2d_bitmap->GetSize();
@@ -26,23 +27,30 @@ namespace {
     const auto reflection_height_dip = static_cast<float>(reflection_height_px);
     const auto target_height_without_reflection = std::max(0, target_height - reflection_height_px);
 
-    const auto [render_width_px, render_height_px]
-        = cui::utils::calculate_scaled_image_size(static_cast<int>(bitmap_pixel_size.width),
-            static_cast<int>(bitmap_pixel_size.height), target_width, target_height_without_reflection, true, false);
+    const auto are_axes_swapped = wic::does_orientation_swap_axes(orientation);
+    const auto oriented_bitmap_pixel_size
+        = are_axes_swapped ? D2D1::SizeU(bitmap_pixel_size.height, bitmap_pixel_size.width) : bitmap_pixel_size;
+    const auto oriented_bitmap_size
+        = are_axes_swapped ? D2D1::SizeF(bitmap_size.height, bitmap_size.width) : bitmap_size;
+
+    const auto [render_width_px, render_height_px] = cui::utils::calculate_scaled_image_size(
+        static_cast<int>(oriented_bitmap_pixel_size.width), static_cast<int>(oriented_bitmap_pixel_size.height),
+        target_width, target_height_without_reflection, true, false);
 
     const auto render_width_dip = static_cast<float>(render_width_px);
     const auto render_height_dip = static_cast<float>(render_height_px);
 
-    const auto scale_effect = d2d::create_scale_effect(context->d2d_device_context,
-        D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height));
-    scale_effect->SetInput(0, d2d_bitmap.get());
+    const auto transform_matrix = d2d::create_orientation_transform_matrix(orientation, bitmap_size,
+        D2D1::Vector2F(render_width_dip / oriented_bitmap_size.width, render_height_dip / oriented_bitmap_size.height));
+    const auto transform_effect = d2d::create_2d_affine_transform_effect(context->d2d_device_context, transform_matrix);
+    transform_effect->SetInput(0, d2d_bitmap.get());
 
     wil::com_ptr<ID2D1ColorContext> source_colour_context;
     d2d_bitmap->GetColorContext(&source_colour_context);
 
     const auto colour_management_effect
         = d2d::create_colour_management_effect(context->d2d_device_context, source_colour_context, dest_colour_context);
-    colour_management_effect->SetInputEffect(0, scale_effect.get());
+    colour_management_effect->SetInputEffect(0, transform_effect.get());
 
     wil::com_ptr<ID2D1RectangleGeometry> reflection_rect_geometry;
     wil::com_ptr<ID2D1LinearGradientBrush> reflection_linear_gradient_brush;
@@ -195,6 +203,8 @@ namespace {
     wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
     THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
 
+    const auto orientation = wic::get_photo_orientation(bitmap_frame_decode).value_or(wic::PhotoOrientation::Original);
+
     wil::com_ptr<IWICBitmapSource> converted_bitmap;
     THROW_IF_FAILED(
         WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, bitmap_frame_decode.get(), &converted_bitmap));
@@ -224,7 +234,8 @@ namespace {
     }
 
     const auto dest_colour_context = get_or_create_colour_context_for_display(context, display_profile_name);
-    const auto render_rect = render_d2d_bitmap(context, d2d_bitmap, dest_colour_context, width, height, b_reflection);
+    const auto render_rect
+        = render_d2d_bitmap(context, d2d_bitmap, orientation, dest_colour_context, width, height, b_reflection);
 
     const auto render_width = render_rect.right;
     const auto render_height = render_rect.bottom;

@@ -19,9 +19,6 @@ wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2
     std::optional<D2D1_COLORMANAGEMENT_RENDERING_INTENT> source_rendering_intent = {},
     std::optional<D2D1_COLORMANAGEMENT_RENDERING_INTENT> dest_rendering_intent = {});
 
-wil::com_ptr<ID2D1Effect> create_scale_effect(
-    const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_VECTOR_2F scale);
-
 wil::com_ptr<ID2D1Effect> create_2d_affine_transform_effect(
     const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_MATRIX_3X2_F matrix);
 

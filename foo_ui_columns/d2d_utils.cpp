@@ -72,19 +72,6 @@ wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2
     return colour_management_effect;
 }
 
-wil::com_ptr<ID2D1Effect> create_scale_effect(
-    const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_VECTOR_2F scale)
-{
-    wil::com_ptr<ID2D1Effect> scale_effect;
-    THROW_IF_FAILED(device_context->CreateEffect(CLSID_D2D1Scale, &scale_effect));
-    THROW_IF_FAILED(
-        scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE, scale));
-
-    return scale_effect;
-}
-
 wil::com_ptr<ID2D1Effect> create_2d_affine_transform_effect(
     const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_MATRIX_3X2_F matrix)
 {
