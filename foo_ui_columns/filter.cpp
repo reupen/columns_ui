@@ -456,7 +456,7 @@ size_t FilterPanel::get_highlight_item()
 
 bool FilterPanel::notify_on_keyboard_keydown_search()
 {
-    return FilterSearchToolbar::g_activate();
+    return FilterSearchToolbar::s_activate();
 }
 
 bool FilterPanel::do_drag_drop(WPARAM wp)

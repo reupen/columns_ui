@@ -7,7 +7,7 @@ namespace cui::panels::filter {
 
 class FilterSearchToolbar : public uie::container_uie_window_v3 {
 public:
-    static bool g_activate();
+    static bool s_activate(bool show_message_if_no_toolbar_found = false);
     static bool g_filter_search_bar_has_stream(
         FilterSearchToolbar const* p_seach_bar, const FilterStream::ptr& p_stream);
     static void s_on_favourites_change();
