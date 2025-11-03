@@ -9,6 +9,11 @@
   [[#1425](https://github.com/reupen/columns_ui/pull/1425),
   [#1426](https://github.com/reupen/columns_ui/pull/1426)]
 
+- A hidden menu item, ‘View/Focus Filter search’, for focusing the Filter search
+  toolbar was added. [[#1427](https://github.com/reupen/columns_ui/pull/1427)]
+
+  This can be assigned to a keyboard shortcut.
+
 ## 3.1.5
 
 ### Bug fixes

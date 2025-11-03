@@ -4,6 +4,7 @@
 #include "ng_playlist/ng_playlist.h"
 #include "main_window.h"
 #include "button_items.h"
+#include "filter_search_bar.h"
 
 namespace cui::main_menu {
 
@@ -107,6 +108,13 @@ static const MainMenuCommand live_editing{toggle_live_editing_id, "Live editing"
     },
     [] { return g_layout_window.get_layout_editing_active(); }};
 
+static const MainMenuCommand focus_filter_search{
+    .guid{0x9ff94c30, 0x7b34, 0x4b5f, {0x99, 0x52, 0xed, 0x14, 0x8a, 0x9a, 0x3f, 0x5c}},
+    .name = "Focus Filter search",
+    .description = "Focuses the Filter search toolbar.",
+    .execute_callback = [] { panels::filter::FilterSearchToolbar::s_activate(true); },
+    .hide_without_shift_key = true};
+
 class MainMenuCommands : public mainmenu_commands {
 public:
     template <class... Commands>
@@ -167,6 +175,9 @@ static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_set
 
 static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_font(
     groups::playlist_font_part, mainmenu_commands::sort_priority_dontcare, increase_font, decrease_font);
+
+static service_factory_single_t<MainMenuCommands> mainmenu_commands_view_misc(
+    mainmenu_groups::view, mainmenu_commands::sort_priority_dontcare, focus_filter_search);
 
 class MainMenuLayoutPresets : public mainmenu_commands {
     uint32_t get_command_count() override { return gsl::narrow<uint32_t>(cfg_layout.get_presets().get_count()); }

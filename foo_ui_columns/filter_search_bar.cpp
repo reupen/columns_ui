@@ -2,6 +2,7 @@
 
 #include "filter_search_bar.h"
 
+#include "dark_mode_dialog.h"
 #include "filter_config_var.h"
 #include "filter_utils.h"
 #include "icons.h"
@@ -127,12 +128,33 @@ void FilterSearchToolbar::on_show_clear_button_change()
     on_size();
 }
 
-bool FilterSearchToolbar::g_activate()
+bool FilterSearchToolbar::s_activate(bool show_message_if_no_toolbar_found)
 {
-    if (s_windows.empty())
+    if (s_windows.empty()) {
+        if (show_message_if_no_toolbar_found)
+            dark::modeless_info_box(core_api::get_main_window(), "Focus Filter search",
+                "No Filter search toolbar found. To use this command, add the Filter search toolbar to the main "
+                "window.",
+                uih::InfoBoxType::Information);
         return false;
+    }
 
-    s_windows[0]->activate();
+    auto visible_windows = s_windows | std::views::filter([](auto&& window) {
+        return window->get_host().is_valid() && window->get_host()->is_visible(window->get_wnd())
+            && IsWindowVisible(window->get_wnd());
+    });
+
+    if (const auto iter = visible_windows.begin(); iter != visible_windows.end()) {
+        (*iter)->activate();
+    } else {
+        const auto window = s_windows.front();
+
+        if (window->get_host().is_valid())
+            window->get_host()->set_window_visibility(window->get_wnd(), true);
+
+        window->activate();
+    }
+
     return true;
 }
 
