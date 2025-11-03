@@ -14,6 +14,13 @@
 
   This can be assigned to a keyboard shortcut.
 
+- Jumping to items by typing in built-in list views (such as the playlist view)
+  now ignores diacritics and symbols.
+  [[#1428](https://github.com/reupen/columns_ui/pull/1428)]
+
+  There may be other changes in behaviour too due to the change in string
+  comparison function and the options being used for the comparison.
+
 ## 3.1.5
 
 ### Bug fixes
