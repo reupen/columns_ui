@@ -1192,9 +1192,8 @@ void PlaylistView::notify_update_item_data(size_t index)
     CellStyleData style_data_item = CellStyleData::g_create_default();
 
     bool colour_global_av = false;
-    size_t i;
     size_t count = m_column_data.get_count();
-    size_t count_display_groups = get_item_display_group_count(index);
+    size_t count_display_groups = get_item_display_group_count(index, true);
     p_out.resize(count);
     get_item(index)->m_style_data.set_count(count);
 
@@ -1203,21 +1202,31 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     SetGlobalTitleformatHook<false, true> tf_hook_get_global(globals);
 
-    size_t item_index = get_item_display_index(index);
-    for (i = 0; i < count_display_groups; i++) {
-        size_t count_groups = p_item->get_group_count();
+    const auto item_index = get_item_display_index(index);
+    const auto group_count = p_item->get_group_count();
+    size_t num_skipped{};
+
+    for (size_t num_processed = 0; num_processed < count_display_groups; ++num_processed) {
+        const auto group_index = group_count - num_processed - 1;
+        const auto group = p_item->get_group(group_index);
+
+        if (group->is_hidden()) {
+            ++num_skipped;
+            continue;
+        }
+
         CellStyleData style_data_group = CellStyleData::g_create_default();
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
-            StyleTitleformatHook tf_hook_style(style_data_group, item_index - i - 1, true);
+            StyleTitleformatHook tf_hook_style(style_data_group, item_index - num_processed + num_skipped - 1, true);
             SplitterTitleformatHook tf_hook(
                 &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
         }
-        // count_display_groups > 0 => count_groups > 0
-        style_cache_manager::g_add_object(style_data_group, p_item->get_group(count_groups - i - 1)->m_style_data);
+
+        style_cache_manager::g_add_object(style_data_group, group->m_style_data);
     }
 
-    for (i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         {
             SplitterTitleformatHook tf_hook(
                 b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);

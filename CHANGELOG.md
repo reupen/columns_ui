@@ -21,6 +21,14 @@
   There may be other changes in behaviour too due to the change in string
   comparison function and the options being used for the comparison.
 
+- The playlist view now hides group headers when they have an empty string as a
+  label. [[#1431](https://github.com/reupen/columns_ui/pull/1431)]
+
+  Grouping will otherwise behave as though the hidden grouping level exists.
+
+  A zero-width space (`$char(8203)`) can be used in a group title formatting
+  script to force it to be shown when it evaluates to an empty string.
+
 ## 3.1.5
 
 ### Bug fixes
