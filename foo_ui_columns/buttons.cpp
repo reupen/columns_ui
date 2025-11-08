@@ -260,7 +260,7 @@ void ButtonsToolbar::create_toolbar()
             if (button.m_type == TYPE_SEPARATOR) {
                 tbbutton.idCommand = gsl::narrow<int>(index);
                 tbbutton.fsStyle = is_dark ? BTNS_BUTTON | BTNS_SHOWTEXT : BTNS_SEP;
-                tbbutton.iBitmap = I_IMAGENONE;
+                tbbutton.iBitmap = is_dark ? I_IMAGENONE : 1 + 4_spx;
             } else {
                 if (button.m_show == SHOW_IMAGE || button.m_show == SHOW_IMAGE_TEXT) {
                     tbbutton.iBitmap = image.add_to_imagelist(m_standard_images.get());
@@ -419,6 +419,9 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] {
             destroy_toolbar();
             create_toolbar();
+
+            if (get_host().is_valid())
+                get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
         });
         break;
     }

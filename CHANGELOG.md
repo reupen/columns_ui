@@ -29,6 +29,16 @@
   A zero-width space (`$char(8203)`) can be used in a group title formatting
   script to force it to be shown when it evaluates to an empty string.
 
+### Bug fixes
+
+- Padding to the right of separators in the Buttons toolbar was reduced at lower
+  system display scale (DPI) settings in light mode.
+  [[#1435](https://github.com/reupen/columns_ui/pull/1435)]
+
+- The minimum width of Buttons toolbars is now recalculated when switching
+  between light and dark mode due to slight differences in separator spacing.
+  [[#1435](https://github.com/reupen/columns_ui/pull/1435)]
+
 ## 3.1.5
 
 ### Bug fixes
