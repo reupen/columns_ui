@@ -22,7 +22,8 @@
   comparison function and the options being used for the comparison.
 
 - The playlist view now hides group headers when they have an empty string as a
-  label. [[#1431](https://github.com/reupen/columns_ui/pull/1431)]
+  label. [[#1431](https://github.com/reupen/columns_ui/pull/1431),
+  [#1437](https://github.com/reupen/columns_ui/pull/1437)]
 
   Grouping will otherwise behave as though the hidden grouping level exists.
 
