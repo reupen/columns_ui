@@ -23,7 +23,8 @@
 
 - The playlist view now hides group headers when they have an empty string as a
   label. [[#1431](https://github.com/reupen/columns_ui/pull/1431),
-  [#1437](https://github.com/reupen/columns_ui/pull/1437)]
+  [#1437](https://github.com/reupen/columns_ui/pull/1437),
+  [#1439](https://github.com/reupen/columns_ui/pull/1439)]
 
   Grouping will otherwise behave as though the hidden grouping level exists.
 
