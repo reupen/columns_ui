@@ -259,7 +259,6 @@ private:
 
     static void s_create_message_window();
     static void s_destroy_message_window();
-    static auto get_artwork_left_right_padding() { return cfg_indent_groups ? 0 : 5_spx; }
 
     void invalidate_artwork_images(size_t index, size_t count);
 

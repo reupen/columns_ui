@@ -272,8 +272,8 @@ void PlaylistView::refresh_columns()
 
 void PlaylistView::set_group_info_area_size()
 {
-    ListView::set_group_info_area_size(cfg_artwork_width + get_artwork_left_right_padding() * 2,
-        cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
+    ListView::set_group_info_area_size(
+        cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
 }
 
 void PlaylistView::g_on_groups_change()
@@ -324,7 +324,7 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item, HMONI
     PlaylistViewGroup* group = item->get_group(group_count - 1);
 
     if (!group->m_artwork_load_attempted) {
-        const auto cx = get_group_info_area_width() - 2 * get_artwork_left_right_padding();
+        const auto cx = get_group_info_area_width();
         const auto cy = get_group_info_area_height();
 
         if (cx > 0 && cy > 0) {
