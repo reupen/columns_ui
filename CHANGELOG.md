@@ -31,6 +31,13 @@
   A zero-width space (`$char(8203)`) can be used in a group title formatting
   script to force it to be shown when it evaluates to an empty string.
 
+- Playlist view group spacing has been adjusted.
+  [[#1440](https://github.com/reupen/columns_ui/pull/1440)]
+
+  In particular, spacing around artwork has been adjusted.
+
+  The default indentation step was also reduced from three spaces to two spaces.
+
 ### Bug fixes
 
 - Padding to the right of separators in the Buttons toolbar was reduced at lower
