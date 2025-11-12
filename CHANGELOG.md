@@ -41,6 +41,10 @@
 - The default playlist view artwork width was increased.
   [[#1443](https://github.com/reupen/columns_ui/pull/1443)]
 
+- The playlist view no longer reloads artwork when custom title-formatting
+  fields provided by other components change.
+  [[#1444](https://github.com/reupen/columns_ui/pull/1444)]
+
 ### Bug fixes
 
 - Padding to the right of separators in the Buttons toolbar was reduced at lower
