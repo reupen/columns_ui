@@ -88,9 +88,7 @@ void PlaylistView::on_items_modified(size_t playlist, const bit_array& p_mask) n
         if (i > start) {
             InsertItemsContainer items;
             get_insert_items(start, i - start, items);
-            // If grouping is enabled, the entire client area is invalidated
             replace_items(start, items);
-            invalidate_artwork_images(start, i - start);
         }
     }
 }

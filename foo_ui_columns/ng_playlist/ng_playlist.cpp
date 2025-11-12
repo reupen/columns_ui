@@ -2,6 +2,7 @@
 
 #include "ng_playlist.h"
 
+#include "fb2k_callbacks.h"
 #include "ng_playlist_groups.h"
 #include "system_appearance_manager.h"
 #include "tab_setup.h"
@@ -585,22 +586,48 @@ void PlaylistView::s_destroy_message_window()
     s_message_window.reset();
 }
 
-void PlaylistView::invalidate_artwork_images(size_t start, size_t count)
+void PlaylistView::register_metadb_io_callback()
 {
-    const auto group_count = get_group_count();
+    m_metadb_io_change_token = fb2k_utils::add_metadb_io_callback(
+        [this, self{service_ptr_t{this}}](metadb_handle_list_cref tracks, bool from_hook) {
+            assert(m_artwork_manager);
+            assert(get_wnd());
 
-    if (group_count == 0 || !get_show_group_info_area())
-        return;
+            if (from_hook || !cfg_show_artwork || get_group_count() == 0 || !m_artwork_manager)
+                return;
 
-    for (const auto index : std::views::iota(start, start + count)) {
-        const auto group = get_item(index)->get_leaf_group();
-        const auto is_new_group = index == 0 || group != get_item(index - 1)->get_leaf_group();
+            const pfc::bit_array_lambda relevant_tracks([this](auto index) {
+                if (index >= get_item_count() || !get_is_new_group(index))
+                    return false;
 
-        if (!is_new_group)
-            continue;
+                const auto group = get_item(index)->get_leaf_group();
 
-        group->reset_artwork();
-    }
+                return group->m_artwork_load_attempted;
+            });
+
+            bool any_modified{};
+
+            m_playlist_api->activeplaylist_enum_items(
+                [this, &tracks, &any_modified](size_t index, const metadb_handle_ptr& track, bool selected) {
+                    size_t modified_index;
+                    const auto is_modified
+                        = tracks.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, track, modified_index);
+
+                    if (is_modified) {
+                        const auto group = get_item(index)->get_leaf_group();
+                        group->reset_artwork();
+                        m_artwork_manager->cancel_for_group(group);
+                        any_modified = true;
+                    }
+
+                    return true;
+                },
+                relevant_tracks);
+
+            // Note: play_callback::on_items_modified should have already invalidated the entire client area
+            if (any_modified)
+                invalidate_all();
+        });
 }
 
 int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
@@ -858,12 +885,15 @@ void PlaylistView::notify_on_create()
             invalidate_all();
     });
 
+    register_metadb_io_callback();
+
     console::formatter formatter;
     formatter << "Playlist view initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
 }
 
 void PlaylistView::notify_on_destroy()
 {
+    m_metadb_io_change_token.reset();
     m_use_hardware_acceleration_change_token.reset();
     m_display_change_token.reset();
 

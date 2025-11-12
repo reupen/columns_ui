@@ -260,7 +260,7 @@ private:
     static void s_create_message_window();
     static void s_destroy_message_window();
 
-    void invalidate_artwork_images(size_t index, size_t count);
+    void register_metadb_io_callback();
 
     void flush_artwork_images()
     {
@@ -497,6 +497,7 @@ private:
     service_ptr_t<titleformat_object> m_script_global, m_script_global_style;
     service_ptr_t<playlist_manager_v4> m_playlist_api;
     bool m_ignore_callback{false};
+    EventToken::Ptr m_metadb_io_change_token;
 
     mainmenu_manager::ptr m_mainmenu_manager;
     contextmenu_manager::ptr m_contextmenu_manager;
