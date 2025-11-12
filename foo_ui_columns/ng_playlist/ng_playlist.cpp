@@ -45,10 +45,10 @@ fbh::ConfigBool cfg_use_custom_group_indentation_amount(
     {0x53cad633, 0xa735, 0x4880, {0x91, 0x45, 0xd9, 0x11, 0x98, 0x5e, 0x51, 0xe6}}, false,
     [](auto&&) { PlaylistView::s_on_group_indentation_amount_change(); });
 fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount(
-    {0x3d1b3bce, 0x25d2, 0x4dde, {0x8e, 0x99, 0x20, 0xfb, 0xc9, 0x6c, 0xbf, 0xec}}, 10);
+    {0x3d1b3bce, 0x25d2, 0x4dde, {0x8e, 0x99, 0x20, 0xfb, 0xc9, 0x6c, 0xbf, 0xec}}, 7);
 fbh::ConfigBool cfg_show_artwork(
     g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
-fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
+fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 150);
 
 void ConfigGroups::swap(size_t index1, size_t index2)
 {
