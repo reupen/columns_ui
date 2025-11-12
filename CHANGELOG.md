@@ -38,6 +38,9 @@
 
   The default indentation step was also reduced from three spaces to two spaces.
 
+- The default playlist view artwork width was increased.
+  [[#1443](https://github.com/reupen/columns_ui/pull/1443)]
+
 ### Bug fixes
 
 - Padding to the right of separators in the Buttons toolbar was reduced at lower
