@@ -342,7 +342,7 @@ ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, u
         = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
 
     const auto d3d_device = d3d::create_d3d_device(feature_levels);
-    const auto d2d_factory = d2d::create_factory(D2D1_FACTORY_TYPE_SINGLE_THREADED);
+    const auto d2d_factory = uih::d2d::create_factory(D2D1_FACTORY_TYPE_SINGLE_THREADED);
     const auto dxgi_device = d3d_device.query<IDXGIDevice1>();
 
     wil::com_ptr<ID2D1Device> d2d_device;
@@ -406,7 +406,7 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
 
                 render_artwork(context, display_profile_name, data, m_abort);
             } catch (const wil::ResultException& ex) {
-                if (!d2d::is_device_reset_error(ex.GetErrorCode()))
+                if (!uih::d2d::is_device_reset_error(ex.GetErrorCode()))
                     throw;
 
                 m_abort.check();
@@ -424,7 +424,7 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
             console::print("Playlist view – error loading artwork: ", mmh::get_caught_exception_message().c_str());
             m_status = ArtworkReaderStatus::Failed;
 
-            if (d2d::is_device_reset_error(wil::ResultFromCaughtException()))
+            if (uih::d2d::is_device_reset_error(wil::ResultFromCaughtException()))
                 context.reset();
         }
 

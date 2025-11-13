@@ -596,7 +596,7 @@ void ItemDetails::update_now()
 void ItemDetails::create_d2d_render_target()
 {
     if (!m_d2d_factory)
-        m_d2d_factory = d2d::create_main_thread_factory();
+        m_d2d_factory = uih::d2d::create_main_thread_factory();
 
     if (!m_d2d_render_target) {
         RECT rect{};

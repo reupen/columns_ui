@@ -296,7 +296,7 @@ private:
     std::optional<uih::direct_write::TextFormat> m_text_format;
     std::optional<uih::direct_write::TextLayout> m_text_layout;
     wil::com_ptr<IDXGIFactory2> m_dxgi_factory;
-    d2d::MainThreadD2D1Factory m_d2d_factory;
+    uih::d2d::MainThreadD2D1Factory m_d2d_factory;
     wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
     wil::com_ptr<ID2D1SolidColorBrush> m_d2d_text_brush;
     std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> m_d2d_brush_cache;
