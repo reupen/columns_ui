@@ -48,12 +48,12 @@ void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
     //    playlist_api->remove_playlist(index+1);
 }
 
-void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, pfc::list_t<FilterStream::ptr>& p_out)
+void g_get_search_bar_sibling_streams(FilterSearchToolbar const* search_bar, pfc::list_t<FilterStream::ptr>& p_out)
 {
-    if (cfg_orderedbysplitters && p_serach_bar->get_wnd() && p_serach_bar->get_host().is_valid()) {
+    if (cfg_orderedbysplitters && search_bar->get_wnd() && search_bar->get_host().is_valid()) {
         pfc::list_t<uie::window_ptr> siblings;
         uie::window_host_ex::ptr hostex;
-        if (p_serach_bar->get_host()->service_query_t(hostex))
+        if (search_bar->get_host()->service_query_t(hostex))
             hostex->get_children(siblings);
 
         // Let's avoid recursion for once
@@ -202,30 +202,35 @@ void FilterSearchToolbar::on_search_editbox_change()
     m_query_timer_active = true;
     update_favourite_icon();
 }
-void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_autosend, bool b_stream_update)
+
+void FilterSearchToolbar::commit_search_results(const char* str, bool force_autosend, bool is_destroying)
 {
-    pfc::list_t<FilterStream::ptr> p_streams;
-    g_get_search_bar_sibling_streams(this, p_streams);
+    pfc::list_t<FilterStream::ptr> streams;
+    g_get_search_bar_sibling_streams(this, streams);
 
-    if (p_streams.get_count() == 0)
-        p_streams = FilterPanel::g_streams;
+    if (streams.get_count() == 0)
+        streams = FilterPanel::g_streams;
 
-    size_t stream_count = p_streams.get_count();
-    bool b_diff = strcmp(m_active_search_string, str) != 0;
+    const auto stream_count = streams.get_count();
 
-    if (!stream_count)
-        b_force_autosend = b_diff;
+    if (is_destroying && stream_count == 0)
+        return;
+
+    bool have_terms_changed = strcmp(m_active_search_string, str) != 0;
+
+    if (stream_count == 0)
+        force_autosend = have_terms_changed;
 
     const auto library_api = library_manager::get();
 
-    if (b_diff || b_force_autosend || b_stream_update) {
+    if (have_terms_changed || force_autosend) {
         m_active_search_string = str;
 
         const auto is_empty = m_active_search_string.is_empty();
 
         if (is_empty) {
             m_active_handles.remove_all();
-        } else if (b_diff) {
+        } else if (have_terms_changed) {
             library_api->get_all_items(m_active_handles);
 
             try {
@@ -240,33 +245,49 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
             }
         }
 
-        bool b_autosent = false;
-        for (size_t i = 0; i < stream_count; i++) {
-            FilterStream::ptr p_stream = p_streams[i];
+        bool have_autosent{};
 
-            p_stream->m_source_overriden = !is_empty;
-            p_stream->m_source_handles = m_active_handles;
+        for (const auto& stream : streams) {
+            stream->m_source_overriden = !is_empty;
+            stream->m_source_handles = m_active_handles;
 
-            if (!b_stream_update) {
-                size_t filter_count = p_stream->m_windows.get_count();
-                if (filter_count) {
-                    bool b_stream_visible = p_stream->is_visible(); // mask_visible.get(i);
-                    pfc::list_t<FilterPanel*> ordered_windows;
-                    p_stream->m_windows[0]->get_windows(ordered_windows);
-                    if (ordered_windows.get_count()) {
-                        if (b_diff)
-                            ordered_windows[0]->refresh((b_stream_visible || stream_count == 1) && !b_autosent);
-                        if (!b_autosent) {
-                            if ((b_stream_visible || stream_count == 1) && b_force_autosend && !cfg_autosend)
-                                ordered_windows[0]->send_results_to_playlist();
-                            b_autosent = b_stream_visible || stream_count == 1;
-                        }
-                    }
+            if (stream->m_windows.get_count() == 0)
+                continue;
+
+            pfc::list_t<FilterPanel*> ordered_windows;
+            stream->m_windows[0]->get_windows(ordered_windows);
+
+            if (ordered_windows.get_count() == 0)
+                continue;
+
+            const auto is_stream_visible = stream->is_visible();
+
+            if (have_terms_changed) {
+                const auto allow_stream_autosend = !have_autosent && (is_stream_visible || stream_count == 1);
+
+                if (is_destroying) {
+                    // Avoid triggering a refresh during layout switches and similar events
+                    fb2k::inMainThread([allow_stream_autosend, filter{service_ptr_t{ordered_windows[0]}}] {
+                        if (filter->get_wnd() != nullptr)
+                            filter->refresh(allow_stream_autosend);
+                    });
+                } else {
+                    ordered_windows[0]->refresh(allow_stream_autosend);
                 }
+            }
+
+            if (!have_autosent) {
+                if ((is_stream_visible || stream_count == 1) && force_autosend && !cfg_autosend)
+                    ordered_windows[0]->send_results_to_playlist();
+
+                have_autosent = is_stream_visible || stream_count == 1;
             }
         }
 
-        if (!b_stream_update && (stream_count == 0 || !b_autosent) && (cfg_autosend || b_force_autosend)) {
+        if (is_destroying)
+            return;
+
+        if ((stream_count == 0 || !have_autosent) && (cfg_autosend || force_autosend)) {
             if (is_empty) {
                 metadb_handle_list all_items;
                 library_api->get_all_items(all_items);
@@ -297,7 +318,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
         std::erase(s_windows, this);
 
         if (!core_api::is_shutting_down())
-            commit_search_results("");
+            commit_search_results("", false, true);
 
         if (s_windows.empty()) {
             s_font.reset();

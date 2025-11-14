@@ -73,6 +73,11 @@
   between light and dark mode due to slight differences in separator spacing.
   [[#1435](https://github.com/reupen/columns_ui/pull/1435)]
 
+- When a query has been entered in the Filter search toolbar and there are no
+  Filter panels in the layout, removing the toolbar from the layout or switching
+  layout preset no longer sends the entire media library to the Filter results
+  playlist. [[#1449](https://github.com/reupen/columns_ui/pull/1449)]
+
 ## 3.1.5
 
 ### Bug fixes
