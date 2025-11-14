@@ -25,6 +25,9 @@ const GUID dark_mode_status_id = {0x1278cd90, 0x1d95, 0x48e8, {0x87, 0x3a, 0x1, 
 
 fbh::ConfigInt32 dark_mode_status(
     dark_mode_status_id, WI_EnumValue(DarkModeStatus::Disabled), [](auto&& new_value, auto&& old_value) {
+        if (new_value == old_value)
+            return;
+
         prefs::g_tab_dark_mode.refresh();
         QuickSetupDialog::s_refresh();
 
