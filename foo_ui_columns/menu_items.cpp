@@ -7,6 +7,7 @@
 #include "config_appearance.h"
 #include "filter_search_bar.h"
 #include "system_appearance_manager.h"
+#include "tab_main_window.h"
 
 namespace cui::main_menu {
 
@@ -90,6 +91,18 @@ const MainMenuCommand decrease_font{{0xf2bc9f43, 0xf709, 0x4f6f, {0x9c, 0x65, 0x
 
 const MainMenuCommand increase_font{{0x8553d7fd, 0xebc5, 0x4ae7, {0xaa, 0x28, 0xb2, 0x6, 0xfe, 0x94, 0xa0, 0xb4}},
     "Increase font size", "Increases the playlist font size.", [] { panels::playlist_view::set_font_size(1.0f); }};
+
+const MainMenuCommand toggle_transparency{
+    .guid{0x0d0dbf0a, 0x7c93, 0x414a, {0x99, 0xef, 0xcc, 0x25, 0x90, 0x19, 0x6a, 0x62}},
+    .name = "Transparent window",
+    .description = "Enables or disables main window transparency.",
+    .execute_callback =
+        [] {
+            main_window::config_set_transparency_enabled(!main_window::config_get_transparency_enabled());
+            prefs::update_main_window_tab_transparency_enabled();
+        },
+    .is_ticked_callback = [] { return main_window::config_get_transparency_enabled(); },
+    .hide_without_shift_key = true};
 
 const MainMenuCommand show_status_bar{{0x5f944522, 0x843b, 0x43d2, {0x87, 0x14, 0xe3, 0xca, 0x1b, 0x78, 0x2b, 0x1f}},
     "Show status bar", "Shows or hides the Columns UI status bar.",
@@ -228,7 +241,10 @@ private:
     std::vector<MainMenuCommand> m_commands;
 };
 
-service_factory_single_t<MainMenuCommands> _mainmenu_commands_view(groups::view_columns_part,
+service_factory_single_t<MainMenuCommands> _mainmenu_commands_view_transparency(
+    mainmenu_groups::view_alwaysontop, mainmenu_commands::sort_priority_base + 1, toggle_transparency);
+
+service_factory_single_t<MainMenuCommands> _mainmenu_commands_view_ui_parts(groups::view_columns_part,
     mainmenu_commands::sort_priority_base + 3, show_status_bar, show_status_pane, show_toolbars);
 
 service_factory_single_t<MainMenuCommands> _mainmenu_commands_layout(

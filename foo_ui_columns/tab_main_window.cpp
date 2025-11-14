@@ -11,17 +11,24 @@ namespace {
 
 class MainWindowTab : public PreferencesTab {
 public:
-    bool m_initialised{};
+    void refresh_transparency_enabled() const
+    {
+        if (!m_wnd)
+            return;
+
+        SendDlgItemMessage(m_wnd, IDC_USE_TRANSPARENCY, BM_SETCHECK,
+            main_window::config_get_transparency_enabled() ? BST_CHECKED : BST_UNCHECKED, 0);
+    }
 
     BOOL handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
+            m_wnd = wnd;
             uih::enhance_edit_control(wnd, IDC_STRING);
             SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
             SendDlgItemMessage(wnd, IDC_TOOLBARS, BM_SETCHECK, cfg_toolbars, 0);
-            SendDlgItemMessage(
-                wnd, IDC_USE_TRANSPARENCY, BM_SETCHECK, main_window::config_get_transparency_enabled(), 0);
+            refresh_transparency_enabled();
             SendDlgItemMessage(
                 wnd, IDC_TRANSPARENCY_SPIN, UDM_SETPOS32, 0, main_window::config_get_transparency_level());
 
@@ -32,6 +39,7 @@ public:
         }
         case WM_DESTROY:
             m_initialised = false;
+            m_wnd = nullptr;
             break;
         case WM_COMMAND:
             switch (wp) {
@@ -94,6 +102,9 @@ public:
 
     const char* get_name() override { return "Main window"; }
 
+private:
+    bool m_initialised{};
+    HWND m_wnd{};
     PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 };
 
@@ -104,6 +115,11 @@ MainWindowTab main_window_tab;
 PreferencesTab& get_main_window_tab()
 {
     return main_window_tab;
+}
+
+void update_main_window_tab_transparency_enabled()
+{
+    main_window_tab.refresh_transparency_enabled();
 }
 
 } // namespace cui::prefs

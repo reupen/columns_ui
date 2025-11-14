@@ -60,6 +60,9 @@
   This includes a hidden menu item that switches to whichever mode is not
   currently active, intended for use as a keyboard shortcut or as a button.
 
+- A hidden main menu item for toggling main window transparency was added to the
+  View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
+
 ### Bug fixes
 
 - Padding to the right of separators in the Buttons toolbar was reduced at lower
