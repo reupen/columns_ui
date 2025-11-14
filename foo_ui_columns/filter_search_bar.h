@@ -95,7 +95,7 @@ private:
 
     void on_show_clear_button_change();
     void on_search_editbox_change();
-    void commit_search_results(const char* str, bool b_force_autosend = false, bool b_stream_update = false);
+    void commit_search_results(const char* str, bool force_autosend = false, bool is_destroying = false);
 
     void refresh_favourites(bool is_initial);
     void update_favourite_icon(const char* p_new = nullptr);
