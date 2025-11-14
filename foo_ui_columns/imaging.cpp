@@ -48,7 +48,7 @@ wil::com_ptr<ID2D1ColorContext> create_d2d_colour_context_for_display_profile(
         THROW_IF_FAILED(d2d_device_context->CreateColorContext(
             D2D1_COLOR_SPACE_CUSTOM, profile.data(), gsl::narrow<uint32_t>(profile.size()), &d2d_colour_context));
     } catch (const wil::ResultException& ex) {
-        if (d2d::is_device_reset_error(ex.GetErrorCode()))
+        if (uih::d2d::is_device_reset_error(ex.GetErrorCode()))
             throw;
 
         wcs::mark_display_colour_profile_as_bad(display_profile_name);

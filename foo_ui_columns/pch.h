@@ -19,7 +19,7 @@
 #include <crtdbg.h>
 #endif
 
-#define CUI_ENABLE_D3D_D2D_DEBUG_LAYER 0
+#define UIH_ENABLE_D3D_D2D_DEBUG_LAYER 0
 
 #include <algorithm>
 #include <atomic>
@@ -110,6 +110,7 @@
 #include "../columns_ui-sdk/ui_extension.h"
 #include "../ui_helpers/stdafx.h"
 #include "../ui_helpers/direct_2d.h"
+#include "../ui_helpers/direct_3d.h"
 #include "../ui_helpers/direct_write.h"
 #include "../ui_helpers/direct_write_text_out.h"
 #include "../ui_helpers/list_view/list_view.h"

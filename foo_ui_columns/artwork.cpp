@@ -404,7 +404,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             HRESULT hr = m_dxgi_swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 
-            if (d2d::is_device_reset_error(hr)) {
+            if (uih::d2d::is_device_reset_error(hr)) {
                 reset_d2d_device_resources();
                 refresh_image();
             } else if (FAILED(hr))
@@ -510,7 +510,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             else
                 deregister_occlusion_event();
         } catch (...) {
-            if (d2d::is_device_reset_error(wil::ResultFromCaughtException())) {
+            if (uih::d2d::is_device_reset_error(wil::ResultFromCaughtException())) {
                 reset_d2d_device_resources();
                 refresh_image();
                 return 0;
@@ -704,7 +704,7 @@ void ArtworkPanel::create_d2d_device_resources()
         }
 
         if (!m_d2d_factory)
-            m_d2d_factory = d2d::create_factory(D2D1_FACTORY_TYPE_MULTI_THREADED);
+            m_d2d_factory = uih::d2d::create_factory(D2D1_FACTORY_TYPE_MULTI_THREADED);
 
         const auto dxgi_device = m_d3d_device.query<IDXGIDevice1>();
 
@@ -782,7 +782,7 @@ void ArtworkPanel::create_d2d_device_resources()
             }
         }
     } catch (const wil::ResultException& ex) {
-        if (d2d::is_device_reset_error(ex.GetErrorCode())) {
+        if (uih::d2d::is_device_reset_error(ex.GetErrorCode())) {
             reset_d2d_device_resources();
             PostMessage(get_wnd(), MSG_REFRESH_IMAGE, 0, 0);
             return;
@@ -1443,7 +1443,7 @@ void ArtworkPanel::queue_decode(const album_art_data::ptr& data)
     const auto monitor = is_advanced_colour_active() ? nullptr : MonitorFromWindow(get_wnd(), MONITOR_DEFAULTTONEAREST);
 
     m_artwork_decoder.decode(m_d2d_device_context, is_advanced_colour_active(), monitor, data, [this, self{ptr{this}}] {
-        if (d2d::is_device_reset_error(m_artwork_decoder.get_error_result())) {
+        if (uih::d2d::is_device_reset_error(m_artwork_decoder.get_error_result())) {
             reset_d2d_device_resources();
             PostMessage(get_wnd(), MSG_REFRESH_IMAGE, 0, 0);
             return;

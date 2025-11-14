@@ -4,37 +4,6 @@
 
 namespace cui::d2d {
 
-namespace {
-
-std::weak_ptr<wil::com_ptr<ID2D1Factory1>> weak_main_thread_factory;
-
-}
-
-wil::com_ptr<ID2D1Factory1> create_factory(D2D1_FACTORY_TYPE factory_type)
-{
-    wil::com_ptr<ID2D1Factory1> factory;
-    D2D1_FACTORY_OPTIONS options{};
-
-#if CUI_ENABLE_D3D_D2D_DEBUG_LAYER == 1
-    options.debugLevel = IsDebuggerPresent() ? D2D1_DEBUG_LEVEL_INFORMATION : D2D1_DEBUG_LEVEL_NONE;
-#endif
-
-    THROW_IF_FAILED(D2D1CreateFactory(factory_type, options, &factory));
-
-    return factory;
-}
-
-MainThreadD2D1Factory create_main_thread_factory()
-{
-    if (const auto factory = weak_main_thread_factory.lock())
-        return factory;
-
-    const auto factory
-        = std::make_shared<wil::com_ptr<ID2D1Factory1>>(create_factory(D2D1_FACTORY_TYPE_SINGLE_THREADED));
-    weak_main_thread_factory = factory;
-    return factory;
-}
-
 wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2D1DeviceContext>& device_context,
     const wil::com_ptr<ID2D1ColorContext>& source_color_context,
     const wil::com_ptr<ID2D1ColorContext>& dest_color_context,

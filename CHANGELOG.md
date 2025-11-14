@@ -32,7 +32,8 @@
   script to force it to be shown when it evaluates to an empty string.
 
 - Playlist view group spacing has been adjusted.
-  [[#1440](https://github.com/reupen/columns_ui/pull/1440)]
+  [[#1440](https://github.com/reupen/columns_ui/pull/1440),
+  [#1446](https://github.com/reupen/columns_ui/pull/1446)]
 
   In particular, spacing around artwork has been adjusted.
 
@@ -44,6 +45,14 @@
 - The playlist view no longer reloads artwork when custom title-formatting
   fields provided by other components change.
   [[#1444](https://github.com/reupen/columns_ui/pull/1444)]
+
+- Built-in list view drag-and-drop overlay images have been replaced with custom
+  versions on Windows 10 and newer.
+  [#1447](https://github.com/reupen/columns_ui/pull/1447)
+
+  This avoids the opaque white background that Windows 11 is currently using
+  when drag-and-drop operations are initiated from built-in Columns UI list
+  views.
 
 ### Bug fixes
 
