@@ -8,7 +8,9 @@ struct MainMenuCommand {
     const char* description;
     std::function<void()> execute_callback;
     std::function<bool()> is_ticked_callback{};
+    std::function<bool()> is_radio_selected_callback{};
     bool hide_without_shift_key{};
+    std::function<bool()> is_available_callback{};
 };
 
 namespace commands {

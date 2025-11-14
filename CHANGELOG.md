@@ -48,11 +48,17 @@
 
 - Built-in list view drag-and-drop overlay images have been replaced with custom
   versions on Windows 10 and newer.
-  [#1447](https://github.com/reupen/columns_ui/pull/1447)
+  [[#1447](https://github.com/reupen/columns_ui/pull/1447)]
 
   This avoids the opaque white background that Windows 11 is currently using
   when drag-and-drop operations are initiated from built-in Columns UI list
   views.
+
+- Main menu items for changing the light or dark mode setting were added to the
+  View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
+
+  This includes a hidden menu item that switches to whichever mode is not
+  currently active, intended for use as a keyboard shortcut or as a button.
 
 ### Bug fixes
 
