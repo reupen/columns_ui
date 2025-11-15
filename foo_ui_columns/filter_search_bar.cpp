@@ -216,14 +216,12 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool force_auto
     if (is_destroying && stream_count == 0)
         return;
 
-    bool have_terms_changed = strcmp(m_active_search_string, str) != 0;
-
-    if (stream_count == 0)
-        force_autosend = have_terms_changed;
+    const auto have_terms_changed = strcmp(m_active_search_string, str) != 0;
+    const auto computed_force_autosend = force_autosend || (stream_count == 0 && have_terms_changed);
 
     const auto library_api = library_manager::get();
 
-    if (have_terms_changed || force_autosend) {
+    if (have_terms_changed || computed_force_autosend) {
         m_active_search_string = str;
 
         const auto is_empty = m_active_search_string.is_empty();
@@ -277,7 +275,7 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool force_auto
             }
 
             if (!have_autosent) {
-                if ((is_stream_visible || stream_count == 1) && force_autosend && !cfg_autosend)
+                if ((is_stream_visible || stream_count == 1) && computed_force_autosend && !cfg_autosend)
                     ordered_windows[0]->send_results_to_playlist();
 
                 have_autosent = is_stream_visible || stream_count == 1;
@@ -287,11 +285,14 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool force_auto
         if (is_destroying)
             return;
 
-        if ((stream_count == 0 || !have_autosent) && (cfg_autosend || force_autosend)) {
+        if ((stream_count == 0 || !have_autosent) && (cfg_autosend || computed_force_autosend)) {
             if (is_empty) {
-                metadb_handle_list all_items;
-                library_api->get_all_items(all_items);
-                g_send_metadb_handles_to_playlist(all_items);
+                metadb_handle_list items;
+
+                if (force_autosend)
+                    library_api->get_all_items(items);
+
+                g_send_metadb_handles_to_playlist(items);
             } else {
                 g_send_metadb_handles_to_playlist(m_active_handles);
             }
