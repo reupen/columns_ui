@@ -763,6 +763,11 @@ void ItemProperties::notify_save_inline_edit(const char* value)
         metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui, nullptr);
 }
 
+void ItemProperties::execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl)
+{
+    activate_inline_editing(index, 1);
+}
+
 bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
     pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries)
 {
