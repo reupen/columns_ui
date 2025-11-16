@@ -85,6 +85,9 @@
 - A hidden main menu item for toggling main window transparency was added to the
   View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
 
+- Double-clicking or pressing the Enter key in Item properties now activates
+  inline editing. [[#1452](https://github.com/reupen/columns_ui/pull/1452)]
+
 ### Bug fixes
 
 - Padding to the right of separators in the Buttons toolbar was reduced at lower
