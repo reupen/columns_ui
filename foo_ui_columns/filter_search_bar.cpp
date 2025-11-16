@@ -216,85 +216,86 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool force_auto
     if (is_destroying && stream_count == 0)
         return;
 
-    bool have_terms_changed = strcmp(m_active_search_string, str) != 0;
+    const auto have_terms_changed = strcmp(m_active_search_string, str) != 0;
+    const auto computed_force_autosend = force_autosend || (stream_count == 0 && have_terms_changed);
 
-    if (stream_count == 0)
-        force_autosend = have_terms_changed;
+    if (!(have_terms_changed || computed_force_autosend))
+        return;
 
     const auto library_api = library_manager::get();
 
-    if (have_terms_changed || force_autosend) {
-        m_active_search_string = str;
+    m_active_search_string = str;
 
-        const auto is_empty = m_active_search_string.is_empty();
+    const auto is_empty = m_active_search_string.is_empty();
 
-        if (is_empty) {
-            m_active_handles.remove_all();
-        } else if (have_terms_changed) {
-            library_api->get_all_items(m_active_handles);
+    if (is_empty) {
+        m_active_handles.remove_all();
+    } else if (have_terms_changed) {
+        library_api->get_all_items(m_active_handles);
 
-            try {
-                auto api = search_filter_manager_v2::get()->create_ex(m_active_search_string,
-                    fb2k::service_new<completion_notify_dummy>(), search_filter_manager_v2::KFlagSuppressNotify);
-                pfc::array_t<bool> data;
-                data.set_size(m_active_handles.get_count());
-                api->test_multi(m_active_handles, data.get_ptr());
-                m_active_handles.remove_mask(
-                    pfc::bit_array_not(pfc::bit_array_table(data.get_ptr(), data.get_count())));
-            } catch (pfc::exception const&) {
-            }
+        try {
+            auto api = search_filter_manager_v2::get()->create_ex(m_active_search_string,
+                fb2k::service_new<completion_notify_dummy>(), search_filter_manager_v2::KFlagSuppressNotify);
+            pfc::array_t<bool> data;
+            data.set_size(m_active_handles.get_count());
+            api->test_multi(m_active_handles, data.get_ptr());
+            m_active_handles.remove_mask(pfc::bit_array_not(pfc::bit_array_table(data.get_ptr(), data.get_count())));
+        } catch (pfc::exception const&) {
         }
+    }
 
-        bool have_autosent{};
+    bool have_autosent{};
 
-        for (const auto& stream : streams) {
-            stream->m_source_overriden = !is_empty;
-            stream->m_source_handles = m_active_handles;
+    for (const auto& stream : streams) {
+        stream->m_source_overriden = !is_empty;
+        stream->m_source_handles = m_active_handles;
 
-            if (stream->m_windows.get_count() == 0)
-                continue;
+        if (stream->m_windows.get_count() == 0)
+            continue;
 
-            pfc::list_t<FilterPanel*> ordered_windows;
-            stream->m_windows[0]->get_windows(ordered_windows);
+        pfc::list_t<FilterPanel*> ordered_windows;
+        stream->m_windows[0]->get_windows(ordered_windows);
 
-            if (ordered_windows.get_count() == 0)
-                continue;
+        if (ordered_windows.get_count() == 0)
+            continue;
 
-            const auto is_stream_visible = stream->is_visible();
+        const auto is_stream_visible = stream->is_visible();
 
-            if (have_terms_changed) {
-                const auto allow_stream_autosend = !have_autosent && (is_stream_visible || stream_count == 1);
+        if (have_terms_changed) {
+            const auto allow_stream_autosend = !have_autosent && (is_stream_visible || stream_count == 1);
 
-                if (is_destroying) {
-                    // Avoid triggering a refresh during layout switches and similar events
-                    fb2k::inMainThread([allow_stream_autosend, filter{service_ptr_t{ordered_windows[0]}}] {
-                        if (filter->get_wnd() != nullptr)
-                            filter->refresh(allow_stream_autosend);
-                    });
-                } else {
-                    ordered_windows[0]->refresh(allow_stream_autosend);
-                }
-            }
-
-            if (!have_autosent) {
-                if ((is_stream_visible || stream_count == 1) && force_autosend && !cfg_autosend)
-                    ordered_windows[0]->send_results_to_playlist();
-
-                have_autosent = is_stream_visible || stream_count == 1;
-            }
-        }
-
-        if (is_destroying)
-            return;
-
-        if ((stream_count == 0 || !have_autosent) && (cfg_autosend || force_autosend)) {
-            if (is_empty) {
-                metadb_handle_list all_items;
-                library_api->get_all_items(all_items);
-                g_send_metadb_handles_to_playlist(all_items);
+            if (is_destroying) {
+                // Avoid triggering a refresh during layout switches and similar events
+                fb2k::inMainThread([allow_stream_autosend, filter{service_ptr_t{ordered_windows[0]}}] {
+                    if (filter->get_wnd() != nullptr)
+                        filter->refresh(allow_stream_autosend);
+                });
             } else {
-                g_send_metadb_handles_to_playlist(m_active_handles);
+                ordered_windows[0]->refresh(allow_stream_autosend);
             }
+        }
+
+        if (!have_autosent) {
+            if ((is_stream_visible || stream_count == 1) && computed_force_autosend && !cfg_autosend)
+                ordered_windows[0]->send_results_to_playlist();
+
+            have_autosent = is_stream_visible || stream_count == 1;
+        }
+    }
+
+    if (is_destroying)
+        return;
+
+    if ((stream_count == 0 || !have_autosent) && (cfg_autosend || computed_force_autosend)) {
+        if (is_empty) {
+            metadb_handle_list items;
+
+            if (force_autosend)
+                library_api->get_all_items(items);
+
+            g_send_metadb_handles_to_playlist(items);
+        } else {
+            g_send_metadb_handles_to_playlist(m_active_handles);
         }
     }
 }

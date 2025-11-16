@@ -64,6 +64,14 @@
 - A hidden main menu item for toggling main window transparency was added to the
   View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
 
+- When there are no Filter panels in the layout, clearing the Filter search
+  toolbar now returns no items (similar to the behaviour in Columns UI 2.1.0)
+  rather than the entire media library.
+  [[#1451](https://github.com/reupen/columns_ui/pull/1451)]
+
+  Pressing the Enter key after clearing the query now returns all items in the
+  media library. The special `ALL` query can also be used to return all items.
+
 ### Bug fixes
 
 - Padding to the right of separators in the Buttons toolbar was reduced at lower
