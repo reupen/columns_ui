@@ -4,15 +4,7 @@
 
 ### Features
 
-- The Artwork and playlist views now automatically rotate and/or mirror artwork
-  according to orientation information in embedded image metadata.
-  [[#1425](https://github.com/reupen/columns_ui/pull/1425),
-  [#1426](https://github.com/reupen/columns_ui/pull/1426)]
-
-- A hidden menu item, ‘View/Focus Filter search’, for focusing the Filter search
-  toolbar was added. [[#1427](https://github.com/reupen/columns_ui/pull/1427)]
-
-  This can be assigned to a keyboard shortcut.
+#### All built-in list views
 
 - Jumping to items by typing in built-in list views (such as the playlist view)
   now ignores diacritics.
@@ -22,15 +14,28 @@
   There may be other changes in behaviour due to a change in the string
   comparison function and options being used for the comparison.
 
-- The playlist view now hides group headers when they have an empty string as a
-  label. [[#1431](https://github.com/reupen/columns_ui/pull/1431),
+- Built-in list view drag-and-drop overlay images have been replaced with custom
+  versions on Windows 10 and newer.
+  [[#1447](https://github.com/reupen/columns_ui/pull/1447)]
+
+  This avoids the opaque white background seen on Windows 11 when drag-and-drop
+  operations are initiated from built-in Columns UI list views.
+
+  (Note that the white background will still be present when the drag-and-drop
+  operation is started from File Explorer.)
+
+#### Playlist view
+
+- The playlist view now hides group headers when they have an empty string as
+  their text content. [[#1431](https://github.com/reupen/columns_ui/pull/1431),
   [#1437](https://github.com/reupen/columns_ui/pull/1437),
   [#1439](https://github.com/reupen/columns_ui/pull/1439)]
 
   Grouping will otherwise behave as though the hidden grouping level exists.
 
   A zero-width space (`$char(8203)`) can be used in a group title formatting
-  script to force it to be shown when it evaluates to an empty string.
+  script to force the header to be shown when the script evaluates to an empty
+  string.
 
 - Playlist view group spacing has been adjusted.
   [[#1440](https://github.com/reupen/columns_ui/pull/1440),
@@ -47,22 +52,19 @@
   fields provided by other components change.
   [[#1444](https://github.com/reupen/columns_ui/pull/1444)]
 
-- Built-in list view drag-and-drop overlay images have been replaced with custom
-  versions on Windows 10 and newer.
-  [[#1447](https://github.com/reupen/columns_ui/pull/1447)]
+#### Artwork
 
-  This avoids the opaque white background that Windows 11 is currently using
-  when drag-and-drop operations are initiated from built-in Columns UI list
-  views.
+- The Artwork and playlist views now automatically rotate and/or mirror artwork
+  according to orientation information in embedded image metadata.
+  [[#1425](https://github.com/reupen/columns_ui/pull/1425),
+  [#1426](https://github.com/reupen/columns_ui/pull/1426)]
 
-- Main menu items for changing the light or dark mode setting were added to the
-  View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
+#### Filter search
 
-  This includes a hidden menu item that switches to whichever mode is not
-  currently active, intended for use as a keyboard shortcut or as a button.
+- A hidden menu item, ‘View/Focus Filter search’, for focusing the Filter search
+  toolbar was added. [[#1427](https://github.com/reupen/columns_ui/pull/1427)]
 
-- A hidden main menu item for toggling main window transparency was added to the
-  View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
+  This can be assigned to a keyboard shortcut.
 
 - When there are no Filter panels in the layout, clearing the Filter search
   toolbar now returns no items (similar to the behaviour in Columns UI 2.1.0)
@@ -71,6 +73,17 @@
 
   Pressing the Enter key after clearing the query now returns all items in the
   media library. The special `ALL` query can also be used to return all items.
+
+#### Other changes
+
+- Main menu items for changing the light or dark mode setting were added to the
+  View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
+
+  This includes a hidden menu item that switches to the mode that’s not active,
+  intended for use as a keyboard shortcut or as a button.
+
+- A hidden main menu item for toggling main window transparency was added to the
+  View menu. [[#1448](https://github.com/reupen/columns_ui/pull/1448)]
 
 ### Bug fixes
 
