@@ -9,10 +9,8 @@ namespace cui::prefs {
 cfg_int g_cur_tab(GUID{0x1f7903e5, 0x9523, 0xac7e, {0xd4, 0xea, 0x13, 0xdd, 0xe5, 0xac, 0xc8, 0x66}}, 0);
 cfg_uint g_last_colour(GUID{0xd352a60a, 0x4d87, 0x07b9, {0x09, 0x07, 0x03, 0xa1, 0xe0, 0x08, 0x03, 0x2f}}, 0);
 
-enum {
-    MSG_COLUMN_NAME_CHANGED = WM_USER + 2,
-    MSG_SELECTION_CHANGED
-};
+constexpr auto MSG_COLUMN_NAME_CHANGED = WM_USER + 3;
+
 struct ColumnTimes {
     service_ptr_t<titleformat_object> to_display;
     service_ptr_t<titleformat_object> to_colour;
@@ -103,6 +101,16 @@ public:
             m_column = column;
             refresh_me(m_wnd);
         }
+    }
+
+    void on_column_name_change(const PlaylistViewColumn::ptr& column) override
+    {
+        if (m_column != column)
+            return;
+
+        initialising = true;
+        uSendDlgItemMessageText(m_wnd, IDC_NAME, WM_SETTEXT, 0, m_column->name);
+        initialising = false;
     }
 
     INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -697,6 +705,41 @@ void TabColumns::show_column(size_t index)
         cfg_cur_prefs_col = gsl::narrow<int>(index);
     }
     cui::prefs::page_playlist_view.get_static_instance().show_tab("Columns");
+}
+
+bool TabColumns::ColumnsListView::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices,
+    size_t column, pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries)
+{
+    size_t indices_count = indices.get_count();
+
+    if (indices_count != 1 || indices[0] >= m_tab.m_columns.size())
+        return false;
+
+    const auto edit_index = indices[0];
+    m_inline_edit_column = m_tab.m_columns[edit_index];
+    p_text = m_inline_edit_column->name;
+    return true;
+}
+
+void TabColumns::ColumnsListView::notify_save_inline_edit(const char* value)
+{
+    auto _ = wil::scope_exit([this] { m_inline_edit_column.reset(); });
+
+    if (!m_inline_edit_column)
+        return;
+
+    m_inline_edit_column->name = value;
+
+    const auto index = fbh::as_optional(m_tab.m_columns.find_item(m_inline_edit_column));
+
+    if (!index)
+        return;
+
+    const std::vector items{InsertItem{{value}, {}}};
+    replace_items(*index, items.size(), items.data());
+
+    if (m_tab.m_child)
+        m_tab.m_child->on_column_name_change(m_inline_edit_column);
 }
 
 bool TabColumns::on_column_list_contextmenu(const POINT& pt, bool from_keyboard)

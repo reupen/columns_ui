@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.2.0-beta.1
 
 ### Features
 
@@ -87,6 +87,10 @@
 
 - Double-clicking or pressing the Enter key in Item properties now activates
   inline editing. [[#1452](https://github.com/reupen/columns_ui/pull/1452)]
+
+- Inline editing can now be used to edit playlist view column names in the
+  column list in Preferences.
+  [[#1453](https://github.com/reupen/columns_ui/pull/1453)]
 
 ### Bug fixes
 
