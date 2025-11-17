@@ -11,6 +11,7 @@ public:
     virtual HWND create(HWND parent_window) = 0;
     virtual void set_column(const PlaylistViewColumn::ptr& column) = 0;
     virtual void get_column(PlaylistViewColumn::ptr& p_out) = 0;
+    virtual void on_column_name_change(const PlaylistViewColumn::ptr& column) {}
 };
 
 class TabColumns : public PreferencesTab {
@@ -61,8 +62,27 @@ private:
             return m_tab.on_column_list_contextmenu(pt, from_keyboard);
         }
 
+        void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override
+        {
+            activate_inline_editing(index, column);
+        }
+
+        bool notify_before_create_inline_edit(
+            const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override
+        {
+            return indices.size() == 1;
+        }
+
+        bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+            pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
+
+        void notify_save_inline_edit(const char* value) override;
+
+        void notify_exit_inline_edit() override { m_inline_edit_column.reset(); }
+
     private:
         TabColumns& m_tab;
+        PlaylistViewColumn::ptr m_inline_edit_column;
     };
 
     TabColumns() = default;
