@@ -29,6 +29,10 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         identifier_indent_groups,
         identifier_use_custom_group_indentation_amount,
         identifier_custom_group_indentation_amount,
+        identifier_show_artwork,
+        identifier_sticky_artwork,
+        identifier_show_artwork_reflection,
+        identifier_artwork_width,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours"; }
     const GUID& get_group() const override { return fcl::groups::colours_and_fonts; }
@@ -44,11 +48,17 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         fbh::fcl::Writer out(p_writer, p_abort);
         out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.get_raw_value().value);
         out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.get_raw_value().dpi);
+
         out.write_item(identifier_indent_groups, panels::playlist_view::cfg_indent_groups);
         out.write_item(
             identifier_custom_group_indentation_amount, panels::playlist_view::cfg_custom_group_indentation_amount);
         out.write_item(identifier_use_custom_group_indentation_amount,
             panels::playlist_view::cfg_use_custom_group_indentation_amount);
+
+        out.write_item(identifier_show_artwork, panels::playlist_view::cfg_show_artwork);
+        out.write_item(identifier_sticky_artwork, panels::playlist_view::cfg_sticky_artwork);
+        out.write_item(identifier_show_artwork_reflection, panels::playlist_view::cfg_artwork_reflection);
+        out.write_item(identifier_artwork_width, panels::playlist_view::cfg_artwork_width);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -63,6 +73,10 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
 
         bool item_padding_read = false;
         bool font_read{false};
+
+        const auto old_artwork_width = panels::playlist_view::cfg_artwork_width.get_scaled_value();
+        const auto old_show_artwork_reflection = panels::playlist_view::cfg_artwork_reflection.get();
+
         uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
 
         while (reader.get_remaining()) {
@@ -86,6 +100,18 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
                 break;
             case identifier_custom_group_indentation_amount:
                 reader.read_item(panels::playlist_view::cfg_custom_group_indentation_amount);
+                break;
+            case identifier_show_artwork:
+                reader.read_item(panels::playlist_view::cfg_show_artwork);
+                break;
+            case identifier_sticky_artwork:
+                reader.read_item(panels::playlist_view::cfg_sticky_artwork);
+                break;
+            case identifier_show_artwork_reflection:
+                reader.read_item(panels::playlist_view::cfg_artwork_reflection);
+                break;
+            case identifier_artwork_width:
+                reader.read_item(panels::playlist_view::cfg_artwork_width);
                 break;
             case colours_pview_scheme: {
                 int use_custom_colours{};
@@ -163,8 +189,12 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         if (item_padding_read)
             settings::playlist_view_item_padding = item_padding;
 
-        // refresh_all_playlist_views();
-        // pvt::ng_playlist_view_t::g_update_all_items();
+        if (old_artwork_width != panels::playlist_view::cfg_artwork_width.get_scaled_value()
+            || old_show_artwork_reflection != panels::playlist_view::cfg_artwork_reflection.get())
+            panels::playlist_view::PlaylistView::g_on_artwork_width_change();
+
+        panels::playlist_view::PlaylistView::g_on_show_artwork_change();
+        panels::playlist_view::PlaylistView::s_on_sticky_artwork_change();
     }
 };
 

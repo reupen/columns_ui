@@ -20,6 +20,7 @@ extern fbh::ConfigBool cfg_indent_groups;
 extern fbh::ConfigBool cfg_use_custom_group_indentation_amount;
 extern fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount;
 extern fbh::ConfigBool cfg_show_artwork;
+extern fbh::ConfigBool cfg_sticky_artwork;
 
 void set_font_size(float point_delta);
 
@@ -175,6 +176,7 @@ public:
     static void s_update_all_items();
     static void g_on_autosize_change();
     static void g_on_show_artwork_change();
+    static void s_on_sticky_artwork_change();
     static void g_on_alternate_selection_change();
     static void g_on_artwork_width_change(const PlaylistView* p_skip = nullptr);
     static void s_flush_artwork(bool b_redraw = false, const PlaylistView* p_skip = nullptr);
