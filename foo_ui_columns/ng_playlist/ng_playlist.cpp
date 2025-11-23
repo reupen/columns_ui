@@ -437,7 +437,7 @@ void PlaylistView::g_on_vertical_item_padding_change()
 void PlaylistView::g_on_font_change()
 {
     for (auto& window : g_windows)
-        window->recreate_items_text_format();
+        window->recreate_items_text_format(item_text_layout_cache_size);
 }
 
 void PlaylistView::g_on_header_font_change()
@@ -449,7 +449,7 @@ void PlaylistView::g_on_header_font_change()
 void PlaylistView::g_on_group_font_change()
 {
     for (auto& window : g_windows)
-        window->recreate_group_text_format();
+        window->recreate_group_text_format(group_text_layout_cache_size);
 }
 
 void PlaylistView::s_update_all_items()
@@ -839,9 +839,9 @@ void PlaylistView::notify_on_initialisation()
         config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false));
     set_vertical_item_padding(settings::playlist_view_item_padding);
 
-    recreate_items_text_format();
+    recreate_items_text_format(item_text_layout_cache_size);
     recreate_header_text_format();
-    recreate_group_text_format();
+    recreate_group_text_format(group_text_layout_cache_size);
 
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);

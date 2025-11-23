@@ -53,7 +53,7 @@ void on_status_font_change()
     CATCH_LOG()
 
     if (state->direct_write_ctx)
-        state->direct_write_text_format = fonts::get_text_format(state->direct_write_ctx, font);
+        state->direct_write_text_format = fonts::get_text_format(state->direct_write_ctx, font, true, 8);
 
     SetWindowFont(g_status, state->font.get(), TRUE);
 

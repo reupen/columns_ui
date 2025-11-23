@@ -145,6 +145,8 @@ public:
     FilterStream::ptr m_stream;
 
 private:
+    static constexpr auto text_layout_cache_size = sizeof(void*) == 8 ? 64 : 32;
+
     static const GUID g_extension_guid;
     static pfc::list_t<FilterStream::ptr> g_streams;
     static std::vector<FilterPanel*> g_windows;

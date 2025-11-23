@@ -7,8 +7,9 @@
 - An option for playlist view artwork to stay in view when scrolling vertically
   was added. [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
 
-- Playlist view rendering performance was improved slightly in some scenarios.
-  [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
+- Rendering performance of some built-in panels was improved in some scenarios.
+  [[#1464](https://github.com/reupen/columns_ui/pull/1464),
+  [#1466](https://github.com/reupen/columns_ui/pull/1466)]
 
 ### Bug fixes
 
