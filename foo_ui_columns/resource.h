@@ -187,6 +187,7 @@
 #define IDC_SHOWARTWORK                 1050
 #define IDC_DROP_STRING                 1051
 #define IDC_SHOW                        1051
+#define IDC_STICKY_ARTWORK              1051
 #define IDC_TABS_MULTILINE              1052
 #define IDC_GROUP                       1052
 #define IDC_TEXT_LOCATION               1052

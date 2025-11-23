@@ -49,6 +49,8 @@ fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount(
     {0x3d1b3bce, 0x25d2, 0x4dde, {0x8e, 0x99, 0x20, 0xfb, 0xc9, 0x6c, 0xbf, 0xec}}, 7);
 fbh::ConfigBool cfg_show_artwork(
     g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
+fbh::ConfigBool cfg_sticky_artwork(
+    {0x4a496eb1, 0x9df7, 0x4008, {0xba, 0xc3, 0x29, 0xb7, 0x1e, 0x58, 0xe1, 0x76}}, false);
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 150);
 
 void ConfigGroups::swap(size_t index1, size_t index2)
@@ -387,6 +389,13 @@ void PlaylistView::g_on_show_artwork_change()
     for (auto& window : g_windows)
         window->set_show_group_info_area(cfg_show_artwork);
 }
+
+void PlaylistView::s_on_sticky_artwork_change()
+{
+    for (auto& window : g_windows)
+        window->set_is_group_info_area_sticky(cfg_sticky_artwork);
+}
+
 void PlaylistView::g_on_alternate_selection_change()
 {
     for (auto& window : g_windows)
@@ -822,6 +831,7 @@ void PlaylistView::notify_on_initialisation()
         set_group_level_indentation_amount(cfg_custom_group_indentation_amount);
 
     set_group_info_area_size();
+    set_is_group_info_area_sticky(cfg_sticky_artwork);
     set_show_group_info_area(cfg_show_artwork);
     set_show_header(cfg_header != 0);
     set_autosize(cfg_nohscroll != 0);

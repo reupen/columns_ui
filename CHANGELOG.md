@@ -1,5 +1,25 @@
 # Change log
 
+## Development version
+
+### Features
+
+- An option for playlist view artwork to stay in view when scrolling vertically
+  was added. [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
+
+- Playlist view rendering performance was improved slightly in some scenarios.
+  [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
+
+### Bug fixes
+
+- A bug in the playlist view where the drag-and-drop insertion marker did not
+  render in the correct place when scrolled right was fixed.
+  [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
+
+- The settings on the Artwork tab on the Playlist view preferences page are now
+  written to FCL files.
+  [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
+
 ## 3.2.0-beta.1
 
 ### Features
