@@ -89,6 +89,10 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
         auto& sub_style_data = style_data[column_index];
 
         rc_subitem.right = rc_subitem.left + sub_item.width;
+
+        if (!RectVisible(context.dc, &rc_subitem))
+            continue;
+
         if (!(b_themed && theme_state)) {
             if (b_selected)
                 cr_text = !b_window_focused ? sub_style_data->selected_text_colour_non_focus

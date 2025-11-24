@@ -107,6 +107,7 @@ private:
     UINT m_wm_shellhookmessage{};
 
     wil::unique_himagelist m_taskbar_button_images;
+    std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;
 };
 
 extern MainWindow main_window;

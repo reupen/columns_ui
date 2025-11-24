@@ -18,6 +18,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             g_font_menu_horizontal.reset(uCreateMenuFont());
             g_font_menu_vertical.reset(uCreateMenuFont(true));
         }
+        m_buffered_paint_initialiser.emplace();
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
             [wnd] { RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
         refresh_children();
@@ -31,6 +32,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     case WM_NCDESTROY:
+        m_buffered_paint_initialiser.reset();
         m_window_host.reset();
         g_instances.remove_item(this);
         m_wnd = nullptr;

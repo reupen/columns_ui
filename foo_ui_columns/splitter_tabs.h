@@ -153,6 +153,7 @@ private:
     wil::unique_hfont g_font;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
     std::unique_ptr<uih::EventToken> m_get_message_hook_token;
+    std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;
 };
 
 } // namespace cui::panels::tab_stack

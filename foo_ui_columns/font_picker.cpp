@@ -531,7 +531,7 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_draw_item(LPDRAWITEMSTRU
         return GetBkColor(dis->hDC);
     }();
 
-    uih::BufferedDC buffered_dc(dis->hDC, dis->rcItem);
+    uih::BufferedPaint buffered_dc(dis->hDC, dis->rcItem);
     FillRect(buffered_dc.get(), &dis->rcItem, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
 
     const auto draw_focus_rect = [&] {

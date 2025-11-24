@@ -79,7 +79,7 @@ void handle_tab_control_paint(HWND wnd)
 
     PAINTSTRUCT ps{};
     const auto paint_dc = wil::BeginPaint(wnd, &ps);
-    const auto buffered_dc = uih::BufferedDC(paint_dc.get(), ps.rcPaint);
+    const auto buffered_dc = uih::BufferedPaint(paint_dc.get(), ps.rcPaint);
     const auto _select_font = wil::SelectObject(buffered_dc.get(), GetWindowFont(wnd));
     const auto _select_pen = wil::SelectObject(buffered_dc.get(), border_pen.get());
 

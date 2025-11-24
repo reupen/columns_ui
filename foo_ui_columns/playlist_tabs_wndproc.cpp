@@ -35,6 +35,9 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         initialised = true;
         list_wnd.add_item(this);
+
+        m_buffered_paint_initialiser.emplace();
+
         wil::com_ptr<PlaylistTabsDropTarget> m_drop_target = new PlaylistTabsDropTarget(this);
         RegisterDragDrop(wnd, m_drop_target.get());
 
@@ -100,6 +103,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_NCDESTROY: {
+        m_buffered_paint_initialiser.reset();
         m_host_wnd = nullptr;
         break;
     }
