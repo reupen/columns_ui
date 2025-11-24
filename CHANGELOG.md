@@ -13,6 +13,12 @@
 
 ### Bug fixes
 
+- A problem where Item details and Artwork view temporarily consumed excessive
+  memory if resized when in a hidden tab was fixed.
+  [[#1467](https://github.com/reupen/columns_ui/pull/1467)]
+
+  This occurred if Direct2D hardware acceleration was disabled.
+
 - A bug in the playlist view where the drag-and-drop insertion marker did not
   render in the correct place when scrolled right was fixed.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464)]

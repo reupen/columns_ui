@@ -397,20 +397,6 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (lpwp->flags & SWP_NOSIZE)
             break;
 
-        if (m_dxgi_swap_chain) {
-            if (m_d2d_device_context) {
-                m_d2d_device_context->SetTarget(nullptr);
-            }
-
-            HRESULT hr = m_dxgi_swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-
-            if (uih::d2d::is_device_reset_error(hr)) {
-                reset_d2d_device_resources();
-                refresh_image();
-            } else if (FAILED(hr))
-                LOG_HR(hr);
-        }
-
         if (m_transform_effect)
             m_transform_effect_needs_updating = true;
 
@@ -458,6 +444,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto background_colour = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
 
         try {
+            update_swap_chain_buffers_size();
             create_d2d_device_resources();
 
             if (!(m_d2d_device_context && m_dxgi_swap_chain)) {
@@ -691,6 +678,24 @@ void ArtworkPanel::update_dxgi_output_desc()
     m_dxgi_output_desc = output_desc;
     m_sdr_white_level = get_sdr_white_level(
         std::wstring_view(m_dxgi_output_desc->DeviceName, std::size(m_dxgi_output_desc->DeviceName)));
+}
+
+void ArtworkPanel::update_swap_chain_buffers_size() const
+{
+    if (!(m_d2d_device_context && m_dxgi_swap_chain))
+        return;
+
+    RECT client_rect{};
+    GetClientRect(get_wnd(), &client_rect);
+
+    const auto required_target_size = D2D1::SizeU(
+        gsl::narrow<unsigned>(wil::rect_width(client_rect)), gsl::narrow<unsigned>(wil::rect_height(client_rect)));
+
+    if (m_d2d_device_context->GetPixelSize() == required_target_size)
+        return;
+
+    m_d2d_device_context->SetTarget(nullptr);
+    THROW_IF_FAILED(m_dxgi_swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
 }
 
 void ArtworkPanel::create_d2d_device_resources()
