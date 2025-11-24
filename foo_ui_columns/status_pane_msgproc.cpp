@@ -93,7 +93,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_PAINT: {
         PAINTSTRUCT ps{};
         const auto paint_dc = wil::BeginPaint(wnd, &ps);
-        uih::BufferedDC dc(paint_dc.get(), ps.rcPaint);
+        uih::BufferedPaint dc(paint_dc.get(), ps.rcPaint);
 
         RECT rc_client{};
         GetClientRect(wnd, &rc_client);

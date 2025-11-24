@@ -131,6 +131,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_shell_hook_registered = RegisterShellHookWindow(wnd) != 0;
         }
 
+        m_buffered_paint_initialiser.emplace();
+
         on_create();
 
         if (!uih::are_keyboard_cues_enabled())
@@ -182,6 +184,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_NCDESTROY:
         m_taskbar_button_images.reset();
+        m_buffered_paint_initialiser.reset();
         break;
     case WM_CLOSE:
         if (config::advbool_close_to_system_tray_icon.get()) {

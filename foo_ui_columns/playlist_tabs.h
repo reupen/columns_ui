@@ -197,6 +197,7 @@ private:
     MINMAXINFO m_mmi{};
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
     std::unique_ptr<uih::EventToken> m_get_message_hook_token;
+    std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;
 };
 
 extern ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;

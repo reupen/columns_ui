@@ -502,6 +502,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
+        m_buffered_paint_initialiser.emplace();
         m_window_host = fb2k::service_new<TabStackSplitterHost>(this);
 
         create_tabs();
@@ -565,6 +566,9 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         destroy_children();
         destroy_tabs();
         m_window_host.reset();
+        break;
+    case WM_NCDESTROY:
+        m_buffered_paint_initialiser.reset();
         break;
     case WM_WINDOWPOSCHANGED: {
         auto lpwp = (LPWINDOWPOS)lp;

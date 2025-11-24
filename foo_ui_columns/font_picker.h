@@ -55,6 +55,7 @@ private:
     std::optional<uih::direct_write::TextFormat> m_custom_axis_values_text_format;
     std::optional<std::reference_wrapper<uih::direct_write::FontFamily>> m_font_family;
     std::optional<std::reference_wrapper<uih::direct_write::Font>> m_font_face;
+    uih::BufferedPaintInitialiser m_buffered_paint_initialiser;
 };
 
 } // namespace cui::utils

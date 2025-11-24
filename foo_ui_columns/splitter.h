@@ -205,6 +205,7 @@ private:
     size_t m_panel_dragging{};
     bool m_panel_dragging_valid{false};
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
+    std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;
 
     static wil::unique_hfont g_font_menu_horizontal;
     static wil::unique_hfont g_font_menu_vertical;

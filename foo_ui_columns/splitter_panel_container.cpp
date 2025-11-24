@@ -115,7 +115,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
     case WM_PAINT: {
         PAINTSTRUCT ps{};
         const auto paint_dc = wil::BeginPaint(wnd, &ps);
-        const uih::BufferedDC buffered_dc(paint_dc.get(), ps.rcPaint);
+        const uih::BufferedPaint buffered_dc(paint_dc.get(), ps.rcPaint);
 
         uie::win32::paint_background_using_parent(wnd, buffered_dc.get(), false);
 

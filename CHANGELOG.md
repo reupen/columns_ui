@@ -9,7 +9,8 @@
 
 - Rendering performance of some built-in panels was improved in some scenarios.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464),
-  [#1466](https://github.com/reupen/columns_ui/pull/1466)]
+  [#1466](https://github.com/reupen/columns_ui/pull/1466),
+  [#1467](https://github.com/reupen/columns_ui/pull/1467)]
 
 ### Bug fixes
 

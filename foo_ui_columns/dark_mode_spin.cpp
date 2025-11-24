@@ -289,7 +289,7 @@ LRESULT WINAPI on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 
         PAINTSTRUCT ps{};
         const auto paint_dc = wil::BeginPaint(wnd, &ps);
-        const uih::BufferedDC buffered_dc(paint_dc.get(), ps.rcPaint);
+        const uih::BufferedPaint buffered_dc(paint_dc.get(), ps.rcPaint);
 
         Gdiplus::Graphics graphics(buffered_dc.get());
 

@@ -81,33 +81,22 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
     case WM_ERASEBKGND:
         return FALSE;
     case WM_PAINT: {
-        PAINTSTRUCT ps;
+        PAINTSTRUCT ps{};
+        const auto dc = wil::BeginPaint(wnd, &ps);
 
-        HDC dc = BeginPaint(wnd, &ps);
-        HDC dc_mem = CreateCompatibleDC(dc);
-
-        RECT rc;
-        GetClientRect(wnd, &rc);
-
-        HBITMAP bm_mem = CreateCompatibleBitmap(dc, rc.right, rc.bottom);
-        auto bm_old = (HBITMAP)SelectObject(dc_mem, bm_mem);
+        uih::BufferedPaint buffered_paint(dc.get(), ps.rcPaint);
 
         if (colours::is_dark_mode_active())
-            FillRect(dc_mem, &rc, get_colour_brush(dark::ColourID::StatusBarBackground, true).get());
+            FillRect(
+                buffered_paint.get(), &ps.rcPaint, get_colour_brush(dark::ColourID::StatusBarBackground, true).get());
         else
-            CallWindowProc(state->status_proc, wnd, WM_ERASEBKGND, (WPARAM)dc_mem, NULL);
+            CallWindowProc(
+                state->status_proc, wnd, WM_ERASEBKGND, reinterpret_cast<WPARAM>(buffered_paint.get()), NULL);
 
-        SendMessage(wnd, WM_PRINTCLIENT, (WPARAM)dc_mem, PRF_CHECKVISIBLE | PRF_CLIENT | PRF_ERASEBKGND);
-
-        BitBlt(dc, rc.left, rc.top, rc.right, rc.bottom, dc_mem, 0, 0, SRCCOPY);
-
-        SelectObject(dc_mem, bm_old);
-        DeleteObject(bm_mem);
-        DeleteDC(dc_mem);
-
-        EndPaint(wnd, &ps);
-    }
+        SendMessage(wnd, WM_PRINTCLIENT, reinterpret_cast<WPARAM>(buffered_paint.get()),
+            PRF_CHECKVISIBLE | PRF_CLIENT | PRF_ERASEBKGND);
         return 0;
+    }
     }
 
     return CallWindowProc(state->status_proc, wnd, msg, wp, lp);
