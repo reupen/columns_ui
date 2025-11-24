@@ -190,7 +190,7 @@ void FilterPanel::s_on_dark_mode_status_change()
 void FilterPanel::g_on_font_items_change()
 {
     for (auto& window : g_windows)
-        window->recreate_items_text_format();
+        window->recreate_items_text_format(text_layout_cache_size);
 }
 
 void FilterPanel::g_on_font_header_change()
@@ -783,7 +783,7 @@ void FilterPanel::notify_on_initialisation()
     set_sorting_enabled(cfg_allow_sorting);
     set_show_sort_indicators(cfg_show_sort_indicators);
 
-    recreate_items_text_format();
+    recreate_items_text_format(text_layout_cache_size);
     recreate_header_text_format();
 
     size_t index = g_windows.size();

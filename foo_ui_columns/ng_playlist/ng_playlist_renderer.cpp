@@ -4,7 +4,7 @@
 
 namespace cui::panels::playlist_view {
 
-void PlaylistViewRenderer::render_begin(uih::lv::RendererContext context)
+void PlaylistViewRenderer::render_begin(const uih::lv::RendererContext& context)
 {
     const auto monitor = MonitorFromWindow(context.wnd, MONITOR_DEFAULTTONEAREST);
 
@@ -14,7 +14,7 @@ void PlaylistViewRenderer::render_begin(uih::lv::RendererContext context)
     m_monitor = monitor;
 }
 
-void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, size_t index, RECT rc)
+void PlaylistViewRenderer::render_group_info(const uih::lv::RendererContext& context, size_t index, RECT rc)
 {
     const auto bitmap = m_playlist_view->request_group_artwork(index, m_monitor);
 
@@ -43,7 +43,7 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, s
         bitmap_dc.get(), 0, 0, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap), blend_function);
 }
 
-void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t index,
+void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, size_t index,
     std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
     bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc)
 {
@@ -160,7 +160,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
     }
 }
 
-void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index,
+void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context, size_t item_index, size_t group_index,
     std::string_view text, int indentation, size_t level, RECT rc)
 {
     if (!(context.group_text_format && context.bitmap_render_target))

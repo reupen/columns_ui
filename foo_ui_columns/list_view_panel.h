@@ -69,11 +69,11 @@ protected:
         p_out.m_group_background = p_out.m_background;
     }
 
-    void recreate_items_text_format()
+    void recreate_items_text_format(size_t layout_cache_size = 32)
     {
         const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
         const auto items_font = font_api->get_font(ItemsFontId);
-        const auto items_text_format = fonts::get_text_format(items_font);
+        const auto items_text_format = fonts::get_text_format(items_font, layout_cache_size);
         const auto items_log_font = items_font->log_font();
         set_font(items_text_format, items_log_font);
     }
@@ -88,14 +88,14 @@ protected:
         set_header_font(fonts::get_text_format(header_font), header_font->log_font());
     }
 
-    void recreate_group_text_format()
+    void recreate_group_text_format(size_t layout_cache_size = 32)
     {
         if (GroupFontId == GUID{})
             return;
 
         const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
         const auto group_font = font_api->get_font(GroupFontId);
-        set_group_font(fonts::get_text_format(group_font));
+        set_group_font(fonts::get_text_format(group_font, layout_cache_size));
     }
 
 private:

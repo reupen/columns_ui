@@ -139,16 +139,16 @@ class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
 public:
     explicit PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {}
 
-    void render_begin(uih::lv::RendererContext context) override;
+    void render_begin(const uih::lv::RendererContext& context) override;
 
-    void render_group_info(uih::lv::RendererContext context, size_t index, RECT rc) override;
+    void render_group_info(const uih::lv::RendererContext& context, size_t index, RECT rc) override;
 
-    void render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index, std::string_view text,
-        int indentation, size_t level, RECT rc) override;
+    void render_group(const uih::lv::RendererContext& context, size_t item_index, size_t group_index,
+        std::string_view text, int indentation, size_t level, RECT rc) override;
 
-    void render_item(uih::lv::RendererContext context, size_t index, std::vector<uih::lv::RendererSubItem> sub_items,
-        int indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool should_hide_focus,
-        bool b_focused, RECT rc) override;
+    void render_item(const uih::lv::RendererContext& context, size_t index,
+        std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
+        bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc) override;
 
     class PlaylistView* m_playlist_view;
     HMONITOR m_monitor{};
@@ -211,6 +211,9 @@ protected:
     using InsertItemsContainer = pfc::array_t<InsertItem>;
 
 private:
+    static constexpr auto item_text_layout_cache_size = sizeof(void*) == 8 ? 512 : 256;
+    static constexpr auto group_text_layout_cache_size = sizeof(void*) == 8 ? 64 : 32;
+
     static const GUID g_extension_guid;
     enum {
         timer_date_change = TIMER_BASE

@@ -56,8 +56,8 @@ struct SystemFont {
 SystemFont get_icon_font_for_dpi(unsigned dpi);
 SystemFont get_menu_font_for_dpi(unsigned dpi);
 
-std::optional<uih::direct_write::TextFormat> get_text_format(
-    const uih::direct_write::Context::Ptr& context, const font::ptr& font_api, bool set_defaults = true);
-std::optional<uih::direct_write::TextFormat> get_text_format(const font::ptr& font_api);
+std::optional<uih::direct_write::TextFormat> get_text_format(const uih::direct_write::Context::Ptr& context,
+    const font::ptr& font_api, bool set_defaults = true, size_t layout_cache_size = 32);
+std::optional<uih::direct_write::TextFormat> get_text_format(const font::ptr& font_api, size_t layout_cache_size = 32);
 
 } // namespace cui::fonts

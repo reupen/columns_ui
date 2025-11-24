@@ -212,21 +212,22 @@ SystemFont get_menu_font_for_dpi(unsigned dpi)
     return {ncm.lfMenuFont, gsl::narrow_cast<float>(-ncm.lfMenuFont.lfHeight)};
 }
 
-std::optional<uih::direct_write::TextFormat> get_text_format(
-    const uih::direct_write::Context::Ptr& context, const font::ptr& font_api, bool set_defaults)
+std::optional<uih::direct_write::TextFormat> get_text_format(const uih::direct_write::Context::Ptr& context,
+    const font::ptr& font_api, bool set_defaults, size_t layout_cache_size)
 {
     try {
         const auto text_format = font_api->create_wil_text_format();
         const auto rendering_opts = font_api->rendering_options();
         return context->wrap_text_format(text_format, rendering_opts->rendering_mode(),
-            rendering_opts->use_greyscale_antialiasing(), rendering_opts->use_colour_glyphs(), set_defaults);
+            rendering_opts->use_greyscale_antialiasing(), rendering_opts->use_colour_glyphs(), set_defaults,
+            fb2k::isLowMemModeActive() ? 0 : layout_cache_size);
     }
     CATCH_LOG()
 
     return {};
 }
 
-std::optional<uih::direct_write::TextFormat> get_text_format(const font::ptr& font_api)
+std::optional<uih::direct_write::TextFormat> get_text_format(const font::ptr& font_api, size_t layout_cache_size)
 {
     uih::direct_write::Context::Ptr context;
     try {
@@ -237,7 +238,7 @@ std::optional<uih::direct_write::TextFormat> get_text_format(const font::ptr& fo
     if (!context)
         return {};
 
-    return get_text_format(context, font_api);
+    return get_text_format(context, font_api, true, layout_cache_size);
 }
 
 } // namespace cui::fonts

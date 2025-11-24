@@ -58,7 +58,7 @@ void StatusPane::recreate_font()
         return;
 
     try {
-        m_text_format = fonts::get_text_format(m_direct_write_context, font);
+        m_text_format = fonts::get_text_format(m_direct_write_context, font, true, 8);
     }
     CATCH_LOG()
 
