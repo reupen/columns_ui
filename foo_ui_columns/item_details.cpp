@@ -593,17 +593,21 @@ void ItemDetails::update_now()
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW);
 }
 
+D2D1_SIZE_U ItemDetails::get_required_d2d_render_target_size() const
+{
+    RECT rect{};
+    GetClientRect(get_wnd(), &rect);
+
+    return D2D1::SizeU(gsl::narrow<unsigned>(wil::rect_width(rect)), gsl::narrow<unsigned>(wil::rect_height(rect)));
+}
+
 void ItemDetails::create_d2d_render_target()
 {
     if (!m_d2d_factory)
         m_d2d_factory = uih::d2d::create_main_thread_factory();
 
     if (!m_d2d_render_target) {
-        RECT rect{};
-        GetClientRect(get_wnd(), &rect);
-
-        const auto size
-            = D2D1::SizeU(gsl::narrow<unsigned>(wil::rect_width(rect)), gsl::narrow<unsigned>(wil::rect_height(rect)));
+        const auto size = get_required_d2d_render_target_size();
         const auto render_target_type
             = config::use_hardware_acceleration ? D2D1_RENDER_TARGET_TYPE_DEFAULT : D2D1_RENDER_TARGET_TYPE_SOFTWARE;
 
@@ -693,13 +697,6 @@ void ItemDetails::on_size()
 
 void ItemDetails::on_size(int cx, int cy)
 {
-    if (m_d2d_render_target) {
-        try {
-            m_d2d_render_target->Resize({gsl::narrow<unsigned>(cx), gsl::narrow<unsigned>(cy)});
-        }
-        CATCH_LOG();
-    }
-
     if (m_text_layout) {
         const auto padding = s_get_padding();
         const auto max_width = std::max(0, cx - padding * 2);
@@ -976,6 +973,11 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ValidateRect(wnd, nullptr);
                 return 0;
             }
+
+            const auto required_target_size = get_required_d2d_render_target_size();
+
+            if (m_d2d_render_target->GetPixelSize() != required_target_size)
+                THROW_IF_FAILED(m_d2d_render_target->Resize(required_target_size));
 
             const auto context_1 = m_d2d_render_target.try_query<ID2D1DeviceContext1>();
 

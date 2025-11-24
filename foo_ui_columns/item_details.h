@@ -255,6 +255,7 @@ private:
     void set_window_theme() const;
     void invalidate_all(bool b_update = true);
     void update_now();
+    D2D1_SIZE_U get_required_d2d_render_target_size() const;
     void create_d2d_render_target();
     void reset_d2d_device_resources();
     void register_occlusion_event();
