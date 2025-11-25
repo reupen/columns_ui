@@ -10,7 +10,11 @@
 - Rendering performance of some built-in panels was improved in some scenarios.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464),
   [#1466](https://github.com/reupen/columns_ui/pull/1466),
-  [#1467](https://github.com/reupen/columns_ui/pull/1467)]
+  [#1468](https://github.com/reupen/columns_ui/pull/1468),
+  [#1470](https://github.com/reupen/columns_ui/pull/1470)]
+
+  Additionally, the behaviour of the spectrum analyser when resizing the panel
+  was improved.
 
 ### Bug fixes
 
@@ -27,6 +31,11 @@
 - The settings on the Artwork tab on the Playlist view preferences page are now
   written to FCL files.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
+
+### API removals
+
+- Support for the legacy `uie::visualisation` service interface was removed from
+  the spectrum analyser visualisation.
 
 ## 3.2.0-beta.1
 

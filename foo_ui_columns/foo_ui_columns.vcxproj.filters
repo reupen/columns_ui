@@ -424,9 +424,6 @@
     <ClCompile Include="vis_spectrum.cpp">
       <Filter>Spectrum analyser</Filter>
     </ClCompile>
-    <ClCompile Include="vis_gen_host.cpp">
-      <Filter>Spectrum analyser</Filter>
-    </ClCompile>
     <ClCompile Include="button_items.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
@@ -790,9 +787,6 @@
     </ClInclude>
     <ClInclude Include="buttons.h">
       <Filter>Buttons toolbar</Filter>
-    </ClInclude>
-    <ClInclude Include="vis_gen_host.h">
-      <Filter>Spectrum analyser</Filter>
     </ClInclude>
     <ClInclude Include="button_items.h">
       <Filter>Buttons toolbar</Filter>
