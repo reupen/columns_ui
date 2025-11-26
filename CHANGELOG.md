@@ -32,6 +32,12 @@
   written to FCL files.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
 
+- A problem where a message about an 0x88982F41 WIC error was have been logged
+  to the console when loading artwork was fixed.
+  [[#1472](https://github.com/reupen/columns_ui/pull/1472)]
+
+  This was seen on Windows 7.
+
 ### API removals
 
 - Support for the legacy `uie::visualisation` service interface was removed from

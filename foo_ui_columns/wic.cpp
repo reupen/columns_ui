@@ -322,7 +322,7 @@ std::optional<PhotoOrientation> get_photo_orientation(const wil::com_ptr<IWICBit
         wil::unique_prop_variant variant;
         const auto hr = metadata_reader->GetMetadataByName(L"System.Photo.Orientation", &variant);
 
-        if (hr == WINCODEC_ERR_PROPERTYNOTFOUND)
+        if (hr == WINCODEC_ERR_PROPERTYNOTFOUND || hr == WINCODEC_ERR_PROPERTYNOTSUPPORTED)
             return {};
 
         THROW_IF_FAILED(hr);
