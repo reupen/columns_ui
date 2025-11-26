@@ -68,7 +68,6 @@ extern cfg_int cfg_cur_prefs_col;
 extern cfg_int cfg_header_hottrack;
 extern cfg_int cfg_sortsel;
 extern cfg_int cfg_global_sort;
-extern cfg_int cfg_vis_edge;
 extern cfg_int cfg_lock;
 extern cfg_int cfg_header;
 extern cfg_int cfg_drop_at_end;

@@ -405,7 +405,6 @@
     <ClCompile Include="menubar.cpp" />
     <ClCompile Include="order_dropdown.cpp" />
     <ClCompile Include="seekbar.cpp" />
-    <ClCompile Include="vis_gen_host.cpp" />
     <ClCompile Include="vis_spectrum.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="config_appearance.cpp" />
@@ -522,7 +521,6 @@
     <ClInclude Include="tab_text_rendering.h" />
     <ClInclude Include="volume.h" />
     <ClInclude Include="seekbar.h" />
-    <ClInclude Include="vis_gen_host.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="config_vars.h" />
     <ClInclude Include="prefs_utils.h" />
