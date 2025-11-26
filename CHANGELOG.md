@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.2.0-beta.2
 
 ### Features
 
@@ -20,6 +20,13 @@
   Additionally, the behaviour of the spectrum analyser when resizing the panel
   was improved.
 
+- Support for sorting results using the SORT BY operator was added to the Filter
+  search toolbar. [[#1474](https://github.com/reupen/columns_ui/pull/1474)]
+
+  Implicit sorting (for example, for time-related queries) is also now enabled
+  if ‘Sort tracks added when added to a playlist by:’ is disabled in Filter
+  preferences.
+
 ### Bug fixes
 
 - A problem where Item details and Artwork view temporarily consumed excessive
@@ -36,8 +43,8 @@
   written to FCL files.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
 
-- A problem where a message about an 0x88982F41 WIC error was have been logged
-  to the console when loading artwork was fixed.
+- A problem where a message about an 0x88982F41 WIC error was logged to the
+  console when loading artwork was fixed.
   [[#1472](https://github.com/reupen/columns_ui/pull/1472)]
 
   This was seen on Windows 7.

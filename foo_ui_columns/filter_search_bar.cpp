@@ -10,7 +10,8 @@
 namespace cui::panels::filter {
 
 template <class tHandles>
-void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
+void g_send_metadb_handles_to_playlist(
+    tHandles& handles, bool b_play = false, const std::optional<SortOverride>& sort_override = {})
 {
     const auto playlist_api = playlist_manager::get();
     const auto playback_api = play_control::get();
@@ -36,7 +37,7 @@ void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
             b_play ? "Filter Results (Playback)" : "Filter Results", pfc_infinite);
     playlist_api->playlist_clear(index);
 
-    sort_tracks(handles);
+    sort_tracks(handles, sort_override);
     playlist_api->playlist_add_items(index, handles, bit_array_false());
 
     playlist_api->set_active_playlist(index);
@@ -227,6 +228,8 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool force_auto
     m_active_search_string = str;
 
     const auto is_empty = m_active_search_string.is_empty();
+    titleformat_object::ptr sort_titleformat_obj;
+    auto sort_direction{1};
 
     if (is_empty) {
         m_active_handles.remove_all();
@@ -234,21 +237,36 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool force_auto
         library_api->get_all_items(m_active_handles);
 
         try {
-            auto api = search_filter_manager_v2::get()->create_ex(m_active_search_string,
-                fb2k::service_new<completion_notify_dummy>(), search_filter_manager_v2::KFlagSuppressNotify);
+            const auto search_filter_instance = search_filter_manager_v2::get()->create_ex(m_active_search_string,
+                fb2k::service_new<completion_notify_dummy>(),
+                search_filter_manager_v2::KFlagSuppressNotify | search_filter_manager_v2::KFlagAllowSort);
+
+            search_filter_v3::ptr search_filter_instance_v3;
+            search_filter_instance->service_query_t(search_filter_instance_v3);
+
             pfc::array_t<bool> data;
             data.set_size(m_active_handles.get_count());
-            api->test_multi(m_active_handles, data.get_ptr());
+            search_filter_instance->test_multi(m_active_handles, data.get_ptr());
             m_active_handles.remove_mask(pfc::bit_array_not(pfc::bit_array_table(data.get_ptr(), data.get_count())));
-        } catch (pfc::exception const&) {
+
+            if (!cfg_sort || search_filter_instance_v3->is_sort_explicit())
+                search_filter_instance_v3->get_sort_pattern(sort_titleformat_obj, sort_direction);
+        } catch ([[maybe_unused]] pfc::exception const& ex) {
+#ifdef _DEBUG
+            console::print(std::format("Filter search – query error: {}", ex.what()).c_str());
+#endif
         }
     }
 
     bool have_autosent{};
+    m_sort_override = sort_titleformat_obj.is_valid()
+        ? std::make_optional<SortOverride>(sort_titleformat_obj, sort_direction < 0)
+        : std::nullopt;
 
     for (const auto& stream : streams) {
         stream->m_source_overriden = !is_empty;
         stream->m_source_handles = m_active_handles;
+        stream->m_sort_override = m_sort_override;
 
         if (stream->m_windows.get_count() == 0)
             continue;
@@ -295,7 +313,7 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool force_auto
 
             g_send_metadb_handles_to_playlist(items);
         } else {
-            g_send_metadb_handles_to_playlist(m_active_handles);
+            g_send_metadb_handles_to_playlist(m_active_handles, false, m_sort_override);
         }
     }
 }
@@ -328,6 +346,8 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
 
         m_active_handles.remove_all();
         m_active_search_string.reset();
+        m_sort_override.reset();
+
         if (m_imagelist) {
             ImageList_Destroy(m_imagelist);
             m_imagelist = nullptr;
