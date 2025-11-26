@@ -33,6 +33,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         identifier_sticky_artwork,
         identifier_show_artwork_reflection,
         identifier_artwork_width,
+        identifier_root_group_indentation_amount,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours"; }
     const GUID& get_group() const override { return fcl::groups::colours_and_fonts; }
@@ -54,11 +55,12 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
             identifier_custom_group_indentation_amount, panels::playlist_view::cfg_custom_group_indentation_amount);
         out.write_item(identifier_use_custom_group_indentation_amount,
             panels::playlist_view::cfg_use_custom_group_indentation_amount);
-
         out.write_item(identifier_show_artwork, panels::playlist_view::cfg_show_artwork);
         out.write_item(identifier_sticky_artwork, panels::playlist_view::cfg_sticky_artwork);
         out.write_item(identifier_show_artwork_reflection, panels::playlist_view::cfg_artwork_reflection);
         out.write_item(identifier_artwork_width, panels::playlist_view::cfg_artwork_width);
+        out.write_item(
+            identifier_root_group_indentation_amount, panels::playlist_view::cfg_root_group_indentation_amount);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -112,6 +114,9 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
                 break;
             case identifier_artwork_width:
                 reader.read_item(panels::playlist_view::cfg_artwork_width);
+                break;
+            case identifier_root_group_indentation_amount:
+                reader.read_item(panels::playlist_view::cfg_root_group_indentation_amount);
                 break;
             case colours_pview_scheme: {
                 int use_custom_colours{};
