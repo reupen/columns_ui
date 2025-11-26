@@ -47,6 +47,8 @@ fbh::ConfigBool cfg_use_custom_group_indentation_amount(
     [](auto&&) { PlaylistView::s_on_group_indentation_amount_change(); });
 fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount(
     {0x3d1b3bce, 0x25d2, 0x4dde, {0x8e, 0x99, 0x20, 0xfb, 0xc9, 0x6c, 0xbf, 0xec}}, 7);
+fbh::ConfigInt32DpiAware cfg_root_group_indentation_amount(
+    {0x29b0bf83, 0x9170, 0x4097, {0xb4, 0xcb, 0x43, 0xec, 0x23, 0x50, 0x44, 0x18}}, 0);
 fbh::ConfigBool cfg_show_artwork(
     g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
 fbh::ConfigBool cfg_sticky_artwork(
@@ -287,9 +289,6 @@ void PlaylistView::g_on_groups_change()
 
 void PlaylistView::s_on_indent_groups_change()
 {
-    if (!cfg_grouping)
-        return;
-
     for (const auto& window : g_windows) {
         window->on_artwork_width_change();
         window->set_group_level_indentation_enabled(cfg_indent_groups);
@@ -298,14 +297,17 @@ void PlaylistView::s_on_indent_groups_change()
 
 void PlaylistView::s_on_group_indentation_amount_change()
 {
-    if (!cfg_grouping)
-        return;
-
     for (const auto& window : g_windows) {
         window->set_group_level_indentation_amount(cfg_use_custom_group_indentation_amount
                 ? std::make_optional<int>(cfg_custom_group_indentation_amount)
                 : std::nullopt);
     }
+}
+
+void PlaylistView::s_on_root_group_indentation_amount_change()
+{
+    for (const auto& window : g_windows)
+        window->set_root_group_indentation_amount(cfg_root_group_indentation_amount);
 }
 
 void PlaylistView::on_groups_change()
@@ -413,6 +415,9 @@ void PlaylistView::g_on_artwork_width_change(const PlaylistView* p_skip)
 
 void PlaylistView::on_artwork_width_change()
 {
+    if (get_group_count() == 0)
+        return;
+
     flush_artwork_images();
     set_group_info_area_size();
 }
@@ -829,6 +834,8 @@ void PlaylistView::notify_on_initialisation()
 
     if (cfg_use_custom_group_indentation_amount)
         set_group_level_indentation_amount(cfg_custom_group_indentation_amount);
+
+    set_root_group_indentation_amount(cfg_root_group_indentation_amount);
 
     set_group_info_area_size();
     set_is_group_info_area_sticky(cfg_sticky_artwork);

@@ -19,6 +19,7 @@ extern fbh::ConfigBool cfg_grouping;
 extern fbh::ConfigBool cfg_indent_groups;
 extern fbh::ConfigBool cfg_use_custom_group_indentation_amount;
 extern fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount;
+extern fbh::ConfigInt32DpiAware cfg_root_group_indentation_amount;
 extern fbh::ConfigBool cfg_show_artwork;
 extern fbh::ConfigBool cfg_sticky_artwork;
 
@@ -171,6 +172,7 @@ public:
     static void g_on_groups_change();
     static void s_on_indent_groups_change();
     static void s_on_group_indentation_amount_change();
+    static void s_on_root_group_indentation_amount_change();
     static void g_on_columns_change();
     static void g_on_column_widths_change(const PlaylistView* p_skip = nullptr);
     static void s_update_all_items();

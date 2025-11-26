@@ -141,6 +141,7 @@
 #define IDC_GROUP_UP                    1022
 #define IDC_MCLICK3                     1023
 #define IDC_ELLIPSIS                    1023
+#define IDC_ROOT_INDENTATION_AMOUNT_SPIN 1023
 #define IDC_PLDRAG                      1024
 #define IDC_PLAYLIST_TABS_MCLICK        1025
 #define IDC_ACTIVATE_TARGET             1026
@@ -295,6 +296,7 @@
 #define IDC_H2_TITLE                    1192
 #define IDC_FONT_SIZE                   1192
 #define IDC_FONT_SIZE_SPIN              1193
+#define IDC_ROOT_INDENTATION_AMOUNT     1193
 #define IDC_RENDERING_MODE              1194
 #define IDC_COLOUR_EMOJI_FAMILY         1195
 #define IDC_USE_GREYSCALE_ANTIALIASING  1196
@@ -311,6 +313,9 @@
 #define IDC_HARDWARE_ACCELERATION       1207
 #define IDC_DOCUMENTATION_LINK          1208
 #define IDC_PLAYLIST_FILTER_HINT        1209
+#define IDC_ROOT_INDENTATION_STATIC     1210
+#define IDC_ROOT_INDENTATION_PX_STATIC  1211
+#define IDC_INDENTATION_AMOUNT_PX_STATIC 1212
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -320,7 +325,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1210
+#define _APS_NEXT_CONTROL_VALUE         1213
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

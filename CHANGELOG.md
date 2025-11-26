@@ -7,6 +7,10 @@
 - An option for playlist view artwork to stay in view when scrolling vertically
   was added. [[#1464](https://github.com/reupen/columns_ui/pull/1464)]
 
+- An option to specify an additional amount of indentation for top-level groups
+  in the playlist view was added.
+  [[#1473](https://github.com/reupen/columns_ui/pull/1473)]
+
 - Rendering performance of some built-in panels was improved in some scenarios.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464),
   [#1466](https://github.com/reupen/columns_ui/pull/1466),
