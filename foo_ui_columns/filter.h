@@ -4,6 +4,11 @@
 
 namespace cui::panels::filter {
 
+struct SortOverride {
+    titleformat_object::ptr object;
+    bool is_reversed{};
+};
+
 constexpr GUID items_font_id{0xd93f1ef3, 0x4aee, 0x4632, {0xb5, 0xbf, 0x2, 0x20, 0xce, 0xc7, 0x6d, 0xed}};
 constexpr GUID header_font_id{0xfca8752b, 0xc064, 0x41c4, {0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34}};
 
@@ -79,6 +84,7 @@ public:
 
     bool m_source_overriden{false};
     metadb_handle_list m_source_handles;
+    std::optional<SortOverride> m_sort_override;
 
     bool is_visible();
 };

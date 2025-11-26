@@ -464,7 +464,7 @@ bool FilterPanel::do_drag_drop(WPARAM wp)
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     get_selection_handles(data);
     if (data.get_count() > 0) {
-        sort_tracks(data);
+        sort_tracks(data, m_stream->m_sort_override);
         const auto incoming_api = playlist_incoming_item_filter::get();
         auto pDataObject = incoming_api->create_dataobject_ex(data);
         if (pDataObject.is_valid()) {
@@ -575,7 +575,7 @@ void FilterPanel::do_items_action(const bit_array& p_nodes, Action action)
         playlist_api->playlist_clear(index);
     }
 
-    sort_tracks(handles);
+    sort_tracks(handles, m_stream->m_sort_override);
 
     if (action != action_add_to_active)
         playlist_api->playlist_add_items(index, handles, bit_array_false());
@@ -640,7 +640,7 @@ void FilterPanel::send_results_to_playlist(bool b_play)
             b_play ? "Filter Results (Playback)" : "Filter Results", pfc_infinite);
     playlist_api->playlist_clear(index);
 
-    sort_tracks(handles);
+    sort_tracks(handles, m_stream->m_sort_override);
     playlist_api->playlist_add_items(index, handles, bit_array_false());
 
     playlist_api->set_active_playlist(index);

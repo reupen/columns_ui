@@ -582,8 +582,7 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     LTEXT           "Behaviour",IDC_TITLE1,7,4,313,16
-    CONTROL         "Sort tracks added when added to a playlist by:",IDC_SORT,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,169,10
+    CONTROL         "Sort tracks added to a playlist by:",IDC_SORT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,169,10
     EDITTEXT        IDC_SORT_STRING,7,42,247,14,ES_AUTOHSCROLL
     CONTROL         "Allow sorting using column titles",IDC_FILTERS_ALLOW_SORTING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,68,124,10

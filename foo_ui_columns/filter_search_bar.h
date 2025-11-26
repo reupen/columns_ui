@@ -19,6 +19,7 @@ public:
                 if (!window->m_active_search_string.is_empty()) {
                     p_stream->m_source_overriden = true;
                     p_stream->m_source_handles = window->m_active_handles;
+                    p_stream->m_sort_override = window->m_sort_override;
                     break;
                 }
             }
@@ -132,6 +133,7 @@ private:
     bool m_show_clear_button{cfg_showsearchclearbutton};
     pfc::string8 m_active_search_string;
     metadb_handle_list m_active_handles;
+    std::optional<SortOverride> m_sort_override;
     HIMAGELIST m_imagelist{};
     int m_combo_cx{};
     int m_combo_cy{};
