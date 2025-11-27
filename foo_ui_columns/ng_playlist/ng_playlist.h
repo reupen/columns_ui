@@ -145,7 +145,7 @@ public:
     void render_group_info(const uih::lv::RendererContext& context, size_t index, RECT rc) override;
 
     void render_group(const uih::lv::RendererContext& context, size_t item_index, size_t group_index,
-        std::string_view text, int indentation, size_t level, RECT rc) override;
+        std::string_view text, int indentation, RECT rc) override;
 
     void render_item(const uih::lv::RendererContext& context, size_t index,
         std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,

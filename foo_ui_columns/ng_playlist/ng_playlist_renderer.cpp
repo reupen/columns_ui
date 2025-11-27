@@ -65,12 +65,12 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
     bool b_themed = b_theme_enabled && context.list_view_theme
         && IsThemePartDefined(context.list_view_theme, LVP_LISTITEM, theme_state);
 
-    const style_data_t& style_data = m_playlist_view->get_style_data(index);
+    const auto is_themed_colours = b_themed && theme_state;
 
-    COLORREF cr_text = RGB(255, 0, 0);
-    if (b_themed && theme_state) {
-        if (FAILED(GetThemeColor(context.list_view_theme, LVP_LISTITEM, LISS_SELECTED, TMT_TEXTCOLOR, &cr_text)))
-            cr_text = GetThemeSysColor(context.list_view_theme, b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
+    COLORREF text_colour = RGB(255, 0, 0);
+    if (is_themed_colours) {
+        if (FAILED(GetThemeColor(context.list_view_theme, LVP_LISTITEM, LISS_SELECTED, TMT_TEXTCOLOR, &text_colour)))
+            text_colour = GetThemeSysColor(context.list_view_theme, b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
 
         if (IsThemeBackgroundPartiallyTransparent(context.list_view_theme, LVP_LISTITEM, theme_state))
             DrawThemeParentBackground(context.wnd, context.dc, &rc);
@@ -82,7 +82,32 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
         DrawThemeBackground(context.list_view_theme, context.dc, LVP_LISTITEM, theme_state, &rc_background, &rc);
     }
 
+    const style_data_t& style_data = m_playlist_view->get_style_data(index);
     RECT rc_subitem = rc;
+
+    bool sub_item_fill_required{};
+
+    const auto window_background_colour = p_helper.get_colour(colours::colour_identifier_t::colour_background);
+
+    if (!is_themed_colours) {
+        auto background_colours = style_data | ranges::views::transform([&](auto cell_style) {
+            return cell_style->get_background_colour(b_selected, b_focused);
+        });
+
+        const auto all_cells_same_background
+            = ranges::adjacent_find(background_colours, ranges::not_equal_to{}) == ranges::end(background_colours);
+
+        if (all_cells_same_background && style_data.size() > 0) {
+            const auto background_colour = background_colours.front();
+
+            if (background_colour != window_background_colour) {
+                SetDCBrushColor(context.dc, background_colour);
+                PatBlt(context.dc, rc.left, rc.top, wil::rect_width(rc), wil::rect_height(rc), PATCOPY);
+            }
+        }
+
+        sub_item_fill_required = !all_cells_same_background;
+    }
 
     for (size_t column_index = 0; column_index < sub_items.size(); column_index++) {
         auto& sub_item = sub_items[column_index];
@@ -93,26 +118,22 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
         if (!RectVisible(context.dc, &rc_subitem))
             continue;
 
-        if (!(b_themed && theme_state)) {
-            if (b_selected)
-                cr_text = !b_window_focused ? sub_style_data->selected_text_colour_non_focus
-                                            : sub_style_data->selected_text_colour;
-            else
-                cr_text = sub_style_data->text_colour;
+        if (!is_themed_colours)
+            text_colour = sub_style_data->get_text_colour(b_selected, b_focused);
 
-            COLORREF cr_back;
-            if (b_selected)
-                cr_back = !b_window_focused ? sub_style_data->selected_background_colour_non_focus
-                                            : sub_style_data->selected_background_colour;
-            else
-                cr_back = sub_style_data->background_colour;
+        if (sub_item_fill_required) {
+            const auto background_colour = sub_style_data->get_background_colour(b_selected, b_focused);
 
-            FillRect(context.dc, &rc_subitem, wil::unique_hbrush(CreateSolidBrush(cr_back)).get());
+            if (background_colour != window_background_colour) {
+                SetDCBrushColor(context.dc, background_colour);
+                PatBlt(context.dc, rc_subitem.left, rc_subitem.top, wil::rect_width(rc_subitem),
+                    wil::rect_height(rc_subitem), PATCOPY);
+            }
         }
 
         if (context.item_text_format && context.bitmap_render_target) {
             text_out_columns_and_colours(*context.item_text_format, context.wnd, context.dc, sub_item.text,
-                1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, cr_text,
+                1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, text_colour,
                 {.bitmap_render_target = context.bitmap_render_target,
                     .is_selected = b_selected,
                     .align = sub_item.alignment,
@@ -165,7 +186,7 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
 }
 
 void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context, size_t item_index, size_t group_index,
-    std::string_view text, int indentation, size_t level, RECT rc)
+    std::string_view text, int indentation, RECT rc)
 {
     if (!(context.group_text_format && context.bitmap_render_target))
         return;
@@ -184,12 +205,13 @@ void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context,
                 GetThemeColor(context.list_view_theme, LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
         cr = group->m_style_data->text_colour;
 
-    {
-        wil::unique_hbrush br(CreateSolidBrush(group->m_style_data->background_colour));
-        FillRect(context.dc, &rc, br.get());
+    if (const auto background_colour = group->m_style_data->background_colour;
+        background_colour != p_helper.get_colour(colours::colour_identifier_t::colour_background)) {
+        SetDCBrushColor(context.dc, background_colour);
+        PatBlt(context.dc, rc.left, rc.top, wil::rect_width(rc), wil::rect_height(rc), PATCOPY);
     }
 
-    const auto x_offset = 1_spx + indentation * gsl::narrow<int>(level);
+    const auto x_offset = 1_spx + indentation;
     const auto border = 3_spx;
 
     const auto text_width

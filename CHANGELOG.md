@@ -9,13 +9,15 @@
 
 - An option to specify an additional amount of indentation for top-level groups
   in the playlist view was added.
-  [[#1473](https://github.com/reupen/columns_ui/pull/1473)]
+  [[#1473](https://github.com/reupen/columns_ui/pull/1473),
+  [#1475](https://github.com/reupen/columns_ui/pull/1475)]
 
 - Rendering performance of some built-in panels was improved in some scenarios.
   [[#1464](https://github.com/reupen/columns_ui/pull/1464),
   [#1466](https://github.com/reupen/columns_ui/pull/1466),
   [#1468](https://github.com/reupen/columns_ui/pull/1468),
-  [#1470](https://github.com/reupen/columns_ui/pull/1470)]
+  [#1470](https://github.com/reupen/columns_ui/pull/1470),
+  [#1475](https://github.com/reupen/columns_ui/pull/1475)]
 
   Additionally, the behaviour of the spectrum analyser when resizing the panel
   was improved.
@@ -48,6 +50,12 @@
   [[#1472](https://github.com/reupen/columns_ui/pull/1472)]
 
   This was seen on Windows 7.
+
+- A bug introduced in version 3.2.0-beta.1 where the playlist view style script
+  field `%_display_index%` was not updated correctly after removing an item was
+  fixed. [[#1475](https://github.com/reupen/columns_ui/pull/1475)]
+
+  This occurred only if grouping was enabled.
 
 ### API removals
 

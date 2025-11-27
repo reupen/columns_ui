@@ -72,7 +72,24 @@ public:
             && (c1.use_frame_top ? c1.frame_top == c2.frame_top : true)
             && (c1.use_frame_right ? c1.frame_right == c2.frame_right : true));
     }
+
+    Colour get_text_colour(bool is_selected, bool is_focused) const
+    {
+        if (is_selected)
+            return is_focused ? selected_text_colour : selected_text_colour_non_focus;
+
+        return text_colour;
+    }
+
+    Colour get_background_colour(bool is_selected, bool is_focused) const
+    {
+        if (is_selected)
+            return is_focused ? selected_background_colour : selected_background_colour_non_focus;
+
+        return background_colour;
+    }
 };
+
 class SharedCellStyleData
     : public pfc::refcounted_object_root
     , public CellStyleData {
