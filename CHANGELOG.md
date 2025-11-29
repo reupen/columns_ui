@@ -61,6 +61,7 @@
 
 - Support for the legacy `uie::visualisation` service interface was removed from
   the spectrum analyser visualisation.
+  [[#1470](https://github.com/reupen/columns_ui/pull/1470)]
 
 ## 3.2.0-beta.1
 

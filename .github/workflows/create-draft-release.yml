@@ -1,0 +1,64 @@
+name: Create draft release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v6
+
+      - name: Extract change log
+        id: extract
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('node:fs');
+
+            const body = fs.readFileSync('CHANGELOG.md', 'utf8');
+            const version = body.match(/\n##\s*(?<version>.*)/).groups.version;
+            const changelog = body.match(/\n##\s*[^\n]*\n+(?<changelog>.*?)\n##\s/s).groups.changelog;
+
+            core.setOutput('version', version);
+            core.setOutput('changelog', changelog);
+
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Reformat release notes using Pandoc
+        id: pandoc
+        env:
+          CHANGELOG: ${{ steps.extract.outputs.changelog }}
+        run: |
+          set -euo pipefail
+          REFORMATTED="$(echo "$CHANGELOG" | pandoc -f gfm -t gfm --wrap=none --shift-heading-level-by=-1 -o -)"
+
+          echo "changelog<<EOF
+          $REFORMATTED
+          EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create draft GitHub release
+        uses: actions/github-script@v8
+        env:
+          VERSION: ${{ steps.extract.outputs.version }}
+          CHANGELOG: ${{ steps.pandoc.outputs.changelog }}
+        with:
+          script: |
+            const tag = `v${process.env.VERSION}`;
+            const body = `# Changes\n\n${process.env.CHANGELOG}`;
+
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: tag,
+              body,
+              draft: true,
+            });
+
+            core.info(`Created draft release ${process.env.VERSION}`);
