@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - test/*
 
 jobs:
   build:
@@ -52,6 +53,17 @@ jobs:
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Install VS C++ 14.43 build tools
+        shell: cmd
+        run: |
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" ^
+          modify ^
+          --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" ^
+          --channelId "VisualStudio.17.Release" ^
+          --add "Microsoft.VisualStudio.Component.VC.14.43.17.13.x86.x64" ^
+          --quiet ^
+          --norestart
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -76,6 +88,7 @@ jobs:
             '/p:Platform=${{ matrix.platform }}' `
             '/p:Configuration=${{ matrix.configuration }}' `
             '/p:RunCodeAnalysis=${{ matrix.run-code-analysis }}' `
+            '/p:VCToolsVersion=14.43.34808' `
             ${{ matrix.additional-build-args }} `
             ${{ matrix.enable-annotations && '"/logger:$Env:Temp\Reupen.MSBuild.GitHubLogger.dll"' }} `
             vc17\columns_ui-public.sln
