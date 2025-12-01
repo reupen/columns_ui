@@ -148,8 +148,8 @@ public:
         std::string_view text, int indentation, RECT rc) override;
 
     void render_item(const uih::lv::RendererContext& context, size_t index,
-        std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
-        bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc) override;
+        std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool is_selected, bool is_window_focused,
+        bool is_highlighted, bool should_hide_focus, bool is_item_focused, RECT rc) override;
 
     class PlaylistView* m_playlist_view;
     HMONITOR m_monitor{};
