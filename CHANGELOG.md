@@ -1,5 +1,13 @@
 # Change log
 
+## 3.2.0-beta.3
+
+### Bug fixes
+
+- A bug introduced in 3.2.0-beta.2 where the playlist view did not render
+  correctly when scrolled right was fixed.
+  [[#1483](https://github.com/reupen/columns_ui/pull/1483)]
+
 ## 3.2.0-beta.2
 
 ### Features
