@@ -184,16 +184,16 @@ std::optional<uih::direct_write::TextLayout> create_text_layout(
     return {};
 }
 
-std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<FontSegment>> process_colour_and_font_codes(
+std::tuple<std::wstring, std::vector<ColourSegment>, std::vector<FontSegment>> process_colour_and_font_codes(
     std::wstring_view text, const uih::direct_write::Context::Ptr& direct_write_context)
 {
-    auto result = std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<FontSegment>>{};
+    auto result = std::tuple<std::wstring, std::vector<ColourSegment>, std::vector<FontSegment>>{};
     auto& [stripped_text, coloured_segments, font_segments] = result;
 
     size_t offset{};
     size_t colour_segment_start{};
     size_t font_segment_start{};
-    std::optional<COLORREF> cr_current;
+    std::optional<uih::ColourPair> cr_current;
     std::optional<FormatProperties> current_font;
 
     while (true) {
@@ -210,7 +210,7 @@ std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<Font
 
         if (cr_current && (is_eos || is_colour_code) && stripped_text.length() > colour_segment_start)
             coloured_segments.emplace_back(
-                *cr_current, colour_segment_start, stripped_text.length() - colour_segment_start);
+                cr_current->colour, colour_segment_start, stripped_text.length() - colour_segment_start);
 
         if (current_font && (is_eos || is_font_code) && stripped_text.length() > font_segment_start) {
             FormatProperties cleaned_font{*current_font};
@@ -234,7 +234,7 @@ std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<Font
         const auto code_text = text.substr(index + 1, offset - index - 1);
 
         if (is_colour_code) {
-            cr_current = uih::parse_colour_code(code_text, false);
+            cr_current = uih::parse_colour_code(code_text);
             colour_segment_start = stripped_text.size();
         } else {
             auto new_properties = parse_font_code(code_text, direct_write_context);
