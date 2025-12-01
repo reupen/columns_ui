@@ -115,6 +115,8 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
 
         rc_subitem.right = rc_subitem.left + sub_item.width;
 
+        auto _ = wil::scope_exit([&] { rc_subitem.left = rc_subitem.right; });
+
         if (!RectVisible(context.dc, &rc_subitem))
             continue;
 
@@ -178,7 +180,6 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
             SelectObject(context.dc, pen_old);
             DeleteObject(pen);
         }
-        rc_subitem.left = rc_subitem.right;
     }
     if (b_focused) {
         render_focus_rect(context, should_hide_focus, rc);
