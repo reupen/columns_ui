@@ -8,6 +8,10 @@
   correctly when scrolled right was fixed.
   [[#1483](https://github.com/reupen/columns_ui/pull/1483)]
 
+- A bug introduced in 3.2.0-beta.2 where `$rgb()` colour codes behaved
+  unexpectedly for selected items was fixed.
+  [[#1484](https://github.com/reupen/columns_ui/pull/1484)]
+
 ## 3.2.0-beta.2
 
 ### Features
