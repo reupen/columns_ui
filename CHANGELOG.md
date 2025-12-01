@@ -1,5 +1,13 @@
 # Change log
 
+## 3.2.0-beta.4
+
+### Bug fixes
+
+- A bug introduced in 3.2.0-beta.2 where non-focused selected items in the
+  playlist view used the wrong colours was fixed.
+  [[#1487](https://github.com/reupen/columns_ui/pull/1487)]
+
 ## 3.2.0-beta.3
 
 ### Bug fixes

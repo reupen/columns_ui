@@ -44,18 +44,18 @@ void PlaylistViewRenderer::render_group_info(const uih::lv::RendererContext& con
 }
 
 void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, size_t index,
-    std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
-    bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc)
+    std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool is_selected, bool is_window_focused,
+    bool is_highlighted, bool should_hide_focus, bool is_item_focused, RECT rc)
 {
     colours::helper p_helper(ColoursClient::id);
 
-    const auto calculated_use_highlight = b_highlight && !context.high_contrast_active;
+    const auto calculated_use_highlight = is_highlighted && !context.high_contrast_active;
 
     int theme_state = NULL;
 
-    if (b_selected) {
+    if (is_selected) {
         theme_state = (calculated_use_highlight ? LISS_HOTSELECTED
-                                                : (b_window_focused ? LISS_SELECTED : LISS_SELECTEDNOTFOCUS));
+                                                : (is_window_focused ? LISS_SELECTED : LISS_SELECTEDNOTFOCUS));
     } else if (calculated_use_highlight) {
         theme_state = LISS_HOT;
     }
@@ -70,7 +70,7 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
     COLORREF text_colour = RGB(255, 0, 0);
     if (is_themed_colours) {
         if (FAILED(GetThemeColor(context.list_view_theme, LVP_LISTITEM, LISS_SELECTED, TMT_TEXTCOLOR, &text_colour)))
-            text_colour = GetThemeSysColor(context.list_view_theme, b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
+            text_colour = GetThemeSysColor(context.list_view_theme, is_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
 
         if (IsThemeBackgroundPartiallyTransparent(context.list_view_theme, LVP_LISTITEM, theme_state))
             DrawThemeParentBackground(context.wnd, context.dc, &rc);
@@ -91,7 +91,7 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
 
     if (!is_themed_colours) {
         auto background_colours = style_data | ranges::views::transform([&](auto cell_style) {
-            return cell_style->get_background_colour(b_selected, b_focused);
+            return cell_style->get_background_colour(is_selected, is_window_focused);
         });
 
         const auto all_cells_same_background
@@ -121,10 +121,10 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
             continue;
 
         if (!is_themed_colours)
-            text_colour = sub_style_data->get_text_colour(b_selected, b_focused);
+            text_colour = sub_style_data->get_text_colour(is_selected, is_window_focused);
 
         if (sub_item_fill_required) {
-            const auto background_colour = sub_style_data->get_background_colour(b_selected, b_focused);
+            const auto background_colour = sub_style_data->get_background_colour(is_selected, is_window_focused);
 
             if (background_colour != window_background_colour) {
                 SetDCBrushColor(context.dc, background_colour);
@@ -137,7 +137,7 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
             text_out_columns_and_colours(*context.item_text_format, context.wnd, context.dc, sub_item.text,
                 1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, text_colour,
                 {.bitmap_render_target = context.bitmap_render_target,
-                    .is_selected = b_selected,
+                    .is_selected = is_selected,
                     .align = sub_item.alignment,
                     .enable_ellipses = cfg_ellipsis != 0});
         }
@@ -181,7 +181,7 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
             DeleteObject(pen);
         }
     }
-    if (b_focused) {
+    if (is_item_focused) {
         render_focus_rect(context, should_hide_focus, rc);
     }
 }
