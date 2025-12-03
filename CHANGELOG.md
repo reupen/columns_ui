@@ -1,5 +1,14 @@
 # Change log
 
+## 3.2.0-beta.5
+
+### Bug fixes
+
+- A problem where Windows reports inconsistent Direct2D and DXGI window
+  occlusion status when the display is turned off, leading to excessive CPU
+  usage in Item details, was worked around.
+  [[#1491](https://github.com/reupen/columns_ui/pull/1491)]
+
 ## 3.2.0-beta.4
 
 ### Bug fixes

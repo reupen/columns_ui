@@ -671,13 +671,13 @@ void ItemDetails::deregister_occlusion_event()
     }
 }
 
-bool ItemDetails::check_occlusion_status()
+bool ItemDetails::check_occlusion_status(bool allow_deregister_event)
 {
     const auto is_occluded = (m_d2d_render_target->CheckWindowState() & D2D1_WINDOW_STATE_OCCLUDED) != 0;
 
     if (is_occluded)
         register_occlusion_event();
-    else
+    else if (allow_deregister_event)
         deregister_occlusion_event();
 
     return is_occluded;
@@ -1008,7 +1008,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             THROW_IF_FAILED(result);
 
-            check_occlusion_status();
+            check_occlusion_status(true);
         }
         CATCH_LOG()
 
