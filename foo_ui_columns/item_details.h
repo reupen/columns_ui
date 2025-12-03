@@ -260,7 +260,7 @@ private:
     void reset_d2d_device_resources();
     void register_occlusion_event();
     void deregister_occlusion_event();
-    bool check_occlusion_status();
+    bool check_occlusion_status(bool allow_deregister_event = false);
 
     enum class ScrollbarType {
         vertical = SB_VERT,
