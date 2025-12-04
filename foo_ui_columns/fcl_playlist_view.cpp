@@ -34,6 +34,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         identifier_show_artwork_reflection,
         identifier_artwork_width,
         identifier_root_group_indentation_amount,
+        identifier_artwork_group_header_spacing_enabled,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours"; }
     const GUID& get_group() const override { return fcl::groups::colours_and_fonts; }
@@ -61,6 +62,8 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         out.write_item(identifier_artwork_width, panels::playlist_view::cfg_artwork_width);
         out.write_item(
             identifier_root_group_indentation_amount, panels::playlist_view::cfg_root_group_indentation_amount);
+        out.write_item(identifier_artwork_group_header_spacing_enabled,
+            panels::playlist_view::cfg_artwork_group_header_spacing_enabled);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -111,6 +114,9 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
                 break;
             case identifier_show_artwork_reflection:
                 reader.read_item(panels::playlist_view::cfg_artwork_reflection);
+                break;
+            case identifier_artwork_group_header_spacing_enabled:
+                reader.read_item(panels::playlist_view::cfg_artwork_group_header_spacing_enabled);
                 break;
             case identifier_artwork_width:
                 reader.read_item(panels::playlist_view::cfg_artwork_width);
@@ -200,6 +206,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
 
         panels::playlist_view::PlaylistView::g_on_show_artwork_change();
         panels::playlist_view::PlaylistView::s_on_sticky_artwork_change();
+        panels::playlist_view::PlaylistView::s_on_artwork_group_header_spacing_change();
     }
 };
 

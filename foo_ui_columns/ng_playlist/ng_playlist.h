@@ -22,6 +22,7 @@ extern fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount;
 extern fbh::ConfigInt32DpiAware cfg_root_group_indentation_amount;
 extern fbh::ConfigBool cfg_show_artwork;
 extern fbh::ConfigBool cfg_sticky_artwork;
+extern fbh::ConfigBool cfg_artwork_group_header_spacing_enabled;
 
 void set_font_size(float point_delta);
 
@@ -166,7 +167,7 @@ public:
     PlaylistView();
     ~PlaylistView();
 
-    static std::vector<PlaylistView*> g_windows;
+    static std::vector<PlaylistView*> s_windows;
     inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
     static void g_on_groups_change();
@@ -179,6 +180,7 @@ public:
     static void g_on_autosize_change();
     static void g_on_show_artwork_change();
     static void s_on_sticky_artwork_change();
+    static void s_on_artwork_group_header_spacing_change();
     static void g_on_alternate_selection_change();
     static void g_on_artwork_width_change(const PlaylistView* p_skip = nullptr);
     static void s_flush_artwork(bool b_redraw = false, const PlaylistView* p_skip = nullptr);

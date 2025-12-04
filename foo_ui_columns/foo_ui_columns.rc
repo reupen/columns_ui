@@ -603,14 +603,16 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
     LTEXT           "Artwork",IDC_TITLE1,7,4,313,16
-    CONTROL         "Display artwork in groups",IDC_SHOWARTWORK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,105,10
+    CONTROL         "Show artwork in groups",IDC_SHOWARTWORK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,105,10
     CONTROL         "Keep artwork in view when scrolling",IDC_STICKY_ARTWORK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,49,147,10
     CONTROL         "Show reflection",IDC_ARTWORKREFLECTION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,68,69,10
-    LTEXT           "Artwork width",-1,7,87,53,8
-    EDITTEXT        IDC_ARTWORKWIDTH,7,98,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_ARTWORKWIDTHSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,59,99,12,10
-    LTEXT           "px",-1,49,100,9,8
+    CONTROL         "Add extra vertical spacing to increase distance between group headers and artwork",IDC_ARTWORK_HEADER_SPACING,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,313,10
+    LTEXT           "Artwork width",IDC_ARTWORK_WIDTH_LABEL,7,106,53,8
+    EDITTEXT        IDC_ARTWORKWIDTH,7,117,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_ARTWORKWIDTHSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,59,118,12,10
+    LTEXT           "px",IDC_ARTWORK_WIDTH_PX,49,119,9,8
 END
 
 IDD_PREFS_LAYOUT_MISC DIALOGEX 0, 0, 327, 271

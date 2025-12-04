@@ -33,7 +33,7 @@ const GUID g_artwork_reflection = {0xc764d238, 0x403f, 0x4a8c, {0xb3, 0x10, 0x30
 // {A28CC736-2B8B-484c-B7A9-4CC312DBD357}
 const GUID g_guid_grouping = {0xa28cc736, 0x2b8b, 0x484c, {0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57}};
 
-std::vector<PlaylistView*> PlaylistView::g_windows;
+std::vector<PlaylistView*> PlaylistView::s_windows;
 
 ConfigGroups g_groups(g_groups_guid);
 
@@ -53,6 +53,8 @@ fbh::ConfigBool cfg_show_artwork(
     g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
 fbh::ConfigBool cfg_sticky_artwork(
     {0x4a496eb1, 0x9df7, 0x4008, {0xba, 0xc3, 0x29, 0xb7, 0x1e, 0x58, 0xe1, 0x76}}, false);
+fbh::ConfigBool cfg_artwork_group_header_spacing_enabled(
+    {0x033c8541, 0xa27b, 0x4265, {0xb7, 0x72, 0x2d, 0xa5, 0xd7, 0xcd, 0xf0, 0x10}}, true);
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 150);
 
 void ConfigGroups::swap(size_t index1, size_t index2)
@@ -212,7 +214,7 @@ void PlaylistView::on_column_widths_change()
 
 void PlaylistView::g_on_column_widths_change(const PlaylistView* p_skip)
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         if (window != p_skip)
             window->on_column_widths_change();
 }
@@ -283,13 +285,13 @@ void PlaylistView::set_group_info_area_size()
 
 void PlaylistView::g_on_groups_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->on_groups_change();
 }
 
 void PlaylistView::s_on_indent_groups_change()
 {
-    for (const auto& window : g_windows) {
+    for (const auto& window : s_windows) {
         window->on_artwork_width_change();
         window->set_group_level_indentation_enabled(cfg_indent_groups);
     }
@@ -297,7 +299,7 @@ void PlaylistView::s_on_indent_groups_change()
 
 void PlaylistView::s_on_group_indentation_amount_change()
 {
-    for (const auto& window : g_windows) {
+    for (const auto& window : s_windows) {
         window->set_group_level_indentation_amount(cfg_use_custom_group_indentation_amount
                 ? std::make_optional<int>(cfg_custom_group_indentation_amount)
                 : std::nullopt);
@@ -306,7 +308,7 @@ void PlaylistView::s_on_group_indentation_amount_change()
 
 void PlaylistView::s_on_root_group_indentation_amount_change()
 {
-    for (const auto& window : g_windows)
+    for (const auto& window : s_windows)
         window->set_root_group_indentation_amount(cfg_root_group_indentation_amount);
 }
 
@@ -383,30 +385,36 @@ void PlaylistView::update_items(size_t index, size_t count)
 }
 void PlaylistView::g_on_autosize_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_autosize(cfg_nohscroll != 0);
 }
 void PlaylistView::g_on_show_artwork_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_show_group_info_area(cfg_show_artwork);
 }
 
 void PlaylistView::s_on_sticky_artwork_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_is_group_info_area_sticky(cfg_sticky_artwork);
+}
+
+void PlaylistView::s_on_artwork_group_header_spacing_change()
+{
+    for (auto& window : s_windows)
+        window->set_is_group_info_area_header_spacing_enabled(cfg_artwork_group_header_spacing_enabled);
 }
 
 void PlaylistView::g_on_alternate_selection_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_alternate_selection_model(cfg_alternative_sel != 0);
 }
 
 void PlaylistView::g_on_artwork_width_change(const PlaylistView* p_skip)
 {
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         if (window != p_skip) {
             window->on_artwork_width_change();
         }
@@ -424,7 +432,7 @@ void PlaylistView::on_artwork_width_change()
 
 void PlaylistView::s_flush_artwork(bool b_redraw, const PlaylistView* p_skip)
 {
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         if (window != p_skip) {
             window->flush_artwork_images();
             if (b_redraw)
@@ -435,74 +443,74 @@ void PlaylistView::s_flush_artwork(bool b_redraw, const PlaylistView* p_skip)
 
 void PlaylistView::g_on_vertical_item_padding_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_vertical_item_padding(settings::playlist_view_item_padding);
 }
 
 void PlaylistView::g_on_font_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->recreate_items_text_format(item_text_layout_cache_size);
 }
 
 void PlaylistView::g_on_header_font_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->recreate_header_text_format();
 }
 
 void PlaylistView::g_on_group_font_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->recreate_group_text_format(group_text_layout_cache_size);
 }
 
 void PlaylistView::s_update_all_items()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->update_all_items();
 }
 void PlaylistView::g_on_show_header_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_show_header(cfg_header != 0);
 }
 void PlaylistView::g_on_sorting_enabled_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_sorting_enabled(cfg_header_hottrack != 0);
 }
 void PlaylistView::g_on_show_sort_indicators_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_show_sort_indicators(cfg_show_sort_arrows != 0);
 }
 void PlaylistView::g_on_edge_style_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_edge_style(cfg_frame);
 }
 void PlaylistView::g_on_time_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->on_time_change();
 }
 void PlaylistView::g_on_show_tooltips_change()
 {
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->set_show_tooltips(cfg_tooltips_clipped != 0);
     }
 }
 void PlaylistView::g_on_playback_follows_cursor_change(bool b_val)
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->set_always_show_focus(b_val);
 }
 
 void PlaylistView::s_on_dark_mode_status_change()
 {
     const auto is_dark = colours::is_dark_mode_active();
-    for (auto&& window : g_windows) {
+    for (auto&& window : s_windows) {
         window->flush_artwork_images();
         window->set_use_dark_mode(is_dark);
     }
@@ -510,7 +518,7 @@ void PlaylistView::s_on_dark_mode_status_change()
 
 void PlaylistView::g_on_columns_change()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->on_columns_change();
 }
 void PlaylistView::on_columns_change()
@@ -526,7 +534,7 @@ void PlaylistView::on_columns_change()
 
 void PlaylistView::s_redraw_all()
 {
-    for (auto&& window : g_windows)
+    for (auto&& window : s_windows)
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
@@ -839,6 +847,7 @@ void PlaylistView::notify_on_initialisation()
 
     set_group_info_area_size();
     set_is_group_info_area_sticky(cfg_sticky_artwork);
+    set_is_group_info_area_header_spacing_enabled(cfg_artwork_group_header_spacing_enabled);
     set_show_group_info_area(cfg_show_artwork);
     set_show_header(cfg_header != 0);
     set_autosize(cfg_nohscroll != 0);
@@ -882,10 +891,10 @@ void PlaylistView::notify_on_create()
     wil::com_ptr<PlaylistViewDropTarget> IDT_playlist = new PlaylistViewDropTarget(this);
     RegisterDragDrop(get_wnd(), IDT_playlist.get());
 
-    if (g_windows.empty())
+    if (s_windows.empty())
         s_create_message_window();
 
-    g_windows.push_back(this);
+    s_windows.push_back(this);
 
     set_day_timer();
 
@@ -918,8 +927,8 @@ void PlaylistView::notify_on_destroy()
         active_playlist != std::numeric_limits<size_t>::max())
         m_playlist_cache.set_item(active_playlist, save_scroll_position());
 
-    std::erase(g_windows, this);
-    if (g_windows.empty())
+    std::erase(s_windows, this);
+    if (s_windows.empty())
         s_destroy_message_window();
 
     RevokeDragDrop(get_wnd());
