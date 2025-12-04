@@ -196,6 +196,7 @@
 #define IDC_MENU_DBLCLK                 1053
 #define IDC_REMOVE_UNDERSCORES          1053
 #define IDC_APPEARANCE                  1053
+#define IDC_ARTWORK_HEADER_SPACING      1053
 #define IDC_ICON_SIZE                   1054
 #define IDC_TEXT                        1055
 #define IDC_USE_CUSTOM_TEXT             1056
@@ -316,6 +317,8 @@
 #define IDC_ROOT_INDENTATION_STATIC     1210
 #define IDC_ROOT_INDENTATION_PX_STATIC  1211
 #define IDC_INDENTATION_AMOUNT_PX_STATIC 1212
+#define IDC_ARTWORK_WIDTH_LABEL         1213
+#define IDC_ARTWORK_WIDTH_PX            1214
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -325,7 +328,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1213
+#define _APS_NEXT_CONTROL_VALUE         1215
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
