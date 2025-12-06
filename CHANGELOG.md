@@ -19,6 +19,10 @@
   under the first set of group headers in the playlist view was fixed.
   [[#1492](https://github.com/reupen/columns_ui/pull/1492)]
 
+- Right-clicking on a group header in the playlist view and in Item properties
+  no longer modifies the existing selection if all items in the group are
+  already selected. [[#1496](https://github.com/reupen/columns_ui/pull/1496)]
+
 ## 3.2.0-beta.5
 
 ### Bug fixes
