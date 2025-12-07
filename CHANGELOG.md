@@ -6,7 +6,7 @@
 
 - An option, ‘Add extra vertical spacing to increase distance between group
   headers and artwork’, was added to the Artwork tab on the Playlist view
-  preferences page. [[#1492](https://github.com/reupen/columns_ui/pull/1492)]
+  preferences page. [[#1493](https://github.com/reupen/columns_ui/pull/1493)]
 
   This is enabled by default. When the option is disabled, the additional
   spacing added in 3.2.0-beta.1 before and after a set of group headers in the
@@ -17,7 +17,7 @@
 - A problem where, when ‘Add extra vertical spacing to increase distance between
   group headers and artwork’ is enabled, the additional spacing was missing
   under the first set of group headers in the playlist view was fixed.
-  [[#1492](https://github.com/reupen/columns_ui/pull/1492)]
+  [[#1493](https://github.com/reupen/columns_ui/pull/1493)]
 
 - Right-clicking on a group header in the playlist view and in Item properties
   no longer modifies the existing selection if all items in the group are
