@@ -4,10 +4,13 @@
 
 ### Bug fixes
 
-- Another Windows bug with Direct2D and DXGI window occlusion statuses,
-  occasionally causing the Artwork view and Item details not to update when the
-  display is turned on after display output was turned off by Windows, was
-  worked around. [[#1510](https://github.com/reupen/columns_ui/pull/1510)]
+- Another Windows bug with DXGI window occlusion statuses, occasionally causing
+  the Artwork view and Item details to not update when the display is turned on
+  after display output was turned off by Windows, was worked around.
+  [[#1510](https://github.com/reupen/columns_ui/pull/1510)]
+
+- Filter search button tooltips are now dark themed when dark mode is enabled.
+  [[#1511](https://github.com/reupen/columns_ui/pull/1511)]
 
 ## 3.2.0-rc.1
 
