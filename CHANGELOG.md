@@ -2,6 +2,15 @@
 
 ## 3.2.0
 
+### Features
+
+- If a front cover stub image is configured on the Display preferences page, the
+  Artwork view no longer uses it as a fallback for other stub image types.
+  [[#1512](https://github.com/reupen/columns_ui/pull/1512)]
+
+  If you were previously relying on that behaviour, you should explicitly
+  configure the stub image for all artwork types as needed.
+
 ### Bug fixes
 
 - Another Windows bug with DXGI window occlusion statuses, occasionally causing
