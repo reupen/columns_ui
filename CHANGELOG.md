@@ -1,5 +1,14 @@
 # Change log
 
+## 3.2.0
+
+### Bug fixes
+
+- Another Windows bug with Direct2D and DXGI window occlusion statuses,
+  occasionally causing the Artwork view and Item details not to update when the
+  display is turned on after display output was turned off by Windows, was
+  worked around. [[#1510](https://github.com/reupen/columns_ui/pull/1510)]
+
 ## 3.2.0-rc.1
 
 ### Features

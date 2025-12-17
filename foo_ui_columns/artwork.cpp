@@ -356,11 +356,15 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 soft_reload_selection_artwork();
             });
+
+        m_power_notify_handle.reset(
+            RegisterPowerSettingNotification(wnd, &GUID_SESSION_DISPLAY_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE));
         break;
     }
     case WM_DESTROY:
         std::erase(g_windows, this);
         m_metadb_io_change_token.reset();
+        m_power_notify_handle.reset();
         m_use_hardware_acceleration_change_token.reset();
         m_display_change_token.reset();
         ui_selection_manager::get()->unregister_callback(this);
@@ -440,6 +444,31 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             invalidate_window();
 
         return 0;
+    case WM_POWERBROADCAST: {
+        if (wp != PBT_POWERSETTINGCHANGE)
+            break;
+
+        const auto pbs = reinterpret_cast<POWERBROADCAST_SETTING*>(lp);
+
+        if (pbs->PowerSetting != GUID_SESSION_DISPLAY_STATUS || pbs->DataLength < sizeof(DWORD))
+            break;
+
+        const auto display_state = *reinterpret_cast<DWORD*>(pbs->Data);
+
+        // When the display is turned on after being off, sometimes when MSG_OCCLUSION_STATUS_CHANGED is received
+        // real IDXGISwapChain::Present() calls still return DXGI_STATUS_OCCLUDED, and another
+        // MSG_OCCLUSION_STATUS_CHANGED is not received.
+        //
+        // This detects that scenario and enables the occlusion status timer to work around the problem.
+        // (Note that even waiting a short time like 25ms is not enough, the delay before IDXGISwapChain::Present()
+        // starts working is longer than that.)
+        if (display_state == MONITOR_DISPLAY_STATE::PowerMonitorOn && m_occlusion_status_event_cookie
+            && !m_is_occlusion_status_timer_active) {
+            SetTimer(get_wnd(), TIMER_OCCLUSION_STATUS, 1000, nullptr);
+            m_is_occlusion_status_timer_active = true;
+        }
+        break;
+    }
     case WM_PAINT: {
         const auto background_colour = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
 

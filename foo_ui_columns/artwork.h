@@ -177,6 +177,7 @@ private:
     wil::com_ptr<ID2D1Effect> m_transform_effect;
     std::optional<wic::PhotoOrientation> m_transform_effect_photo_orientation;
     wil::com_ptr<ID2D1Effect> m_output_effect;
+    wil::unique_hpowernotify m_power_notify_handle;
     std::optional<DWORD> m_occlusion_status_event_cookie;
     bool m_is_occlusion_status_timer_active{};
 
