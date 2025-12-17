@@ -253,7 +253,7 @@ private:
     void scroll(INT sb, int position, bool b_absolute);
 
     void set_window_theme() const;
-    void invalidate_all(bool b_update = true);
+    void invalidate_all() const;
     void update_now();
     D2D1_SIZE_U get_required_d2d_render_target_size() const;
     void create_d2d_render_target();
@@ -304,6 +304,7 @@ private:
     EventToken::Ptr m_use_hardware_acceleration_change_token;
     bool m_is_occlusion_status_timer_active{};
     std::optional<DWORD> m_occlusion_status_event_cookie;
+    wil::unique_hpowernotify m_power_notify_handle;
 
     std::optional<RECT> m_text_rect{};
 

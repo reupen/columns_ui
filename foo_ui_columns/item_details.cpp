@@ -683,9 +683,9 @@ bool ItemDetails::check_occlusion_status(bool allow_deregister_event)
     return is_occluded;
 }
 
-void ItemDetails::invalidate_all(bool b_update)
+void ItemDetails::invalidate_all() const
 {
-    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | (b_update ? RDW_UPDATENOW : NULL));
+    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
 void ItemDetails::on_size()
@@ -711,7 +711,7 @@ void ItemDetails::on_size(int cx, int cy)
         m_text_rect.reset();
     }
 
-    invalidate_all(false);
+    invalidate_all();
 
     if (cx != m_last_cx) {
         m_last_cx = cx;
@@ -789,13 +789,19 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         on_size(/*lpcs->cx, lpcs->cy*/);
         on_tracking_mode_change();
         refresh_contents(true, true);
-    } break;
+
+        m_power_notify_handle.reset(
+            RegisterPowerSettingNotification(wnd, &GUID_SESSION_DISPLAY_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE));
+
+        break;
+    }
     case WM_DESTROY: {
         std::erase(s_windows, this);
 
         if (s_windows.empty())
             s_destroy_message_window();
 
+        m_power_notify_handle.reset();
         m_use_hardware_acceleration_change_token.reset();
         play_callback_manager::get()->unregister_callback(this);
         metadb_io_v3::get()->unregister_callback(this);
@@ -932,6 +938,31 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             invalidate_all();
 
         return 0;
+    case WM_POWERBROADCAST: {
+        if (wp != PBT_POWERSETTINGCHANGE)
+            break;
+
+        const auto pbs = reinterpret_cast<POWERBROADCAST_SETTING*>(lp);
+
+        if (pbs->PowerSetting != GUID_SESSION_DISPLAY_STATUS || pbs->DataLength < sizeof(DWORD))
+            break;
+
+        const auto display_state = *reinterpret_cast<DWORD*>(pbs->Data);
+
+        // When the display is turned on after being off, sometimes when MSG_OCCLUSION_STATUS_CHANGED is received
+        // real IDXGISwapChain::Present() calls still return DXGI_STATUS_OCCLUDED, and another
+        // MSG_OCCLUSION_STATUS_CHANGED is not received.
+        //
+        // This detects that scenario and enables the occlusion status timer to work around the problem.
+        // (Note that even waiting a short time like 25ms is not enough, the delay before IDXGISwapChain::Present()
+        // starts working is longer than that.)
+        if (display_state == MONITOR_DISPLAY_STATE::PowerMonitorOn && m_occlusion_status_event_cookie
+            && !m_is_occlusion_status_timer_active) {
+            SetTimer(get_wnd(), OCCLUSION_STATUS_TIMER_ID, 1000, nullptr);
+            m_is_occlusion_status_timer_active = true;
+        }
+        break;
+    }
     case WM_ERASEBKGND:
         return TRUE;
     case WM_PAINT: {
@@ -1351,7 +1382,7 @@ void ItemDetails::set_vertical_alignment(VerticalAlignment vertical_alignment)
     }
 
     reset_display_info();
-    invalidate_all(false);
+    invalidate_all();
     update_scrollbars(false, false);
     update_now();
 }
@@ -1372,7 +1403,7 @@ void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
     }
 
     reset_display_info();
-    invalidate_all(false);
+    invalidate_all();
     update_scrollbars(false, true);
     update_now();
 }
@@ -1427,7 +1458,7 @@ void ItemDetails::MenuNodeWordWrap::execute()
     }
 
     p_this->reset_display_info();
-    p_this->invalidate_all(false);
+    p_this->invalidate_all();
     p_this->update_scrollbars(false, true);
     p_this->update_now();
 }
@@ -1451,7 +1482,7 @@ void ItemDetails::MenuNodeHorizontalScrolling::execute()
     p_this->m_hscroll = !p_this->m_hscroll;
     cfg_item_details_hscroll = p_this->m_hscroll;
     p_this->reset_display_info();
-    p_this->invalidate_all(false);
+    p_this->invalidate_all();
     p_this->update_scrollbars(false, true);
     p_this->update_now();
 }
@@ -1500,7 +1531,7 @@ void ItemDetails::MenuNodeAlignment::execute()
 {
     p_this->m_horizontal_alignment = m_type;
     cfg_item_details_horizontal_alignment = m_type;
-    p_this->invalidate_all(false);
+    p_this->invalidate_all();
     p_this->update_scrollbars(false, true);
     p_this->update_now();
 }
