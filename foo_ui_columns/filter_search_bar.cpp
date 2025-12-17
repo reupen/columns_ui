@@ -410,8 +410,14 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
                 } else if (lpnmtbgit->iItem == idc_clear)
                     temp = "Clear";
                 StringCchCopy(lpnmtbgit->pszText, lpnmtbgit->cchTextMax, pfc::stringcvt::string_wide_from_utf8(temp));
-            }
                 return 0;
+            }
+            case NM_TOOLTIPSCREATED: {
+                const auto lpnmttc = reinterpret_cast<LPNMTOOLTIPSCREATED>(lp);
+                SetWindowTheme(
+                    lpnmttc->hwndToolTips, colours::is_dark_mode_active() ? L"DarkMode_Explorer" : nullptr, nullptr);
+                break;
+            }
             }
             break;
         }
@@ -477,8 +483,12 @@ void FilterSearchToolbar::set_window_themes() const
     if (m_search_editbox)
         SetWindowTheme(m_search_editbox, is_dark ? L"DarkMode_CFD" : nullptr, nullptr);
 
-    if (m_wnd_toolbar)
+    if (m_wnd_toolbar) {
         SetWindowTheme(m_wnd_toolbar, is_dark ? L"DarkMode" : nullptr, nullptr);
+
+        if (const auto wnd_tooltips = reinterpret_cast<HWND>(SendMessage(m_wnd_toolbar, TB_GETTOOLTIPS, 0, 0)))
+            SetWindowTheme(wnd_tooltips, is_dark ? L"DarkMode_Explorer" : nullptr, nullptr);
+    }
 }
 
 void FilterSearchToolbar::update_toolbar_icons() const
