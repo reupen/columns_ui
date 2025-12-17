@@ -134,13 +134,6 @@ album_art_data_ptr ArtworkReaderManager::get_stub_image(GUID artwork_type_id)
         return content_iter->second;
     }
 
-    if (artwork_type_id == album_art_ids::cover_front)
-        return {};
-
-    if (const auto content_iter = m_stub_images.find(album_art_ids::cover_front); content_iter != m_stub_images.end()) {
-        return content_iter->second;
-    }
-
     return {};
 }
 
@@ -301,20 +294,23 @@ bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& 
 
     if (args.read_stub_image) {
         const auto stub_extractor = p_album_art_manager_v2->open_stub(p_abort);
+        std::optional<album_art_data_ptr> default_stub_image;
 
         for (auto&& artwork_id : m_artwork_type_ids) {
             const auto [data, _] = query_artwork_data(artwork_id, stub_extractor, false, p_abort);
 
-            if (data.is_valid())
+            if (data.is_valid()) {
                 m_stub_images.insert_or_assign(artwork_id, data);
-        }
+                continue;
+            }
 
-        if (!m_stub_images.contains(album_art_ids::cover_front)) {
-            album_art_data_ptr data;
-            panels::playlist_view::get_default_artwork_placeholder_data(data, p_abort);
+            if (!default_stub_image) {
+                default_stub_image.emplace();
+                panels::playlist_view::get_default_artwork_placeholder_data(*default_stub_image, p_abort);
+            }
 
-            if (data.is_valid())
-                m_stub_images.insert_or_assign(album_art_ids::cover_front, data);
+            if (default_stub_image->is_valid())
+                m_stub_images.insert_or_assign(artwork_id, *default_stub_image);
         }
     }
 
