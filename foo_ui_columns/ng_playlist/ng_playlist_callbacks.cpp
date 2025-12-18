@@ -21,15 +21,25 @@ void PlaylistView::on_items_reordered(size_t playlist, const size_t* p_order, si
         return;
 
     clear_sort_column();
+
+    bool subsequent_styles_invalidated{};
+
     for (size_t i = 0; i < p_count; i++) {
         const size_t start = i;
         while (i < p_count && p_order[i] != i) {
             i++;
         }
         if (i > start) {
+            const auto run_count = i - start;
             InsertItemsContainer items;
-            get_insert_items(start, i - start, items);
-            replace_items(start, items);
+            get_insert_items(start, run_count, items);
+
+            const auto subsequent_display_indices_changed = replace_items(start, items);
+
+            if (subsequent_display_indices_changed && !subsequent_styles_invalidated) {
+                invalidate_styles(i, get_item_count() - i);
+                subsequent_styles_invalidated = true;
+            }
         }
     }
 }
@@ -79,6 +89,7 @@ void PlaylistView::on_items_modified(size_t playlist, const bit_array& p_mask) n
 
     clear_sort_column();
     const size_t count = m_playlist_api->activeplaylist_get_item_count();
+    bool subsequent_styles_invalidated{};
 
     for (size_t i = 0; i < count; i++) {
         const size_t start = i;
@@ -88,7 +99,13 @@ void PlaylistView::on_items_modified(size_t playlist, const bit_array& p_mask) n
         if (i > start) {
             InsertItemsContainer items;
             get_insert_items(start, i - start, items);
-            replace_items(start, items);
+
+            const auto subsequent_display_indices_changed = replace_items(start, items);
+
+            if (subsequent_display_indices_changed && !subsequent_styles_invalidated) {
+                subsequent_styles_invalidated = true;
+                invalidate_styles(i, count - i);
+            }
         }
     }
 }
