@@ -324,6 +324,7 @@ private:
 
     void update_all_items();
     void refresh_all_items_text();
+    void invalidate_styles(size_t index, size_t count);
     void update_items(size_t index, size_t count);
 
     Item* storage_create_item() override { return new PlaylistViewItem; }

@@ -373,16 +373,26 @@ void PlaylistView::refresh_all_items_text()
 {
     update_items(0, get_item_count());
 }
+
+void PlaylistView::invalidate_styles(size_t index, size_t count)
+{
+    for (const auto item_index : ranges::views::iota(index, index + count)) {
+        const auto item = get_item(item_index);
+        const auto group_count = item->get_group_count();
+
+        for (const auto group_index : ranges::views::iota(size_t{}, group_count))
+            item->get_group(group_index)->m_style_data.release();
+
+        item->m_style_data.set_count(0);
+    }
+}
+
 void PlaylistView::update_items(size_t index, size_t count)
 {
-    for (size_t i = 0; i < count; i++) {
-        size_t cg = get_item(i + index)->get_group_count();
-        for (size_t j = 0; j < cg; j++)
-            get_item(i + index)->get_group(j)->m_style_data.release();
-        get_item(i + index)->m_style_data.set_count(0);
-    }
+    invalidate_styles(index, count);
     ListView::update_items(index, count);
 }
+
 void PlaylistView::g_on_autosize_change()
 {
     for (auto& window : s_windows)
@@ -1249,7 +1259,6 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     bool colour_global_av = false;
     size_t count = m_column_data.get_count();
-    size_t count_display_groups = get_item_display_group_count(index, true);
     p_out.resize(count);
     get_item(index)->m_style_data.set_count(count);
 
@@ -1258,22 +1267,20 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     SetGlobalTitleformatHook<false, true> tf_hook_get_global(globals);
 
-    const auto item_index = get_item_display_index(index);
+    const auto item_display_index = get_item_display_index(index);
     const auto group_count = p_item->get_group_count();
-    size_t num_skipped{};
+    size_t group_display_index{item_display_index};
 
-    for (size_t num_processed = 0; num_processed < count_display_groups; ++num_processed) {
-        const auto group_index = group_count - num_processed - 1;
-        const auto group = p_item->get_group(group_index);
-
-        if (group->is_hidden()) {
-            ++num_skipped;
+    for (auto group_index : ranges::views::iota(size_t{}, group_count) | ranges::views::reverse) {
+        if (!is_group_visible(index, group_index))
             continue;
-        }
+
+        const auto group = p_item->get_group(group_index);
+        --group_display_index;
 
         CellStyleData style_data_group = CellStyleData::g_create_default();
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
-            StyleTitleformatHook tf_hook_style(style_data_group, item_index - num_processed + num_skipped - 1, true);
+            StyleTitleformatHook tf_hook_style(style_data_group, group_display_index, true);
             SplitterTitleformatHook tf_hook(
                 &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
@@ -1298,7 +1305,7 @@ void PlaylistView::notify_update_item_data(size_t index)
         {
             if (!colour_global_av) {
                 if (m_script_global_style.is_valid()) {
-                    StyleTitleformatHook tf_hook_style(style_data_item, item_index);
+                    StyleTitleformatHook tf_hook_style(style_data_item, item_display_index);
                     SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
                         &tf_hook_date, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(
@@ -1311,7 +1318,7 @@ void PlaylistView::notify_update_item_data(size_t index)
         }
         if (b_custom) {
             if (m_column_data[i].m_style_script.is_valid()) {
-                StyleTitleformatHook tf_hook_style(style_temp, item_index);
+                StyleTitleformatHook tf_hook_style(style_temp, item_display_index);
                 SplitterTitleformatHook tf_hook(
                     &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
                 m_playlist_api->activeplaylist_item_format_title(

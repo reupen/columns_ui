@@ -1,5 +1,16 @@
 # Change log
 
+## 3.2.1
+
+### Bug fixes
+
+- A bug where `%_display_index%` in style scripts may not have updated correctly
+  in playlist views using grouping when items were modified was fixed.
+  [[#1514](https://github.com/reupen/columns_ui/pull/1514)]
+
+- Some playlist view grouping logic was made more consistent to avoid a possible
+  crash. [[#1514](https://github.com/reupen/columns_ui/pull/1514)]
+
 ## 3.2.0
 
 ### Features
