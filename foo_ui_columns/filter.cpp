@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "filter.h"
 
+#include "fb2k_misc.h"
 #include "filter_config_var.h"
 #include "filter_search_bar.h"
 #include "filter_utils.h"
@@ -465,13 +466,12 @@ bool FilterPanel::do_drag_drop(WPARAM wp)
     get_selection_handles(data);
     if (data.get_count() > 0) {
         sort_tracks(data, m_stream->m_sort_override);
-        const auto incoming_api = playlist_incoming_item_filter::get();
-        auto pDataObject = incoming_api->create_dataobject_ex(data);
-        if (pDataObject.is_valid()) {
+        const auto data_object = fb2k_utils::create_data_object_safe(data);
+        if (data_object) {
             m_drag_item_count = data.get_count();
             DWORD blah = DROPEFFECT_NONE;
             uih::ole::do_drag_drop(
-                get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
+                get_wnd(), wp, data_object.get(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
             m_drag_item_count = 0;
         }
     }

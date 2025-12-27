@@ -35,4 +35,6 @@ private:
     service_ptr_t<Service> m_ptr;
 };
 
+wil::com_ptr_t<IDataObject> create_data_object_safe(const metadb_handle_list& tracks);
+
 } // namespace cui::fb2k_utils

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ng_playlist.h"
+#include "fb2k_misc.h"
 
 namespace playlist_utils {
 
@@ -24,12 +25,16 @@ bool cut()
     metadb_handle_list data;
     m_playlist_api->activeplaylist_undo_backup();
     m_playlist_api->activeplaylist_get_selected_items(data);
-    pfc::com_ptr_t<IDataObject> pDO = api->create_dataobject(data);
-    if (SUCCEEDED(OleSetClipboard(pDO.get_ptr()))) {
-        m_playlist_api->activeplaylist_remove_selection();
-        return true;
-    }
-    return false;
+    const auto data_object = cui::fb2k_utils::create_data_object_safe(data);
+
+    if (!data_object)
+        return false;
+
+    if (FAILED(OleSetClipboard(data_object.get())))
+        return false;
+
+    m_playlist_api->activeplaylist_remove_selection();
+    return true;
 }
 
 bool copy()
@@ -38,8 +43,12 @@ bool copy()
     const auto api = ole_interaction::get();
     metadb_handle_list data;
     m_playlist_api->activeplaylist_get_selected_items(data);
-    pfc::com_ptr_t<IDataObject> pDO = api->create_dataobject(data);
-    return SUCCEEDED(OleSetClipboard(pDO.get_ptr()));
+    const auto data_object = cui::fb2k_utils::create_data_object_safe(data);
+
+    if (!data_object)
+        return false;
+
+    return SUCCEEDED(OleSetClipboard(data_object.get()));
 }
 
 bool paste_at_focused_item(HWND wnd)
