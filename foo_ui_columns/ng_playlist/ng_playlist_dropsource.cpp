@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ng_playlist.h"
+#include "fb2k_misc.h"
 
 namespace cui::panels::playlist_view {
 bool PlaylistView::do_drag_drop(WPARAM wp)
@@ -7,18 +8,17 @@ bool PlaylistView::do_drag_drop(WPARAM wp)
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     m_playlist_api->activeplaylist_get_selected_items(data);
     if (data.get_count() > 0) {
-        const auto incoming_api = playlist_incoming_item_filter::get();
-        auto pDataObject = incoming_api->create_dataobject_ex(data);
-        if (pDataObject.is_valid()) {
+        const auto data_object = cui::fb2k_utils::create_data_object_safe(data);
+        if (data_object) {
             // pfc::com_ptr_t<IAsyncOperation> pAsyncOperation;
             // HRESULT hr = pDataObject->QueryInterface(IID_IAsyncOperation, (void**)pAsyncOperation.receive_ptr());
             DWORD blah = DROPEFFECT_NONE;
             {
                 m_dragging = true;
-                m_DataObject = pDataObject.get_ptr();
+                m_DataObject = data_object.get();
                 m_dragging_initial_playlist = m_playlist_api->get_active_playlist();
                 uih::ole::do_drag_drop(
-                    get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
+                    get_wnd(), wp, data_object.get(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
 
                 m_dragging = false;
                 m_DataObject.reset();
