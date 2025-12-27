@@ -430,12 +430,16 @@ decltype(std::declval<TrackPropertyCallback>().to_sorted_vector()) get_track_pro
     TrackPropertyInfoSourceProviderV5 info_source_v5(recs);
 
     for (auto&& provider : main_thread_providers) {
-        if (track_property_provider_v3::ptr provider_v3; provider->service_query_t(provider_v3)) {
-            provider_v3->enumerate_properties_v3(tracks, info_source_v3, props);
-        } else if (track_property_provider_v2::ptr provider_v2; provider->service_query_t(provider_v2)) {
-            provider_v2->enumerate_properties_v2(tracks, props);
-        } else {
-            provider->enumerate_properties(tracks, props);
+        try {
+            if (track_property_provider_v3::ptr provider_v3; provider->service_query_t(provider_v3)) {
+                provider_v3->enumerate_properties_v3(tracks, info_source_v3, props);
+            } else if (track_property_provider_v2::ptr provider_v2; provider->service_query_t(provider_v2)) {
+                provider_v2->enumerate_properties_v2(tracks, props);
+            } else {
+                provider->enumerate_properties(tracks, props);
+            }
+        } catch (std::exception& ex) {
+            console::print("Item properties – track property provider error: ", ex.what());
         }
     }
 
@@ -444,13 +448,17 @@ decltype(std::declval<TrackPropertyCallback>().to_sorted_vector()) get_track_pro
             auto&& index) {
             auto&& provider = thread_safe_providers[index];
 
-            track_property_provider_v5::ptr provider_v5;
-            if (has_recs && (provider_v5 &= provider)) {
-                provider_v5->enumerate_properties_v5(tracks, info_source_v5, props, fb2k::noAbort);
-                return;
-            }
+            try {
+                track_property_provider_v5::ptr provider_v5;
+                if (has_recs && (provider_v5 &= provider)) {
+                    provider_v5->enumerate_properties_v5(tracks, info_source_v5, props, fb2k::noAbort);
+                    return;
+                }
 
-            provider->enumerate_properties_v4(tracks, info_source_v3, props, fb2k::noAbort);
+                provider->enumerate_properties_v4(tracks, info_source_v3, props, fb2k::noAbort);
+            } catch (std::exception& ex) {
+                console::print("Item properties – track property provider error: ", ex.what());
+            }
         });
 
     return props.to_sorted_vector();
