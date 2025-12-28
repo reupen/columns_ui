@@ -1,5 +1,14 @@
 # Change log
 
+## 3.2.2
+
+- Some crashes when tracks using the foobar2000 relative path protocol creep
+  into a non-portable foobar2000 installation were fixed.
+  [[#1520](https://github.com/reupen/columns_ui/pull/1520)]
+
+  Note that such paths do not work in non-portable installations; this change is
+  simply to avoid Columns UI-related crashes when such paths are encountered.
+
 ## 3.2.1
 
 ### Bug fixes

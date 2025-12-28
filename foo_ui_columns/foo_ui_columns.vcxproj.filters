@@ -647,6 +647,9 @@
     <ClCompile Include="fb2k_callbacks.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="fb2k_misc.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
