@@ -303,9 +303,6 @@ void ItemDetails::set_handles(const metadb_handle_list& handles)
 
 void ItemDetails::request_full_file_info()
 {
-    if (static_api_test_t<metadb_v2>())
-        return;
-
     if (m_full_file_info_requested)
         return;
 
@@ -315,8 +312,13 @@ void ItemDetails::request_full_file_info()
         return;
 
     const auto handle = m_handles[0];
+
+    if (const auto info_ref = handle->get_info_ref(); !info_ref->isInfoPartial())
+        return;
+
     if (filesystem::g_is_remote_or_unrecognized(handle->get_path()))
         return;
+
     m_full_file_info_request = std::make_unique<helpers::FullFileInfoRequest>(
         std::move(handle), [self = service_ptr_t<ItemDetails>{this}](auto&& request) {
             self->on_full_file_info_request_completion(std::forward<decltype(request)>(request));
