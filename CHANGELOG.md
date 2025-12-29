@@ -2,6 +2,15 @@
 
 ## 3.2.2
 
+### Features
+
+- Support was added to Item details for loading full track metadata for
+  non-playing tracks when using `LargeFieldsConfig-v2.txt` on foobar2000 2.26
+  preview 2025-12-28 and newer.
+  [[#1521](https://github.com/reupen/columns_ui/pull/1521)]
+
+### Bug fixes
+
 - Some crashes when tracks using the foobar2000 relative path protocol creep
   into a non-portable foobar2000 installation were fixed.
   [[#1520](https://github.com/reupen/columns_ui/pull/1520)]
