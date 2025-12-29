@@ -3,6 +3,7 @@
 
 #include "dark_mode.h"
 #include "dark_mode_tabs.h"
+#include "panel_utils.h"
 
 namespace cui::panels::tab_stack {
 
@@ -748,7 +749,8 @@ void TabStackPanel::refresh_children()
                     m_active_panels.emplace(m_active_panels.begin() + insertion_index, panel);
                 }
 
-                HWND wnd_panel = p_ext->create_or_transfer_window(get_wnd(), m_window_host.get_ptr());
+                HWND wnd_panel = panel_utils::create_or_transfer_window_safe(
+                    "Tab stack"sv, p_ext, get_wnd(), m_window_host.get_ptr());
                 if (wnd_panel) {
                     if (GetWindowLongPtr(wnd_panel, GWL_STYLE) & WS_VISIBLE) {
                         pfc::string8 name;

@@ -54,4 +54,8 @@ inline auto get_grouped_panel_info(const std::vector<PanelInfo>& panels)
     });
 }
 
+HWND create_or_transfer_window_safe(std::string_view host_name, const uie::window::ptr& window, HWND wnd_parent,
+    const uie::window_host::ptr& host, const ui_helpers::window_position_t& position = ui_helpers::window_position_null,
+    std::string_view panel_noun = "panel"_zv);
+
 } // namespace cui::panel_utils

@@ -9,6 +9,13 @@
   preview 2025-12-28 and newer.
   [[#1521](https://github.com/reupen/columns_ui/pull/1521)]
 
+- Crashing is now avoided when third-party panels throw unexpected C++
+  exceptions during window creation.
+  [[#1522](https://github.com/reupen/columns_ui/pull/1522)]
+
+  A console message will be emitted when such exceptions are encountered, and
+  the panel will not be shown or will be replaced by an empty space.
+
 ### Bug fixes
 
 - Some crashes when tracks using the foobar2000 relative path protocol creep

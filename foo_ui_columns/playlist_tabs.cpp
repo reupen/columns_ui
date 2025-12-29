@@ -3,6 +3,7 @@
 
 #include "dark_mode_spin.h"
 #include "dark_mode_tabs.h"
+#include "panel_utils.h"
 #include "playlist_manager_utils.h"
 
 namespace cui::panels::playlist_tabs {
@@ -135,8 +136,8 @@ void PlaylistTabs::create_child()
                 m_child->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
             } catch (const exception_io&) {
             }
-            m_child_wnd
-                = m_child->create_or_transfer_window(m_host_wnd, ui_extension::window_host_ptr(m_host.get_ptr()));
+            m_child_wnd = panel_utils::create_or_transfer_window_safe(
+                "Playlist tabs"_zv, m_child, m_host_wnd, ui_extension::window_host_ptr(m_host.get_ptr()));
             if (m_child_wnd) {
                 // ShowWindow(m_child_wnd, SW_SHOWNORMAL);
                 SetWindowPos(m_child_wnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
@@ -147,7 +148,8 @@ void PlaylistTabs::create_child()
     on_size();
     if (IsWindowVisible(get_wnd())) {
         get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
-        ShowWindow(m_child_wnd, SW_SHOWNORMAL);
+        if (m_child_wnd)
+            ShowWindow(m_child_wnd, SW_SHOWNORMAL);
     }
 }
 
@@ -871,9 +873,13 @@ bool PlaylistTabs::WindowHost::request_resize(HWND wnd, unsigned flags, unsigned
 {
     if (flags == ui_extension::size_height && is_resize_supported(wnd)) {
         if (m_this->wnd_tabs) {
-            RECT rc;
-            GetWindowRect(m_this->m_child_wnd, &rc);
-            MapWindowPoints(HWND_DESKTOP, m_this->get_wnd(), (LPPOINT)&rc, 2);
+            RECT rc{};
+
+            if (m_this->m_child_wnd) {
+                GetWindowRect(m_this->m_child_wnd, &rc);
+                MapWindowPoints(HWND_DESKTOP, m_this->get_wnd(), (LPPOINT)&rc, 2);
+            }
+
             rc.bottom = rc.top + height;
             m_this->adjust_rect(TRUE, &rc);
             // We would expect rc.top and rc.left to be 0.

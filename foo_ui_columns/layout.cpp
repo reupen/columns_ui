@@ -674,8 +674,9 @@ void LayoutWindow::create_child()
         formatter << "Error setting panel config: " << ex.what();
     }
 
-    m_child_wnd = m_child->create_or_transfer_window(get_wnd(),
-        uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()), ui_helpers::window_position_t(rc));
+    m_child_wnd = cui::panel_utils::create_or_transfer_window_safe("Columns UI"sv, m_child, get_wnd(),
+        uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()), ui_helpers::window_position_t(rc),
+        "root panel"sv);
 
     if (m_child_wnd) {
         SetWindowLongPtr(m_child_wnd, GWL_STYLE, GetWindowLongPtr(m_child_wnd, GWL_STYLE) | WS_CLIPSIBLINGS);

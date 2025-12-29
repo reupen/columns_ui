@@ -3,6 +3,7 @@
 
 #include "dark_mode.h"
 #include "main_window.h"
+#include "panel_utils.h"
 
 // extern HBITMAP buttons_images;
 
@@ -762,7 +763,9 @@ void RebarWindow::refresh_bands()
                         formatter << "Error setting panel config: " << e.what();
                     }
                 }
-                band->m_wnd = p_ext->create_or_transfer_window(wnd_rebar, &host);
+                band->m_wnd = panel_utils::create_or_transfer_window_safe(
+                    "Toolbars"sv, p_ext, wnd_rebar, &host, ui_helpers::window_position_null, "toolbar"sv);
+
                 if (band->m_wnd) {
                     band->m_window = p_ext;
                     ShowWindow(band->m_wnd, SW_SHOWNORMAL);

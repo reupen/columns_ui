@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "splitter.h"
+#include "panel_utils.h"
 
 namespace cui::panels::splitter {
 
@@ -127,7 +128,10 @@ void FlatSplitterPanel::refresh_children()
                     }
                 }
 
-                HWND wnd_panel = p_ext->create_or_transfer_window(wnd_host, m_window_host);
+                HWND wnd_panel = cui::panel_utils::create_or_transfer_window_safe(
+                    get_orientation() == Orientation::horizontal ? "Row"sv : "Column"sv, p_ext, wnd_host,
+                    m_window_host);
+
                 if (wnd_panel) {
                     SetWindowLongPtr(wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE) | WS_CLIPSIBLINGS);
                     MINMAXINFO mmi{};

@@ -280,6 +280,7 @@
     <ClCompile Include="imaging.cpp" />
     <ClCompile Include="item_details_format_parser.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
+    <ClCompile Include="panel_utils.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
     <ClCompile Include="string.cpp" />
