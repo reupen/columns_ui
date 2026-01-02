@@ -1,5 +1,13 @@
 # Change log
 
+## 3.2.3
+
+### Bug fixes
+
+- A bug where importing some old FCL files failed with an ‘Unsupported format or
+  corrupted file’ error was fixed.
+  [[#1526](https://github.com/reupen/columns_ui/pull/1526)]
+
 ## 3.2.2
 
 ### Features

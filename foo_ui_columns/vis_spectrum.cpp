@@ -518,7 +518,13 @@ void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_s
 
     reader->read_lendian_t(m_frame, p_abort);
 
-    [[maybe_unused]] const auto _size = reader->read_lendian_t<uint32_t>(p_abort);
+    [[maybe_unused]] const auto nested_data_size = reader->read_lendian_t<uint32_t>(p_abort);
+
+    if (nested_data_size == 0) {
+        has_migrated_spectrum_analyser_colours = true;
+        return;
+    }
+
     const auto legacy_foreground = reader->read_lendian_t<COLORREF>(p_abort);
     const auto legacy_background = reader->read_lendian_t<COLORREF>(p_abort);
 
