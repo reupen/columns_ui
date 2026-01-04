@@ -146,44 +146,6 @@ bool DateTitleformatHook::process_field(
     return false;
 }
 
-bool SplitterTitleformatHook::process_field(
-    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
-{
-    p_found_flag = false;
-    if (m_hook1 && m_hook1->process_field(p_out, p_name, p_name_length, p_found_flag))
-        return true;
-    p_found_flag = false;
-    if (m_hook2 && m_hook2->process_field(p_out, p_name, p_name_length, p_found_flag))
-        return true;
-    p_found_flag = false;
-    if (m_hook3 && m_hook3->process_field(p_out, p_name, p_name_length, p_found_flag))
-        return true;
-    p_found_flag = false;
-    if (m_hook4 && m_hook4->process_field(p_out, p_name, p_name_length, p_found_flag))
-        return true;
-    p_found_flag = false;
-    return false;
-}
-
-bool SplitterTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
-    titleformat_hook_function_params* p_params, bool& p_found_flag)
-{
-    p_found_flag = false;
-    if (m_hook1 && m_hook1->process_function(p_out, p_name, p_name_length, p_params, p_found_flag))
-        return true;
-    p_found_flag = false;
-    if (m_hook2 && m_hook2->process_function(p_out, p_name, p_name_length, p_params, p_found_flag))
-        return true;
-    p_found_flag = false;
-    if (m_hook3 && m_hook3->process_function(p_out, p_name, p_name_length, p_params, p_found_flag))
-        return true;
-    p_found_flag = false;
-    if (m_hook4 && m_hook4->process_function(p_out, p_name, p_name_length, p_params, p_found_flag))
-        return true;
-    p_found_flag = false;
-    return false;
-}
-
 bool DateTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
     titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
