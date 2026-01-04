@@ -2,7 +2,7 @@
 #include "playlist_switcher_title_formatting.h"
 
 #include "metadb_helpers.h"
-#include "title_formatting.h"
+#include "tf_field_provider.h"
 
 namespace cui {
 

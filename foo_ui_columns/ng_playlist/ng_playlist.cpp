@@ -6,6 +6,7 @@
 #include "ng_playlist_groups.h"
 #include "system_appearance_manager.h"
 #include "tab_setup.h"
+#include "tf_splitter_hook.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
 #include "../playlist_view_tfhooks.h"
@@ -579,7 +580,7 @@ const char* PlaylistView::PlaylistViewSearchContext::get_item_text(size_t index)
 
         if (has_global_variables) {
             SetGlobalTitleformatHook<true, false> tf_hook_set_global(global_variables);
-            SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+            tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
             pfc::string8 _;
             track->formatTitle_v2(rec, &tf_hook, _, m_global_script, nullptr);
         }
@@ -588,7 +589,7 @@ const char* PlaylistView::PlaylistViewSearchContext::get_item_text(size_t index)
         mmh::StringAdaptor adapted_title(title);
 
         SetGlobalTitleformatHook<false, true> tf_hook_get_global(global_variables);
-        SplitterTitleformatHook tf_hook(
+        tf::SplitterTitleformatHook tf_hook(
             has_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
         track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_script, nullptr);
         m_items[index + offset] = std::move(title);
@@ -714,14 +715,14 @@ void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending
 
                 if (extra) {
                     SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                    SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+                    tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
                     pfc::string8 output;
                     m_playlist_api->activeplaylist_item_format_title(
                         n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
                 }
 
                 SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
-                SplitterTitleformatHook tf_hook(
+                tf::SplitterTitleformatHook tf_hook(
                     extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
                 m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
                     m_column_data[column_index].m_sort_script, nullptr, play_control::display_level_none);
@@ -792,7 +793,7 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
 
             if (extra) {
                 SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+                tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
                 pfc::string8 output;
                 track->formatTitle_v2(rec, &tf_hook, output, m_script_global, nullptr);
             }
@@ -801,7 +802,7 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
             mmh::StringAdaptor adapted_title(title);
 
             SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
-            SplitterTitleformatHook tf_hook(
+            tf::SplitterTitleformatHook tf_hook(
                 extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_data[column_index].m_sort_script, nullptr);
 
@@ -809,7 +810,7 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
             std::string title_without_colour_codes;
 
             if (strchr(ptr, 3)) {
-                title_without_colour_codes = uih::remove_colour_codes(ptr);
+                title_without_colour_codes = uih::text_style::remove_colour_and_font_codes(ptr);
                 ptr = title_without_colour_codes.c_str();
             }
 
@@ -1250,7 +1251,7 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     if (b_global) {
         SetGlobalTitleformatHook<true, false> tf_hook_set_global(globals);
-        SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+        tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
         m_playlist_api->activeplaylist_item_format_title(
             index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
     }
@@ -1281,7 +1282,7 @@ void PlaylistView::notify_update_item_data(size_t index)
         CellStyleData style_data_group = CellStyleData::g_create_default();
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
             StyleTitleformatHook tf_hook_style(style_data_group, group_display_index, true);
-            SplitterTitleformatHook tf_hook(
+            tf::SplitterTitleformatHook tf_hook(
                 &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
         }
@@ -1291,7 +1292,7 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     for (size_t i = 0; i < count; i++) {
         {
-            SplitterTitleformatHook tf_hook(
+            tf::SplitterTitleformatHook tf_hook(
                 b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             m_playlist_api->activeplaylist_item_format_title(
                 index, &tf_hook, temp, m_column_data[i].m_display_script, nullptr, playback_control::display_level_all);
@@ -1306,7 +1307,7 @@ void PlaylistView::notify_update_item_data(size_t index)
             if (!colour_global_av) {
                 if (m_script_global_style.is_valid()) {
                     StyleTitleformatHook tf_hook_style(style_data_item, item_display_index);
-                    SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
+                    tf::SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
                         &tf_hook_date, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(
                         index, &tf_hook, temp, m_script_global_style, nullptr, play_control::display_level_all);
@@ -1319,7 +1320,7 @@ void PlaylistView::notify_update_item_data(size_t index)
         if (b_custom) {
             if (m_column_data[i].m_style_script.is_valid()) {
                 StyleTitleformatHook tf_hook_style(style_temp, item_display_index);
-                SplitterTitleformatHook tf_hook(
+                tf::SplitterTitleformatHook tf_hook(
                     &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
                 m_playlist_api->activeplaylist_item_format_title(
                     index, &tf_hook, temp, m_column_data[i].m_style_script, nullptr, play_control::display_level_all);

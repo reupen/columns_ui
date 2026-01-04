@@ -134,7 +134,7 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
         }
 
         if (context.item_text_format && context.bitmap_render_target) {
-            text_out_columns_and_colours(*context.item_text_format, context.wnd, context.dc, sub_item.text,
+            text_out_columns_and_styles(*context.item_text_format, context.wnd, context.dc, sub_item.text,
                 1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, text_colour,
                 {.bitmap_render_target = context.bitmap_render_target,
                     .is_selected = is_selected,
@@ -216,7 +216,7 @@ void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context,
     const auto border = 3_spx;
 
     const auto text_width
-        = text_out_columns_and_colours(*context.group_text_format, context.wnd, context.dc, text, x_offset, border, rc,
+        = text_out_columns_and_styles(*context.group_text_format, context.wnd, context.dc, text, x_offset, border, rc,
             cr, {.bitmap_render_target = context.bitmap_render_target, .enable_ellipses = cfg_ellipsis != 0});
 
     const auto line_height = 1_spx;

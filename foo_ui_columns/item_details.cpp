@@ -4,6 +4,7 @@
 #include "d2d_utils.h"
 #include "item_details_text.h"
 #include "tab_setup.h"
+#include "tf_text_format.h"
 
 namespace cui::panels::item_details {
 
@@ -364,9 +365,12 @@ void ItemDetails::refresh_contents(
 {
     if (m_handles.get_count()) {
         const auto font = fonts::get_font(g_guid_item_details_font_client);
-        const auto font_size = gsl::narrow_cast<int>(uih::direct_write::dip_to_pt(font->size()) + 0.5f);
+        const auto font_size = uih::direct_write::dip_to_pt(font->size());
 
-        TitleformatHookChangeFont tf_hook(font->log_font(), font_size);
+        const auto font_face = mmh::to_utf8({font->log_font().lfFaceName,
+            wcsnlen_s(font->log_font().lfFaceName, std::size(font->log_font().lfFaceName))});
+
+        tf::TextFormatTitleformatHook tf_hook(font_size, font_face, true);
         pfc::string8_fast_aggressive temp;
         temp.prealloc(2048);
 
@@ -1083,144 +1087,6 @@ void ItemDetails::recreate_text_format()
     reset_display_info();
 }
 
-namespace {
-
-template <class Value, typename Member>
-void process_simple_style_property(const std::vector<FontSegment>& segments, Member member,
-    std::function<void(const Value&, DWRITE_TEXT_RANGE text_range)> apply_to_layout)
-{
-    struct CurrentValue {
-        Value value;
-        size_t start{};
-        size_t count{};
-    };
-
-    std::optional<CurrentValue> current_value;
-
-    const auto apply_current_value = [&] {
-        if (!current_value)
-            return;
-
-        const auto text_range = DWRITE_TEXT_RANGE{
-            gsl::narrow<uint32_t>(current_value->start), gsl::narrow<uint32_t>(current_value->count)};
-
-        try {
-            apply_to_layout(current_value->value, text_range);
-        }
-        CATCH_LOG();
-
-        current_value.reset();
-    };
-
-    for (auto& [properties, start_character, character_count] : segments) {
-        const auto& value = properties.*member;
-
-        if (!value) {
-            apply_current_value();
-            continue;
-        }
-
-        const auto& segment_value = std::get<Value>(*value);
-
-        if (current_value
-            && (current_value->value != segment_value
-                || (current_value->start + current_value->count < start_character))) {
-            apply_current_value();
-        }
-
-        if (current_value) {
-            current_value->count += character_count;
-        } else {
-            current_value = {segment_value, start_character, character_count};
-        }
-    }
-
-    apply_current_value();
-}
-
-void process_wss_style_property(const std::vector<FontSegment>& segments,
-    const uih::direct_write::TextFormat& text_format, const uih::direct_write::TextLayout& text_layout)
-{
-    struct CurrentValue {
-        DWRITE_FONT_WEIGHT weight{};
-        std::variant<DWRITE_FONT_STRETCH, float> stretch{};
-        DWRITE_FONT_STYLE style{};
-        size_t start{};
-        size_t count{};
-    };
-
-    const auto initial_weight = text_format.get_weight();
-    const auto initial_stretch = text_format.get_stretch();
-    const auto initial_style = text_format.get_style();
-
-    std::optional<CurrentValue> current_value;
-
-    const auto apply_current_value = [&] {
-        if (!current_value)
-            return;
-
-        const auto text_range = DWRITE_TEXT_RANGE{
-            gsl::narrow<uint32_t>(current_value->start), gsl::narrow<uint32_t>(current_value->count)};
-
-        const auto weight = current_value->weight;
-        const auto stretch = current_value->stretch;
-        const auto style = current_value->style;
-
-        if (weight != initial_weight || stretch != initial_stretch || style != initial_style) {
-            try {
-                text_layout.set_wss(weight, stretch, style, text_range);
-            }
-            CATCH_LOG();
-        }
-
-        current_value.reset();
-    };
-
-    for (auto& [properties, start_character, character_count] : segments) {
-        std::optional<DWRITE_FONT_WEIGHT> weight;
-        std::optional<std::variant<DWRITE_FONT_STRETCH, float>> stretch;
-        std::optional<DWRITE_FONT_STYLE> style;
-
-        if (properties.font_weight)
-            weight = std::get<DWRITE_FONT_WEIGHT>(*properties.font_weight);
-
-        if (properties.font_stretch) {
-            if (std::holds_alternative<float>(*properties.font_stretch))
-                stretch = std::get<float>(*properties.font_stretch);
-            else
-                stretch = std::get<DWRITE_FONT_STRETCH>(*properties.font_stretch);
-        }
-
-        if (properties.font_style)
-            style = std::get<DWRITE_FONT_STYLE>(*properties.font_style);
-
-        if (!(weight || stretch || style)) {
-            apply_current_value();
-            continue;
-        }
-
-        if (current_value) {
-            if (current_value->start + current_value->count < start_character)
-                apply_current_value();
-            else if (current_value->weight != weight.value_or(initial_weight)
-                || current_value->stretch != stretch.value_or(initial_stretch)
-                || current_value->style != style.value_or(initial_style))
-                apply_current_value();
-        }
-
-        if (current_value) {
-            current_value->count += character_count;
-        } else {
-            current_value = {weight.value_or(initial_weight), stretch.value_or(initial_stretch),
-                style.value_or(initial_style), start_character, character_count};
-        }
-    }
-
-    apply_current_value();
-}
-
-} // namespace
-
 void ItemDetails::create_text_layout()
 {
     if (!m_direct_write_context || !m_text_format || m_text_layout)
@@ -1229,8 +1095,11 @@ void ItemDetails::create_text_layout()
     RECT rect{};
     GetClientRect(get_wnd(), &rect);
 
-    auto [render_text, colour_segments, font_segments]
-        = process_colour_and_font_codes(m_formatted_text, m_direct_write_context);
+    auto print_legacy_feedback
+        = [](auto&& message) { console::print("Item details – $set_font() error: ", message.c_str()); };
+
+    auto [render_text, colour_segments, font_segments] = uih::text_style::process_colour_and_font_codes(
+        m_formatted_text, print_legacy_feedback, m_direct_write_context);
 
     const auto padding = s_get_padding();
     const auto max_width = std::max(0, gsl::narrow<int>(wil::rect_width(rect)) - padding * 2);
@@ -1246,7 +1115,7 @@ void ItemDetails::create_text_layout()
         std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> old_d2d_brush_cache
             = std::move(m_d2d_brush_cache);
 
-        for (auto& [colour, start_character, character_count] : colour_segments) {
+        for (auto& [colour, _, start_character, character_count] : colour_segments) {
             wil::com_ptr<ID2D1SolidColorBrush> brush;
 
             if (auto iter = m_d2d_brush_cache.find(colour); iter != m_d2d_brush_cache.end()) {
@@ -1265,21 +1134,7 @@ void ItemDetails::create_text_layout()
     }
     CATCH_LOG()
 
-    process_simple_style_property<std::wstring>(font_segments, &FormatProperties::font_family,
-        [&](auto&& value, auto&& text_range) { m_text_layout->set_family(value.c_str(), text_range); });
-
-    process_simple_style_property<float>(
-        font_segments, &FormatProperties::font_size, [&](auto&& value, auto&& text_range) {
-            m_text_layout->set_size(uih::direct_write::pt_to_dip(value), text_range);
-        });
-
-    process_simple_style_property<TextDecorationType>(
-        font_segments, &FormatProperties::text_decoration, [&](auto&& value, auto&& text_range) {
-            if (value == TextDecorationType::Underline)
-                m_text_layout->set_underline(true, text_range);
-        });
-
-    process_wss_style_property(font_segments, *m_text_format, *m_text_layout);
+    uih::direct_write::set_layout_font_segments(*m_text_layout, font_segments);
 }
 
 void ItemDetails::on_font_change()

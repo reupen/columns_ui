@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "title_formatting.h"
+#include "tf_field_provider.h"
 
 namespace cui::tf {
 
@@ -50,15 +50,6 @@ bool FieldProviderTitleformatHook::process_field(
     p_found_flag = true;
 
     return std::visit(ValueVisitor(p_out), iter->second);
-}
-
-std::string_view get_param(titleformat_hook_function_params& params, size_t index)
-{
-    const char* param{};
-    size_t param_length{};
-    params.get_param(index, param, param_length);
-
-    return {param, param_length};
 }
 
 } // namespace cui::tf

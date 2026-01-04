@@ -127,6 +127,9 @@
     <Filter Include="Command line">
       <UniqueIdentifier>{3a26f18b-a5d9-4a25-aec2-3d55d89697cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Title formatting">
+      <UniqueIdentifier>{dfa0e6d2-ef84-4e1f-a5a9-41d7363cca2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp">
@@ -506,9 +509,6 @@
     <ClCompile Include="rename_dialog.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="title_formatting.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
     <ClCompile Include="playlist_switcher_title_formatting.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
@@ -611,9 +611,6 @@
     <ClCompile Include="string.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="item_details_format_parser.cpp">
-      <Filter>Item details</Filter>
-    </ClCompile>
     <ClCompile Include="font_picker.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
@@ -649,6 +646,15 @@
     </ClCompile>
     <ClCompile Include="fb2k_misc.cpp">
       <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="tf_field_provider.cpp">
+      <Filter>Title formatting</Filter>
+    </ClCompile>
+    <ClCompile Include="tf_text_format.cpp">
+      <Filter>Title formatting</Filter>
+    </ClCompile>
+    <ClCompile Include="tf_utils.cpp">
+      <Filter>Title formatting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -839,9 +845,6 @@
     <ClInclude Include="rename_dialog.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="title_formatting.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="playlist_switcher_title_formatting.h">
       <Filter>Playlist switcher</Filter>
     </ClInclude>
@@ -929,9 +932,6 @@
     <ClInclude Include="string.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="item_details_format_parser.h">
-      <Filter>Item details</Filter>
-    </ClInclude>
     <ClInclude Include="lexy_user_config.hpp" />
     <ClInclude Include="font_picker.h">
       <Filter>Utilities</Filter>
@@ -974,6 +974,18 @@
     </ClInclude>
     <ClInclude Include="fb2k_misc.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="tf_field_provider.h">
+      <Filter>Title formatting</Filter>
+    </ClInclude>
+    <ClInclude Include="tf_text_format.h">
+      <Filter>Title formatting</Filter>
+    </ClInclude>
+    <ClInclude Include="tf_utils.h">
+      <Filter>Title formatting</Filter>
+    </ClInclude>
+    <ClInclude Include="tf_splitter_hook.h">
+      <Filter>Title formatting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

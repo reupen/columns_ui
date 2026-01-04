@@ -1,7 +1,9 @@
 #include "pch.h"
+
 #include "playlist_view_tfhooks.h"
 #include "tab_colours.h"
 #include "prefs_utils.h"
+#include "tf_splitter_hook.h"
 
 void preview_to_console(const char* spec, bool extra)
 {
@@ -30,7 +32,7 @@ void preview_to_console(const char* spec, bool extra)
             PlaylistNameTitleformatHook tf_hook_playlist_name;
             DateTitleformatHook tf_hook_date(&st);
             SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-            SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+            cui::tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
             playlist_api->activeplaylist_item_format_title(
                 idx, &tf_hook, str_dummy, to_global, nullptr, play_control::display_level_all);
         }

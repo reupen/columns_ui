@@ -420,7 +420,7 @@ void draw_item_content(
 
     if (part_id == StatusBarPartID::PlaybackInformation) {
         if (state->direct_write_text_format)
-            uih::direct_write::text_out_columns_and_colours(
+            uih::direct_write::text_out_columns_and_styles(
                 *state->direct_write_text_format, wnd, dc, text, 0, 0, rc, text_colour);
         return;
     }
@@ -454,8 +454,8 @@ void draw_item_content(
     }
 
     if (state->direct_write_text_format)
-        uih::direct_write::text_out_columns_and_colours(*state->direct_write_text_format, wnd, dc, text, x - rc.left, 0,
-            rc, text_colour, {.enable_colour_codes = false, .enable_tab_columns = false});
+        uih::direct_write::text_out_columns_and_styles(*state->direct_write_text_format, wnd, dc, text, x - rc.left, 0,
+            rc, text_colour, {.enable_style_codes = false, .enable_tab_columns = false});
 }
 
 } // namespace
