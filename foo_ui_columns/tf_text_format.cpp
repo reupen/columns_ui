@@ -27,7 +27,7 @@ bool TextFormatTitleformatHook::process_function(titleformat_text_out* p_out, co
         return true;
     }
 
-    if (!stricmp_utf8_ex(p_name, p_name_length, "set_format", pfc_infinite)) {
+    if (!stricmp_utf8_ex(p_name, p_name_length, set_format_function_name.c_str(), pfc_infinite)) {
         const auto param_count = p_params->get_param_count();
 
         if (param_count != 1)
@@ -41,7 +41,7 @@ bool TextFormatTitleformatHook::process_function(titleformat_text_out* p_out, co
     }
 
     if ((m_legacy_functionality_enabled && !stricmp_utf8_ex(p_name, p_name_length, "reset_font", pfc_infinite))
-        || !stricmp_utf8_ex(p_name, p_name_length, "reset_format", pfc_infinite)) {
+        || !stricmp_utf8_ex(p_name, p_name_length, reset_format_function_name.c_str(), pfc_infinite)) {
         switch (p_params->get_param_count()) {
         case 0: {
             p_out->write(titleformat_inputtypes::unknown,
@@ -69,11 +69,46 @@ bool TextFormatTitleformatHook::process_field(
         return true;
     }
 
-    if (!stricmp_utf8_ex(p_name, p_name_length, "default_font_size", pfc_infinite)) {
+    if (!stricmp_utf8_ex(p_name, p_name_length, default_font_size_field_name.c_str(), pfc_infinite)) {
         p_out->write(titleformat_inputtypes::unknown, fmt::format("{:.1f}", m_default_font_size_pt).c_str());
         p_found_flag = true;
         return true;
     }
+    return false;
+}
+
+bool NullTextFormatTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name,
+    size_t p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
+{
+    p_found_flag = false;
+
+    if (!stricmp_utf8_ex(
+            p_name, p_name_length, TextFormatTitleformatHook::set_format_function_name.c_str(), pfc_infinite)) {
+        p_found_flag = true;
+        return true;
+    }
+
+    if (!stricmp_utf8_ex(
+            p_name, p_name_length, TextFormatTitleformatHook::reset_format_function_name.c_str(), pfc_infinite)) {
+        p_found_flag = true;
+        return true;
+    }
+
+    return false;
+}
+
+bool NullTextFormatTitleformatHook::process_field(
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
+{
+    p_found_flag = false;
+
+    if (!stricmp_utf8_ex(
+            p_name, p_name_length, TextFormatTitleformatHook::default_font_size_field_name.c_str(), pfc_infinite)) {
+        p_out->write(titleformat_inputtypes::unknown, "0.0");
+        p_found_flag = true;
+        return true;
+    }
+
     return false;
 }
 

@@ -1,5 +1,23 @@
 # Change log
 
+## Development version
+
+### Features
+
+- Support for the `$set_format()`, `$reset_format()` and `%default_font_size%`
+  title formatting functions and fields was added to playlist view display,
+  group and global scripts.
+  [[#1529](https://github.com/reupen/columns_ui/pull/1529)]
+
+  These functions and fields behave as they do in Item details and allow text
+  styling to be changed for specific parts of text. Note that `$set_format()`
+  does not affect the item height, which is fixed based on the size of the base
+  font and the vertical item padding setting.
+
+  Additionally, `%default_font_size%` has been modified universally to return
+  the font size to one decimal place instead of rounding to the nearest whole
+  number.
+
 ## 3.2.3
 
 ### Bug fixes
