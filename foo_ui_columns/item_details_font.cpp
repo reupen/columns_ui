@@ -1,83 +1,10 @@
 #include "pch.h"
+
 #include "item_details.h"
-#include "config.h"
-#include "title_formatting.h"
+
+#include "tf_utils.h"
 
 namespace cui::panels::item_details {
-
-TitleformatHookChangeFont::TitleformatHookChangeFont(const LOGFONT& lf, int font_size) : m_default_font_size(font_size)
-{
-    m_default_font_face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, std::size(lf.lfFaceName));
-}
-
-bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
-    titleformat_hook_function_params* p_params, bool& p_found_flag)
-{
-    p_found_flag = false;
-
-    if (!stricmp_utf8_ex(p_name, p_name_length, "set_font", pfc_infinite)) {
-        const auto param_count = p_params->get_param_count();
-
-        if (param_count < 2 || param_count > 3)
-            return true;
-
-        const auto face = tf::get_param(*p_params, 0);
-        const auto size_points = tf::get_param(*p_params, 1);
-        const auto have_flags = p_params->get_param_count() == 3;
-        const auto flags = have_flags ? tf::get_param(*p_params, 2) : ""sv;
-
-        const auto value = fmt::format("\x7\x1\t{}\t{}\t{}\x7", face, size_points, flags);
-        p_out->write(titleformat_inputtypes::unknown, value.data(), value.size());
-        p_found_flag = true;
-        return true;
-    }
-
-    if (!stricmp_utf8_ex(p_name, p_name_length, "set_format", pfc_infinite)) {
-        const auto param_count = p_params->get_param_count();
-
-        if (param_count != 1)
-            return true;
-
-        const auto attributes = tf::get_param(*p_params, 0);
-        const auto value = fmt::format("\x7\x2\t{}\x7", attributes);
-        p_out->write(titleformat_inputtypes::unknown, value.data(), value.size());
-        p_found_flag = true;
-        return true;
-    }
-
-    if (!stricmp_utf8_ex(p_name, p_name_length, "reset_font", pfc_infinite)
-        || !stricmp_utf8_ex(p_name, p_name_length, "reset_format", pfc_infinite)) {
-        switch (p_params->get_param_count()) {
-        case 0: {
-            p_out->write(titleformat_inputtypes::unknown,
-                "\x07"
-                ""
-                "\x07",
-                pfc_infinite);
-            p_found_flag = true;
-        }
-        }
-        return true;
-    }
-    return false;
-}
-
-bool TitleformatHookChangeFont::process_field(
-    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
-{
-    p_found_flag = false;
-    if (!stricmp_utf8_ex(p_name, p_name_length, "default_font_face", pfc_infinite)) {
-        p_out->write(titleformat_inputtypes::unknown, m_default_font_face);
-        p_found_flag = true;
-        return true;
-    }
-    if (!stricmp_utf8_ex(p_name, p_name_length, "default_font_size", pfc_infinite)) {
-        p_out->write_int(titleformat_inputtypes::unknown, m_default_font_size);
-        p_found_flag = true;
-        return true;
-    }
-    return false;
-}
 
 class ItemDetailsFontClient : public fonts::client {
 public:

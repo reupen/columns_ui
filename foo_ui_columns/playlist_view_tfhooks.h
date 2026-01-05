@@ -103,25 +103,6 @@ public:
     explicit DateTitleformatHook(const SYSTEMTIME* st = nullptr) : p_st(st) {}
 };
 
-class SplitterTitleformatHook : public titleformat_hook {
-public:
-    SplitterTitleformatHook(titleformat_hook* p_hook1, titleformat_hook* p_hook2, titleformat_hook* p_hook3,
-        titleformat_hook* p_hook4 = nullptr)
-        : m_hook1(p_hook1)
-        , m_hook2(p_hook2)
-        , m_hook3(p_hook3)
-        , m_hook4(p_hook4)
-    {
-    }
-    bool process_field(
-        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
-    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
-        titleformat_hook_function_params* p_params, bool& p_found_flag) override;
-
-private:
-    titleformat_hook *m_hook1, *m_hook2, *m_hook3, *m_hook4;
-};
-
 class PlaylistNameTitleformatHook : public titleformat_hook {
     bool m_initialised{false};
     pfc::string8 m_name;

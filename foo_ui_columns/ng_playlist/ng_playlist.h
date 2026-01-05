@@ -189,14 +189,17 @@ public:
     static void g_on_playback_follows_cursor_change(bool b_val);
     static void g_on_show_tooltips_change();
     static void s_on_dark_mode_status_change();
-    static void g_on_font_change();
-    static void g_on_header_font_change();
-    static void g_on_group_font_change();
+    static void s_on_font_change();
+    static void s_on_header_font_change();
+    static void s_on_group_font_change();
     static void g_on_sorting_enabled_change();
     static void g_on_show_sort_indicators_change();
     static void g_on_edge_style_change();
     static void s_redraw_all();
     static void g_on_time_change();
+
+    void on_font_change();
+    void on_group_font_change();
 
     const GUID& get_extension_guid() const override;
     void get_name(pfc::string_base& out) const override;

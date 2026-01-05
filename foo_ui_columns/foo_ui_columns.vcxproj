@@ -278,7 +278,6 @@
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
     <ClCompile Include="imaging.cpp" />
-    <ClCompile Include="item_details_format_parser.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
@@ -306,7 +305,9 @@
     <ClCompile Include="tab_setup.cpp" />
     <ClCompile Include="tab_status_pane.cpp" />
     <ClCompile Include="tab_text_rendering.cpp" />
-    <ClCompile Include="title_formatting.cpp" />
+    <ClCompile Include="tf_text_format.cpp" />
+    <ClCompile Include="tf_field_provider.cpp" />
+    <ClCompile Include="tf_utils.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="config_defaults.cpp" />
     <ClCompile Include="config_items.cpp" />
@@ -465,7 +466,6 @@
     <ClInclude Include="icons.h" />
     <ClInclude Include="imaging.h" />
     <ClInclude Include="item_details.h" />
-    <ClInclude Include="item_details_format_parser.h" />
     <ClInclude Include="item_details_text.h" />
     <ClInclude Include="item_properties.h" />
     <ClInclude Include="lexy_user_config.hpp" />
@@ -520,6 +520,9 @@
     <ClInclude Include="tab_main_window.h" />
     <ClInclude Include="tab_setup.h" />
     <ClInclude Include="tab_text_rendering.h" />
+    <ClInclude Include="tf_splitter_hook.h" />
+    <ClInclude Include="tf_text_format.h" />
+    <ClInclude Include="tf_utils.h" />
     <ClInclude Include="volume.h" />
     <ClInclude Include="seekbar.h" />
     <ClInclude Include="config.h" />
@@ -541,7 +544,7 @@
     <ClInclude Include="tab_dark_mode.h" />
     <ClInclude Include="tab_layout.h" />
     <ClInclude Include="tab_layout_misc.h" />
-    <ClInclude Include="title_formatting.h" />
+    <ClInclude Include="tf_field_provider.h" />
     <ClInclude Include="urls.h" />
     <ClInclude Include="vis_spectrum.h" />
     <ClInclude Include="wcs.h" />

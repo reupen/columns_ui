@@ -26,21 +26,6 @@ extern cfg_uint cfg_item_details_horizontal_alignment;
 extern cfg_uint cfg_item_details_vertical_alignment;
 extern cfg_bool cfg_item_details_word_wrapping;
 
-class TitleformatHookChangeFont : public titleformat_hook {
-public:
-    bool process_field(
-        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
-
-    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
-        titleformat_hook_function_params* p_params, bool& p_found_flag) override;
-
-    TitleformatHookChangeFont(const LOGFONT& lf, int font_size);
-
-private:
-    pfc::string8 m_default_font_face;
-    int m_default_font_size;
-};
-
 class ItemDetails
     : public uie::container_uie_window_v3
     , public ui_selection_callback

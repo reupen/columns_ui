@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "playlist_view_tfhooks.h"
+#include "tf_splitter_hook.h"
 #include "ng_playlist/ng_playlist_style.h"
 
 EditorFontNotify g_editor_font_notify;
@@ -151,7 +152,7 @@ void speedtest(ColumnListCRef columns, bool b_global)
                             cui::panels::playlist_view::StyleTitleformatHook tf_hook_style(style_info, 0);
                             SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
                             DateTitleformatHook tf_hook_date(&st);
-                            SplitterTitleformatHook tf_hook(
+                            cui::tf::SplitterTitleformatHook tf_hook(
                                 &tf_hook_style, b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
 
                             playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp,
@@ -215,7 +216,7 @@ void speedtest(ColumnListCRef columns, bool b_global)
                                 cui::panels::playlist_view::StyleTitleformatHook tf_hook_style(style_info, 0);
                                 SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
                                 DateTitleformatHook tf_hook_date(&st);
-                                SplitterTitleformatHook tf_hook(
+                                cui::tf::SplitterTitleformatHook tf_hook(
                                     &tf_hook_style, b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
 
                                 playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp,

@@ -6,6 +6,9 @@
 #include "ng_playlist_groups.h"
 #include "system_appearance_manager.h"
 #include "tab_setup.h"
+#include "tf_splitter_hook.h"
+#include "tf_text_format.h"
+#include "tf_utils.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
 #include "../playlist_view_tfhooks.h"
@@ -457,22 +460,22 @@ void PlaylistView::g_on_vertical_item_padding_change()
         window->set_vertical_item_padding(settings::playlist_view_item_padding);
 }
 
-void PlaylistView::g_on_font_change()
+void PlaylistView::s_on_font_change()
 {
     for (auto& window : s_windows)
-        window->recreate_items_text_format(item_text_layout_cache_size);
+        window->on_font_change();
 }
 
-void PlaylistView::g_on_header_font_change()
+void PlaylistView::s_on_header_font_change()
 {
     for (auto& window : s_windows)
         window->recreate_header_text_format();
 }
 
-void PlaylistView::g_on_group_font_change()
+void PlaylistView::s_on_group_font_change()
 {
     for (auto& window : s_windows)
-        window->recreate_group_text_format(group_text_layout_cache_size);
+        window->on_group_font_change();
 }
 
 void PlaylistView::s_update_all_items()
@@ -480,6 +483,7 @@ void PlaylistView::s_update_all_items()
     for (auto& window : s_windows)
         window->update_all_items();
 }
+
 void PlaylistView::g_on_show_header_change()
 {
     for (auto& window : s_windows)
@@ -505,6 +509,41 @@ void PlaylistView::g_on_time_change()
     for (auto& window : s_windows)
         window->on_time_change();
 }
+
+void PlaylistView::on_font_change()
+{
+    recreate_items_text_format(item_text_layout_cache_size);
+
+    if (!get_wnd())
+        return;
+
+    const auto global_script_using_default_font_size = m_script_global.is_valid()
+        && tf::is_field_used(m_script_global, tf::TextFormatTitleformatHook::default_font_size_field_name);
+
+    const auto column_script_using_default_font_size = [&] {
+        return ranges::any_of(m_column_data, [](auto&& column) {
+            return tf::is_field_used(
+                column.m_display_script, tf::TextFormatTitleformatHook::default_font_size_field_name);
+        });
+    };
+
+    if (global_script_using_default_font_size || column_script_using_default_font_size())
+        refresh_all_items_text();
+}
+
+void PlaylistView::on_group_font_change()
+{
+    recreate_group_text_format(group_text_layout_cache_size);
+
+    if (!get_wnd())
+        return;
+
+    if (ranges::any_of(m_scripts, [](auto&& script) {
+            return tf::is_field_used(script, tf::TextFormatTitleformatHook::default_font_size_field_name);
+        }))
+        flush_items();
+}
+
 void PlaylistView::g_on_show_tooltips_change()
 {
     for (auto& window : s_windows) {
@@ -579,7 +618,7 @@ const char* PlaylistView::PlaylistViewSearchContext::get_item_text(size_t index)
 
         if (has_global_variables) {
             SetGlobalTitleformatHook<true, false> tf_hook_set_global(global_variables);
-            SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+            tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
             pfc::string8 _;
             track->formatTitle_v2(rec, &tf_hook, _, m_global_script, nullptr);
         }
@@ -588,8 +627,11 @@ const char* PlaylistView::PlaylistViewSearchContext::get_item_text(size_t index)
         mmh::StringAdaptor adapted_title(title);
 
         SetGlobalTitleformatHook<false, true> tf_hook_get_global(global_variables);
-        SplitterTitleformatHook tf_hook(
-            has_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+        tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
+
+        tf::SplitterTitleformatHook tf_hook(has_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date,
+            &tf_hook_playlist_name, &null_text_format_tf_hook);
+
         track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_script, nullptr);
         m_items[index + offset] = std::move(title);
     });
@@ -699,6 +741,8 @@ void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending
     if (b_selection_only)
         m_playlist_api->activeplaylist_get_selection_mask(mask);
 
+    tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
+
     SYSTEMTIME st;
     GetLocalTime(&st);
 
@@ -714,15 +758,16 @@ void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending
 
                 if (extra) {
                     SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                    SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+                    tf::SplitterTitleformatHook tf_hook(
+                        &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &null_text_format_tf_hook);
                     pfc::string8 output;
                     m_playlist_api->activeplaylist_item_format_title(
                         n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
                 }
 
                 SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
-                SplitterTitleformatHook tf_hook(
-                    extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+                tf::SplitterTitleformatHook tf_hook(extra ? &tf_hook_get_global : nullptr, &tf_hook_date,
+                    &tf_hook_playlist_name, &null_text_format_tf_hook);
                 m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
                     m_column_data[column_index].m_sort_script, nullptr, play_control::display_level_none);
             }
@@ -779,10 +824,12 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
         m_playlist_api->activeplaylist_get_all_items(tracks);
 
     const bool extra = m_script_global.is_valid() && cfg_global_sort;
+    tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
     std::vector<std::wstring> data{tracks.size()};
 
-    metadb_v2::get()->queryMultiParallel_(
-        tracks, [this, &tracks, &data, &st, extra, column_index](size_t index, const metadb_v2::rec_t& rec) {
+    metadb_v2::get()->queryMultiParallel_(tracks,
+        [this, &tracks, &data, &null_text_format_tf_hook, &st, extra, column_index](
+            size_t index, const metadb_v2::rec_t& rec) {
             metadb_handle_v2::ptr track;
             track &= tracks[index];
 
@@ -792,7 +839,8 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
 
             if (extra) {
                 SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+                tf::SplitterTitleformatHook tf_hook(
+                    &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &null_text_format_tf_hook);
                 pfc::string8 output;
                 track->formatTitle_v2(rec, &tf_hook, output, m_script_global, nullptr);
             }
@@ -801,15 +849,15 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
             mmh::StringAdaptor adapted_title(title);
 
             SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
-            SplitterTitleformatHook tf_hook(
-                extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+            tf::SplitterTitleformatHook tf_hook(extra ? &tf_hook_get_global : nullptr, &tf_hook_date,
+                &tf_hook_playlist_name, &null_text_format_tf_hook);
             track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_data[column_index].m_sort_script, nullptr);
 
             const char* ptr = title.c_str();
             std::string title_without_colour_codes;
 
             if (strchr(ptr, 3)) {
-                title_without_colour_codes = uih::remove_colour_codes(ptr);
+                title_without_colour_codes = uih::text_style::remove_colour_and_font_codes(ptr);
                 ptr = title_without_colour_codes.c_str();
             }
 
@@ -1247,10 +1295,12 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     DateTitleformatHook tf_hook_date(&st);
     PlaylistNameTitleformatHook tf_hook_playlist_name;
+    tf::TextFormatTitleformatHook text_format_tf_hook(get_items_font_size_pt().value_or(0.f));
 
     if (b_global) {
         SetGlobalTitleformatHook<true, false> tf_hook_set_global(globals);
-        SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+        tf::SplitterTitleformatHook tf_hook(
+            &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &text_format_tf_hook);
         m_playlist_api->activeplaylist_item_format_title(
             index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
     }
@@ -1281,7 +1331,7 @@ void PlaylistView::notify_update_item_data(size_t index)
         CellStyleData style_data_group = CellStyleData::g_create_default();
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
             StyleTitleformatHook tf_hook_style(style_data_group, group_display_index, true);
-            SplitterTitleformatHook tf_hook(
+            tf::SplitterTitleformatHook tf_hook(
                 &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
         }
@@ -1291,8 +1341,9 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     for (size_t i = 0; i < count; i++) {
         {
-            SplitterTitleformatHook tf_hook(
-                b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+            tf::SplitterTitleformatHook tf_hook(
+                b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name, &text_format_tf_hook);
+
             m_playlist_api->activeplaylist_item_format_title(
                 index, &tf_hook, temp, m_column_data[i].m_display_script, nullptr, playback_control::display_level_all);
             p_out[i] = temp;
@@ -1306,7 +1357,7 @@ void PlaylistView::notify_update_item_data(size_t index)
             if (!colour_global_av) {
                 if (m_script_global_style.is_valid()) {
                     StyleTitleformatHook tf_hook_style(style_data_item, item_display_index);
-                    SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
+                    tf::SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
                         &tf_hook_date, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(
                         index, &tf_hook, temp, m_script_global_style, nullptr, play_control::display_level_all);
@@ -1319,7 +1370,7 @@ void PlaylistView::notify_update_item_data(size_t index)
         if (b_custom) {
             if (m_column_data[i].m_style_script.is_valid()) {
                 StyleTitleformatHook tf_hook_style(style_temp, item_display_index);
-                SplitterTitleformatHook tf_hook(
+                tf::SplitterTitleformatHook tf_hook(
                     &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
                 m_playlist_api->activeplaylist_item_format_title(
                     index, &tf_hook, temp, m_column_data[i].m_style_script, nullptr, play_control::display_level_all);
@@ -1361,9 +1412,11 @@ void PlaylistView::get_insert_items(
     const auto group_count = m_scripts.get_count();
     const auto metadb_v2_api = metadb_v2::tryGet();
 
+    tf::TextFormatTitleformatHook text_format_tf_hook(get_group_font_size_pt().value_or(0.f));
+
     if (metadb_v2_api.is_valid()) {
-        metadb_v2_api->queryMultiParallel_(
-            handles, [this, &handles, &items, group_count](size_t index, const metadb_v2::rec_t& rec) {
+        metadb_v2_api->queryMultiParallel_(handles,
+            [this, &handles, &items, &text_format_tf_hook, group_count](size_t index, const metadb_v2::rec_t& rec) {
                 metadb_handle_v2::ptr track;
                 track &= handles[index];
 
@@ -1373,7 +1426,7 @@ void PlaylistView::get_insert_items(
                 items[index].m_groups.resize(group_count);
 
                 for (auto&& [script, group] : ranges::views::zip(m_scripts, items[index].m_groups)) {
-                    track->formatTitle_v2(rec, nullptr, adapted_string, script, nullptr);
+                    track->formatTitle_v2(rec, &text_format_tf_hook, adapted_string, script, nullptr);
                     group = title.c_str();
                 }
             });
@@ -1381,15 +1434,16 @@ void PlaylistView::get_insert_items(
         return;
     }
 
-    concurrency::parallel_for(size_t{0}, count, [this, &items, &handles, group_count](size_t index) {
-        pfc::string8_fast temp;
-        temp.prealloc(32);
-        items[index].m_groups.resize(group_count);
-        for (size_t i = 0; i < group_count; i++) {
-            handles[index]->format_title(nullptr, temp, m_scripts[i], nullptr);
-            items[index].m_groups[i] = temp;
-        }
-    });
+    concurrency::parallel_for(
+        size_t{0}, count, [this, &items, &handles, &text_format_tf_hook, group_count](size_t index) {
+            pfc::string8_fast temp;
+            temp.prealloc(32);
+            items[index].m_groups.resize(group_count);
+            for (size_t i = 0; i < group_count; i++) {
+                handles[index]->format_title(&text_format_tf_hook, temp, m_scripts[i], nullptr);
+                items[index].m_groups[i] = temp;
+            }
+        });
 }
 
 void PlaylistView::flush_items()
@@ -1561,7 +1615,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { PlaylistView::g_on_font_change(); }
+    void on_font_changed() const override { PlaylistView::s_on_font_change(); }
 };
 
 class PlaylistViewHeaderFontClient : public fonts::client {
@@ -1571,7 +1625,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { PlaylistView::g_on_header_font_change(); }
+    void on_font_changed() const override { PlaylistView::s_on_header_font_change(); }
 };
 
 class PlaylistViewGroupFontClient : public fonts::client {
@@ -1581,7 +1635,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { PlaylistView::g_on_group_font_change(); }
+    void on_font_changed() const override { PlaylistView::s_on_group_font_change(); }
 };
 
 PlaylistViewItemFontClient::factory<PlaylistViewItemFontClient> g_font_client_ngpv;

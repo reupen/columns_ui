@@ -34,6 +34,7 @@
 #include <set>
 #include <span>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <unordered_map>
 #include <unordered_set>
@@ -112,7 +113,9 @@
 #include "../ui_helpers/direct_2d.h"
 #include "../ui_helpers/direct_3d.h"
 #include "../ui_helpers/direct_write.h"
+#include "../ui_helpers/direct_write_style_utils.h"
 #include "../ui_helpers/direct_write_text_out.h"
+#include "../ui_helpers/text_style.h"
 #include "../ui_helpers/list_view/list_view.h"
 #include "../mmh/stdafx.h"
 #include "../fbh/stdafx.h"
