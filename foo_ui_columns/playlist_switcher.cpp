@@ -18,7 +18,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { PlaylistSwitcher::g_on_font_items_change(); }
+    void on_font_changed() const override { PlaylistSwitcher::s_on_font_items_change(); }
 };
 
 PlaylistSwitcherFontClient::factory<PlaylistSwitcherFontClient> g_font_client_switcher;
@@ -27,7 +27,7 @@ PlaylistSwitcherColoursClient::factory<PlaylistSwitcherColoursClient> g_appearan
 
 void PlaylistSwitcherColoursClient::on_colour_changed(uint32_t mask) const
 {
-    PlaylistSwitcher::g_redraw_all();
+    PlaylistSwitcher::s_redraw_all();
 }
 
 void PlaylistSwitcherColoursClient::on_bool_changed(uint32_t mask) const

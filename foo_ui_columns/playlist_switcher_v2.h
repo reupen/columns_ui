@@ -76,12 +76,12 @@ class PlaylistSwitcher
     };
 
 public:
-    static void g_on_font_items_change();
-    static void g_on_edgestyle_change();
-    static void g_on_vertical_item_padding_change();
-    static void g_redraw_all();
+    static void s_on_font_items_change();
+    static void s_on_edgestyle_change();
+    static void s_on_vertical_item_padding_change();
+    static void s_redraw_all();
     static void s_on_dark_mode_status_change();
-    static void g_refresh_all_items();
+    static void s_refresh_all_items();
 
     void destroy_switch_timer()
     {
@@ -116,9 +116,10 @@ public:
         return false;
     }
 
-    void get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& p_out);
+    void get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& p_out) const;
+    void repopulate_items();
     void refresh_all_items();
-    void refresh_items(size_t base, size_t count, bool b_update = true);
+    void refresh_items(size_t base, size_t count);
     void add_items(size_t base, size_t count);
     void refresh_columns();
 
@@ -358,8 +359,8 @@ private:
     service_ptr_t<playlist_manager_v3> m_playlist_api;
     service_ptr_t<playback_control> m_playback_api;
 
-    static const GUID g_guid_font;
-    static std::vector<PlaylistSwitcher*> g_windows;
+    static constexpr GUID font_id{0x70a5c273, 0x67ab, 0x4bb6, {0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd}};
+    static std::vector<PlaylistSwitcher*> s_windows;
 };
 
 } // namespace cui::panels::playlist_switcher
