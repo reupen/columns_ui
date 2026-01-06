@@ -6,8 +6,9 @@
 
 - Support for the `$set_format()`, `$reset_format()` and `%default_font_size%`
   title formatting functions and fields was added to playlist view display,
-  group and global scripts.
-  [[#1529](https://github.com/reupen/columns_ui/pull/1529)]
+  group and global scripts and to the playlist switcher.
+  [[#1529](https://github.com/reupen/columns_ui/pull/1529),
+  [#1530](https://github.com/reupen/columns_ui/pull/1530)]
 
   These functions and fields behave as they do in Item details and allow text
   styling to be changed for specific parts of text. Note that `$set_format()`

@@ -2,26 +2,29 @@
 #include "playlist_switcher_v2.h"
 
 #include "playlist_switcher_title_formatting.h"
+#include "tf_text_format.h"
+#include "tf_utils.h"
 
 namespace cui::panels::playlist_switcher {
 
-// {70A5C273-67AB-4bb6-B61C-F7975A6871FD}
-const GUID PlaylistSwitcher::g_guid_font
-    = {0x70a5c273, 0x67ab, 0x4bb6, {0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd}};
+std::vector<PlaylistSwitcher*> PlaylistSwitcher::s_windows;
 
-std::vector<PlaylistSwitcher*> PlaylistSwitcher::g_windows;
-
-void PlaylistSwitcher::get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& p_out)
+void PlaylistSwitcher::get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& p_out) const
 {
     p_out.set_count(count);
 
+    titleformat_object::ptr tf_object;
+
+    if (cfg_playlist_switcher_use_tagz)
+        tf_object = titleformat_compiler::get()->compile(cfg_playlist_switcher_tagz);
+
     for (size_t i = 0; i < count; i++) {
         p_out[i].m_subitems.resize(1);
-        p_out[i].m_subitems[0].set_string(format_playlist_title(i + base));
+        p_out[i].m_subitems[0].set_string(format_playlist_title(i + base, tf_object, get_items_font_size_pt()));
     }
 }
 
-void PlaylistSwitcher::refresh_all_items()
+void PlaylistSwitcher::repopulate_items()
 {
     remove_items(bit_array_true());
 
@@ -32,7 +35,12 @@ void PlaylistSwitcher::refresh_all_items()
         set_item_selected_single(index, false);
 }
 
-void PlaylistSwitcher::refresh_items(size_t base, size_t count, bool b_update)
+void PlaylistSwitcher::refresh_all_items()
+{
+    refresh_items(0, get_item_count());
+}
+
+void PlaylistSwitcher::refresh_items(size_t base, size_t count)
 {
     pfc::list_t<InsertItem> items_insert;
     get_insert_items(base, count, items_insert);
@@ -79,41 +87,48 @@ void PlaylistSwitcher::move_selection(int delta)
         }
     }
 }
-void PlaylistSwitcher::g_on_edgestyle_change()
+void PlaylistSwitcher::s_on_edgestyle_change()
 {
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->set_edge_style(cfg_plistframe);
     }
 }
-void PlaylistSwitcher::g_on_vertical_item_padding_change()
+void PlaylistSwitcher::s_on_vertical_item_padding_change()
 {
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->set_vertical_item_padding(settings::playlist_switcher_item_padding);
     }
 }
-void PlaylistSwitcher::g_redraw_all()
+void PlaylistSwitcher::s_redraw_all()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 }
 
 void PlaylistSwitcher::s_on_dark_mode_status_change()
 {
     const auto is_dark = colours::is_dark_mode_active();
-    for (auto&& window : g_windows)
+    for (auto&& window : s_windows)
         window->set_use_dark_mode(is_dark);
 }
 
-void PlaylistSwitcher::g_refresh_all_items()
+void PlaylistSwitcher::s_refresh_all_items()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->refresh_all_items();
 }
 
-void PlaylistSwitcher::g_on_font_items_change()
+void PlaylistSwitcher::s_on_font_items_change()
 {
-    for (auto& window : g_windows)
+    const auto is_default_font_size_used = cfg_playlist_switcher_use_tagz
+        && tf::is_field_used(cfg_playlist_switcher_tagz, tf::TextFormatTitleformatHook::default_font_size_field_name);
+
+    for (auto& window : s_windows) {
         window->recreate_items_text_format();
+
+        if (is_default_font_size_used)
+            window->refresh_all_items();
+    }
 }
 
 void PlaylistSwitcher::notify_on_initialisation()
@@ -137,7 +152,7 @@ void PlaylistSwitcher::notify_on_create()
 
     refresh_columns();
 
-    refresh_all_items();
+    repopulate_items();
 
     m_playlist_api->register_callback(this, flag_all);
     standard_api_create_t<play_callback_manager>()->register_callback(this, flag_on_playback_all, false);
@@ -145,13 +160,13 @@ void PlaylistSwitcher::notify_on_create()
     wil::com_ptr<DropTarget> drop_target = new DropTarget(this);
     RegisterDragDrop(get_wnd(), drop_target.get());
 
-    g_windows.push_back(this);
+    s_windows.push_back(this);
 }
 void PlaylistSwitcher::notify_on_destroy()
 {
     m_selection_holder.release();
 
-    std::erase(g_windows, this);
+    std::erase(s_windows, this);
 
     RevokeDragDrop(get_wnd());
 

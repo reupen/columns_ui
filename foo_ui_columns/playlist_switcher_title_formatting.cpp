@@ -3,6 +3,8 @@
 
 #include "metadb_helpers.h"
 #include "tf_field_provider.h"
+#include "tf_splitter_hook.h"
+#include "tf_text_format.h"
 
 namespace cui {
 
@@ -49,7 +51,8 @@ private:
 
 } // namespace
 
-pfc::string8 format_playlist_title(size_t index)
+pfc::string8 format_playlist_title(
+    size_t index, const titleformat_object::ptr& tf_object, std::optional<float> default_font_size)
 {
     auto playlist_api = playlist_manager_v3::get();
     auto playback_api = playback_control::get();
@@ -57,7 +60,7 @@ pfc::string8 format_playlist_title(size_t index)
     pfc::string8 name;
     playlist_api->playlist_get_name(index, name);
 
-    if (!cfg_playlist_switcher_use_tagz)
+    if (!tf_object.is_valid())
         return name;
 
     auto size = playlist_api->playlist_get_item_count(index);
@@ -85,13 +88,13 @@ pfc::string8 format_playlist_title(size_t index)
     }
 
     tf::FieldProviderTitleformatHook field_provider_hook(field_map);
+    tf::TextFormatTitleformatHook text_format_tf_hook(default_font_size.value_or(0.f));
+    tf::SplitterTitleformatHook combined_hook(&field_provider_hook, &text_format_tf_hook);
 
     pfc::string8 title;
-    service_ptr_t<titleformat_object> to_temp;
-    titleformat_compiler::get()->compile_safe(to_temp, cfg_playlist_switcher_tagz);
-
-    to_temp->run(&field_provider_hook, title, nullptr);
+    tf_object->run(&combined_hook, title, nullptr);
 
     return title;
 }
+
 } // namespace cui

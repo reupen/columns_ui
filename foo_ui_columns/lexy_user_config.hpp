@@ -1,2 +1,0 @@
-#define LEXY_HAS_NTTP 1
-#define LEXY_HAS_UNICODE_DATABASE 1

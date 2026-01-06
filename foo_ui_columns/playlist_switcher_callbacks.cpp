@@ -28,7 +28,8 @@ void PlaylistSwitcher::on_items_replaced(size_t p_playlist, const bit_array& p_m
 void PlaylistSwitcher::on_playlist_activate(size_t p_old, size_t p_new) noexcept
 {
     if (p_old != pfc_infinite && p_old < get_item_count())
-        refresh_items(p_old, 1, false);
+        refresh_items(p_old, 1);
+
     if (p_new != pfc_infinite && p_new < get_item_count()) {
         refresh_items(p_new, 1);
         set_item_selected_single(p_new, false);

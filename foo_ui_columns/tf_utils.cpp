@@ -1,6 +1,18 @@
 #include "pch.h"
 
+#include "tf_utils.h"
+
 namespace cui::tf {
+
+bool is_field_used(const char* pattern, wil::zstring_view field)
+{
+    const auto tf_object = titleformat_compiler::get()->compile(pattern);
+
+    if (!tf_object.is_valid())
+        return false;
+
+    return is_field_used(tf_object, field);
+}
 
 bool is_field_used(const titleformat_object::ptr& tf_object, wil::zstring_view field)
 {

@@ -932,7 +932,6 @@
     <ClInclude Include="string.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="lexy_user_config.hpp" />
     <ClInclude Include="font_picker.h">
       <Filter>Utilities</Filter>
     </ClInclude>
