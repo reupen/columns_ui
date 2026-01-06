@@ -468,7 +468,6 @@
     <ClInclude Include="item_details.h" />
     <ClInclude Include="item_details_text.h" />
     <ClInclude Include="item_properties.h" />
-    <ClInclude Include="lexy_user_config.hpp" />
     <ClInclude Include="menu_helpers.h" />
     <ClInclude Include="metadb_helpers.h" />
     <ClInclude Include="mw_drop_target.h" />

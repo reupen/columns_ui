@@ -81,12 +81,6 @@
 #include <winrt/windows.foundation.h>
 #include <winrt/windows.ui.viewmanagement.h>
 
-#include <lexy/action/parse.hpp>
-#include <lexy/callback.hpp>
-#include <lexy/dsl.hpp>
-#include <lexy/input/string_input.hpp>
-#include <lexy_ext/report_error.hpp>
-
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic warning "-Wambiguous-reversed-operator"
