@@ -8,7 +8,8 @@
   title formatting functions and fields was added to playlist view display,
   group and global scripts and to the playlist switcher.
   [[#1529](https://github.com/reupen/columns_ui/pull/1529),
-  [#1530](https://github.com/reupen/columns_ui/pull/1530)]
+  [#1530](https://github.com/reupen/columns_ui/pull/1530),
+  [#1531](https://github.com/reupen/columns_ui/pull/1531)]
 
   These functions and fields behave as they do in Item details and allow text
   styling to be changed for specific parts of text. Note that `$set_format()`

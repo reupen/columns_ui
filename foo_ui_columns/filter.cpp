@@ -5,6 +5,8 @@
 #include "filter_config_var.h"
 #include "filter_search_bar.h"
 #include "filter_utils.h"
+#include "tf_text_format.h"
+#include "tf_utils.h"
 
 namespace cui::panels::filter {
 
@@ -188,13 +190,13 @@ void FilterPanel::s_on_dark_mode_status_change()
         window->set_use_dark_mode(is_dark);
 }
 
-void FilterPanel::g_on_font_items_change()
+void FilterPanel::s_on_font_items_change()
 {
     for (auto& window : g_windows)
-        window->recreate_items_text_format(text_layout_cache_size);
+        window->on_font_items_change();
 }
 
-void FilterPanel::g_on_font_header_change()
+void FilterPanel::s_on_font_header_change()
 {
     for (auto& window : g_windows)
         window->recreate_header_text_format();
@@ -385,6 +387,16 @@ void FilterPanel::g_update_subsequent_filters(const pfc::list_base_const_t<Filte
     }
     if (count && b_update_playlist && cfg_autosend)
         windows[count - 1]->send_results_to_playlist();
+}
+
+void FilterPanel::on_font_items_change()
+{
+    recreate_items_text_format(text_layout_cache_size);
+
+    if (m_nodes.size() > 0 && m_field_data.m_use_script
+        && tf::is_field_used(m_field_data.m_script, tf::TextFormatTitleformatHook::default_font_size_field_name)) {
+        update_nodes(m_nodes[0]->m_handles);
+    }
 }
 
 void FilterPanel::update_subsequent_filters(bool b_allow_autosend)
@@ -912,7 +924,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { FilterPanel::g_on_font_items_change(); }
+    void on_font_changed() const override { FilterPanel::s_on_font_items_change(); }
 };
 
 class FilterHeaderFontClient : public fonts::client {
@@ -922,7 +934,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { FilterPanel::g_on_font_header_change(); }
+    void on_font_changed() const override { FilterPanel::s_on_font_header_change(); }
 };
 
 FilterItemFontClient::factory<FilterItemFontClient> g_font_client_filter;

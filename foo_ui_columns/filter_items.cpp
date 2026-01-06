@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "filter.h"
 #include "filter_config_var.h"
+#include "tf_text_format.h"
 
 namespace cui::panels::filter {
 void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain)
@@ -341,17 +342,19 @@ std::vector<DataEntry> FilterPanel::make_data_entries_using_script_fb2k_v2(
     std::vector<DataEntry> data_entries{track_count};
 
     titleformat_object_wrapper to(m_field_data.m_script);
+    tf::TextFormatTitleformatHook text_format_tf_hook(get_items_font_size_pt().value_or(0.f));
     std::atomic<size_t> node_count{0};
 
-    metadb_v2::get()->queryMultiParallel_(
-        tracks, [&tracks, &data_entries, &to, &node_count, b_show_empty](size_t index, const metadb_v2::rec_t& rec) {
+    metadb_v2::get()->queryMultiParallel_(tracks,
+        [&tracks, &data_entries, &node_count, &text_format_tf_hook, &to, b_show_empty](
+            size_t index, const metadb_v2::rec_t& rec) {
             metadb_handle_v2::ptr track;
             track &= tracks[index];
 
             std::string title;
             mmh::StringAdaptor adapted_string(title);
 
-            track->formatTitle_v2(rec, nullptr, adapted_string, to, nullptr);
+            track->formatTitle_v2(rec, &text_format_tf_hook, adapted_string, to, nullptr);
 
             if (!b_show_empty && title.empty())
                 return;
@@ -373,13 +376,14 @@ std::vector<DataEntry> FilterPanel::make_data_entries_using_script_fb2k_v1(
     std::vector<DataEntry> data_entries{track_count};
 
     titleformat_object_wrapper to(m_field_data.m_script);
+    tf::TextFormatTitleformatHook text_format_tf_hook(get_items_font_size_pt().value_or(0.f));
     std::atomic<size_t> node_count{0};
 
-    concurrency::parallel_for(
-        size_t{0}, track_count, [&data_entries, &tracks, &node_count, &to, b_show_empty](size_t index) {
+    concurrency::parallel_for(size_t{0}, track_count,
+        [&data_entries, &tracks, &node_count, &text_format_tf_hook, &to, b_show_empty](size_t index) {
             pfc::string8_fastalloc buffer;
             buffer.prealloc(32);
-            tracks[index]->format_title(nullptr, buffer, to, nullptr);
+            tracks[index]->format_title(&text_format_tf_hook, buffer, to, nullptr);
 
             if (!b_show_empty && buffer.is_empty())
                 return;
