@@ -126,8 +126,8 @@ public:
     static void g_on_showemptyitems_change(bool b_val, bool update_filters = true);
     static void g_on_edgestyle_change();
     static void s_on_dark_mode_status_change();
-    static void g_on_font_items_change();
-    static void g_on_font_header_change();
+    static void s_on_font_items_change();
+    static void s_on_font_header_change();
     static void g_redraw_all();
     static void g_on_new_field(const Field& field);
     static void g_on_fields_swapped(size_t index_1, size_t index_2);
@@ -164,6 +164,8 @@ private:
     static void g_load_fields();
     static void g_update_subsequent_filters(const pfc::list_base_const_t<FilterPanel*>& windows, size_t index,
         bool b_check_needs_update = false, bool b_update_playlist = true);
+
+    void on_font_items_change();
 
     size_t get_field_index();
     void set_field(const FieldData& field, bool b_force = false);
