@@ -23,7 +23,6 @@ bool TextFormatTitleformatHook::process_function(titleformat_text_out* p_out, co
 
         const auto value = fmt::format("\x7\x1\uF8FF{}\uF8FF{}\uF8FF{}\x7", face, size_points, flags);
         p_out->write(titleformat_inputtypes::unknown, value.data(), value.size());
-        p_found_flag = true;
         return true;
     }
 
@@ -36,7 +35,6 @@ bool TextFormatTitleformatHook::process_function(titleformat_text_out* p_out, co
         const auto attributes = tf::get_param(*p_params, 0);
         const auto value = fmt::format("\x7\x2\uF8FF{}\x7", attributes);
         p_out->write(titleformat_inputtypes::unknown, value.data(), value.size());
-        p_found_flag = true;
         return true;
     }
 
@@ -49,7 +47,6 @@ bool TextFormatTitleformatHook::process_function(titleformat_text_out* p_out, co
                 ""
                 "\x7",
                 pfc_infinite);
-            p_found_flag = true;
         }
         }
         return true;
@@ -84,13 +81,11 @@ bool NullTextFormatTitleformatHook::process_function(titleformat_text_out* p_out
 
     if (!stricmp_utf8_ex(
             p_name, p_name_length, TextFormatTitleformatHook::set_format_function_name.c_str(), pfc_infinite)) {
-        p_found_flag = true;
         return true;
     }
 
     if (!stricmp_utf8_ex(
             p_name, p_name_length, TextFormatTitleformatHook::reset_format_function_name.c_str(), pfc_infinite)) {
-        p_found_flag = true;
         return true;
     }
 
