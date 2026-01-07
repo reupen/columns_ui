@@ -4,6 +4,8 @@
 #include "font_utils.h"
 #include "main_window.h"
 #include "metadb_helpers.h"
+#include "tf_text_format.h"
+#include "tf_utils.h"
 
 extern HWND g_status;
 
@@ -31,7 +33,7 @@ std::optional<StatusBarState> state;
 
 constexpr GUID font_client_status_guid = {0xb9d5ea18, 0x5827, 0x40be, {0xa8, 0x96, 0x30, 0x2a, 0x71, 0xbc, 0xaa, 0x9c}};
 
-void on_status_font_change()
+void on_status_font_change(bool is_initialising)
 {
     if (!g_status)
         return;
@@ -58,6 +60,12 @@ void on_status_font_change()
     SetWindowFont(g_status, state->font.get(), TRUE);
 
     set_part_sizes(t_parts_all);
+
+    if (!is_initialising
+        && tf::is_field_used(
+            main_window::config_status_bar_script.get(), tf::TextFormatTitleformatHook::default_font_size_field_name))
+        regenerate_text();
+
     main_window.resize_child_windows();
 }
 
@@ -68,7 +76,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
 
-    void on_font_changed() const override { on_status_font_change(); }
+    void on_font_changed() const override { on_status_font_change(false); }
 };
 
 StatusBarFontClient::factory<StatusBarFontClient> g_font_client_status;
@@ -141,9 +149,15 @@ void regenerate_text()
     play_api->get_now_playing(track);
     if (track.is_valid()) {
         titleformat_object::ptr to_status;
-        pfc::string8 text;
         titleformat_compiler::get()->compile_safe(to_status, main_window::config_status_bar_script.get());
-        play_api->playback_format_title_ex(track, nullptr, text, to_status, nullptr, play_control::display_level_all);
+
+        tf::TextFormatTitleformatHook text_format_tf_hook(
+            state->direct_write_text_format ? state->direct_write_text_format->get_font_size_pt() : 0.f);
+
+        pfc::string8 text;
+        play_api->playback_format_title_ex(
+            track, &text_format_tf_hook, text, to_status, nullptr, play_control::display_level_all);
+
         set_playback_information(text.get_ptr());
     } else {
         set_playback_information(core_version_info::g_get_version_string());
@@ -356,7 +370,7 @@ void create_window()
 
         SetWindowPos(g_status, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
-        on_status_font_change();
+        on_status_font_change(true);
 
         state->dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([wnd = g_status] {
             state->lock_bitmap.reset();
