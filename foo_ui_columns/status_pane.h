@@ -17,30 +17,6 @@ class StatusPane
     };
     VolumeBar<false, false, StatusPaneVolumeBarAttributes> m_volume_control;
 
-    class StatusPaneTitleformatHook : public titleformat_hook {
-    public:
-        bool process_field(
-            titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override
-        {
-            p_found_flag = false;
-            if (!stricmp_utf8_ex(p_name, p_name_length, "is_status_pane", pfc_infinite)) {
-                p_out->write(titleformat_inputtypes::unknown, "true");
-                p_found_flag = true;
-                return true;
-            }
-            return false;
-        }
-
-        bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
-            titleformat_hook_function_params* p_params, bool& p_found_flag) override
-        {
-            p_found_flag = false;
-            return false;
-        }
-
-        StatusPaneTitleformatHook() = default;
-    };
-
     /** PLAYLIST CALLBACKS */
     void on_items_added(size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
         const bit_array& p_selection) noexcept override

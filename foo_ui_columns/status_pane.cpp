@@ -7,6 +7,10 @@
 #include "font_utils.h"
 #include "menu_items.h"
 #include "metadb_helpers.h"
+#include "tf_field_provider.h"
+#include "tf_splitter_hook.h"
+#include "tf_text_format.h"
+#include "tf_utils.h"
 
 namespace cui::status_pane {
 
@@ -44,7 +48,14 @@ StatusPaneFontClient::factory<StatusPaneFontClient> g_font_client_status_pane;
 
 void StatusPane::on_font_changed()
 {
+    if (!get_wnd())
+        return;
+
     recreate_font();
+
+    if (tf::is_field_used(status_pane_script.get(), tf::TextFormatTitleformatHook::default_font_size_field_name))
+        refresh_playing_text_section();
+
     main_window.resize_child_windows();
 }
 
@@ -103,9 +114,13 @@ void StatusPane::update_playing_text()
     if (track.is_valid()) {
         service_ptr_t<titleformat_object> to_status;
         titleformat_compiler::get()->compile_safe(to_status, status_pane_script.get());
-        StatusPaneTitleformatHook tf_hook;
+
+        tf::FieldProviderTitleformatHook field_provider_tf_hook({{"is_status_pane"sv, "true"sv}});
+        tf::TextFormatTitleformatHook text_format_tf_hook(m_text_format ? m_text_format->get_font_size_pt() : 0.f);
+        tf::SplitterTitleformatHook splitter_tf_hook(&field_provider_tf_hook, &text_format_tf_hook);
+
         play_api->playback_format_title_ex(
-            track, &tf_hook, playing1, to_status, nullptr, play_control::display_level_all);
+            track, &splitter_tf_hook, playing1, to_status, nullptr, play_control::display_level_all);
 
         track.release();
     } else {
