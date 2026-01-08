@@ -87,7 +87,7 @@ dependencies = [
 requires-dist = [
     { name = "myst-parser", specifier = ">=4.0.1" },
     { name = "sphinx", specifier = ">=8.2.3" },
-    { name = "takao", specifier = ">=0.2.1" },
+    { name = "takao", specifier = ">=0.2.2" },
 ]
 
 [[package]]
@@ -378,14 +378,14 @@ wheels = [
 
 [[package]]
 name = "takao"
-version = "0.2.1"
+version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/23/64/0befa2068dc30fcb5193a454d95f3165f7553a4c8b453ca0ede2331b1662/takao-0.2.1.tar.gz", hash = "sha256:f4f5b670bb7c49987f1af92edcdd67267c0e314db9fa801fdfe5c60573cf8388", size = 5281763, upload-time = "2024-06-23T08:22:27.657Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/ee/9f744ea9cae02743a9054c48bb0bdeb9d701f1bdbeb4a4e6e7061dac7556/takao-0.2.2.tar.gz", hash = "sha256:6acc1c416c2c16e892a8ddfac19b629a0cf06c19bdce7ced6a8e180c0ff078d0", size = 5608869, upload-time = "2026-01-08T18:52:52.137Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/84/96/e21b9618f2a434eff72cc5f3fa474a812d894b21c8fc8e81cc1e524d6d0e/takao-0.2.1-py3-none-any.whl", hash = "sha256:85b7713255b330a801c8fe64b15e6fd002fb3ca985a60a9afca658355972abc5", size = 5283552, upload-time = "2024-06-23T08:22:16.645Z" },
+    { url = "https://files.pythonhosted.org/packages/03/62/03c9779d8902f0d279f1d4b32787c8aa48c33ff4192ca6eff3a99bd996b2/takao-0.2.2-py3-none-any.whl", hash = "sha256:4454a49401955554f4dcd4b6cb08d03949aef8e35d270456df0a319cdc99efd1", size = 5612247, upload-time = "2026-01-08T18:52:54.669Z" },
 ]
 
 [[package]]
