@@ -250,34 +250,9 @@ public:
 
     class ConfigParam {
     public:
-        // service_ptr_t<toolbar_extension> m_this;
         class ButtonsList : public helpers::CoreDarkListView {
             ConfigParam& m_param;
-            static CLIPFORMAT g_clipformat();
-            struct DDData {
-                uint32_t version;
-                HWND wnd;
-            };
-            class ButtonsListDropTarget : public IDropTarget {
-                long drop_ref_count;
-                bool last_rmb;
-                ButtonsList* m_button_list_view;
-                wil::com_ptr<IDataObject> m_DataObject;
-                wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
-                // pfc::string
-            public:
-                HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;
-                ULONG STDMETHODCALLTYPE AddRef() override;
-                ULONG STDMETHODCALLTYPE Release() override;
-                bool check_do(IDataObject* pDO);
-                HRESULT STDMETHODCALLTYPE DragEnter(
-                    IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect) override;
-                HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect) override;
-                HRESULT STDMETHODCALLTYPE DragLeave() override;
-                HRESULT STDMETHODCALLTYPE Drop(
-                    IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect) override;
-                explicit ButtonsListDropTarget(ButtonsList* p_blv);
-            };
+
             void notify_on_initialisation() override;
             void notify_on_create() override;
             void notify_on_destroy() override;

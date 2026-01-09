@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_dark_list_view.h"
+#include "list_view_drop_target.h"
 
 namespace cui::prefs {
 
@@ -51,6 +52,27 @@ private:
             set_autosize(true);
         }
 
+        void notify_on_create() override
+        {
+            wil::com_ptr drop_target(new utils::SimpleListViewDropTarget(
+                this, [this](mmh::Permutation& new_order, size_t old_index, size_t new_index) {
+                    m_tab.on_column_list_reorder(new_order, old_index, new_index);
+                }));
+
+            RegisterDragDrop(get_wnd(), drop_target.get());
+        }
+
+        void notify_on_destroy() override { RevokeDragDrop(get_wnd()); }
+
+        bool do_drag_drop(WPARAM wp) override
+        {
+            DWORD drop_effect{DROPEFFECT_NONE};
+            const auto data_object = utils::create_simple_list_view_data_object(get_wnd());
+            LOG_IF_FAILED(
+                uih::ole::do_drag_drop(get_wnd(), wp, data_object.get(), DROPEFFECT_MOVE, NULL, &drop_effect));
+            return true;
+        }
+
         void notify_on_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
             notification_source_t p_notification_source) override
         {
@@ -89,6 +111,7 @@ private:
 
     bool on_column_list_contextmenu(const POINT& pt, bool from_keyboard);
     void on_column_list_selection_change();
+    void on_column_list_reorder(mmh::Permutation& permuation, size_t old_index, size_t new_index);
     void add_column(size_t index);
     void remove_column(size_t index);
     void move_column_up(size_t index);

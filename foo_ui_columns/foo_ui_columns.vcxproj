@@ -256,7 +256,6 @@
     <ClCompile Include="buttons_button_image.cpp" />
     <ClCompile Include="buttons_command_picker.cpp" />
     <ClCompile Include="buttons_config_param.cpp" />
-    <ClCompile Include="buttons_config_droptarget.cpp" />
     <ClCompile Include="buttons_config_listview.cpp" />
     <ClCompile Include="buttons_custom_image.cpp" />
     <ClCompile Include="colour_manager_data.cpp" />
@@ -278,6 +277,7 @@
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
     <ClCompile Include="imaging.cpp" />
+    <ClCompile Include="list_view_drop_target.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
@@ -468,6 +468,7 @@
     <ClInclude Include="item_details.h" />
     <ClInclude Include="item_details_text.h" />
     <ClInclude Include="item_properties.h" />
+    <ClInclude Include="list_view_drop_target.h" />
     <ClInclude Include="menu_helpers.h" />
     <ClInclude Include="metadb_helpers.h" />
     <ClInclude Include="mw_drop_target.h" />

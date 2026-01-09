@@ -802,6 +802,23 @@ void TabColumns::on_column_list_selection_change()
     m_child->set_column(index != std::numeric_limits<size_t>::max() ? m_columns[index] : PlaylistViewColumn::ptr());
 }
 
+void TabColumns::on_column_list_reorder(mmh::Permutation& permuation, size_t old_index, size_t new_index)
+{
+    m_columns.reorder(permuation.data());
+
+    const auto first_affected = std::min(old_index, new_index);
+    const auto last_affected = std::max(old_index, new_index);
+    const auto affected_count = last_affected - first_affected + 1;
+
+    std::vector<uih::ListView::InsertItem> insert_items(affected_count);
+
+    for (const auto index : ranges::views::iota(size_t{}, affected_count)) {
+        insert_items[index].m_subitems.emplace_back(m_columns[first_affected + index]->name);
+    }
+
+    m_columns_list_view.replace_items(first_affected, insert_items.size(), insert_items.data());
+}
+
 void TabColumns::add_column(size_t index)
 {
     const PlaylistViewColumn::ptr column = std::make_shared<PlaylistViewColumn>();

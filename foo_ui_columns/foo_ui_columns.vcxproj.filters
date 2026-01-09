@@ -409,9 +409,6 @@
     <ClCompile Include="buttons_command_picker.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include="buttons_config_droptarget.cpp">
-      <Filter>Buttons toolbar</Filter>
-    </ClCompile>
     <ClCompile Include="buttons_config_listview.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
@@ -655,6 +652,9 @@
     </ClCompile>
     <ClCompile Include="tf_utils.cpp">
       <Filter>Title formatting</Filter>
+    </ClCompile>
+    <ClCompile Include="list_view_drop_target.cpp">
+      <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -985,6 +985,9 @@
     </ClInclude>
     <ClInclude Include="tf_splitter_hook.h">
       <Filter>Title formatting</Filter>
+    </ClInclude>
+    <ClInclude Include="list_view_drop_target.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
