@@ -1,13 +1,8 @@
 #include "pch.h"
 #include "buttons.h"
+#include "list_view_drop_target.h"
 
 namespace cui::toolbars::buttons {
-
-CLIPFORMAT ButtonsToolbar::ConfigParam::ButtonsList::g_clipformat()
-{
-    static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIListViewStandardClipFormat");
-    return cf;
-}
 
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 {
@@ -17,8 +12,18 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_create()
 {
-    wil::com_ptr<ButtonsListDropTarget> IDT_blv = new ButtonsListDropTarget(this);
-    RegisterDragDrop(get_wnd(), IDT_blv.get());
+    wil::com_ptr drop_target(new utils::SimpleListViewDropTarget(
+        this, [this](mmh::Permutation& new_order, size_t old_index, size_t new_index) {
+            mmh::destructive_reorder(m_param.m_buttons, new_order);
+
+            m_param.m_selection = &m_param.m_buttons[new_index];
+
+            const size_t first_index = std::min(old_index, new_index);
+            const size_t last_index = std::max(old_index, new_index);
+            m_param.refresh_buttons_list_items(first_index, last_index - first_index + 1);
+        }));
+
+    RegisterDragDrop(get_wnd(), drop_target.get());
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_destroy()
 {
@@ -33,14 +38,10 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_selection_change(
 
 bool ButtonsToolbar::ConfigParam::ButtonsList::do_drag_drop(WPARAM wp)
 {
-    UINT cf = g_clipformat();
-    wil::com_ptr<IDataObject> pDO = new CDataObject;
+    DWORD drop_effect{DROPEFFECT_NONE};
+    const auto data_object = utils::create_simple_list_view_data_object(get_wnd());
 
-    DDData data = {0, get_wnd()};
-    uih::ole::set_blob(pDO.get(), cf, &data, sizeof(data));
-
-    DWORD drop_effect = DROPEFFECT_NONE;
-    uih::ole::do_drag_drop(get_wnd(), wp, pDO.get(), DROPEFFECT_MOVE, NULL, &drop_effect);
+    LOG_IF_FAILED(uih::ole::do_drag_drop(get_wnd(), wp, data_object.get(), DROPEFFECT_MOVE, NULL, &drop_effect));
 
     return true;
 }
