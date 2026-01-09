@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "myst-parser>=4.0.1",
     "sphinx>=8.2.3",
-    "takao>=0.2.1",
+    "takao>=0.2.2",
 ]
 
 [build-system]

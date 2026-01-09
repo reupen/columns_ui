@@ -26,15 +26,6 @@ Drag and drop<playlist-switcher/drag-and-drop>
 ---
 hidden:
 maxdepth: 2
-caption: Item details
----
-Title formatting<item-details/title-formatting>
-```
-
-```{toctree}
----
-hidden:
-maxdepth: 2
 caption: Buttons toolbar
 ---
 SVG support<buttons-toolbar/svg-support>
@@ -57,6 +48,16 @@ caption: Other functionality
 other/artwork
 other/cli-commands
 other/text-rendering
+other/text-styling
+```
+
+```{toctree}
+---
+hidden:
+maxdepth: 2
+caption: Reference
+---
+Title formatting index<reference/title-formatting-index>
 ```
 
 ```{toctree}
