@@ -200,6 +200,7 @@ HRESULT STDMETHODCALLTYPE SimpleListViewDropTarget::Drop(
 
             m_on_order_changed(perm, *old_index, *new_index);
             m_list_view->set_item_selected_single(*new_index);
+            m_list_view->ensure_visible(*new_index);
         }
     }
 

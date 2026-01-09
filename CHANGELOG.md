@@ -24,6 +24,10 @@
   the font size to one decimal place instead of rounding to the nearest whole
   number.
 
+- On the Columns tab on the Playlist view preferences page, columns can now be
+  reordered using drag and drop.
+  [[#1535](https://github.com/reupen/columns_ui/pull/1535)]
+
 ## 3.2.3
 
 ### Bug fixes
