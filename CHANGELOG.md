@@ -12,7 +12,8 @@
   [#1530](https://github.com/reupen/columns_ui/pull/1530),
   [#1531](https://github.com/reupen/columns_ui/pull/1531),
   [#1532](https://github.com/reupen/columns_ui/pull/1532),
-  [#1533](https://github.com/reupen/columns_ui/pull/1533)]
+  [#1533](https://github.com/reupen/columns_ui/pull/1533),
+  [#1536](https://github.com/reupen/columns_ui/pull/1536)]
 
   These functions and fields behave as they do in Item details and allow text
   styling to be changed for specific parts of text. Note that `$set_format()`
