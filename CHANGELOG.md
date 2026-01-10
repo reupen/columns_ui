@@ -29,6 +29,10 @@
   reordered using drag and drop.
   [[#1535](https://github.com/reupen/columns_ui/pull/1535)]
 
+- In live layout editing context menu, the ‘Add sibling’ submenu was replaced
+  with ‘Add before’ and ‘Add after’ submenus.
+  [[#1537](https://github.com/reupen/columns_ui/pull/1537)]
+
 ## 3.2.3
 
 ### Bug fixes

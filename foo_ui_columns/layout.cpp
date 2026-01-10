@@ -997,26 +997,33 @@ void LayoutWindow::run_live_edit_base(LiveEditData p_data)
             menu.append_submenu(std::move(paste_submenu), L"Paste");
     }
 
-    const auto has_add_sibling_submenu
-        = parent_splitter.is_valid() && parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count();
+    const auto has_add_sibling_submenus = index_in_parent && parent_splitter.is_valid()
+        && parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count();
 
-    if (index_in_parent && (has_add_sibling_submenu || hierarchy_count > 1))
+    if (has_add_sibling_submenus) {
         menu.append_separator();
 
-    if (has_add_sibling_submenu) {
-        const auto handle_add_sibling = [&](GUID panel_id) {
-            const auto new_splitter_item = create_splitter_item(panel_id);
+        const auto make_panel_inserter = [&](size_t offset) {
+            return [&, offset](GUID panel_id) {
+                const auto refreshed_index_in_parent = get_index_in_parent();
 
-            if (const auto index = get_index_in_parent())
-                parent_splitter->insert_panel(*index + 1, new_splitter_item.get_ptr());
-            else
-                parent_splitter->add_panel(new_splitter_item.get_ptr());
+                if (!refreshed_index_in_parent)
+                    return;
+
+                const auto new_splitter_item = create_splitter_item(panel_id);
+                parent_splitter->insert_panel(*refreshed_index_in_parent + offset, new_splitter_item.get_ptr());
+            };
         };
 
-        menu.append_submenu(create_panels_menu(parent_supported_panels, commands, handle_add_sibling), L"Add sibling");
+        menu.append_submenu(
+            create_panels_menu(parent_supported_panels, commands, make_panel_inserter(0)), L"Add before");
+        menu.append_submenu(
+            create_panels_menu(parent_supported_panels, commands, make_panel_inserter(1)), L"Add after");
     }
 
     if (hierarchy_count > 1) {
+        menu.append_separator();
+
         const auto edit_parent_id = commands.add([&] {
             m_live_edit_data = p_data;
             m_live_edit_data.m_hierarchy.remove_by_idx(hierarchy_count - 1);
