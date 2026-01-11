@@ -65,6 +65,13 @@ void ConfigGroups::swap(size_t index1, size_t index2)
     m_groups.swap_items(index1, index2);
     PlaylistView::g_on_groups_change();
 }
+
+void ConfigGroups::reorder(const size_t* order)
+{
+    m_groups.reorder(order);
+    PlaylistView::g_on_groups_change();
+}
+
 void ConfigGroups::replace_group(size_t index, const Group& p_group)
 {
     m_groups.replace_item(index, p_group);
