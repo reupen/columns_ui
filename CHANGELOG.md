@@ -25,8 +25,8 @@
   the font size to one decimal place instead of rounding to the nearest whole
   number.
 
-- Items in the playlist view columns and groups lists in preferences can now be
-  reordered using drag and drop.
+- Items in the playlist view columns and groups lists and the Filter panel field
+  list in Preferences can now be reordered using drag and drop.
   [[#1535](https://github.com/reupen/columns_ui/pull/1535),
   [#1538](https://github.com/reupen/columns_ui/pull/1538)]
 

@@ -202,12 +202,13 @@ void FilterPanel::s_on_font_header_change()
         window->recreate_header_text_format();
 }
 
-void FilterPanel::g_redraw_all()
+void FilterPanel::s_redraw_all()
 {
     for (auto& window : g_windows)
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 }
-void FilterPanel::g_on_new_field(const Field& field)
+
+void FilterPanel::s_on_new_field(const Field& field)
 {
     if (!g_windows.empty()) {
         size_t index = g_field_data.get_count();
@@ -215,7 +216,8 @@ void FilterPanel::g_on_new_field(const Field& field)
         g_create_field_data(field, g_field_data[index]);
     }
 }
-void FilterPanel::g_on_fields_swapped(size_t index_1, size_t index_2)
+
+void FilterPanel::s_on_fields_swapped(size_t index_1, size_t index_2)
 {
     if (std::max(index_1, index_2) < g_field_data.get_count())
         g_field_data.swap_items(index_1, index_2);
@@ -239,7 +241,44 @@ void FilterPanel::g_on_fields_swapped(size_t index_1, size_t index_2)
         }
     }
 }
-void FilterPanel::g_on_field_removed(size_t index)
+
+void FilterPanel::s_on_fields_reordered(mmh::Permutation& permutation, size_t old_index, size_t new_index)
+{
+    if (permutation.size() != g_field_data.size()) {
+        assert(false);
+        return;
+    }
+
+    g_field_data.reorder(permutation.data());
+
+    if (cfg_orderedbysplitters)
+        return;
+
+    const auto first_affected = std::min(old_index, new_index);
+    const auto last_affected = std::min(old_index, new_index);
+
+    for (auto&& stream : g_streams) {
+        if (stream->m_windows.get_count() == 0)
+            continue;
+
+        pfc::list_t<FilterPanel*> windows;
+        stream->m_windows[0]->get_windows(windows);
+
+        for (auto&& [panel_index, window] : ranges::views::enumerate(windows)) {
+            const size_t field_index = window->get_field_index();
+
+            if (field_index == first_affected) {
+                g_update_subsequent_filters(windows, panel_index, false, false);
+                break;
+            }
+
+            if (field_index > last_affected)
+                break;
+        }
+    }
+}
+
+void FilterPanel::s_on_field_removed(size_t index)
 {
     size_t count = g_streams.get_count();
     for (size_t i = 0; i < count; i++) {
@@ -942,7 +981,7 @@ FilterHeaderFontClient::factory<FilterHeaderFontClient> g_font_header_client_fil
 
 void AppearanceClient::on_colour_changed(uint32_t mask) const
 {
-    FilterPanel::g_redraw_all();
+    FilterPanel::s_redraw_all();
 }
 
 void AppearanceClient::on_bool_changed(uint32_t mask) const
