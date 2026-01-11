@@ -4,6 +4,22 @@
 #include "config.h"
 #include "core_dark_list_view.h"
 #include "dark_mode_dialog.h"
+#include "list_view_drop_target.h"
+
+namespace {
+
+void get_list_view_insert_items(size_t base, size_t count, pfc::list_t<uih::ListView::InsertItem>& items)
+{
+    items.set_count(count);
+
+    for (auto index : ranges::views::iota(size_t{}, count)) {
+        items[index].m_subitems.resize(2);
+        items[index].m_subitems[0] = cui::panels::filter::cfg_field_list[base + index].m_name;
+        items[index].m_subitems[1] = cui::panels::filter::cfg_field_list[base + index].m_field;
+    }
+}
+
+} // namespace
 
 class FieldList : public cui::helpers::CoreDarkListView {
 public:
@@ -22,7 +38,33 @@ public:
 
         set_selection_mode(SelectionMode::SingleRelaxed);
         set_columns({{"Name", client_width / 3}, {"Field", client_width * 2 / 3}});
+
+        wil::com_ptr drop_target(new cui::utils::SimpleListViewDropTarget(
+            this, [this](mmh::Permutation& new_order, size_t old_index, size_t new_index) {
+                cui::panels::filter::cfg_field_list.reorder(new_order.data());
+                cui::panels::filter::FilterPanel::s_on_fields_reordered(new_order, old_index, new_index);
+
+                const auto first_affected = std::min(old_index, new_index);
+                const auto last_affected = std::max(old_index, new_index);
+
+                pfc::list_t<InsertItem> items;
+                get_list_view_insert_items(first_affected, last_affected - first_affected + 1, items);
+                replace_items(first_affected, items);
+            }));
+
+        RegisterDragDrop(get_wnd(), drop_target.get());
     }
+
+    void notify_on_destroy() override { RevokeDragDrop(get_wnd()); }
+
+    bool do_drag_drop(WPARAM wp) override
+    {
+        DWORD drop_effect{DROPEFFECT_NONE};
+        const auto data_object = cui::utils::create_simple_list_view_data_object(get_wnd());
+        LOG_IF_FAILED(uih::ole::do_drag_drop(get_wnd(), wp, data_object.get(), DROPEFFECT_MOVE, NULL, &drop_effect));
+        return true;
+    }
+
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override
     {
@@ -79,16 +121,6 @@ static class TabFilterFields : public PreferencesTab {
 public:
     TabFilterFields() = default;
 
-    void get_insert_items(size_t base, size_t count, pfc::list_t<uih::ListView::InsertItem>& items)
-    {
-        items.set_count(count);
-        for (size_t i = 0; i < count; i++) {
-            items[i].m_subitems.resize(2);
-            items[i].m_subitems[0] = cui::panels::filter::cfg_field_list[base + i].m_name;
-            items[i].m_subitems[1] = cui::panels::filter::cfg_field_list[base + i].m_field;
-        }
-    }
-
     void refresh_me(HWND wnd)
     {
         m_initialising = true;
@@ -96,7 +128,7 @@ public:
         m_field_list.remove_items(bit_array_true());
         pfc::list_t<uih::ListView::InsertItem> items;
         size_t count = cui::panels::filter::cfg_field_list.get_count();
-        get_insert_items(0, count, items);
+        get_list_view_insert_items(0, count, items);
         m_field_list.insert_items(0, items.get_count(), items.get_ptr());
 
         m_initialising = false;
@@ -139,10 +171,10 @@ public:
                         index++;
                     if (index && cui::panels::filter::cfg_field_list.get_count()) {
                         cui::panels::filter::cfg_field_list.swap_items(index, index - 1);
-                        cui::panels::filter::FilterPanel::g_on_fields_swapped(index, index - 1);
+                        cui::panels::filter::FilterPanel::s_on_fields_swapped(index, index - 1);
 
                         pfc::list_t<uih::ListView::InsertItem> items;
-                        get_insert_items(index - 1, 2, items);
+                        get_list_view_insert_items(index - 1, 2, items);
                         m_field_list.replace_items(index - 1, items);
                         m_field_list.set_item_selected_single(index - 1);
                     }
@@ -156,10 +188,10 @@ public:
                         index++;
                     if (index + 1 < count && index + 1 < cui::panels::filter::cfg_field_list.get_count()) {
                         cui::panels::filter::cfg_field_list.swap_items(index, index + 1);
-                        cui::panels::filter::FilterPanel::g_on_fields_swapped(index, index + 1);
+                        cui::panels::filter::FilterPanel::s_on_fields_swapped(index, index + 1);
 
                         pfc::list_t<uih::ListView::InsertItem> items;
-                        get_insert_items(index, 2, items);
+                        get_list_view_insert_items(index, 2, items);
                         m_field_list.replace_items(index, items);
                         m_field_list.set_item_selected_single(index + 1);
                     }
@@ -170,10 +202,10 @@ public:
                 temp.m_name = "<enter name here>";
                 temp.m_field = "<enter field here>";
                 size_t index = cui::panels::filter::cfg_field_list.add_item(temp);
-                cui::panels::filter::FilterPanel::g_on_new_field(temp);
+                cui::panels::filter::FilterPanel::s_on_new_field(temp);
 
                 pfc::list_t<uih::ListView::InsertItem> items;
-                get_insert_items(index, 1, items);
+                get_list_view_insert_items(index, 1, items);
                 m_field_list.insert_items(index, 1, items.get_ptr());
                 m_field_list.set_item_selected_single(index);
                 SetFocus(m_field_list.get_wnd());
@@ -195,7 +227,7 @@ public:
                     if (index < count && index < cui::panels::filter::cfg_field_list.get_count()) {
                         cui::panels::filter::cfg_field_list.remove_by_idx(index);
                         m_field_list.remove_item(index);
-                        cui::panels::filter::FilterPanel::g_on_field_removed(index);
+                        cui::panels::filter::FilterPanel::s_on_field_removed(index);
                         size_t new_count = m_field_list.get_item_count();
                         if (new_count) {
                             if (index < new_count)

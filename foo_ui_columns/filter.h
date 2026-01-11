@@ -128,10 +128,11 @@ public:
     static void s_on_dark_mode_status_change();
     static void s_on_font_items_change();
     static void s_on_font_header_change();
-    static void g_redraw_all();
-    static void g_on_new_field(const Field& field);
-    static void g_on_fields_swapped(size_t index_1, size_t index_2);
-    static void g_on_field_removed(size_t index);
+    static void s_redraw_all();
+    static void s_on_new_field(const Field& field);
+    static void s_on_fields_swapped(size_t index_1, size_t index_2);
+    static void s_on_fields_reordered(mmh::Permutation& permutation, size_t old_index, size_t new_index);
+    static void s_on_field_removed(size_t index);
 
     ~FilterPanel() = default;
 

@@ -111,7 +111,7 @@ private:
 
     bool on_column_list_contextmenu(const POINT& pt, bool from_keyboard);
     void on_column_list_selection_change();
-    void on_column_list_reorder(mmh::Permutation& permuation, size_t old_index, size_t new_index);
+    void on_column_list_reorder(mmh::Permutation& permutation, size_t old_index, size_t new_index);
     void add_column(size_t index);
     void remove_column(size_t index);
     void move_column_up(size_t index);

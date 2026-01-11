@@ -240,4 +240,22 @@ void GroupsPreferencesTab::on_group_default_action(size_t index)
     }
 }
 
+void GroupsPreferencesTab::on_column_list_reorder(mmh::Permutation& permutation, size_t old_index, size_t new_index)
+{
+    g_groups.reorder(permutation.data());
+
+    const auto first_affected = std::min(old_index, new_index);
+    const auto last_affected = std::max(old_index, new_index);
+    const auto affected_count = last_affected - first_affected + 1;
+
+    const auto& groups = g_groups.get_groups();
+    std::vector<uih::ListView::InsertItem> insert_items(affected_count);
+
+    for (const auto index : ranges::views::iota(size_t{}, affected_count)) {
+        insert_items[index].m_subitems.emplace_back(groups[first_affected + index].string);
+    }
+
+    m_groups_list_view.replace_items(first_affected, insert_items.size(), insert_items.data());
+}
+
 } // namespace cui::panels::playlist_view

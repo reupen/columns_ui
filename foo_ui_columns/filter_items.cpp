@@ -548,14 +548,14 @@ void FilterPanel::notify_sort_column(size_t index, bool b_descending, bool b_sel
 {
     const auto node_count = m_nodes.get_count();
     if (node_count > 2) {
-        mmh::Permutation sort_permuation(node_count - 1);
+        mmh::Permutation sort_permutation(node_count - 1);
         const auto* nodes = m_nodes.get_ptr();
         ++nodes;
-        sort_get_permutation(nodes, sort_permuation, Node::g_compare_ptr_with_node, false, b_descending, true);
+        sort_get_permutation(nodes, sort_permutation, Node::g_compare_ptr_with_node, false, b_descending, true);
 
-        m_nodes.reorder_partial(1, sort_permuation.data(), node_count - 1);
+        m_nodes.reorder_partial(1, sort_permutation.data(), node_count - 1);
 
-        reorder_items_partial(1, sort_permuation.data(), node_count - 1);
+        reorder_items_partial(1, sort_permutation.data(), node_count - 1);
         ensure_visible(get_focus_item());
 
         size_t field_index;

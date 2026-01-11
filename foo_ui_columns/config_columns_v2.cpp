@@ -802,9 +802,9 @@ void TabColumns::on_column_list_selection_change()
     m_child->set_column(index != std::numeric_limits<size_t>::max() ? m_columns[index] : PlaylistViewColumn::ptr());
 }
 
-void TabColumns::on_column_list_reorder(mmh::Permutation& permuation, size_t old_index, size_t new_index)
+void TabColumns::on_column_list_reorder(mmh::Permutation& permutation, size_t old_index, size_t new_index)
 {
-    m_columns.reorder(permuation.data());
+    m_columns.reorder(permutation.data());
 
     const auto first_affected = std::min(old_index, new_index);
     const auto last_affected = std::max(old_index, new_index);

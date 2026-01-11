@@ -66,6 +66,7 @@ public:
     void remove_group(size_t index);
     void replace_group(size_t index, const Group& p_group);
     void swap(size_t index1, size_t index2);
+    void reorder(const size_t* order);
     void set_groups(const pfc::list_base_const_t<Group>& p_groups, bool b_update_views = true);
     explicit ConfigGroups(const GUID& p_guid) : cfg_var(p_guid)
     {

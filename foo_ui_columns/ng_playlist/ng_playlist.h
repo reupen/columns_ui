@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_dark_list_view.h"
+#include "list_view_drop_target.h"
 #include "ng_playlist_artwork.h"
 #include "ng_playlist_groups.h"
 #include "ng_playlist_style.h"
@@ -581,6 +582,27 @@ public:
             set_autosize(true);
         }
 
+        void notify_on_create() override
+        {
+            wil::com_ptr drop_target(new utils::SimpleListViewDropTarget(
+                this, [this](mmh::Permutation& new_order, size_t old_index, size_t new_index) {
+                    m_tab.on_column_list_reorder(new_order, old_index, new_index);
+                }));
+
+            RegisterDragDrop(get_wnd(), drop_target.get());
+        }
+
+        void notify_on_destroy() override { RevokeDragDrop(get_wnd()); }
+
+        bool do_drag_drop(WPARAM wp) override
+        {
+            DWORD drop_effect{DROPEFFECT_NONE};
+            const auto data_object = utils::create_simple_list_view_data_object(get_wnd());
+            LOG_IF_FAILED(
+                uih::ole::do_drag_drop(get_wnd(), wp, data_object.get(), DROPEFFECT_MOVE, NULL, &drop_effect));
+            return true;
+        }
+
     private:
         void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override
         {
@@ -602,6 +624,7 @@ private:
     void refresh_enabled_options() const;
 
     void on_group_default_action(size_t index);
+    void on_column_list_reorder(mmh::Permutation& permutation, size_t old_index, size_t new_index);
 
     HWND m_wnd{};
     bool m_initialised{};
