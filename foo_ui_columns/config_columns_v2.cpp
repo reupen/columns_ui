@@ -204,48 +204,33 @@ public:
 
 void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
 {
-    RECT rc;
+    RECT rc{};
     GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
-    const HMENU menu = CreatePopupMenu();
 
-    enum {
-        IDM_TFHELP = 1,
-        IDM_STYLE_HELP,
-        IDM_GLOBALS_HELP,
-        IDM_SPEEDTEST,
-        IDM_PREVIEW,
-        IDM_EDITORFONT
-    };
+    uih::Menu menu;
+    uih::MenuCommandCollector collector;
 
-    uAppendMenu(menu, MF_STRING, IDM_TFHELP, "Title formatting &help");
-    uAppendMenu(menu, MF_STRING, IDM_STYLE_HELP, "&Style script help");
-    uAppendMenu(menu, MF_STRING, IDM_GLOBALS_HELP, "&Global variables help");
-    uAppendMenu(menu, MF_SEPARATOR, 0, "");
-    uAppendMenu(menu, MF_STRING, IDM_SPEEDTEST, "Speed &test");
-    uAppendMenu(menu, MF_STRING, IDM_PREVIEW, "&Preview script");
-    uAppendMenu(menu, MF_SEPARATOR, 0, "");
-    uAppendMenu(menu, MF_STRING, IDM_EDITORFONT, "Change editor &font");
-
-    const int cmd
-        = TrackPopupMenu(menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
-    DestroyMenu(menu);
-    if (cmd == IDM_TFHELP) {
-        standard_commands::main_titleformat_help();
-    } else if (cmd == IDM_STYLE_HELP) {
-        cui::help::open_colour_script_help(GetParent(wnd));
-    } else if (cmd == IDM_GLOBALS_HELP) {
-        cui::help::open_global_variables_help(GetParent(wnd));
-    } else if (cmd == IDM_SPEEDTEST) {
-        speedtest(g_columns, cfg_global != 0);
-    } else if (cmd == IDM_PREVIEW) {
-        preview_to_console(uGetDlgItemText(wnd, edit_ctrl_id), cfg_global != 0);
-    } else if (cmd == IDM_EDITORFONT) {
-        auto font_description = cui::fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
-        if (font_description) {
+    menu.append_command(collector.add([] { standard_commands::main_titleformat_help(); }), L"Title formatting help");
+    menu.append_command(collector.add([wnd] { help::open_colour_script_help(GetParent(wnd)); }), L"Style script help");
+    menu.append_command(
+        collector.add([=] { help::open_global_variables_help(GetParent(wnd)); }), L"Global variables help");
+    menu.append_separator();
+    menu.append_command(collector.add([] { speedtest(g_columns, cfg_global != 0); }), L"Speed test");
+    menu.append_command(
+        collector.add([edit_ctrl_id, wnd] { preview_to_console(uGetDlgItemText(wnd, edit_ctrl_id), cfg_global != 0); }),
+        L"Preview script");
+    menu.append_separator();
+    menu.append_command(collector.add([wnd] {
+        if (auto font_description = fonts::select_font(GetParent(wnd), cfg_editor_font->log_font)) {
             cfg_editor_font = *font_description;
             g_editor_font_notify.on_change();
-        }
-    }
+        };
+    }),
+        L"Change editor font");
+
+    menu_helpers::win32_auto_mnemonics(menu.get());
+
+    collector.execute(menu.run(wnd, {rc.left, rc.bottom}));
 }
 
 class DisplayScriptTab : public ColumnTab {
@@ -744,51 +729,30 @@ void TabColumns::ColumnsListView::notify_save_inline_edit(const char* value)
 
 bool TabColumns::on_column_list_contextmenu(const POINT& pt, bool from_keyboard)
 {
-    enum {
-        ID_REMOVE = 1,
-        ID_UP,
-        ID_DOWN,
-        ID_NEW
-    };
     const auto item = m_columns_list_view.get_selected_item_single();
     const auto is_item_selected = item != std::numeric_limits<size_t>::max();
 
-    const wil::unique_hmenu menu(CreatePopupMenu());
+    uih::Menu menu;
+    uih::MenuCommandCollector collector;
 
-    AppendMenu(menu.get(), MF_STRING, ID_NEW, L"&New");
+    menu.append_command(collector.add([this, item] { add_column(item); }), L"New");
 
     if (is_item_selected) {
-        AppendMenu(menu.get(), MF_STRING, ID_REMOVE, L"&Remove");
+        menu.append_command(collector.add([this, item] { remove_column(item); }), L"Remove");
 
-        if (m_columns.get_count() > 1)
-            AppendMenu(menu.get(), MF_SEPARATOR, NULL, nullptr);
+        if (m_columns.size() > 1)
+            menu.append_separator();
 
         if (item > 0)
-            AppendMenu(menu.get(), MF_STRING, ID_UP, L"Move &up");
+            menu.append_command(collector.add([this, item] { move_column_up(item); }), L"Move up");
 
         if (item + 1 < m_columns.get_count())
-            AppendMenu(menu.get(), MF_STRING, ID_DOWN, L"Move &down");
+            menu.append_command(collector.add([this, item] { move_column_down(item); }), L"Move down");
     }
 
-    const int cmd = TrackPopupMenu(menu.get(), TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0,
-        m_columns_list_view.get_wnd(), nullptr);
+    menu_helpers::win32_auto_mnemonics(menu.get());
 
-    switch (cmd) {
-    case ID_NEW:
-        add_column(item);
-        break;
-    case ID_REMOVE:
-        remove_column(item);
-        break;
-    case ID_UP:
-        move_column_up(item);
-        break;
-    case ID_DOWN:
-        move_column_down(item);
-        break;
-    default:
-        break;
-    }
+    collector.execute(menu.run(m_columns_list_view.get_wnd(), pt));
 
     return true;
 }

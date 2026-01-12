@@ -87,60 +87,47 @@ public:
                 cfg_global = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case IDC_TFHELP: {
-                RECT rc;
+                RECT rc{};
                 GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
-                //        MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)(&rc), 2);
-                HMENU menu = CreatePopupMenu();
 
-                enum {
-                    IDM_TFHELP = 1,
-                    IDM_STYLE_HELP,
-                    IDM_GLOBALS_HELP,
-                    IDM_SPEEDTEST,
-                    IDM_PREVIEW,
-                    IDM_EDITORFONT,
-                    IDM_RESETSTYLE
-                };
+                uih::Menu menu;
+                uih::MenuCommandCollector collector;
 
-                uAppendMenu(menu, (MF_STRING), IDM_TFHELP, "Title formatting &help");
-                uAppendMenu(menu, (MF_STRING), IDM_STYLE_HELP, "&Style script help");
-                uAppendMenu(menu, (MF_STRING), IDM_GLOBALS_HELP, "&Global variables help");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_SPEEDTEST, "Speed &test");
-                uAppendMenu(menu, (MF_STRING), IDM_PREVIEW, "&Preview to console");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_EDITORFONT, "Change editor &font");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_RESETSTYLE, "&Reset style string");
-
-                int cmd = TrackPopupMenu(
-                    menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
-                DestroyMenu(menu);
-                if (cmd == IDM_TFHELP) {
-                    standard_commands::main_titleformat_help();
-                } else if (cmd == IDM_STYLE_HELP) {
-                    help::open_colour_script_help(GetParent(wnd));
-                } else if (cmd == IDM_GLOBALS_HELP) {
-                    help::open_global_variables_help(GetParent(wnd));
-                } else if (cmd == IDM_SPEEDTEST) {
-                    speedtest(g_columns, cfg_global != 0);
-                } else if (cmd == IDM_PREVIEW) {
+                menu.append_command(
+                    collector.add([] { standard_commands::main_titleformat_help(); }), L"Title formatting help");
+                menu.append_command(
+                    collector.add([wnd] { help::open_colour_script_help(GetParent(wnd)); }), L"Style script help");
+                menu.append_command(collector.add([wnd] { help::open_global_variables_help(GetParent(wnd)); }),
+                    L"Global variables help");
+                menu.append_separator();
+                menu.append_command(collector.add([] { speedtest(g_columns, cfg_global != 0); }), L"Speed test");
+                menu.append_command(collector.add([wnd] {
                     preview_to_console(uGetDlgItemText(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
-                } else if (cmd == IDM_EDITORFONT) {
-                    auto font_description = fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
-                    if (font_description) {
+                    ;
+                }),
+                    L"Preview script");
+                menu.append_separator();
+                menu.append_command(collector.add([wnd] {
+                    if (auto font_description = fonts::select_font(GetParent(wnd), cfg_editor_font->log_font)) {
                         cfg_editor_font = *font_description;
                         g_editor_font_notify.on_change();
-                    }
-                } else if (cmd == IDM_RESETSTYLE) {
+                    };
+                }),
+                    L"Change editor font");
+                menu.append_separator();
+                menu.append_command(collector.add([wnd] {
                     cfg_colour = default_global_style_script;
                     if (g_cur_tab2 == 1)
                         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
                     panels::playlist_view::PlaylistView::s_update_all_items();
-                }
-            }
+                }),
+                    L"Reset style script");
 
-            break;
+                menu_helpers::win32_auto_mnemonics(menu.get());
+
+                collector.execute(menu.run(wnd, {rc.left, rc.bottom}));
+                break;
+            }
             case IDC_GLOBALSORT:
                 cfg_global_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
