@@ -6,8 +6,21 @@
 
 namespace cui::prefs {
 
+namespace {
+
+enum class ColumnTabIndex : int32_t {
+    General,
+    DisplayScript,
+    StyleScript,
+    SortingScript,
+};
+
+} // namespace
+
 cfg_int g_cur_tab(GUID{0x1f7903e5, 0x9523, 0xac7e, {0xd4, 0xea, 0x13, 0xdd, 0xe5, 0xac, 0xc8, 0x66}}, 0);
 cfg_uint g_last_colour(GUID{0xd352a60a, 0x4d87, 0x07b9, {0x09, 0x07, 0x03, 0xa1, 0xe0, 0x08, 0x03, 0x2f}}, 0);
+cfg_int cfg_child_column({0xa7a2845, 0x6a4, 0x4c15, {0xb0, 0x9f, 0xa6, 0xeb, 0xee, 0x86, 0x33, 0x5d}},
+    WI_EnumValue(ColumnTabIndex::General));
 
 constexpr auto MSG_COLUMN_NAME_CHANGED = WM_USER + 3;
 
@@ -211,9 +224,16 @@ void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
     uih::MenuCommandCollector collector;
 
     menu.append_command(collector.add([] { standard_commands::main_titleformat_help(); }), L"Title formatting help");
-    menu.append_command(collector.add([wnd] { help::open_colour_script_help(GetParent(wnd)); }), L"Style script help");
+    menu.append_command(collector.add([wnd] { help::open_style_script_help(GetParent(wnd)); }), L"Style script help");
     menu.append_command(
         collector.add([=] { help::open_global_variables_help(GetParent(wnd)); }), L"Global variables help");
+
+    if (cfg_child_column == WI_EnumValue(ColumnTabIndex::DisplayScript)) {
+        menu.append_separator();
+        menu.append_command(
+            collector.add([wnd] { help::open_text_styling_help(GetParent(wnd)); }), L"Text styling help");
+    }
+
     menu.append_separator();
     menu.append_command(collector.add([] { speedtest(g_columns, cfg_global != 0); }), L"Speed test");
     menu.append_command(
@@ -491,11 +511,6 @@ private:
     PlaylistViewColumn::ptr m_column;
 };
 
-// {0A7A2845-06A4-4c15-B09F-A6EBEE86335D}
-const GUID g_guid_cfg_child_column = {0xa7a2845, 0x6a4, 0x4c15, {0xb0, 0x9f, 0xa6, 0xeb, 0xee, 0x86, 0x33, 0x5d}};
-
-cfg_uint cfg_child_column(g_guid_cfg_child_column, 0);
-
 void TabColumns::make_child()
 {
     // HWND wnd_destroy = child;
@@ -515,9 +530,10 @@ void TabColumns::make_child()
 
     TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
 
-    const auto count = 4u;
+    const auto count = 4;
+
     if (cfg_child_column >= count)
-        cfg_child_column = 0;
+        cfg_child_column = WI_EnumValue(ColumnTabIndex::General);
 
     if (cfg_child_column < count && cfg_child_column >= 0) {
         const auto item = m_columns_list_view.get_selected_item_single();
@@ -526,13 +542,13 @@ void TabColumns::make_child()
         if (item != std::numeric_limits<size_t>::max())
             column = m_columns[item];
 
-        if (cfg_child_column == 0)
+        if (cfg_child_column == WI_EnumValue(ColumnTabIndex::General))
             m_child = std::make_unique<EditColumnWindowOptions>(column);
-        else if (cfg_child_column == 1)
+        else if (cfg_child_column == WI_EnumValue(ColumnTabIndex::DisplayScript))
             m_child = std::make_unique<DisplayScriptTab>(column);
-        else if (cfg_child_column == 2)
+        else if (cfg_child_column == WI_EnumValue(ColumnTabIndex::StyleScript))
             m_child = std::make_unique<StyleScriptTab>(column);
-        else if (cfg_child_column == 3)
+        else if (cfg_child_column == WI_EnumValue(ColumnTabIndex::SortingScript))
             m_child = std::make_unique<SortingScriptTab>(column);
         m_wnd_child = m_child->create(m_wnd);
     }

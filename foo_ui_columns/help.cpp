@@ -5,7 +5,12 @@
 
 namespace cui::help {
 
-void open_colour_script_help(HWND wnd)
+void open_text_styling_help(HWND wnd)
+{
+    helpers::open_web_page(wnd, urls::text_styling_help.data());
+}
+
+void open_style_script_help(HWND wnd)
 {
     helpers::open_web_page(wnd, urls::style_script_help.data());
 }
