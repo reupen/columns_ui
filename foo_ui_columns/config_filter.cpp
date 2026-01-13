@@ -5,6 +5,7 @@
 #include "core_dark_list_view.h"
 #include "dark_mode_dialog.h"
 #include "list_view_drop_target.h"
+#include "permutation_utils.h"
 
 namespace {
 
@@ -26,10 +27,25 @@ public:
     size_t m_edit_index, m_edit_column;
     FieldList() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite) {}
 
+    void move_item(size_t old_index, size_t new_index)
+    {
+        auto permutation = cui::utils::create_shift_item_permutation(old_index, new_index, get_item_count());
+        cui::panels::filter::cfg_field_list.reorder(permutation.data());
+        cui::panels::filter::FilterPanel::s_on_fields_reordered(permutation, old_index, new_index);
+
+        const auto first_affected = std::min(old_index, new_index);
+        const auto last_affected = std::max(old_index, new_index);
+
+        pfc::list_t<InsertItem> items;
+        get_list_view_insert_items(first_affected, last_affected - first_affected + 1, items);
+        replace_items(first_affected, items);
+    }
+
     void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override
     {
         activate_inline_editing(index, column);
     }
+
     void notify_on_create() override
     {
         RECT rc{};
@@ -40,22 +56,27 @@ public:
         set_columns({{"Name", client_width / 3}, {"Field", client_width * 2 / 3}});
 
         wil::com_ptr drop_target(new cui::utils::SimpleListViewDropTarget(
-            this, [this](mmh::Permutation& new_order, size_t old_index, size_t new_index) {
-                cui::panels::filter::cfg_field_list.reorder(new_order.data());
-                cui::panels::filter::FilterPanel::s_on_fields_reordered(new_order, old_index, new_index);
-
-                const auto first_affected = std::min(old_index, new_index);
-                const auto last_affected = std::max(old_index, new_index);
-
-                pfc::list_t<InsertItem> items;
-                get_list_view_insert_items(first_affected, last_affected - first_affected + 1, items);
-                replace_items(first_affected, items);
-            }));
+            this, [this](size_t old_index, size_t new_index) { move_item(old_index, new_index); }));
 
         RegisterDragDrop(get_wnd(), drop_target.get());
     }
 
     void notify_on_destroy() override { RevokeDragDrop(get_wnd()); }
+
+    void move_selection(int delta) override
+    {
+        const auto selection_index = fbh::as_optional(get_selected_item_single());
+
+        if (!selection_index)
+            return;
+
+        const auto new_index = std::clamp(gsl::narrow<ptrdiff_t>(*selection_index) + delta, ptrdiff_t{},
+            gsl::narrow<ptrdiff_t>(get_item_count() - 1));
+
+        move_item(*selection_index, gsl::narrow<size_t>(new_index));
+        set_item_selected_single(new_index, false);
+        ensure_visible(new_index);
+    }
 
     bool do_drag_drop(WPARAM wp) override
     {

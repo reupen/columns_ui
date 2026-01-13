@@ -259,6 +259,9 @@ public:
             void notify_on_selection_change(const bit_array& p_affected, const bit_array& p_status,
                 notification_source_t p_notification_source) override;
             bool do_drag_drop(WPARAM wp) override;
+            void move_selection(int delta) override;
+
+            void move_item(size_t old_index, size_t new_index);
 
         public:
             explicit ButtonsList(ConfigParam& p_param) : CoreDarkListView(true), m_param(p_param) {}
