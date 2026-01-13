@@ -192,13 +192,7 @@ HRESULT STDMETHODCALLTYPE SimpleListViewDropTarget::Drop(
         const auto item_count = m_list_view->get_item_count();
 
         if (new_index && old_index && new_index != old_index && old_index < item_count) {
-            const int step = new_index > old_index ? 1 : -1;
-            mmh::Permutation perm(item_count);
-
-            for (size_t index = *old_index; index != new_index; index += step)
-                std::swap(perm[index], perm[index + step]);
-
-            m_on_order_changed(perm, *old_index, *new_index);
+            m_on_order_changed(*old_index, *new_index);
             m_list_view->set_item_selected_single(*new_index);
             m_list_view->ensure_visible(*new_index);
         }

@@ -244,6 +244,9 @@ void FilterPanel::s_on_fields_swapped(size_t index_1, size_t index_2)
 
 void FilterPanel::s_on_fields_reordered(mmh::Permutation& permutation, size_t old_index, size_t new_index)
 {
+    if (g_windows.empty())
+        return;
+
     if (permutation.size() != g_field_data.size()) {
         assert(false);
         return;

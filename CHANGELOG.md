@@ -26,10 +26,16 @@
   the font size to one decimal place instead of rounding to the nearest whole
   number.
 
-- Items in the playlist view columns and groups lists and the Filter panel field
-  list in Preferences can now be reordered using drag and drop.
-  [[#1535](https://github.com/reupen/columns_ui/pull/1535),
-  [#1538](https://github.com/reupen/columns_ui/pull/1538)]
+- In Preferences, items in the playlist view columns list, the playlist view
+  groups list and the Filter panel field list can now be reordered using drag
+  and drop and by using Ctrl+Shift in combination with the Up, Down, PgUp, PgDn,
+  Home and End keys. [[#1535](https://github.com/reupen/columns_ui/pull/1535),
+  [#1538](https://github.com/reupen/columns_ui/pull/1538),
+  [#1543](https://github.com/reupen/columns_ui/pull/1543)]
+
+- Items in the buttons list in Buttons options can now be reordered using
+  Ctrl+Shift in combination with the Up, Down, PgUp, PgDn, Home and End keys.
+  [[#1543](https://github.com/reupen/columns_ui/pull/1543)]
 
 - In live layout editing context menu, the ‘Add sibling’ submenu was replaced
   with ‘Add before’ and ‘Add after’ submenus.

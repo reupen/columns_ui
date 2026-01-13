@@ -3,6 +3,7 @@
 #include "dark_mode_dialog.h"
 #include "ng_playlist.h"
 #include "ng_playlist_groups.h"
+#include "permutation_utils.h"
 
 namespace cui::panels::playlist_view {
 
@@ -240,8 +241,9 @@ void GroupsPreferencesTab::on_group_default_action(size_t index)
     }
 }
 
-void GroupsPreferencesTab::on_column_list_reorder(mmh::Permutation& permutation, size_t old_index, size_t new_index)
+void GroupsPreferencesTab::on_group_list_reorder(size_t old_index, size_t new_index)
 {
+    auto permutation = utils::create_shift_item_permutation(old_index, new_index, m_groups_list_view.get_item_count());
     g_groups.reorder(permutation.data());
 
     const auto first_affected = std::min(old_index, new_index);

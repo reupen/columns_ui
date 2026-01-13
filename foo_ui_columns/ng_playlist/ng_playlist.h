@@ -584,15 +584,28 @@ public:
 
         void notify_on_create() override
         {
-            wil::com_ptr drop_target(new utils::SimpleListViewDropTarget(
-                this, [this](mmh::Permutation& new_order, size_t old_index, size_t new_index) {
-                    m_tab.on_column_list_reorder(new_order, old_index, new_index);
-                }));
+            wil::com_ptr drop_target(new utils::SimpleListViewDropTarget(this,
+                [this](size_t old_index, size_t new_index) { m_tab.on_group_list_reorder(old_index, new_index); }));
 
             RegisterDragDrop(get_wnd(), drop_target.get());
         }
 
         void notify_on_destroy() override { RevokeDragDrop(get_wnd()); }
+
+        void move_selection(int delta) override
+        {
+            const auto selection_index = fbh::as_optional(get_selected_item_single());
+
+            if (!selection_index)
+                return;
+
+            const auto new_index = std::clamp(gsl::narrow<ptrdiff_t>(*selection_index) + delta, ptrdiff_t{},
+                gsl::narrow<ptrdiff_t>(get_item_count() - 1));
+
+            m_tab.on_group_list_reorder(*selection_index, gsl::narrow<size_t>(new_index));
+            set_item_selected_single(new_index, false);
+            ensure_visible(new_index);
+        }
 
         bool do_drag_drop(WPARAM wp) override
         {
@@ -624,7 +637,7 @@ private:
     void refresh_enabled_options() const;
 
     void on_group_default_action(size_t index);
-    void on_column_list_reorder(mmh::Permutation& permutation, size_t old_index, size_t new_index);
+    void on_group_list_reorder(size_t old_index, size_t new_index);
 
     HWND m_wnd{};
     bool m_initialised{};

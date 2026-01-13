@@ -6,7 +6,7 @@ wil::com_ptr<IDataObject> create_simple_list_view_data_object(HWND wnd);
 
 class SimpleListViewDropTarget : public IDropTarget {
 public:
-    using OnOrderChanged = std::function<void(mmh::Permutation& new_order, size_t new_index, size_t old_index)>;
+    using OnOrderChanged = std::function<void(size_t new_index, size_t old_index)>;
 
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;
     ULONG STDMETHODCALLTYPE AddRef() override;
