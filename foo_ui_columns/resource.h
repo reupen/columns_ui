@@ -95,7 +95,7 @@
 #define IDD_PREFS_STATUS_PANE           236
 #define IDD_PREFS_TEXT_RENDERING        237
 #define IDD_FONT_AXES                   238
-#define IDD_ITEM_DETAILS_PICK_FONT      239
+#define IDD_FORMAT_CODE_GENERATOR       239
 #define IDD_PREFS_SETUP                 240
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
+#include "format_code_generator.h"
 #include "help.h"
 
 extern const char* default_global_style_script;
@@ -9,7 +10,13 @@ namespace cui::prefs {
 
 namespace {
 
-cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}}, 0);
+enum class ColumnTabIndex : int32_t {
+    VariablesScript,
+    StyleScript,
+};
+
+cfg_int cfg_globals_tab_index(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}},
+    WI_EnumValue(ColumnTabIndex::VariablesScript));
 
 class TabGlobal : public PreferencesTab {
 public:
@@ -17,17 +24,19 @@ public:
     {
         SendDlgItemMessage(wnd, IDC_GLOBAL, BM_SETCHECK, cfg_global, 0);
         SendDlgItemMessage(wnd, IDC_GLOBALSORT, BM_SETCHECK, cfg_global_sort, 0);
-        uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, (g_cur_tab2 == 0 ? cfg_globalstring : cfg_colour));
+        uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0,
+            (cfg_globals_tab_index == WI_EnumValue(ColumnTabIndex::VariablesScript) ? cfg_globalstring : cfg_colour));
     }
 
     static void save_string(HWND wnd)
     {
-        int id = g_cur_tab2;
-        if (id >= 0 && id < 2) {
-            if (id == 0)
-                cfg_globalstring = uGetDlgItemText(wnd, IDC_STRING);
-            else if (id == 1)
-                cfg_colour = uGetDlgItemText(wnd, IDC_STRING);
+        switch (cfg_globals_tab_index) {
+        case WI_EnumValue(ColumnTabIndex::VariablesScript):
+            cfg_globalstring = uGetDlgItemText(wnd, IDC_STRING);
+            break;
+        case WI_EnumValue(ColumnTabIndex::StyleScript):
+            cfg_colour = uGetDlgItemText(wnd, IDC_STRING);
+            break;
         }
     }
 
@@ -45,7 +54,7 @@ public:
             tabs.pszText = const_cast<char*>("Style");
             uTabCtrl_InsertItem(wnd_tab, 1, &tabs);
 
-            TabCtrl_SetCurSel(wnd_tab, g_cur_tab2);
+            TabCtrl_SetCurSel(wnd_tab, cfg_globals_tab_index);
 
             colour_code_gen(wnd, IDC_COLOUR, false, true);
 
@@ -66,9 +75,10 @@ public:
                 case TCN_SELCHANGE: {
                     save_string(wnd);
                     int id = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-                    g_cur_tab2 = id;
-                    uSendDlgItemMessageText(
-                        wnd, IDC_STRING, WM_SETTEXT, 0, (g_cur_tab2 == 0 ? cfg_globalstring : cfg_colour));
+                    cfg_globals_tab_index = id;
+                    uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0,
+                        (cfg_globals_tab_index == WI_EnumValue(ColumnTabIndex::VariablesScript) ? cfg_globalstring
+                                                                                                : cfg_colour));
                 } break;
                 }
                 break;
@@ -87,60 +97,61 @@ public:
                 cfg_global = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case IDC_TFHELP: {
-                RECT rc;
+                RECT rc{};
                 GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
-                //        MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)(&rc), 2);
-                HMENU menu = CreatePopupMenu();
 
-                enum {
-                    IDM_TFHELP = 1,
-                    IDM_STYLE_HELP,
-                    IDM_GLOBALS_HELP,
-                    IDM_SPEEDTEST,
-                    IDM_PREVIEW,
-                    IDM_EDITORFONT,
-                    IDM_RESETSTYLE
-                };
+                uih::Menu menu;
+                uih::MenuCommandCollector collector;
 
-                uAppendMenu(menu, (MF_STRING), IDM_TFHELP, "Title formatting &help");
-                uAppendMenu(menu, (MF_STRING), IDM_STYLE_HELP, "&Style script help");
-                uAppendMenu(menu, (MF_STRING), IDM_GLOBALS_HELP, "&Global variables help");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_SPEEDTEST, "Speed &test");
-                uAppendMenu(menu, (MF_STRING), IDM_PREVIEW, "&Preview to console");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_EDITORFONT, "Change editor &font");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_RESETSTYLE, "&Reset style string");
+                menu.append_command(
+                    collector.add([] { standard_commands::main_titleformat_help(); }), L"Title formatting help");
+                menu.append_command(
+                    collector.add([wnd] { help::open_style_script_help(GetParent(wnd)); }), L"Style script help");
+                menu.append_command(collector.add([wnd] { help::open_global_variables_help(GetParent(wnd)); }),
+                    L"Global variables help");
 
-                int cmd = TrackPopupMenu(
-                    menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
-                DestroyMenu(menu);
-                if (cmd == IDM_TFHELP) {
-                    standard_commands::main_titleformat_help();
-                } else if (cmd == IDM_STYLE_HELP) {
-                    help::open_colour_script_help(GetParent(wnd));
-                } else if (cmd == IDM_GLOBALS_HELP) {
-                    help::open_global_variables_help(GetParent(wnd));
-                } else if (cmd == IDM_SPEEDTEST) {
-                    speedtest(g_columns, cfg_global != 0);
-                } else if (cmd == IDM_PREVIEW) {
-                    preview_to_console(uGetDlgItemText(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
-                } else if (cmd == IDM_EDITORFONT) {
-                    auto font_description = fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
-                    if (font_description) {
+                if (cfg_globals_tab_index == WI_EnumValue(ColumnTabIndex::VariablesScript)) {
+                    menu.append_separator();
+                    menu.append_command(
+                        collector.add([wnd] { help::open_text_styling_help(GetParent(wnd)); }), L"Text styling help");
+                    menu.append_command(collector.add([parent_wnd{GetAncestor(wnd, GA_ROOT)}] {
+                        utils::open_format_code_generator(parent_wnd, panels::playlist_view::items_font_id);
+                    }),
+                        L"Format code generator");
+                }
+
+                menu.append_separator();
+                menu.append_command(collector.add([] { speedtest(g_columns, cfg_global != 0); }), L"Speed test");
+                menu.append_command(collector.add([wnd] {
+                    preview_to_console(uGetDlgItemText(wnd, IDC_STRING),
+                        cfg_globals_tab_index != WI_EnumValue(ColumnTabIndex::VariablesScript) && cfg_global);
+                    ;
+                }),
+                    L"Preview script");
+                menu.append_separator();
+                menu.append_command(collector.add([wnd] {
+                    if (auto font_description = fonts::select_font(GetParent(wnd), cfg_editor_font->log_font)) {
                         cfg_editor_font = *font_description;
                         g_editor_font_notify.on_change();
-                    }
-                } else if (cmd == IDM_RESETSTYLE) {
+                    };
+                }),
+                    L"Change editor font");
+                menu.append_separator();
+                menu.append_command(collector.add([wnd] {
                     cfg_colour = default_global_style_script;
-                    if (g_cur_tab2 == 1)
-                        uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
-                    panels::playlist_view::PlaylistView::s_update_all_items();
-                }
-            }
 
-            break;
+                    if (cfg_globals_tab_index == WI_EnumValue(ColumnTabIndex::StyleScript))
+                        uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
+
+                    panels::playlist_view::PlaylistView::s_update_all_items();
+                }),
+                    L"Reset style script");
+
+                menu_helpers::win32_auto_mnemonics(menu.get());
+
+                collector.execute(menu.run(wnd, {rc.left, rc.bottom}));
+                break;
+            }
             case IDC_GLOBALSORT:
                 cfg_global_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;

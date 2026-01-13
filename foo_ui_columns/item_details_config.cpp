@@ -3,46 +3,11 @@
 #include "config.h"
 #include "dark_mode_dialog.h"
 #include "font_picker.h"
+#include "format_code_generator.h"
 
 namespace cui::panels::item_details {
 
 namespace {
-
-constexpr auto MSG_FORMAT_GENERATOR_CLOSED = WM_USER + 0x10;
-
-std::wstring create_set_format_snippet(const fonts::FontDescription& font_description)
-{
-    const auto& desc = font_description;
-
-    if (!desc.wss)
-        return L""s;
-
-    const auto font_family
-        = desc.typographic_family_name.empty() ? desc.wss->family_name : desc.typographic_family_name;
-
-    const auto font_size = uih::direct_write::dip_to_pt(font_description.dip_size);
-    const auto font_style = [style{desc.wss->style}] {
-        switch (style) {
-        default:
-            return L"normal";
-        case DWRITE_FONT_STYLE_OBLIQUE:
-            return L"oblique";
-        case DWRITE_FONT_STYLE_ITALIC:
-            return L"italic";
-        }
-    }();
-
-    const auto snippet = fmt::format(LR"($set_format(
-  font-family: {};
-  font-size: {};
-  font-weight: {};
-  font-stretch: {};
-  font-style: {};
-))",
-        font_family, font_size, WI_EnumValue(desc.wss->weight), WI_EnumValue(desc.wss->stretch), font_style);
-
-    return std::regex_replace(snippet, std::wregex(L"\n"), L"\r\n");
-}
 
 const dark::DialogDarkModeConfig dark_mode_config{
     .button_ids = {IDC_GEN_COLOUR, IDC_FORMAT_CODE_GENERATOR, IDOK, IDCANCEL},
@@ -116,9 +81,6 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         if (wp == timer_id)
             on_timer();
         break;
-    case MSG_FORMAT_GENERATOR_CLOSED:
-        m_format_code_generator_wnd = nullptr;
-        break;
     case WM_COMMAND:
         switch (LOWORD(wp)) {
         case IDOK:
@@ -136,7 +98,7 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
             colour_code_gen(wnd, IDC_COLOUR_CODE, false, false);
             break;
         case IDC_FORMAT_CODE_GENERATOR:
-            open_format_code_generator();
+            utils::open_format_code_generator(m_wnd, g_guid_item_details_font_client);
             break;
         case IDC_SCRIPT:
             switch (HIWORD(wp)) {
@@ -190,59 +152,6 @@ void ItemDetailsConfig::on_timer()
 {
     m_this->set_script(m_script);
     kill_timer();
-}
-
-void ItemDetailsConfig::open_format_code_generator()
-{
-    if (m_format_code_generator_wnd) {
-        SetForegroundWindow(m_format_code_generator_wnd);
-        return;
-    }
-
-    m_format_code_generator_wnd = cui::dark::modeless_dialog_box(IDD_ITEM_DETAILS_PICK_FONT,
-        {.button_ids = {IDCANCEL},
-            .combo_box_ids = {IDC_FONT_FAMILY, IDC_FONT_FACE},
-            .edit_ids = {IDC_FONT_SIZE, IDC_SET_FORMAT_SNIPPET},
-            .spin_ids = {IDC_FONT_SIZE_SPIN},
-            .last_button_id = IDCANCEL},
-        m_wnd,
-        [wnd_parent{m_wnd}, font_picker{utils::DirectWriteFontPicker{}}](
-            auto wnd, auto msg, auto wp, auto lp) mutable -> INT_PTR {
-            if (const auto result = font_picker.handle_message(wnd, msg, wp, lp); result)
-                return *result;
-
-            switch (msg) {
-            case WM_INITDIALOG: {
-                const auto font = fonts::get_font(g_guid_item_details_font_client);
-
-                fonts::FontDescription font_description;
-                font_description.wss = uih::direct_write::WeightStretchStyle{
-                    font->family_name(), font->weight(), font->stretch(), font->style()};
-                font_description.set_dip_size(font->size());
-
-                const auto snippet_wnd = GetDlgItem(wnd, IDC_SET_FORMAT_SNIPPET);
-                uih::enhance_edit_control(snippet_wnd);
-
-                const auto on_font_changed = [snippet_wnd](const auto& font_description) {
-                    SetWindowText(snippet_wnd, create_set_format_snippet(font_description).c_str());
-                };
-                on_font_changed(font_description);
-
-                font_picker.set_font_description(std::move(font_description));
-                font_picker.on_font_changed(std::move(on_font_changed));
-                return FALSE;
-            }
-            case WM_DESTROY:
-                SendMessage(wnd_parent, MSG_FORMAT_GENERATOR_CLOSED, 0, 0);
-                break;
-            case WM_COMMAND:
-                if (wp == IDCANCEL)
-                    DestroyWindow(wnd);
-                return TRUE;
-            }
-
-            return FALSE;
-        });
 }
 
 void ItemDetailsConfig::start_timer()
