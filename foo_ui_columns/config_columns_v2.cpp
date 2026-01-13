@@ -2,6 +2,8 @@
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
 #include "config_columns_v2.h"
+
+#include "format_code_generator.h"
 #include "help.h"
 
 namespace cui::prefs {
@@ -232,6 +234,10 @@ void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
         menu.append_separator();
         menu.append_command(
             collector.add([wnd] { help::open_text_styling_help(GetParent(wnd)); }), L"Text styling help");
+        menu.append_command(collector.add([parent_wnd{GetAncestor(wnd, GA_ROOT)}] {
+            utils::open_format_code_generator(parent_wnd, panels::playlist_view::items_font_id);
+        }),
+            L"Format code generator");
     }
 
     menu.append_separator();

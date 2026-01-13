@@ -318,7 +318,6 @@ public:
     bool m_timer_active{};
     service_ptr_t<ItemDetails> m_this;
     HWND m_wnd{};
-    HWND m_format_code_generator_wnd{};
 
     enum {
         timer_id = 100
@@ -336,7 +335,6 @@ private:
     void kill_timer();
     void start_timer();
     void on_timer();
-    void open_format_code_generator();
     INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 };
 

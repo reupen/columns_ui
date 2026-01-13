@@ -656,6 +656,9 @@
     <ClCompile Include="list_view_drop_target.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="format_code_generator.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -987,6 +990,9 @@
       <Filter>Title formatting</Filter>
     </ClInclude>
     <ClInclude Include="list_view_drop_target.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="format_code_generator.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
