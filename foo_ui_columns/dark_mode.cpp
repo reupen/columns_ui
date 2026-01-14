@@ -8,14 +8,14 @@ namespace cui::dark {
 
 bool does_os_support_dark_mode()
 {
-    static auto is_19041_or_newer = win32::check_windows_10_build(19'041);
+    static auto is_19041_or_newer = mmh::check_windows_10_build(19'041);
     return is_19041_or_newer;
 }
 
 bool is_native_dark_spin_available()
 {
     // Earliest known build number – exact build number unknown.
-    return win32::check_windows_10_build(22'579);
+    return mmh::check_windows_10_build(22'579);
 }
 
 bool are_private_apis_allowed()
