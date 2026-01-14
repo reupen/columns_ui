@@ -4,6 +4,16 @@
 
 namespace cui::panels::playlist_view {
 
+namespace {
+
+bool is_windows_11_22h2_or_newer()
+{
+    static bool result = mmh::check_windows_10_build(22'621);
+    return result;
+}
+
+} // namespace
+
 void PlaylistViewRenderer::render_begin(const uih::lv::RendererContext& context)
 {
     const auto monitor = MonitorFromWindow(context.wnd, MONITOR_DEFAULTTONEAREST);
@@ -76,8 +86,8 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
             DrawThemeParentBackground(context.wnd, context.dc, &rc);
 
         RECT rc_background{rc};
-        if (context.use_dark_mode)
-            // This is inexplicable, but it needs to be done to get the same appearance as Windows Explorer.
+        if (context.use_dark_mode || is_windows_11_22h2_or_newer())
+            // Hide borders present on newer versions of Windows
             InflateRect(&rc_background, 1, 1);
         DrawThemeBackground(context.list_view_theme, context.dc, LVP_LISTITEM, theme_state, &rc_background, &rc);
     }

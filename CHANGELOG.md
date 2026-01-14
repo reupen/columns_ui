@@ -26,6 +26,10 @@
   the font size to one decimal place instead of rounding to the nearest whole
   number.
 
+- In light mode, the border around selected items in themed list views on
+  Windows 11 22H2 and newer was removed.
+  [[#1545](https://github.com/reupen/columns_ui/pull/1545)]
+
 - In Preferences, items in the playlist view columns list, the playlist view
   groups list and the Filter panel field list can now be reordered using drag
   and drop and by using Ctrl+Shift in combination with the Up, Down, PgUp, PgDn,
@@ -40,6 +44,12 @@
 - In live layout editing context menu, the ‘Add sibling’ submenu was replaced
   with ‘Add before’ and ‘Add after’ submenus.
   [[#1537](https://github.com/reupen/columns_ui/pull/1537)]
+
+### Bug fixes
+
+- A problem where, in dark mode, non-custom focus rectangles in themed list
+  views were inset by one pixel was fixed.
+  [[#1545](https://github.com/reupen/columns_ui/pull/1545)]
 
 ## 3.2.3
 

@@ -46,7 +46,7 @@ public:
 
         const HWND use_advanced_colour_wnd = GetDlgItem(wnd, IDC_USE_ADVANCED_COLOUR);
 
-        if (!win32::check_windows_10_build(17'763)) {
+        if (!mmh::check_windows_10_build(17'763)) {
             EnableWindow(use_advanced_colour_wnd, false);
             uSetWindowText(use_advanced_colour_wnd, "Use Advanced Colour (requires Window 10 version 1809 or newer)");
         } else if (artwork_panel::colour_management_mode
