@@ -40,6 +40,9 @@ public:
                 settings::show_status_pane = SendMessage(reinterpret_cast<HWND>(lp), BM_GETCHECK, 0, 0) != 0;
                 on_show_status_pane_change();
                 break;
+            case IDC_TOOLS:
+                show_generic_title_formatting_tools_menu(wnd, reinterpret_cast<HWND>(lp), status_pane::font_id);
+                break;
             }
         }
         return 0;

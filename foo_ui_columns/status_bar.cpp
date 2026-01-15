@@ -31,8 +31,6 @@ struct StatusBarState {
 
 std::optional<StatusBarState> state;
 
-constexpr GUID font_client_status_guid = {0xb9d5ea18, 0x5827, 0x40be, {0xa8, 0x96, 0x30, 0x2a, 0x71, 0xbc, 0xaa, 0x9c}};
-
 void on_status_font_change(bool is_initialising)
 {
     if (!g_status)
@@ -43,7 +41,7 @@ void on_status_font_change(bool is_initialising)
     state->lock_icon.reset();
     state->lock_bitmap.reset();
 
-    const auto font = fonts::get_font(font_client_status_guid);
+    const auto font = fonts::get_font(font_id);
     const auto log_font = font->log_font();
     state->font.reset(CreateFontIndirect(&log_font));
     state->direct_write_text_format.reset();
@@ -71,7 +69,7 @@ void on_status_font_change(bool is_initialising)
 
 class StatusBarFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return font_client_status_guid; }
+    const GUID& get_client_guid() const override { return font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Status bar"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }

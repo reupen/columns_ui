@@ -3,6 +3,9 @@
 #include "playlist_view_tfhooks.h"
 #include "tab_colours.h"
 #include "prefs_utils.h"
+
+#include "format_code_generator.h"
+#include "help.h"
 #include "tf_splitter_hook.h"
 
 void preview_to_console(const char* spec, bool extra)
@@ -152,6 +155,28 @@ HFONT create_default_ui_font(unsigned point_size)
 HFONT create_default_title_font()
 {
     return create_default_ui_font(12);
+}
+
+void show_generic_title_formatting_tools_menu(HWND dialog_wnd, HWND button_wnd, GUID font_id)
+{
+    RECT rc{};
+    GetWindowRect(button_wnd, &rc);
+
+    const auto root_wnd = GetAncestor(dialog_wnd, GA_ROOT);
+
+    uih::Menu menu;
+    uih::MenuCommandCollector collector;
+
+    menu.append_command(collector.add([] { standard_commands::main_titleformat_help(); }), L"Title formatting help");
+
+    menu.append_separator();
+    menu.append_command(collector.add([root_wnd] { help::open_text_styling_help(root_wnd); }), L"Text styling help");
+    menu.append_command(collector.add([&font_id, root_wnd] { utils::open_format_code_generator(root_wnd, font_id); }),
+        L"Format code generator");
+
+    menu_helpers::win32_auto_mnemonics(menu.get());
+
+    collector.execute(menu.run(dialog_wnd, {rc.left, rc.bottom}));
 }
 
 } // namespace cui::prefs

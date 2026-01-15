@@ -20,11 +20,18 @@
   styling to be changed for specific parts of text. Note that `$set_format()`
   does not affect item heights, which is fixed based on the size of the font
   configured on the Colours and fonts preferences page font and vertical item
-  padding settings where available.
+  padding settings where available. See
+  [Text styling](https://columns-ui.readthedocs.io/page/other/text-styling.html)
+  for full documentation for the functions.
 
   Additionally, `%default_font_size%` has been modified universally to return
   the font size to one decimal place instead of rounding to the nearest whole
   number.
+
+- ‘Tools’ menus were added below the playlist switcher, status bar and status
+  pane title formatting edit fields in Preferences, providing access to title
+  formatting help and the `$set_format()` code snippet generator.
+  [[#1546](https://github.com/reupen/columns_ui/pull/1546)]
 
 - In light mode, the border around selected items in themed list views on
   Windows 11 22H2 and newer was removed.
