@@ -4,6 +4,8 @@
 
 namespace cui::status_bar {
 
+constexpr GUID font_id = {0xb9d5ea18, 0x5827, 0x40be, {0xa8, 0x96, 0x30, 0x2a, 0x71, 0xbc, 0xaa, 0x9c}};
+
 extern volume_popup_t volume_popup_window;
 
 enum StatusBarPart : uint32_t {

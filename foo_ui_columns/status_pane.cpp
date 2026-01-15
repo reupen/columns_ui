@@ -31,12 +31,9 @@ fbh::ConfigString status_pane_script(GUID{0x952b7029, 0x8dd5, 0x46e8, {0xbc, 0xb
 ConfigMenuItem double_click_action(GUID{0x55c049ba, 0x9f46, 0x4986, {0xa4, 0xf5, 0xf8, 0x3d, 0x14, 0x49, 0x29, 0x9b}},
     cui::main_menu::commands::activate_now_playing_id);
 
-// {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
-const GUID StatusPane::g_guid_font = {0x522e01c6, 0xea7c, 0x49f2, {0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24}};
-
 class StatusPaneFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return StatusPane::g_guid_font; }
+    const GUID& get_client_guid() const override { return font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Status pane"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
@@ -63,7 +60,7 @@ void StatusPane::recreate_font()
 {
     m_text_format.reset();
 
-    const auto font = fonts::get_font(g_guid_font);
+    const auto font = fonts::get_font(font_id);
 
     if (!m_direct_write_context)
         return;

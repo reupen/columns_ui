@@ -60,6 +60,9 @@ public:
                 cfg_status = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 on_show_status_change();
                 break;
+            case IDC_TOOLS:
+                show_generic_title_formatting_tools_menu(wnd, reinterpret_cast<HWND>(lp), status_bar::font_id);
+                break;
             }
         }
         return 0;

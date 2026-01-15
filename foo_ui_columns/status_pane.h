@@ -3,6 +3,8 @@
 
 namespace cui::status_pane {
 
+constexpr GUID font_id{0x522e01c6, 0xea7c, 0x49f2, {0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24}};
+
 extern fbh::ConfigString status_pane_script;
 extern ConfigMenuItem double_click_action;
 
@@ -162,8 +164,6 @@ public:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     void on_font_changed();
-
-    static const GUID g_guid_font;
 
 private:
     void recreate_font();

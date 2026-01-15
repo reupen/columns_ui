@@ -20,4 +20,9 @@ void open_global_variables_help(HWND wnd)
     helpers::open_web_page(wnd, urls::global_variables_help.data());
 }
 
+void open_playlist_switcher_title_formatting_help(HWND wnd)
+{
+    helpers::open_web_page(wnd, urls::playlist_switcher_title_formatting_help.data());
+}
+
 } // namespace cui::help

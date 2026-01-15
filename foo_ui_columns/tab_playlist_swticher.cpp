@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "playlist_switcher_v2.h"
 #include "config.h"
+#include "format_code_generator.h"
+#include "help.h"
 
 namespace cui::prefs {
 
@@ -59,6 +61,33 @@ public:
                 cfg_plistframe = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
                 panels::playlist_switcher::PlaylistSwitcher::s_on_edgestyle_change();
                 break;
+            case IDC_TOOLS: {
+                RECT rc{};
+                GetWindowRect(reinterpret_cast<HWND>(lp), &rc);
+
+                const auto root_wnd = GetAncestor(wnd, GA_ROOT);
+
+                uih::Menu menu;
+                uih::MenuCommandCollector collector;
+
+                menu.append_command(
+                    collector.add([] { standard_commands::main_titleformat_help(); }), L"Title formatting help");
+                menu.append_command(
+                    collector.add([root_wnd] { help::open_playlist_switcher_title_formatting_help(root_wnd); }),
+                    L"Playlist switcher title formatting help");
+                menu.append_separator();
+                menu.append_command(
+                    collector.add([root_wnd] { help::open_text_styling_help(root_wnd); }), L"Text styling help");
+                menu.append_command(collector.add([root_wnd] {
+                    utils::open_format_code_generator(root_wnd, panels::playlist_switcher::items_font_id);
+                }),
+                    L"Format code generator");
+
+                menu_helpers::win32_auto_mnemonics(menu.get());
+
+                collector.execute(menu.run(wnd, {rc.left, rc.bottom}));
+                break;
+            }
             }
         }
         return 0;

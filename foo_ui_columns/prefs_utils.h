@@ -9,5 +9,6 @@ namespace cui::prefs {
 
 HFONT create_default_ui_font(unsigned point_size);
 HFONT create_default_title_font();
+void show_generic_title_formatting_tools_menu(HWND dialog_wnd, HWND button_wnd, GUID font_id);
 
 } // namespace cui::prefs
