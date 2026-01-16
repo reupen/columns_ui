@@ -22,9 +22,12 @@ class traits_t<Alignment> : public traits_rawobject {};
 const char* strchr_n(const char* src, char c, unsigned len = -1);
 
 struct Colour {
-    BYTE B{0};
-    BYTE G{0};
-    BYTE R{0};
+    BYTE B{};
+    BYTE G{};
+    BYTE R{};
+
+    Colour() {}
+    explicit Colour(COLORREF colour) : B(GetBValue(colour)), G(GetGValue(colour)), R(GetRValue(colour)) {}
 
     void set(COLORREF new_colour);
     operator COLORREF() const { return RGB(R, G, B); }

@@ -149,7 +149,8 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
                 {.bitmap_render_target = context.bitmap_render_target,
                     .is_selected = is_selected,
                     .align = sub_item.alignment,
-                    .enable_ellipses = cfg_ellipsis != 0});
+                    .enable_ellipses = cfg_ellipsis != 0,
+                    .initial_format = sub_style_data->format_properties});
         }
 
         const auto frame_width = uih::scale_dpi_value(1);
@@ -225,9 +226,11 @@ void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context,
     const auto x_offset = 1_spx + indentation;
     const auto border = 3_spx;
 
-    const auto text_width
-        = text_out_columns_and_styles(*context.group_text_format, context.wnd, context.dc, text, x_offset, border, rc,
-            cr, {.bitmap_render_target = context.bitmap_render_target, .enable_ellipses = cfg_ellipsis != 0});
+    const auto text_width = text_out_columns_and_styles(*context.group_text_format, context.wnd, context.dc, text,
+        x_offset, border, rc, cr,
+        {.bitmap_render_target = context.bitmap_render_target,
+            .enable_ellipses = cfg_ellipsis != 0,
+            .initial_format = group->m_style_data->format_properties});
 
     const auto line_height = 1_spx;
     const auto line_top = rc.top + wil::rect_height(rc) / 2 - line_height / 2;

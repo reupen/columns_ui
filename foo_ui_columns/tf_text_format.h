@@ -28,6 +28,28 @@ private:
     bool m_legacy_functionality_enabled{};
 };
 
+class MergingTextFormatTitleformatHook : public titleformat_hook {
+public:
+    bool process_field(
+        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
+
+    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
+        titleformat_hook_function_params* p_params, bool& p_found_flag) override;
+
+    MergingTextFormatTitleformatHook(float font_size_pt, uih::text_style::FormatProperties format_properties)
+        : m_default_font_size_pt(font_size_pt)
+        , m_format_properties(format_properties)
+    {
+    }
+
+    uih::text_style::FormatProperties consume_result() { return std::move(m_format_properties); }
+    void reset() { m_format_properties = {}; }
+
+private:
+    float m_default_font_size_pt{};
+    uih::text_style::FormatProperties m_format_properties;
+};
+
 class NullTextFormatTitleformatHook : public titleformat_hook {
 public:
     bool process_field(

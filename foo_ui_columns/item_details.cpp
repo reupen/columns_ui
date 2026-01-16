@@ -1099,7 +1099,7 @@ void ItemDetails::create_text_layout()
         = [](auto&& message) { console::print("Item details – $set_font() error: ", message.c_str()); };
 
     auto [render_text, colour_segments, font_segments] = uih::text_style::process_colour_and_font_codes(
-        m_formatted_text, print_legacy_feedback, m_direct_write_context);
+        m_formatted_text, {}, print_legacy_feedback, m_direct_write_context);
 
     const auto padding = s_get_padding();
     const auto max_width = std::max(0, gsl::narrow<int>(wil::rect_width(rect)) - padding * 2);

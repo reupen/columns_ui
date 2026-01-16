@@ -10,7 +10,7 @@ void g_add_object(const CellStyleData& p_data, SharedCellStyleData::ptr& p_out)
 {
     size_t count = m_objects.get_count();
     for (size_t i = 0; i < count; i++)
-        if (m_objects[i]->is_equal(p_data)) {
+        if (*static_cast<CellStyleData*>(m_objects[i]) == p_data) {
             p_out = m_objects[i];
             return;
         }
@@ -30,13 +30,15 @@ SharedCellStyleData::~SharedCellStyleData()
     style_cache_manager::g_remove_object(this);
 }
 
-CellStyleData CellStyleData::g_create_default()
+CellStyleData CellStyleData::create_default()
 {
     colours::helper p_helper(ColoursClient::id);
-    return CellStyleData(p_helper.get_colour(colours::colour_text), p_helper.get_colour(colours::colour_selection_text),
-        p_helper.get_colour(colours::colour_background), p_helper.get_colour(colours::colour_selection_background),
-        p_helper.get_colour(colours::colour_inactive_selection_text),
-        p_helper.get_colour(colours::colour_inactive_selection_background));
+    return CellStyleData{Colour(p_helper.get_colour(colours::colour_text)),
+        Colour(p_helper.get_colour(colours::colour_selection_text)),
+        Colour(p_helper.get_colour(colours::colour_background)),
+        Colour(p_helper.get_colour(colours::colour_selection_background)),
+        Colour(p_helper.get_colour(colours::colour_inactive_selection_text)),
+        Colour(p_helper.get_colour(colours::colour_inactive_selection_background))};
 }
 
 bool StyleTitleformatHook::process_field(
