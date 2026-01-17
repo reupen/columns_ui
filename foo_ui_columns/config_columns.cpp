@@ -3,6 +3,7 @@
 #include "config.h"
 #include "playlist_view_tfhooks.h"
 #include "tf_splitter_hook.h"
+#include "tf_text_format.h"
 #include "ng_playlist/ng_playlist_style.h"
 
 EditorFontNotify g_editor_font_notify;
@@ -115,6 +116,8 @@ void speedtest(ColumnListCRef columns, bool b_global)
         GetLocalTime(&st);
 
         {
+            cui::tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
+
             pfc::string8_fast_aggressive str_temp;
             str_temp.prealloc(512);
 
@@ -129,7 +132,8 @@ void speedtest(ColumnListCRef columns, bool b_global)
                             {
                                 SetGlobalTitleformatHook<true, false> tf_hook_set_global(p_vars);
                                 DateTitleformatHook tf_hook_date(&st);
-                                titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, &tf_hook_date);
+                                cui::tf::SplitterTitleformatHook tf_hook(
+                                    &tf_hook_set_global, &tf_hook_date, &null_text_format_tf_hook);
                                 playlist_api->activeplaylist_item_format_title(
                                     tracks[j], &tf_hook, str_temp, to_global, nullptr, play_control::display_level_all);
 
@@ -146,14 +150,14 @@ void speedtest(ColumnListCRef columns, bool b_global)
                 if (b_global_colour_used)
                     for (unsigned i = 0; i < 10; i++) {
                         for (unsigned j = 0; j < 16; j++) {
-                            auto style_info = cui::panels::playlist_view::CellStyleData::g_create_default();
+                            auto style_info = cui::panels::playlist_view::CellStyleData::create_default();
                             pfc::hires_timer timer;
                             timer.start();
                             cui::panels::playlist_view::StyleTitleformatHook tf_hook_style(style_info, 0);
                             SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
                             DateTitleformatHook tf_hook_date(&st);
-                            cui::tf::SplitterTitleformatHook tf_hook(
-                                &tf_hook_style, b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
+                            cui::tf::SplitterTitleformatHook tf_hook(&tf_hook_style,
+                                b_global ? &tf_hook_set_global : nullptr, &tf_hook_date, &null_text_format_tf_hook);
 
                             playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp,
                                 to_global_colour, nullptr, play_control::display_level_all);
@@ -182,8 +186,8 @@ void speedtest(ColumnListCRef columns, bool b_global)
                             timer.start();
                             SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
                             DateTitleformatHook tf_hook_date(&st);
-                            titleformat_hook_impl_splitter tf_hook(
-                                b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
+                            cui::tf::SplitterTitleformatHook tf_hook(
+                                b_global ? &tf_hook_set_global : nullptr, &tf_hook_date, &null_text_format_tf_hook);
 
                             playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp,
                                 times_columns[n].to_display, nullptr, play_control::display_level_all);
@@ -210,14 +214,14 @@ void speedtest(ColumnListCRef columns, bool b_global)
                         time_temp = 0;
                         for (i = 0; i < 10; i++) {
                             for (unsigned j = 0; j < 16; j++) {
-                                auto style_info = cui::panels::playlist_view::CellStyleData::g_create_default();
+                                auto style_info = cui::panels::playlist_view::CellStyleData::create_default();
                                 pfc::hires_timer timer;
                                 timer.start();
                                 cui::panels::playlist_view::StyleTitleformatHook tf_hook_style(style_info, 0);
                                 SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
                                 DateTitleformatHook tf_hook_date(&st);
-                                cui::tf::SplitterTitleformatHook tf_hook(
-                                    &tf_hook_style, b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
+                                cui::tf::SplitterTitleformatHook tf_hook(&tf_hook_style,
+                                    b_global ? &tf_hook_set_global : nullptr, &tf_hook_date, &null_text_format_tf_hook);
 
                                 playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp,
                                     times_columns[n].to_colour, nullptr, play_control::display_level_all);

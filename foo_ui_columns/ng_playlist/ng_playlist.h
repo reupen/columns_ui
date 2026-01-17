@@ -395,6 +395,8 @@ private:
     size_t column_index_display_to_actual(size_t display_index);
     size_t column_index_actual_to_display(size_t actual_index);
 
+    int measure_text_width(size_t item_index, size_t column_index) override;
+
     void notify_on_initialisation() override;
     void notify_on_create() override;
     void notify_on_destroy() override;

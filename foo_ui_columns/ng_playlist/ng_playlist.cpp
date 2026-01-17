@@ -212,6 +212,15 @@ size_t PlaylistView::column_index_actual_to_display(size_t actual_index)
     return pfc_infinite;
     // throw pfc::exception_bug_check();
 }
+
+int PlaylistView::measure_text_width(size_t item_index, size_t column_index)
+{
+    const char* text = get_item_text(item_index, column_index);
+    const style_data_t& style_data = get_style_data(item_index);
+    return uih::direct_write::measure_text_width_columns_and_styles(
+        *get_items_text_format(), mmh::to_utf16(text), 1_spx, 3_spx, style_data[column_index]->format_properties);
+}
+
 void PlaylistView::on_column_widths_change()
 {
     size_t count = m_column_mask.get_count();
@@ -1302,6 +1311,9 @@ void PlaylistView::notify_update_item_data(size_t index)
 
     DateTitleformatHook tf_hook_date(&st);
     PlaylistNameTitleformatHook tf_hook_playlist_name;
+
+    const auto items_font_size = get_items_font_size_pt().value_or(0.f);
+    const auto group_font_size = get_group_font_size_pt().value_or(0.f);
     tf::TextFormatTitleformatHook text_format_tf_hook(get_items_font_size_pt().value_or(0.f));
 
     if (b_global) {
@@ -1312,7 +1324,7 @@ void PlaylistView::notify_update_item_data(size_t index)
             index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
     }
 
-    CellStyleData style_data_item = CellStyleData::g_create_default();
+    CellStyleData style_data_item = CellStyleData::create_default();
 
     bool colour_global_av = false;
     size_t count = m_column_data.get_count();
@@ -1335,54 +1347,69 @@ void PlaylistView::notify_update_item_data(size_t index)
         const auto group = p_item->get_group(group_index);
         --group_display_index;
 
-        CellStyleData style_data_group = CellStyleData::g_create_default();
+        tf::MergingTextFormatTitleformatHook group_style_text_format_tf_hook(group_font_size, {});
+
+        CellStyleData style_data_group = CellStyleData::create_default();
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
             StyleTitleformatHook tf_hook_style(style_data_group, group_display_index, true);
-            tf::SplitterTitleformatHook tf_hook(
-                &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+            tf::SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date,
+                &tf_hook_playlist_name, &group_style_text_format_tf_hook);
             ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
         }
 
+        style_data_group.format_properties = group_style_text_format_tf_hook.consume_result();
         style_cache_manager::g_add_object(style_data_group, group->m_style_data);
     }
 
+    uih::text_style::FormatProperties global_format_properties;
+
     for (size_t i = 0; i < count; i++) {
-        {
-            tf::SplitterTitleformatHook tf_hook(
-                b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name, &text_format_tf_hook);
+        tf::SplitterTitleformatHook tf_hook(
+            b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name, &text_format_tf_hook);
 
-            m_playlist_api->activeplaylist_item_format_title(
-                index, &tf_hook, temp, m_column_data[i].m_display_script, nullptr, playback_control::display_level_all);
-            p_out[i] = temp;
-        }
+        m_playlist_api->activeplaylist_item_format_title(
+            index, &tf_hook, temp, m_column_data[i].m_display_script, nullptr, playback_control::display_level_all);
 
-        CellStyleData style_temp = CellStyleData::g_create_default();
+        p_out[i] = temp;
+
+        CellStyleData style_temp = CellStyleData::create_default();
 
         bool b_custom = m_column_data[i].m_style_script.is_valid();
 
-        {
-            if (!colour_global_av) {
-                if (m_script_global_style.is_valid()) {
-                    StyleTitleformatHook tf_hook_style(style_data_item, item_display_index);
-                    tf::SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
-                        &tf_hook_date, &tf_hook_playlist_name);
-                    m_playlist_api->activeplaylist_item_format_title(
-                        index, &tf_hook, temp, m_script_global_style, nullptr, play_control::display_level_all);
-                }
+        if (!colour_global_av) {
+            if (m_script_global_style.is_valid()) {
+                StyleTitleformatHook tf_hook_style(style_data_item, item_display_index);
+                tf::MergingTextFormatTitleformatHook global_style_text_format_tf_hook(items_font_size, {});
+                tf::SplitterTitleformatHook global_style_tf_hook(&tf_hook_style,
+                    b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name,
+                    &global_style_text_format_tf_hook);
 
-                colour_global_av = true;
+                m_playlist_api->activeplaylist_item_format_title(index, &global_style_tf_hook, temp,
+                    m_script_global_style, nullptr, play_control::display_level_all);
+
+                global_format_properties = global_style_text_format_tf_hook.consume_result();
             }
-            style_temp = style_data_item;
+
+            colour_global_av = true;
         }
-        if (b_custom) {
-            if (m_column_data[i].m_style_script.is_valid()) {
-                StyleTitleformatHook tf_hook_style(style_temp, item_display_index);
-                tf::SplitterTitleformatHook tf_hook(
-                    &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
-                m_playlist_api->activeplaylist_item_format_title(
-                    index, &tf_hook, temp, m_column_data[i].m_style_script, nullptr, play_control::display_level_all);
-            }
+
+        style_temp = style_data_item;
+
+        if (b_custom && m_column_data[i].m_style_script.is_valid()) {
+            StyleTitleformatHook tf_hook_style(style_temp, item_display_index);
+            tf::MergingTextFormatTitleformatHook item_style_text_format_tf_hook(
+                items_font_size, global_format_properties);
+            tf::SplitterTitleformatHook column_style_tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
+                &tf_hook_date, &tf_hook_playlist_name, &item_style_text_format_tf_hook);
+
+            m_playlist_api->activeplaylist_item_format_title(index, &column_style_tf_hook, temp,
+                m_column_data[i].m_style_script, nullptr, play_control::display_level_all);
+
+            style_temp.format_properties = item_style_text_format_tf_hook.consume_result();
+        } else {
+            style_temp.format_properties = global_format_properties;
         }
+
         style_cache_manager::g_add_object(style_temp, get_item(index)->m_style_data[i]);
     }
 }

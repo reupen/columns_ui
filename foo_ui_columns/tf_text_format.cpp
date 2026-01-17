@@ -74,6 +74,54 @@ bool TextFormatTitleformatHook::process_field(
     return false;
 }
 
+bool MergingTextFormatTitleformatHook::process_field(
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
+{
+    if (stricmp_utf8_ex(
+            p_name, p_name_length, TextFormatTitleformatHook::default_font_size_field_name.c_str(), pfc_infinite)
+        != 0) {
+        p_out->write(titleformat_inputtypes::unknown, fmt::format("{:.1f}", m_default_font_size_pt).c_str());
+        p_found_flag = true;
+        return true;
+    }
+
+    p_found_flag = false;
+
+    return false;
+}
+
+bool MergingTextFormatTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name,
+    size_t p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
+{
+    if (stricmp_utf8_ex(
+            p_name, p_name_length, TextFormatTitleformatHook::set_format_function_name.c_str(), pfc_infinite)
+        != 0)
+        return false;
+
+    const auto param_count = p_params->get_param_count();
+
+    if (param_count != 1)
+        return true;
+
+    const auto attributes = mmh::to_utf16(get_param(*p_params, 0));
+
+    if (const auto properties = uih::text_style::parse_format_properties(attributes)) {
+        auto copy_property = [](auto&& left, auto&& right) {
+            if (left)
+                right = left;
+        };
+
+        copy_property(properties->font_weight, m_format_properties.font_weight);
+        copy_property(properties->font_stretch, m_format_properties.font_stretch);
+        copy_property(properties->font_style, m_format_properties.font_style);
+        copy_property(properties->font_size, m_format_properties.font_size);
+        copy_property(properties->font_family, m_format_properties.font_family);
+        copy_property(properties->text_decoration, m_format_properties.text_decoration);
+    }
+
+    return true;
+}
+
 bool NullTextFormatTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name,
     size_t p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
 {

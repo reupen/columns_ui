@@ -17,7 +17,7 @@ Available in the following contexts from Columns UI 3.3.0:
 
 - Filter panel
 - Playlist switcher
-- Playlist view (display, grouping and global variables scripts)
+- Playlist view
 - Status bar
 - Status pane
 ```
@@ -59,6 +59,14 @@ value.
 
 Percentages must use the suffix `%%` or `pc`, for example `150%%` or `150pc`
 (`%%` is an escaped `%` in the title formatting language).
+
+#### Usage in playlist view style scripts
+
+When used in a playlist view style script, `$set_format()` has the same effect
+as being used at the beginning of a display script.
+
+It does not affect the behaviour of the `initial` special value or
+`$reset_format()`.
 
 #### Examples
 
@@ -287,7 +295,7 @@ Available in the following contexts from Columns UI 3.3.0:
 
 - Filter panel
 - Playlist switcher
-- Playlist view (display, grouping and global variables scripts)
+- Playlist view
 - Status bar
 - Status pane
 ```
