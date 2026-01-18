@@ -134,6 +134,11 @@ $reset_format()
 
 ### \$rgb()
 
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
+
 Sets the text colour using red, green and blue component values.
 
 #### Syntax
@@ -151,6 +156,11 @@ are not provided, then the inverse of the colour specified by `r1`, `g1` and
 `b1` is used for selected text.
 
 ### \$hsl()
+
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
 
 Sets the text colour using hue, saturation and luminance component values.
 
@@ -173,6 +183,11 @@ are not provided, then the inverse of the colour specified by `h1`, `s1` and
 
 ### \$blend()
 
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
+
 Returns a colour that is part way between two other colours.
 
 #### Syntax
@@ -193,6 +208,11 @@ $blend($rgb(128,128,128),$rgb(255,255,255),$sub(%tracknumber%,1),$sub(%totaltrac
 ```
 
 ### \$transition()
+
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
 
 Applies a colour gradient to a string. Each letter in the string is a solid
 colour.
