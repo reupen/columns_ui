@@ -134,6 +134,11 @@ $reset_format()
 
 ### \$rgb()
 
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
+
 Sets the text colour using red, green and blue component values.
 
 #### Syntax
@@ -151,6 +156,11 @@ are not provided, then the inverse of the colour specified by `r1`, `g1` and
 `b1` is used for selected text.
 
 ### \$hsl()
+
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
 
 Sets the text colour using hue, saturation and luminance component values.
 
@@ -173,6 +183,11 @@ are not provided, then the inverse of the colour specified by `h1`, `s1` and
 
 ### \$blend()
 
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
+
 Returns a colour that is part way between two other colours.
 
 #### Syntax
@@ -193,6 +208,11 @@ $blend($rgb(128,128,128),$rgb(255,255,255),$sub(%tracknumber%,1),$sub(%totaltrac
 ```
 
 ### \$transition()
+
+```{note}
+This function is provided by the foobar2000 title formatting engine. Custom
+text colours cannot be used in the main window title.
+```
 
 Applies a colour gradient to a string. Each letter in the string is a solid
 colour.
@@ -319,3 +339,76 @@ Deprecated in Columns UI 3.0.0. Use ``$set_format(font-family: initial)`` instea
 
 The default font family for the panel. This is a legacy, GDI-compatible font
 family name.
+
+## Tab columns
+
+```{note}
+This is a legacy feature dating back to early versions of foobar2000.
+
+It’s available in the following contexts:
+
+- Filter panel
+- Playlist switcher
+- Playlist view
+- Status bar
+- Status pane
+```
+
+Tab characters can be used in the above contexts to align text across multiple
+items, such that columns are formed. Text can also be right-aligned at the end
+of the available space.
+
+Consider the following example:
+
+```
+column 1
+$tab()
+column 2
+$tab()
+right-aligned text
+```
+
+(Note that `$tab()` inserts a tab character.)
+
+In this example, column 1 and column 2 are both equal sizes (i.e. 50% of the
+available space). The text after the final tab character is right-aligned. It
+shares space with the other columns and will cover them if text overlaps.
+
+Text colours and formatting properties set using `$rgb()`, `$set_format()` and
+similar functions are only effective until the next tab character is
+encountered.
+
+The size of the columns can be controlled by the number of tab characters. In
+this example, the size of the first column is increased by adding a second tab
+character after the column:
+
+```
+⅔ width column
+$tab(2)
+⅓ width column
+$tab()
+right-aligned text
+```
+
+(Note that `$tab(2)` inserts two tab characters.)
+
+In this example, the size of the second column is increased:
+
+```
+⅓ width column
+$tab()
+⅔ width column
+$tab(2)
+right-aligned text
+```
+
+In more general terms, the proportion of space a column is given is the number
+of consecutive tab characters following the column divided by the total number
+of tab characters in the formatted string.
+
+If right-aligned text is not required, use a trailing `$tab()` without any
+following text:
+
+```
+column 1$tab()column 2$tab()
+```
