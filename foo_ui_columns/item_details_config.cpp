@@ -4,13 +4,13 @@
 #include "dark_mode_dialog.h"
 #include "font_picker.h"
 #include "format_code_generator.h"
+#include "prefs_utils.h"
 
 namespace cui::panels::item_details {
 
 namespace {
 
-const dark::DialogDarkModeConfig dark_mode_config{
-    .button_ids = {IDC_GEN_COLOUR, IDC_FORMAT_CODE_GENERATOR, IDOK, IDCANCEL},
+const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR, IDC_TOOLS, IDOK, IDCANCEL},
     .combo_box_ids = {IDC_HALIGN, IDC_VALIGN, IDC_EDGESTYLE},
     .edit_ids = {IDC_SCRIPT, IDC_COLOUR_CODE}};
 
@@ -97,8 +97,9 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         case IDC_GEN_COLOUR:
             colour_code_gen(wnd, IDC_COLOUR_CODE, false, false);
             break;
-        case IDC_FORMAT_CODE_GENERATOR:
-            utils::open_format_code_generator(m_wnd, g_guid_item_details_font_client);
+        case IDC_TOOLS:
+            prefs::show_generic_title_formatting_tools_menu(
+                wnd, reinterpret_cast<HWND>(lp), g_guid_item_details_font_client);
             break;
         case IDC_SCRIPT:
             switch (HIWORD(wp)) {

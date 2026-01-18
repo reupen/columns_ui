@@ -266,7 +266,6 @@
 #define IDC_SHOWGROUPS                  1164
 #define IDC_INDENT_GROUPS               1164
 #define IDC_USE_CUSTOM_INDENTATION      1165
-#define IDC_FORMAT_CODE_GENERATOR       1165
 #define IDC_COLOUR_CODE                 1166
 #define IDC_TITLE1                      1168
 #define IDC_TITLE2                      1169
