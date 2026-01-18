@@ -33,6 +33,11 @@
   formatting help and the `$set_format()` code snippet generator.
   [[#1546](https://github.com/reupen/columns_ui/pull/1546)]
 
+- In Item details options, the ‘Open format code generator’ button has been
+  replaced with a ‘Tools’ menu providing access both to title formatting help
+  and the existing `$set_format()` code snippet generator.
+  [[#1550](https://github.com/reupen/columns_ui/pull/1550)]
+
 - In light mode, the border around selected items in themed list views on
   Windows 11 22H2 and newer was removed.
   [[#1545](https://github.com/reupen/columns_ui/pull/1545)]
