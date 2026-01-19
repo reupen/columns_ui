@@ -71,6 +71,10 @@
   views were inset by one pixel was fixed.
   [[#1545](https://github.com/reupen/columns_ui/pull/1545)]
 
+- A bug where list view tooltips were incorrectly sized when a large amount of
+  vertical item padding was in use was fixed.
+  [[#1552](https://github.com/reupen/columns_ui/pull/1552)]
+
 ## 3.2.3
 
 ### Bug fixes
