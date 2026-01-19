@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.3.0-beta.1
 
 ### Features
 
@@ -19,10 +19,11 @@
   These functions and fields behave as they do in Item details and allow text
   styling to be changed for specific parts of text. Note that `$set_format()`
   does not affect item heights, which is fixed based on the size of the font
-  configured on the Colours and fonts preferences page font and vertical item
-  padding settings where available. See
+  configured on the Colours and fonts preferences page and the vertical item
+  padding setting where available. See
   [Text styling](https://columns-ui.readthedocs.io/page/other/text-styling.html)
-  for full documentation for the functions.
+  for full documentation for the functions and some examples of how they can be
+  used.
 
   Additionally, `%default_font_size%` has been modified universally to return
   the font size to one decimal place instead of rounding to the nearest whole
@@ -64,6 +65,10 @@
 - In live layout editing context menu, the ‘Add sibling’ submenu was replaced
   with ‘Add before’ and ‘Add after’ submenus.
   [[#1537](https://github.com/reupen/columns_ui/pull/1537)]
+
+- In the context menu for panel captions, the ‘Close panel’ item was removed to
+  prevent accidental panel removals.
+  [[#1553](https://github.com/reupen/columns_ui/pull/1553)]
 
 ### Bug fixes
 

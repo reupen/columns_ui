@@ -258,8 +258,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         break;
     case WM_CONTEXTMENU: {
         enum {
-            IDM_CLOSE = 1,
-            IDM_MOVE_UP,
+            IDM_MOVE_UP = 1,
             IDM_MOVE_DOWN,
             IDM_LOCK,
             IDM_CAPTION,
@@ -293,7 +292,6 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         AppendMenu(menu, (MF_SEPARATOR), 0, _T(""));
         AppendMenu(menu, (MF_STRING), IDM_MOVE_UP, _T("Move &up"));
         AppendMenu(menu, (MF_STRING), IDM_MOVE_DOWN, _T("Move &down"));
-        AppendMenu(menu, (MF_STRING), IDM_CLOSE, _T("&Close panel"));
 
         pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
             = new ui_extension::menu_hook_impl;
@@ -321,13 +319,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
 
         DestroyMenu(menu);
 
-        if (cmd == IDM_CLOSE && p_panel->m_child.is_valid()) {
-            service_ptr_t<FlatSplitterPanel> p_this = m_this;
-            p_panel->destroy();
-            std::erase(p_this->m_panels, p_panel);
-            p_this->get_host()->on_size_limit_change(p_this->get_wnd(), uie::size_limit_all);
-            p_this->on_size_changed();
-        } else if (cmd == IDM_MOVE_UP) {
+        if (cmd == IDM_MOVE_UP) {
             if (auto new_iter = std::ranges::find(m_this->m_panels, p_panel);
                 new_iter != m_this->m_panels.begin() && new_iter != m_this->m_panels.end()) {
                 std::iter_swap(new_iter, std::prev(new_iter));
