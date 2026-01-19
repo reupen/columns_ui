@@ -53,6 +53,14 @@
   Ctrl+Shift in combination with the Up, Down, PgUp, PgDn, Home and End keys.
   [[#1543](https://github.com/reupen/columns_ui/pull/1543)]
 
+- Items in the field list in Item properties options can now be reordered using
+  drag and drop and by using Ctrl+Shift in combination with the Up, Down, PgUp,
+  PgDn, Home and End keys.
+  [[#1551](https://github.com/reupen/columns_ui/pull/1551)]
+
+- Double-clicking in the field list in Item properties options now activates
+  inline editing. [[#1551](https://github.com/reupen/columns_ui/pull/1551)]
+
 - In live layout editing context menu, the ‘Add sibling’ submenu was replaced
   with ‘Add before’ and ‘Add after’ submenus.
   [[#1537](https://github.com/reupen/columns_ui/pull/1537)]

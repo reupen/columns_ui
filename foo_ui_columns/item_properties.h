@@ -36,6 +36,11 @@ public:
 
     void get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& items);
     void notify_on_create() override;
+    bool do_drag_drop(WPARAM wp) override;
+    void move_selection(int delta) override;
+
+    void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override;
+
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
     bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
@@ -43,6 +48,7 @@ public:
     void notify_save_inline_edit(const char* value) override;
 
 private:
+    void reorder_item(size_t old_index, size_t new_index);
 };
 
 size_t g_get_info_section_id_by_name(const char* p_name);
