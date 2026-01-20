@@ -1,5 +1,13 @@
 # Change log
 
+## 3.3.0-beta.2
+
+### Bug fixes
+
+- A bug in beta 1 causing playlist view style scripts to be evaluated
+  incorrectly was fixed.
+  [[#1557](https://github.com/reupen/columns_ui/pull/1557)]
+
 ## 3.3.0-beta.1
 
 ### Features

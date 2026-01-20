@@ -80,14 +80,13 @@ bool MergingTextFormatTitleformatHook::process_field(
     if (stricmp_utf8_ex(
             p_name, p_name_length, TextFormatTitleformatHook::default_font_size_field_name.c_str(), pfc_infinite)
         != 0) {
-        p_out->write(titleformat_inputtypes::unknown, fmt::format("{:.1f}", m_default_font_size_pt).c_str());
-        p_found_flag = true;
-        return true;
+        p_found_flag = false;
+        return false;
     }
 
-    p_found_flag = false;
-
-    return false;
+    p_out->write(titleformat_inputtypes::unknown, fmt::format("{:.1f}", m_default_font_size_pt).c_str());
+    p_found_flag = true;
+    return true;
 }
 
 bool MergingTextFormatTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name,
