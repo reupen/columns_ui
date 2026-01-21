@@ -320,12 +320,7 @@ std::optional<PhotoOrientation> get_photo_orientation(const wil::com_ptr<IWICBit
         THROW_IF_FAILED(bitmap_frame_decode->GetMetadataQueryReader(&metadata_reader));
 
         wil::unique_prop_variant variant;
-        const auto hr = metadata_reader->GetMetadataByName(L"System.Photo.Orientation", &variant);
-
-        if (hr == WINCODEC_ERR_PROPERTYNOTFOUND || hr == WINCODEC_ERR_PROPERTYNOTSUPPORTED)
-            return {};
-
-        THROW_IF_FAILED(hr);
+        THROW_IF_FAILED(metadata_reader->GetMetadataByName(L"System.Photo.Orientation", &variant));
 
         assert(variant.vt == VT_UI2);
 
@@ -333,9 +328,13 @@ std::optional<PhotoOrientation> get_photo_orientation(const wil::com_ptr<IWICBit
             return {};
 
         return static_cast<PhotoOrientation>(variant.uiVal);
-    }
-    CATCH_LOG();
+    } catch (...) {
+        const auto hr = wil::ResultFromCaughtException();
 
+        if (hr != WINCODEC_ERR_PROPERTYNOTFOUND && hr != WINCODEC_ERR_PROPERTYNOTSUPPORTED
+            && hr != WINCODEC_ERR_UNSUPPORTEDOPERATION)
+            LOG_CAUGHT_EXCEPTION();
+    }
     return {};
 }
 
