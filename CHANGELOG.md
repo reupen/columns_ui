@@ -8,6 +8,9 @@
   logged to the console when loading artwork images in the BMP format was fixed.
   [[#1560](https://github.com/reupen/columns_ui/pull/1560)]
 
+- A possible error when the Artwork view reinitialises Direct3D and Direct2D
+  resources was fixed. [[#1561](https://github.com/reupen/columns_ui/pull/1561)]
+
 ## 3.3.0-beta.2
 
 ### Bug fixes
