@@ -197,15 +197,18 @@ $blend(colour one,colour two,numerator,denominator)
 ```
 
 The colour that is numerator/denominator the way between colour one and colour
-two will be returns.
+two will be returned.
 
 #### Example
 
-This will colour the text of tracks from grey to white by track number:
+This will vary the text colour of tracks in an album by track number, starting
+with grey for the first track and ending with white for the last track:
 
 ```
 $blend($rgb(128,128,128),$rgb(255,255,255),$sub(%tracknumber%,1),$sub(%totaltracks%,1))
 ```
+
+It requires the `TRACKNUMBER` and `TOTALTRACKS` fields to be populated.
 
 ### \$transition()
 
