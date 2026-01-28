@@ -1,6 +1,12 @@
 # Change log
 
-## Development version
+## 3.3.0
+
+### Features
+
+- On the Colours and fonts preferences page, the Colours and Fonts tabs now
+  remember the last selected element the next time the tab is opened.
+  [[#1566](https://github.com/reupen/columns_ui/pull/1566)]
 
 ### Bug fixes
 

@@ -91,13 +91,13 @@ class FontsDataSet : public fcl::dataset {
             case identifier_global_items: {
                 const auto data = get_data();
                 stream_reader_memblock_ref data_reader(data.data(), data.size());
-                g_font_manager_data.m_common_items_entry->import(&data_reader, data.size(), type, p_abort);
+                g_font_manager_data.m_common_items_entry->import(&data_reader, data.size(), type, p_abort, true);
                 break;
             }
             case identifier_global_labels: {
                 const auto data = get_data();
                 stream_reader_memblock_ref data_reader(data.data(), data.size());
-                g_font_manager_data.m_common_labels_entry->import(&data_reader, data.size(), type, p_abort);
+                g_font_manager_data.m_common_labels_entry->import(&data_reader, data.size(), type, p_abort, true);
                 break;
             }
             case identifier_client_entries: {

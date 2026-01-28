@@ -40,6 +40,7 @@ private:
     void update_title() const;
 
     void on_colour_changed();
+    void on_element_selected();
 
     prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };

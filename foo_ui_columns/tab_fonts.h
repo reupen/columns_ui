@@ -20,6 +20,7 @@ public:
 private:
     FontManagerData::entry_ptr_t get_current_resolved_entry() const;
     void on_font_changed();
+    void on_element_selected();
 
     HWND m_wnd{};
     HWND m_element_combobox{};
