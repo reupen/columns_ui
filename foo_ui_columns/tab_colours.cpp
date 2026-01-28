@@ -8,6 +8,12 @@
 
 namespace cui::prefs {
 
+namespace {
+
+cfg_guid last_selected_element_id{{0xa2c02dff, 0xae0f, 0x41fc, {0x88, 0x8b, 0xfa, 0xb1, 0x01, 0xdc, 0x8c, 0xd7}}, {}};
+
+}
+
 TabColours g_tab_appearance;
 
 bool TabColours::is_active()
@@ -55,47 +61,36 @@ INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             wnd, uih::WindowPosition{x_col_2, y_start + y_spacing * 2, 18, 14}, nullptr, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
+
+        std::optional<int> last_selected_element_index;
         ColoursClientList::g_get_list(m_colours_client_list);
-        size_t count = m_colours_client_list.get_count();
-        for (size_t i = 0; i < count; i++)
-            ComboBox_AddString(
-                m_wnd_colours_element, pfc::stringcvt::string_os_from_utf8(m_colours_client_list[i].m_name));
 
-        ComboBox_SetCurSel(m_wnd_colours_element, 0);
+        for (const auto& client : m_colours_client_list) {
+            const auto index
+                = ComboBox_AddString(m_wnd_colours_element, pfc::stringcvt::string_os_from_utf8(client.m_name));
 
-        m_element_ptr = g_colour_manager_data.get_entry(m_element_guid);
+            if (last_selected_element_id != GUID{} && client.m_guid == last_selected_element_id && index != CB_ERR)
+                last_selected_element_index = index;
+        }
+
+        ComboBox_SetCurSel(m_wnd_colours_element, last_selected_element_index.value_or(0));
 
         update_title();
-        update_scheme_combobox();
-        update_fills();
-        update_buttons();
+        on_element_selected();
     } break;
     case WM_DESTROY: {
         m_colours_client_list.remove_all();
-        m_element_guid = pfc::guid_null;
+        m_element_guid = GUID{};
         m_element_ptr.reset();
         m_element_api.release();
         m_wnd = nullptr;
     } break;
     case WM_COMMAND:
         switch (wp) {
-        case IDC_COLOURS_ELEMENT | (CBN_SELCHANGE << 16): {
-            int idx = ComboBox_GetCurSel((HWND)lp);
-            m_element_api.release();
-            if (idx != -1) {
-                if (idx == 0)
-                    m_element_guid = pfc::guid_null;
-                else {
-                    m_element_guid = m_colours_client_list[idx - 1].m_guid;
-                    m_element_api = m_colours_client_list[idx - 1].m_ptr;
-                }
-                m_element_ptr = g_colour_manager_data.get_entry(m_element_guid);
-            }
-            update_fills();
-            update_buttons();
-            update_scheme_combobox();
+        case IDC_COLOURS_ELEMENT | (CBN_SELCHANGE << 16):
+            on_element_selected();
+            last_selected_element_id = m_element_guid;
             return 0;
-        }
         case IDC_COLOURS_SCHEME | (CBN_SELCHANGE << 16): {
             int idx = ComboBox_GetCurSel((HWND)lp);
             m_element_ptr->colour_set.colour_scheme = (colours::ColourScheme)ComboBox_GetItemData((HWND)lp, idx);
@@ -164,6 +159,26 @@ void TabColours::on_colour_changed()
                 m_colours_client_list[i].m_ptr->on_colour_changed(colours::colour_flag_all);
         }
     }
+}
+
+void TabColours::on_element_selected()
+{
+    m_element_api.reset();
+    m_element_guid = GUID{};
+    m_element_ptr.reset();
+
+    if (const auto index = ComboBox_GetCurSel(m_wnd_colours_element); index != CB_ERR) {
+        if (index != 0) {
+            m_element_guid = m_colours_client_list[index - 1].m_guid;
+            m_element_api = m_colours_client_list[index - 1].m_ptr;
+        }
+
+        m_element_ptr = g_colour_manager_data.get_entry(m_element_guid);
+    }
+
+    update_fills();
+    update_buttons();
+    update_scheme_combobox();
 }
 
 void TabColours::update_scheme_combobox()
