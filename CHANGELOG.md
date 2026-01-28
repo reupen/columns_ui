@@ -12,7 +12,8 @@
 
 - A problem where a message mentioning that ‘The operation is unsupported’ was
   logged to the console when loading artwork images in the BMP format was fixed.
-  [[#1560](https://github.com/reupen/columns_ui/pull/1560)]
+  [[#1560](https://github.com/reupen/columns_ui/pull/1560),
+  [#1567](https://github.com/reupen/columns_ui/pull/1567)]
 
 - A possible error when the Artwork view reinitialises Direct3D and Direct2D
   resources was fixed. [[#1561](https://github.com/reupen/columns_ui/pull/1561)]
