@@ -4,6 +4,12 @@
 
 namespace cui::prefs {
 
+namespace {
+
+cfg_guid last_selected_element_id{{0x467c3e73, 0x80ff, 0x4ded, {0xa8, 0x27, 0x57, 0x3c, 0xfa, 0x39, 0x1b, 0x8f}}, {}};
+
+}
+
 bool TabFonts::is_active() const
 {
     return m_wnd != nullptr;
@@ -37,13 +43,22 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         ComboBox_AddString(m_element_combobox, L"Common (list items)");
         ComboBox_AddString(m_element_combobox, L"Common (labels)");
 
-        for (auto&& client : m_fonts_client_list)
-            ComboBox_AddString(m_element_combobox, mmh::to_utf16(mmh::to_string_view(client.m_name)).c_str());
+        std::optional<int> last_selected_element_index;
 
-        ComboBox_SetCurSel(m_element_combobox, 0);
-        m_element_ptr = g_font_manager_data.m_common_items_entry;
+        for (auto&& client : m_fonts_client_list) {
+            const auto index
+                = ComboBox_AddString(m_element_combobox, mmh::to_utf16(mmh::to_string_view(client.m_name)).c_str());
 
-        update_mode_combobox();
+            if (last_selected_element_id != GUID{} && last_selected_element_id == client.m_guid && index != CB_ERR)
+                last_selected_element_index = index;
+        }
+
+        if (last_selected_element_index)
+            ComboBox_SetCurSel(m_element_combobox, *last_selected_element_index);
+        else if (last_selected_element_id == fonts::labels_font_id)
+            ComboBox_SetCurSel(m_element_combobox, 1);
+        else
+            ComboBox_SetCurSel(m_element_combobox, 0);
 
         m_direct_write_font_picker = utils::DirectWriteFontPicker(false);
         m_direct_write_font_picker->on_font_changed([this](auto& font_description) {
@@ -52,9 +67,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         });
         m_direct_write_font_picker->handle_message(wnd, msg, wp, lp);
 
-        enable_or_disable_font_selection();
-
-        restore_font_selection_state();
+        on_element_selected();
         break;
     }
     case WM_DESTROY: {
@@ -78,24 +91,10 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             on_font_changed();
             break;
         }
-        case IDC_FONT_ELEMENT | (CBN_SELCHANGE << 16): {
-            const int idx = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-            m_element_api.release();
-            if (idx != -1) {
-                if (idx == 0)
-                    m_element_ptr = g_font_manager_data.m_common_items_entry;
-                else if (idx == 1)
-                    m_element_ptr = g_font_manager_data.m_common_labels_entry;
-                else if (idx >= 2) {
-                    m_element_api = m_fonts_client_list[idx - 2].m_ptr;
-                    m_element_ptr = g_font_manager_data.find_by_id(m_fonts_client_list[idx - 2].m_guid);
-                }
-            }
-            update_mode_combobox();
-            restore_font_selection_state();
-            enable_or_disable_font_selection();
+        case IDC_FONT_ELEMENT | (CBN_SELCHANGE << 16):
+            on_element_selected();
+            last_selected_element_id = m_element_ptr ? m_element_ptr->guid : GUID{};
             return 0;
-        }
         }
         break;
     }
@@ -121,6 +120,27 @@ void TabFonts::on_font_changed()
             || (index_element == 1 && p_data->font_mode == fonts::FontMode::CommonLabels))
             g_font_manager_data.dispatch_client_font_changed(client.m_ptr);
     }
+}
+
+void TabFonts::on_element_selected()
+{
+    m_element_api.reset();
+    m_element_ptr.reset();
+
+    if (const auto index = ComboBox_GetCurSel(m_element_combobox); index != CB_ERR) {
+        if (index == 0)
+            m_element_ptr = g_font_manager_data.m_common_items_entry;
+        else if (index == 1)
+            m_element_ptr = g_font_manager_data.m_common_labels_entry;
+        else if (index >= 2) {
+            m_element_api = m_fonts_client_list[index - 2].m_ptr;
+            m_element_ptr = g_font_manager_data.find_by_id(m_fonts_client_list[index - 2].m_guid);
+        }
+    }
+
+    update_mode_combobox();
+    restore_font_selection_state();
+    enable_or_disable_font_selection();
 }
 
 void TabFonts::restore_font_selection_state()

@@ -61,11 +61,12 @@ public:
         void write(stream_writer* p_stream, abort_callback& p_abort);
         void write_extra_data(stream_writer* stream, abort_callback& aborter) const;
         void write_extra_data_v2(stream_writer* stream, abort_callback& aborter) const;
-        void read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort);
+        void read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort, bool ignore_id = false);
         void read_extra_data(stream_reader* stream, abort_callback& aborter);
         void read_extra_data_v2(stream_reader* stream, abort_callback& aborter);
         void _export(stream_writer* p_stream, abort_callback& p_abort);
-        void import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort);
+        void import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort,
+            bool ignore_id = false);
         void reset_fonts();
 
         Entry();

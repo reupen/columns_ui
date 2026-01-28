@@ -9,10 +9,12 @@
 FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 {
     m_common_items_entry = std::make_shared<Entry>();
+    m_common_items_entry->guid = cui::fonts::items_font_id;
     uGetIconFont(&m_common_items_entry->font_description.log_font);
     m_common_items_entry->font_description.estimate_point_and_dip_size();
 
     m_common_labels_entry = std::make_shared<Entry>();
+    m_common_labels_entry->guid = cui::fonts::labels_font_id;
     uGetMenuFont(&m_common_labels_entry->font_description.log_font);
     m_common_labels_entry->font_description.estimate_point_and_dip_size();
 }
@@ -195,8 +197,9 @@ void FontManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, a
     if (version > cfg_version)
         return;
 
-    m_common_items_entry->read(version, p_stream, p_abort);
-    m_common_labels_entry->read(version, p_stream, p_abort);
+    m_common_items_entry->read(version, p_stream, p_abort, true);
+    m_common_labels_entry->read(version, p_stream, p_abort, true);
+
     const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
     m_entries.remove_all();
 
@@ -286,7 +289,8 @@ void FontManagerData::Entry::reset_fonts()
     font_description.estimate_point_and_dip_size();
 }
 
-void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort)
+void FontManagerData::Entry::import(
+    stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort, bool ignore_id)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
     uint32_t element_id;
@@ -298,7 +302,10 @@ void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size,
 
         switch (element_id) {
         case identifier_guid:
-            reader.read_item(guid);
+            if (ignore_id)
+                reader.skip(element_size);
+            else
+                reader.read_item(guid);
             break;
         case identifier_mode:
             reader.read_item((uint32_t&)font_mode);
@@ -397,9 +404,13 @@ void FontManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_
     }
 }
 
-void FontManagerData::Entry::read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort)
+void FontManagerData::Entry::read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort, bool ignore_id)
 {
-    p_stream->read_lendian_t(guid, p_abort);
+    if (ignore_id)
+        p_stream->skip(sizeof(GUID), p_abort);
+    else
+        p_stream->read_lendian_t(guid, p_abort);
+
     p_stream->read_lendian_t(reinterpret_cast<uint32_t&>(font_mode), p_abort);
     font_description.log_font = cui::fonts::read_font(p_stream, p_abort);
     font_description.estimate_point_and_dip_size();
