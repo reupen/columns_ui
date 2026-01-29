@@ -1,6 +1,6 @@
 # Change log
 
-## 3.3.0
+## 3.3.0-rc.1
 
 ### Features
 
@@ -9,6 +9,10 @@
   [[#1566](https://github.com/reupen/columns_ui/pull/1566)]
 
 ### Bug fixes
+
+- A bug where the playlist view may not have shown tooltips as expected when
+  `$set_format()` was used in a style script was fixed.
+  [[#1568](https://github.com/reupen/columns_ui/pull/1568)]
 
 - A problem where a message mentioning that ‘The operation is unsupported’ was
   logged to the console when loading artwork images in the BMP format was fixed.
