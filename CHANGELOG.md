@@ -14,11 +14,21 @@
   `$set_format()` was used in a style script was fixed.
   [[#1568](https://github.com/reupen/columns_ui/pull/1568)]
 
-- Newlines are now ignored in built-in list views and the status bar, rather
-  than only the first line of text being shown.
+- Newlines are now stripped from text in built-in list views and the status bar
+  instead of only the first line of text being shown.
   [[#1569](https://github.com/reupen/columns_ui/pull/1569)]
 
   This is intended to restore the behaviour present prior to version 3.0.0.
+
+- Newlines are now preserved and handled correctly in tooltips in built-in list
+  views. [[#1570](https://github.com/reupen/columns_ui/pull/1570)]
+
+  Additionally, the maximum number of code points shown in list view tooltips
+  was increased to 2048.
+
+- Tooltips in built-in list views are now positioned so that they are not
+  off-screen if they extend beyond the dimensions of the top-level window that
+  the list view is in. [[#1570](https://github.com/reupen/columns_ui/pull/1570)]
 
 - A problem where a message mentioning that ‘The operation is unsupported’ was
   logged to the console when loading artwork images in the BMP format was fixed.
