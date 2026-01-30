@@ -16,7 +16,8 @@
 
 - Newlines are now stripped from text in built-in list views and the status bar
   instead of only the first line of text being shown.
-  [[#1569](https://github.com/reupen/columns_ui/pull/1569)]
+  [[#1569](https://github.com/reupen/columns_ui/pull/1569),
+  [#1571](https://github.com/reupen/columns_ui/pull/1571)]
 
   This is intended to restore the behaviour present prior to version 3.0.0.
 
