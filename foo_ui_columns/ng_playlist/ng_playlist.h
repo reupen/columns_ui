@@ -17,6 +17,7 @@ constexpr GUID group_font_id = {0xfb127ffa, 0x1b35, 0x4572, {0x9c, 0x1a, 0x4b, 0
 extern cfg_bool cfg_artwork_reflection;
 extern fbh::ConfigUint32DpiAware cfg_artwork_width;
 extern fbh::ConfigBool cfg_grouping;
+extern fbh::ConfigBool cfg_sticky_group_headers;
 extern fbh::ConfigBool cfg_indent_groups;
 extern fbh::ConfigBool cfg_use_custom_group_indentation_amount;
 extern fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount;
@@ -172,6 +173,7 @@ public:
     inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
     static void g_on_groups_change();
+    static void s_on_sticky_group_headers_change();
     static void s_on_indent_groups_change();
     static void s_on_group_indentation_amount_change();
     static void s_on_root_group_indentation_amount_change();

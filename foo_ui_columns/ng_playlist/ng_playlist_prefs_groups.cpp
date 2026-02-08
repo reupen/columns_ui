@@ -72,7 +72,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
-        m_groups_list_view.create(wnd, {7, 138, 313, 107}, true);
+        m_groups_list_view.create(wnd, {7, 156, 313, 89}, true);
         SetWindowPos(m_groups_list_view.get_wnd(), GetDlgItem(wnd, IDC_H2_TITLE), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
         LOGFONT font{};
@@ -94,6 +94,8 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         ShowWindow(m_groups_list_view.get_wnd(), SW_SHOWNORMAL);
 
         Button_SetCheck(GetDlgItem(wnd, IDC_GROUPING), cfg_grouping ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(
+            GetDlgItem(wnd, IDC_STICKY_GROUP_HEADERS), cfg_sticky_group_headers ? BST_CHECKED : BST_UNCHECKED);
         Button_SetCheck(GetDlgItem(wnd, IDC_INDENT_GROUPS), cfg_indent_groups ? BST_CHECKED : BST_UNCHECKED);
         Button_SetCheck(GetDlgItem(wnd, IDC_USE_CUSTOM_INDENTATION),
             cfg_use_custom_group_indentation_amount ? BST_CHECKED : BST_UNCHECKED);
@@ -120,6 +122,12 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             cfg_grouping = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
             refresh_enabled_options();
             PlaylistView::g_on_groups_change();
+            break;
+        }
+        case IDC_STICKY_GROUP_HEADERS: {
+            cfg_sticky_group_headers = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+            refresh_enabled_options();
+            PlaylistView::s_on_sticky_group_headers_change();
             break;
         }
         case IDC_INDENT_GROUPS:
@@ -216,6 +224,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void GroupsPreferencesTab::refresh_enabled_options() const
 {
+    EnableWindow(GetDlgItem(m_wnd, IDC_STICKY_GROUP_HEADERS), cfg_grouping);
     EnableWindow(GetDlgItem(m_wnd, IDC_INDENT_GROUPS), cfg_grouping);
     EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_INDENTATION), cfg_grouping && cfg_indent_groups);
     const auto enable_custom_indentation_amount

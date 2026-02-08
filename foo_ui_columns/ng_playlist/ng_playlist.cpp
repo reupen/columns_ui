@@ -43,6 +43,8 @@ ConfigGroups g_groups(g_groups_guid);
 cfg_bool cfg_artwork_reflection(g_artwork_reflection, false);
 
 fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { button_items::ShowGroupsButton::s_on_change(); });
+fbh::ConfigBool cfg_sticky_group_headers(
+    {0x12f598c6, 0xb9ac, 0x4f7b, {0xbe, 0x29, 0x9a, 0x2b, 0x4f, 0x68, 0x23, 0xb4}}, false);
 fbh::ConfigBool cfg_indent_groups({0x2e3d28c7, 0x7e99, 0x410f, {0xa5, 0x50, 0xd1, 0x5c, 0xc0, 0x6e, 0xa5, 0x51}}, true,
     [](auto&&) { PlaylistView::s_on_indent_groups_change(); });
 fbh::ConfigBool cfg_use_custom_group_indentation_amount(
@@ -306,6 +308,12 @@ void PlaylistView::g_on_groups_change()
 {
     for (auto& window : s_windows)
         window->on_groups_change();
+}
+
+void PlaylistView::s_on_sticky_group_headers_change()
+{
+    for (auto& window : s_windows)
+        window->set_are_group_headers_sticky(cfg_sticky_group_headers);
 }
 
 void PlaylistView::s_on_indent_groups_change()
@@ -912,6 +920,7 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
 void PlaylistView::notify_on_initialisation()
 {
     set_use_dark_mode(colours::is_dark_mode_active());
+    set_are_group_headers_sticky(cfg_sticky_group_headers);
     set_group_level_indentation_enabled(cfg_indent_groups);
 
     if (cfg_use_custom_group_indentation_amount)
