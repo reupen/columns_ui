@@ -82,9 +82,9 @@ private:
     bool m_shell_hook_registered{};
     bool m_gdiplus_initialised{};
     bool m_is_destroying{};
-    bool m_last_sysray_r_down{};
-    bool m_last_sysray_x1_down{};
-    bool m_last_sysray_x2_down{};
+    bool m_last_systray_r_down{};
+    bool m_last_systray_x1_down{};
+    bool m_last_systray_x2_down{};
     ULONG_PTR m_gdiplus_instance{};
     UINT m_wm_taskbarcreated{};
     UINT m_wm_taskbarbuttoncreated{};

@@ -565,7 +565,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // if (b_wasDown)
             standard_commands::main_activate_or_hide();
         } else if (lp == WM_RBUTTONDOWN) {
-            m_last_sysray_r_down = true;
+            m_last_systray_r_down = true;
         }
 #if 0
             /* There was some misbehaviour with the newer messages. So we don't use them. */
@@ -577,24 +577,24 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
 #endif
         else if (lp == WM_XBUTTONDOWN) {
-            m_last_sysray_x1_down = HIBYTE(GetKeyState(VK_XBUTTON1)) != 0;
-            m_last_sysray_x2_down = HIBYTE(GetKeyState(VK_XBUTTON2)) != 0;
+            m_last_systray_x1_down = HIBYTE(GetKeyState(VK_XBUTTON1)) != 0;
+            m_last_systray_x2_down = HIBYTE(GetKeyState(VK_XBUTTON2)) != 0;
             return TRUE;
         } else if (lp == WM_MOUSEMOVE) {
         } else if (lp == WM_XBUTTONUP) {
             if (config::advbool_system_tray_icon_x_buttons.get()) {
-                if (m_last_sysray_x1_down && !m_last_sysray_x2_down)
+                if (m_last_systray_x1_down && !m_last_systray_x2_down)
                     standard_commands::main_previous();
-                if (m_last_sysray_x2_down && !m_last_sysray_x1_down)
+                if (m_last_systray_x2_down && !m_last_systray_x1_down)
                     standard_commands::main_next();
             }
-            m_last_sysray_x1_down = false;
-            m_last_sysray_x2_down = false;
+            m_last_systray_x1_down = false;
+            m_last_systray_x2_down = false;
             return TRUE;
         }
         // else if (lp == WM_CONTEXTMENU)
         else if (lp == WM_RBUTTONUP) {
-            if (m_last_sysray_r_down) {
+            if (m_last_systray_r_down) {
                 SetForegroundWindow(wnd);
 
                 POINT pt; // = {(short)LOWORD(lp),(short)HIWORD(lp)};
