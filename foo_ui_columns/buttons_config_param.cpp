@@ -45,8 +45,8 @@ void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b
     p_file->write_lendian_t(I_BUTTONS, p_abort);
 
     stream_writer_memblock p_write;
-    // FIX
 
+    // FIXME – the wrong size is being written (though the importer doesn’t use it)
     p_file->write_lendian_t(gsl::narrow<uint32_t>(p_write.m_data.get_size() + sizeof(count)), p_abort);
     p_file->write_lendian_t(count, p_abort);
 
@@ -83,10 +83,6 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
     size_t blen = str_base.get_length();
     if (blen && str_base[blen - 1] == '\\')
         str_base.truncate(blen - 1);
-    // uGetModuleFileName(NULL, str_base);
-    // unsigned pos = str_base.find_last('\\');
-    // if (pos != -1)
-    //    str_base.truncate(pos);
 
     GUID header_id = p_file->read_lendian_t<GUID>(p_abort);
 
@@ -101,8 +97,7 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
     if (!add)
         m_buttons.clear();
 
-    while (true) //! p_file.is_eof(p_abort)
-    {
+    while (true) {
         Identifier id;
         try {
             p_file->read_lendian_t(id, p_abort);
@@ -111,8 +106,7 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
         }
         unsigned size;
         p_file->read_lendian_t(size, p_abort);
-        // if (size > p_file->get_size(p_abort) - p_file->get_position(p_abort))
-        //    throw exception_io_data();
+
         switch (id) {
         case I_TEXT_BELOW:
             p_file->read_lendian_t(m_text_below, p_abort);
@@ -148,7 +142,6 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
                 p_file->read_lendian_t(size_button, p_abort);
                 pfc::string_formatter formatter;
                 temp.read_from_file(vers, str_base, formatter << dirname, p_file, size_button, p_abort);
-                //                        assert(n < 7);
                 m_buttons.emplace_back(std::move(temp));
             }
             break;
@@ -400,7 +393,6 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
                 IDM_ADD
             };
 
-            // AppendMenu(menu,MF_SEPARATOR,0,0);
             AppendMenu(menu, MF_STRING, IDM_LOAD, _T("Load from file..."));
             AppendMenu(menu, MF_STRING, IDM_ADD, _T("Add from file..."));
             AppendMenu(menu, MF_STRING, IDM_EXPORT, _T("Save to file (embed images)..."));

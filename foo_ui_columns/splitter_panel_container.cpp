@@ -181,12 +181,6 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
             }
         }
         break;
-        /*    case WM_SIZE:
-        if (m_this.is_valid())
-        {
-        m_panel->on_size(LOWORD(lp),HIWORD(lp));
-        }
-        break;*/
     case WM_LBUTTONDOWN:
         if (m_this.is_valid()) {
             if (m_panel->m_show_toggle_area && !m_panel->m_autohide) {
@@ -297,7 +291,6 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
             = new ui_extension::menu_hook_impl;
 
         if (p_panel->m_child.is_valid()) {
-            //                p_ext->build_menu(menu, IDM_EXT_BASE, pt, true, user_data);
             p_panel->m_child->get_menu_items(*extension_menu_nodes.get_ptr());
             if (extension_menu_nodes->get_children_count() > 0)
                 AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
@@ -306,12 +299,8 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         }
         menu_helpers::win32_auto_mnemonics(menu);
 
-        //            menu_ext_base = IDM_EXT_BASE;
-
         const auto cmd = static_cast<unsigned>(
             TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr));
-
-        //            menu_ext_base=0;
 
         if (cmd >= IDM_EXT_BASE) {
             extension_menu_nodes->execute_by_id(cmd);

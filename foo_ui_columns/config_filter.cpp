@@ -170,10 +170,9 @@ public:
             refresh_me(wnd);
         } break;
         case WM_DESTROY: {
-            // if (m_changed)
-            //    filter_panel::g_on_fields_change();
             m_field_list.destroy();
-        } break;
+            break;
+        }
         case WM_COMMAND:
             switch (wp) {
             case IDC_FILTER_HELP: {
@@ -237,7 +236,7 @@ public:
                 if (m_field_list.get_selection_count(2) == 1) {
                     bit_array_bittable mask(m_field_list.get_item_count());
                     m_field_list.get_selection_state(mask);
-                    // bool b_found = false;
+
                     size_t index = 0;
                     size_t count = m_field_list.get_item_count();
                     while (index < count) {
@@ -245,6 +244,7 @@ public:
                             break;
                         index++;
                     }
+
                     if (index < count && index < cui::panels::filter::cfg_field_list.get_count()) {
                         cui::panels::filter::cfg_field_list.remove_by_idx(index);
                         m_field_list.remove_item(index);

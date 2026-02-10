@@ -16,8 +16,6 @@ class TabPlaylistSwitcherDragAndDrop : public PreferencesTab {
         SendDlgItemMessage(wnd, IDC_ACTIVATE_TARGET, BM_SETCHECK,
             main_window::config_get_activate_target_playlist_on_dropped_items(), 0);
 
-        // SendDlgItemMessage(wnd,IDC_DROP_NAME,BM_SETCHECK,cfg_pgen_dir,0);
-        // SendDlgItemMessage(wnd,IDC_DROP_PLAYLIST,BM_SETCHECK,cfg_pgen_playlist,0);
         SendDlgItemMessage(wnd, IDC_DROP_USE_STRING, BM_SETCHECK, cfg_pgen_tf, 0);
         SendDlgItemMessage(wnd, IDC_REMOVE_UNDERSCORES, BM_SETCHECK, cfg_replace_drop_underscores, 0);
         uSendDlgItemMessageText(wnd, IDC_DROP_STRING, WM_SETTEXT, 0, cfg_pgenstring);

@@ -182,8 +182,8 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
                 pfc::string8 name;
                 m_playlist_api->playlist_get_name(index, name);
                 g_save_playlist(get_wnd(), data, name);
-                // standard_commands::main_save_playlist();
-            } break;
+                break;
+            }
             case ID_LOAD: {
                 standard_commands::main_load_playlist();
             } break;
@@ -209,14 +209,6 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     }
     m_contextmenu_manager.release();
     m_contextmenu_manager_base = NULL;
-
-    /*size_t index_active = m_playlist_api->get_active_playlist();
-    if (index_active != pfc_infinite && index_active < get_item_count())
-    {
-        set_item_selected_single(index_active, false);
-    }
-    else
-        set_selection_state(pfc::bit_array_true(), pfc::bit_array_false(), false);*/
 
     return true;
 }

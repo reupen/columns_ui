@@ -212,7 +212,6 @@ size_t PlaylistView::column_index_actual_to_display(size_t actual_index)
         }
     }
     return pfc_infinite;
-    // throw pfc::exception_bug_check();
 }
 
 std::optional<std::reference_wrapper<uih::text_style::FormatProperties>> PlaylistView::get_initial_format(
@@ -1440,8 +1439,7 @@ bool PlaylistView::notify_on_doubleleftclick_nowhere()
     return false;
 }
 
-void PlaylistView::get_insert_items(
-    /*size_t p_playlist, */ size_t start, size_t count, InsertItemsContainer& items)
+void PlaylistView::get_insert_items(size_t start, size_t count, InsertItemsContainer& items)
 {
     items.set_count(count);
 

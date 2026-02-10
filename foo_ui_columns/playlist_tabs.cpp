@@ -20,8 +20,6 @@ void remove_playlist_helper(size_t index)
     if (index == api->get_active_playlist()) {
         if (index && index + 1 == api->get_playlist_count())
             api->set_active_playlist(index - 1);
-        // else
-        //    api->set_active_playlist(index);
     }
     api->remove_playlist_switch(index);
 }
@@ -138,7 +136,6 @@ void PlaylistTabs::create_child()
             m_child_wnd
                 = m_child->create_or_transfer_window(m_host_wnd, ui_extension::window_host_ptr(m_host.get_ptr()));
             if (m_child_wnd) {
-                // ShowWindow(m_child_wnd, SW_SHOWNORMAL);
                 SetWindowPos(m_child_wnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             }
         }
@@ -293,7 +290,6 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         if (wp == VK_TAB) {
             g_on_tab(wnd);
-            // return 0;
         }
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
         break;
@@ -310,8 +306,6 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
             if (idx >= 0) {
                 const auto playlist_api = playlist_manager::get();
-                // if (cfg_playlists_shift_lmb && (wp & MK_SHIFT)) remove_playlist_helper(idx);
-                // else
                 if (cfg_drag_pl) {
                     SetCapture(wnd);
                     m_dragging = true;
@@ -435,7 +429,6 @@ void PlaylistTabs::on_child_position_change()
     get_host()->on_size_limit_change(get_wnd(),
         uie::size_limit_maximum_height | uie::size_limit_maximum_width | uie::size_limit_minimum_height
             | uie::size_limit_minimum_width);
-    // on_size();
 }
 
 void PlaylistTabs::set_up_down_window_theme() const
@@ -509,7 +502,7 @@ void PlaylistTabs::import_config(stream_reader* p_reader, size_t p_size, abort_c
         unsigned size = 0;
         p_reader->read_lendian_t(size, p_abort);
         m_child_data.set_size(0);
-        // m_child_data.set_size(size);
+
         pfc::array_t<uint8_t> data;
         data.set_size(size);
         p_reader->read(data.get_ptr(), size, p_abort);
@@ -521,7 +514,6 @@ void PlaylistTabs::import_config(stream_reader* p_reader, size_t p_size, abort_c
             }
             ptr->get_config_to_array(m_child_data, p_abort, true);
         }
-        // p_reader->read(m_child_data.get_ptr(), size, p_abort);
     }
 }
 
@@ -535,8 +527,6 @@ uie::splitter_item_t* PlaylistTabs::get_panel(size_t index) const
     if (index == 0 && m_child_guid != pfc::guid_null) {
         if (m_child_wnd && m_child.is_valid())
             ptr->set_window_ptr(m_child);
-        // else
-        //    p_out.set_window_ptr(uie::window_ptr(NULL));
     }
     return ptr;
 }
@@ -697,7 +687,7 @@ void PlaylistTabs::reset_size_limits()
     }
 }
 
-void PlaylistTabs::set_styles(bool visible /*= true*/)
+void PlaylistTabs::set_styles(bool visible)
 {
     if (wnd_tabs) {
         long flags = WS_CHILD | TCS_HOTTRACK | TCS_TABS

@@ -301,9 +301,9 @@ private:
     void notify_on_group_info_area_size_change(int new_width) override
     {
         cfg_artwork_width = new_width;
-        // flush_artwork_images();
-        g_on_artwork_width_change(nullptr /*this*/);
+        g_on_artwork_width_change(nullptr);
     }
+
     void on_artwork_read_complete(const PlaylistViewGroup::ptr& p_group, const ArtworkReader* p_reader)
     {
         if (p_reader->status() != ArtworkReaderStatus::Succeeded)
@@ -473,8 +473,7 @@ private:
         kill_day_timer();
         SYSTEMTIME st;
         GetLocalTime(&st);
-        unsigned ms
-            = /*24**/ 60 * 60 * 1000 - (st.wMilliseconds + ((/*st.wHour*60 + */ st.wMinute) * 60 + st.wSecond) * 1000);
+        unsigned ms = 60 * 60 * 1000 - (st.wMilliseconds + (st.wMinute * 60 + st.wSecond) * 1000);
         SetTimer(get_wnd(), timer_date_change, ms, nullptr);
         m_day_timer_active = true;
     }

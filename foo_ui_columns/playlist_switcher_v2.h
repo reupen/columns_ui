@@ -239,7 +239,7 @@ public:
                     index++;
                 }
                 m_playlist_api->set_active_playlist(index);
-            } else // if (numSelected == 0)
+            } else
                 m_playlist_api->set_active_playlist(pfc_infinite);
         }
     }

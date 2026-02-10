@@ -38,8 +38,10 @@ void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc
                 b_found = true;
             }
         }
+
         if (!b_found)
-            new_selection[0] = true; // m_nodes.get_count() >= 1
+            new_selection[0] = true;
+
         set_selection_state(pfc::bit_array_var_table(new_selection.get_ptr(), new_selection.get_count()),
             pfc::bit_array_var_table(new_selection.get_ptr(), new_selection.get_count()), false);
     }

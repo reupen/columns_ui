@@ -65,7 +65,7 @@ void on_transparency_enabled_change()
 {
     if (cui::main_window.get_wnd()) {
         LONG current_style = GetWindowLong(cui::main_window.get_wnd(), GWL_EXSTYLE);
-        if (cfg_transparency_enabled /* && IsWindowVisible(g_main_window)*/) {
+        if (cfg_transparency_enabled) {
             if (!(current_style & WS_EX_LAYERED)) {
                 SetWindowLong(cui::main_window.get_wnd(), GWL_EXSTYLE, current_style | WS_EX_LAYERED);
             }

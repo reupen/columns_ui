@@ -46,7 +46,7 @@ public:
         auto [wnd, _] = fbh::auto_dark_modeless_dialog_box(IDD_COLUMN_OPTIONS, parent_window, std::move(on_message_));
         return wnd;
     }
-    // virtual const char * get_name()=0;
+
     explicit EditColumnWindowOptions(PlaylistViewColumn::ptr column)
         : initialising(false)
         , editproc(nullptr)
@@ -564,8 +564,6 @@ void TabColumns::make_child()
         SetWindowPos(m_wnd_child, HWND_TOP, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, NULL);
         ShowWindow(m_wnd_child, SW_SHOWNORMAL);
     }
-
-    // SetWindowPos(wnd_tab,GetDlgItem(m_wnd, IDC_GROUPBOX),0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 }
 
 void TabColumns::refresh_me(HWND wnd, bool init)
@@ -665,7 +663,6 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_DESTROY: {
             if (m_wnd_child && (HWND)lp == m_wnd_child) {
                 m_wnd_child = nullptr;
-                // m_child.release();
             }
         } break;
         }

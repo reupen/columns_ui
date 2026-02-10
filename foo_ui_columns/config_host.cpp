@@ -21,8 +21,6 @@ void PreferencesInstanceTabsHost::make_child()
         m_child = m_tabs[m_active_tab]->create(m_wnd);
     }
 
-    // SetWindowPos(wnd_tab,HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
-
     if (m_child) {
         EnableThemeDialogTexture(m_child, ETDT_ENABLETAB);
     }
@@ -31,7 +29,6 @@ void PreferencesInstanceTabsHost::make_child()
     SetWindowPos(m_wnd_tabs, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
     ShowWindow(m_child, SW_SHOWNORMAL);
-    // UpdateWindow(child);
 }
 
 namespace cui::prefs {
@@ -126,7 +123,6 @@ INT_PTR PreferencesInstanceTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, L
     case WM_INITDIALOG: {
         m_wnd = wnd;
         m_wnd_tabs = GetDlgItem(wnd, IDC_TAB1);
-        // SendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
         const auto count = m_tabs.size();
         for (size_t n = 0; n < count; n++) {
             uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(n), m_tabs[n]->get_name());

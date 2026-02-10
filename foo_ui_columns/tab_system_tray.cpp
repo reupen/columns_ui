@@ -69,8 +69,7 @@ public:
             } break;
             case IDC_SHOW_SYSTRAY: {
                 cfg_show_systray = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                //                EnableWindow(GetDlgItem(wnd, IDC_MINIMISE_TO_SYSTRAY), cfg_show_systray);
-                cui::systray::on_show_icon_change();
+                systray::on_show_icon_change();
             } break;
             case IDC_BALLOON: {
                 cfg_balloon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;

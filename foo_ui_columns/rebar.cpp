@@ -4,8 +4,6 @@
 #include "dark_mode.h"
 #include "main_window.h"
 
-// extern HBITMAP buttons_images;
-
 namespace cui::rebar {
 
 RebarWindow* g_rebar_window{};

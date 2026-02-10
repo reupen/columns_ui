@@ -26,7 +26,6 @@ pfc::string8 ButtonsToolbar::Button::CustomImage::get_path() const
 
     pfc::string8 fb2kexe;
     uGetModuleFileName(nullptr, fb2kexe);
-    // pfc::string8 fullPath;
 
     if (b_relative_to_drive) {
         size_t index_colon = fb2kexe.find_first(':');
@@ -63,15 +62,12 @@ void ButtonsToolbar::Button::CustomImage::read(ConfigVersion p_version, stream_r
 void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, const char* p_base, const char* p_name,
     stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
 {
-    // t_filesize p_start = p_file->get_position(p_abort);
     t_filesize read = 0;
-    while (/*p_file->get_position(p_abort) - p_start*/ read < p_size /* && !p_file->is_eof(p_abort)*/) {
+    while (read < p_size) {
         CustomImageIdentifier id;
         p_file->read_lendian_t(id, p_abort);
         unsigned size;
         p_file->read_lendian_t(size, p_abort);
-        // if (size > p_file->get_size(p_abort) - p_file->get_position(p_abort))
-        //    throw exception_io_data();
         pfc::array_t<char> path, maskpath;
         read += 8 + size;
         switch (id) {
@@ -93,17 +89,15 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
         } break;
         case I_CUSTOM_BUTTON_IMAGE_DATA: {
             t_filesize read2 = 0;
-            // t_filesize p_start_data = p_file->get_position(p_abort);
             pfc::array_t<char> name;
             pfc::array_t<uint8_t> data;
-            while (read2 /*p_file->get_position(p_abort) - p_start_data*/ < size /* && !p_file->is_eof(p_abort)*/) {
+            while (read2 < size) {
                 DWORD size_data;
                 ImageIdentifier id_data;
                 p_file->read_lendian_t(id_data, p_abort);
                 p_file->read_lendian_t(size_data, p_abort);
-                // if (size_data > p_file->get_size(p_abort) - p_file->get_position(p_abort))
-                // throw exception_io_data();
                 read2 += 8 + size_data;
+
                 switch (id_data) {
                 case IMAGE_NAME:
                     name.set_size(size_data);
@@ -174,16 +168,13 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
         } break;
         case I_CUSTOM_BUTTON_MASK_DATA: {
             t_filesize read2 = 0;
-            // t_filesize p_start_data = p_file->get_position(p_abort);
             pfc::array_t<char> name;
             pfc::array_t<uint8_t> data;
-            while (read2 /*p_file->get_position(p_abort) - p_start_data*/ < size /* && !p_file->is_eof(p_abort)*/) {
+            while (read2 < size) {
                 DWORD size_data;
                 ImageIdentifier id_data;
                 p_file->read_lendian_t(id_data, p_abort);
                 p_file->read_lendian_t(size_data, p_abort);
-                // if (size_data > p_file->get_size(p_abort) - p_file->get_position(p_abort))
-                //    throw exception_io_data();
                 read2 += 8 + size_data;
                 switch (id_data) {
                 case IMAGE_NAME:

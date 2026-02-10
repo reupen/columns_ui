@@ -5,7 +5,9 @@
 
 namespace cui::panels::playlist_view {
 namespace style_cache_manager {
+
 pfc::list_t<SharedCellStyleData*> m_objects;
+
 void g_add_object(const CellStyleData& p_data, SharedCellStyleData::ptr& p_out)
 {
     size_t count = m_objects.get_count();
@@ -15,14 +17,14 @@ void g_add_object(const CellStyleData& p_data, SharedCellStyleData::ptr& p_out)
             return;
         }
     p_out = new SharedCellStyleData(p_data);
-    // console::formatter() << "added style obj: " << m_objects.add_item(p_out.get_ptr());
     m_objects.add_item(p_out.get_ptr());
 }
+
 void g_remove_object(SharedCellStyleData* p_object)
 {
     m_objects.remove_item(p_object);
-    // console::formatter() << "removed style obj";
 }
+
 } // namespace style_cache_manager
 
 SharedCellStyleData::~SharedCellStyleData()

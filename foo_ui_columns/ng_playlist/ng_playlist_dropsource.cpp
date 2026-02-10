@@ -10,8 +10,6 @@ bool PlaylistView::do_drag_drop(WPARAM wp)
     if (data.get_count() > 0) {
         const auto data_object = cui::fb2k_utils::create_data_object_safe(data);
         if (data_object) {
-            // pfc::com_ptr_t<IAsyncOperation> pAsyncOperation;
-            // HRESULT hr = pDataObject->QueryInterface(IID_IAsyncOperation, (void**)pAsyncOperation.receive_ptr());
             DWORD blah = DROPEFFECT_NONE;
             {
                 m_dragging = true;

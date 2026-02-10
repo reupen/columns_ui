@@ -164,9 +164,6 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
     enum ItemID {
         identifier_groups,
         identifier_show_groups,
-        /*identifier_show_artwork, //Need somewhere to stick these
-        identifier_artwork_width,
-        identifier_artwork_reflection,*/
     };
 
     enum GroupItemID {
@@ -192,9 +189,6 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
         fbh::fcl::Writer out(p_writer, p_abort);
 
         out.write_item(identifier_show_groups, cfg_grouping);
-        // out.write_item(identifier_show_artwork, pvt::cfg_show_artwork);
-        // out.write_item(identifier_artwork_width, pvt::cfg_artwork_width);
-        // out.write_item(identifier_artwork_reflection, pvt::cfg_artwork_reflection);
 
         stream_writer_memblock groups_sw;
         fbh::fcl::Writer groups_writer(&groups_sw, p_abort);
@@ -239,15 +233,6 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
             case identifier_show_groups:
                 reader.read_item(cfg_grouping);
                 break;
-            // case identifier_artwork_reflection:
-            //    reader.read_item(pvt::cfg_artwork_reflection);
-            //    break;
-            // case identifier_show_artwork:
-            //    reader.read_item(pvt::cfg_show_artwork);
-            //    break;
-            // case identifier_artwork_width:
-            //    reader.read_item(pvt::cfg_artwork_width);
-            //    break;
             case identifier_groups: {
                 const auto count = reader.read_item<uint32_t>();
                 for (size_t i = 0; i < count; i++) {
@@ -299,8 +284,6 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
         if (b_groups_set)
             g_groups.set_groups(newgroups, false);
         PlaylistView::g_on_groups_change();
-        // pvt::ng_playlist_view_t::g_on_show_artwork_change();
-        // pvt::ng_playlist_view_t::g_on_artwork_width_change();
     }
 };
 

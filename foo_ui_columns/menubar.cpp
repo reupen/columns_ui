@@ -61,10 +61,7 @@ class MenuToolbar
     : public uie::container_uie_window_v3_t<uie::menu_window_v2>
     , uih::MessageHook {
 public:
-    //    static pfc::ptr_list_t<playlists_list_window> list_wnd;
-    // static HHOOK msghook;
     static bool hooked;
-    // static menu_extension * p_hooked_menu;
 
     bool redrop{true};
     bool is_submenu{false};
@@ -168,7 +165,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         std::vector<TBBUTTON> tb_buttons(button_count);
 
-        wnd_menu = CreateWindowEx(/*TBSTYLE_EX_MIXEDBUTTONS|*/ WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, nullptr,
+        wnd_menu = CreateWindowEx(WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, nullptr,
             WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TBSTYLE_FLAT | TBSTYLE_TRANSPARENT
                 | TBSTYLE_LIST | CCS_NORESIZE | CCS_NOPARENTALIGN | CCS_NODIVIDER,
             0, 0, 0, 25, wnd, (HMENU)ID_MENU, core_api::get_my_instance(), nullptr);
@@ -181,7 +178,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 = std::make_unique<cui::colours::dark_mode_notifier>([this, self = ptr{this}] { set_window_theme(); });
 
             SendMessage(wnd_menu, TB_SETBITMAPSIZE, (WPARAM)0, MAKELONG(0, 0));
-            SendMessage(wnd_menu, TB_SETBUTTONSIZE, (WPARAM)0, MAKELONG(0, /*GetSystemMetrics(SM_CYMENUSIZE)*/ 0));
+            SendMessage(wnd_menu, TB_SETBUTTONSIZE, (WPARAM)0, MAKELONG(0, 0));
 
             SendMessage(wnd_menu, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 
@@ -196,15 +193,10 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             SendMessage(wnd_menu, TB_ADDBUTTONS, (WPARAM)tb_buttons.size(), (LPARAM)(LPTBBUTTON)tb_buttons.data());
 
-            //            SendMessage(wnd_menu, TB_SETEXTENDEDSTYLE, 0, TBSTYLE_EX_MIXEDBUTTONS);
-
-            //            SendMessage(wnd_menu, TB_AUTOSIZE, 0, 0);
-
             BOOL a = true;
             SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
             SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
 
-            //            SendMessage(wnd_menu, TB_SETPARENT, (WPARAM) (HWND)wnd_host, 0);
             menuproc = (WNDPROC)SetWindowLongPtr(wnd_menu, GWLP_WNDPROC, (LPARAM)main_hook);
         }
 
@@ -213,9 +205,6 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_WINDOWPOSCHANGED: {
         auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE)) {
-            // SIZE sz = {0,0};
-            // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
-
             RECT rc = {0, 0, 0, 0};
             size_t count = m_buttons.get_count();
             int cx = lpwp->cx;
@@ -314,10 +303,6 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         RECT rc = {0, 0, 0, 0};
         SendMessage(wnd_menu, TB_GETITEMRECT, m_buttons.get_count() - 1, (LPARAM)(&rc));
-
-        // SIZE sz = {0,0};
-        // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
-        // console::formatter() << sz.cx << sz.cy;
 
         mmi->ptMinTrackSize.x = rc.right;
         mmi->ptMinTrackSize.y = rc.bottom;
@@ -427,9 +412,7 @@ void MenuToolbar::make_menu(int idx)
     HMENU menu = CreatePopupMenu();
 
     hooked = true;
-    //    p_hooked_menu = this;
     register_message_hook(uih::MessageHookType::type_message_filter, this);
-    // msghook = uSetWindowsHookEx(WH_MSGFILTER, menu_hook_t_proc, 0, GetCurrentThreadId());
     service_ptr_t<mainmenu_manager> p_menu = standard_api_create_t<mainmenu_manager>();
 
     bool b_keyb = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
@@ -445,12 +428,6 @@ void MenuToolbar::make_menu(int idx)
     is_submenu = false;
 
     sub_menu_ref_count = -1; // we get a notificationwhen the inital menu is created
-
-    //    RECT rc_desktop;
-    //    if (GetWindowRect(GetDesktopWindow(), &rc_desktop))
-
-    //    if (pt.x < rc_desktop.left) pt.x = rc_desktop.left;
-    //    else if (pt.x > rc_desktop.right) pt.x = rc_desktop.right;
 
     p_manager = p_menu;
 
@@ -472,20 +449,14 @@ void MenuToolbar::make_menu(int idx)
         }
     }
 
-    //    menu_info::MENU_A_BASE = 1;
-    //    menu_info::MENU_B_BASE = -1;
-
     if (GetFocus() != wnd_menu)
         wnd_prev_focus = GetFocus();
 
     int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON | TPM_RETURNCMD, pt.x, pt.y, get_wnd(), &tpmp);
-    //    int cmd = TrackPopupMenuEx(menu,TPM_LEFTBUTTON|TPM_RETURNCMD,pt.x,pt.y,g_main_window,0);
-
     m_status_override.release();
 
-    // SendMessage(wnd_menu, TB_PRESSBUTTON, idx, FALSE);
-
     PostMessage(wnd_menu, TB_PRESSBUTTON, idx, FALSE);
+
     if (GetFocus() != wnd_menu) {
         PostMessage(wnd_menu, TB_SETHOTITEM, -1, 0);
     }
@@ -493,23 +464,16 @@ void MenuToolbar::make_menu(int idx)
     DestroyMenu(menu);
 
     if (cmd > 0 && p_menu.is_valid()) {
-        //        SendMessage(wnd_menu, TB_SETHOTITEM, -1, 0);
         if (IsWindow(wnd_prev_focus))
             SetFocus(wnd_prev_focus);
         p_menu->execute_command(cmd - 1);
     }
 
-    //    if (p_menu.is_valid())
-    {
-        p_manager.release();
-        p_menu.release();
-    }
+    p_manager.release();
+    p_menu.release();
 
-    // UnhookWindowsHookEx(msghook); // hook may not be freed instantly, so dont make msghook = 0
     deregister_message_hook(uih::MessageHookType::type_message_filter, this);
     hooked = false;
-    // p_hooked_menu=0;
-
     actual_active = 0;
 }
 

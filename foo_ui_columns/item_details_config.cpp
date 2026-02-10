@@ -19,9 +19,6 @@ const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR,
 INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
-        /*case DM_GETDEFID:
-        SetWindowLongPtr(wnd, DWLP_MSGRESULT, MAKELONG(m_modal ? IDOK : IDCANCEL, DC_HASDEFID));
-        return TRUE;*/
     case WM_INITDIALOG: {
         m_wnd = wnd;
 
@@ -61,7 +58,6 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         }
         return FALSE;
     }
-        return FALSE; // m_modal ? FALSE : TRUE;
     case WM_DESTROY:
         if (m_timer_active)
             on_timer();

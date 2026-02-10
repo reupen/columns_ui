@@ -58,10 +58,11 @@ size_t FilterPanel::g_get_stream_index_by_window(const uie::window_ptr& ptr)
 void FilterPanel::g_on_orderedbysplitters_change()
 {
     g_streams.remove_all();
+
     for (auto& window : g_windows) {
         window->refresh_stream();
     }
-    // filter_search_bar::g_on_orderedbysplitters_change();
+
     size_t count = g_streams.get_count();
     for (size_t i = 0; i < count; i++) {
         if (g_streams[i]->m_windows.get_count()) {
@@ -489,9 +490,10 @@ void FilterPanel::set_field(const FieldData& field, bool b_force)
         get_windows(windows_after);
         size_t pos_after = windows_after.find_item(this);
         size_t pos_update = std::min(pos_before, pos_after);
+
         if (b_redraw)
             enable_redrawing();
-        // update_window();
+
         g_update_subsequent_filters(windows_after, pos_update, false, false);
     }
 }
@@ -684,7 +686,7 @@ void FilterPanel::send_results_to_playlist(bool b_play)
                 playlist_api->remove_playlist(index_old);
         }
     }
-    // size_t index_remove = playlist_api->find_playlist("Filter Results", pfc_infinite);
+
     size_t index = NULL;
     if (index_insert != pfc_infinite)
         index = playlist_api->create_playlist(
@@ -702,9 +704,8 @@ void FilterPanel::send_results_to_playlist(bool b_play)
         playlist_api->set_playing_playlist(index);
         playback_api->play_start(play_control::track_command_default);
     }
-    // if (index_remove != pfc_infinite)
-    //    playlist_api->remove_playlist(index+1);
 }
+
 void FilterPanel::notify_on_selection_change(
     const bit_array& p_affected, const bit_array& p_status, notification_source_t p_notification_source)
 {
@@ -828,7 +829,6 @@ void FilterPanel::refresh_columns()
 
 void FilterPanel::notify_on_initialisation()
 {
-    // set_variable_height_items(true); //Implementation not finished
     set_use_dark_mode(colours::is_dark_mode_active());
     set_edge_style(cfg_edgestyle);
     set_autosize(true);
@@ -849,9 +849,8 @@ void FilterPanel::notify_on_initialisation()
     refresh_stream();
 
     size_t field_index = get_field_index();
-    if (field_index == pfc_infinite)
-    // if (m_field_data.is_empty())
-    {
+
+    if (field_index == pfc_infinite) {
         m_pending_sort_direction = false;
 
         pfc::array_t<bool> used;

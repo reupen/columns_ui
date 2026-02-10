@@ -393,7 +393,6 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abor
             item.set_panel_config_from_ptr(m_presets[m_active].m_val.get_ptr(), m_presets[m_active].m_val.get_size());
             g_layout_window.set_child(&item);
         }
-        // m_initialised = m_presets.get_count() > 0;
     }
 }
 

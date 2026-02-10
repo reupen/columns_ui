@@ -439,8 +439,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         extension_menu_nodes->execute_by_id(cmd);
                     }
 
-                    //            if (p_ext.is_valid()) p_ext->menu_action(menu, IDM_EXT_BASE, cmd, user_data);
-
                     DestroyMenu(menu);
 
                     if (cmd == IDM_LOCK) {
@@ -452,7 +450,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     } else if (cmd > 0 && cmd - IDM_BASE < panel_info.size()) {
                         const auto& panel = panel_info[cmd - IDM_BASE];
                         bool shift_down = (GetAsyncKeyState(VK_SHIFT) & (1 << 31)) != 0;
-                        //                bool ctrl_down = (GetAsyncKeyState(VK_CONTROL) & (1 << 31)) != 0;
 
                         if (!shift_down && !panel.prefers_multiple_instances
                             && rebar::g_rebar_window->check_band(panel.id)) {
@@ -536,8 +533,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         } else if (wp == SPI_SETKEYBOARDCUES) {
             bool cues = uih::are_keyboard_cues_enabled();
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(cues ? UIS_CLEAR : UIS_SET, UISF_HIDEFOCUS), NULL);
-            // SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(cues ? UIS_CLEAR : UIS_SET, UISF_HIDEFOCUS), NULL);
-            // return 0;
         }
         win32_helpers::send_message_to_direct_children(wnd, msg, wp, lp);
         break;
@@ -562,7 +557,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case MSG_SYSTEM_TRAY_ICON:
         if (lp == WM_LBUTTONUP) {
-            // if (b_wasDown)
             standard_commands::main_activate_or_hide();
         } else if (lp == WM_RBUTTONDOWN) {
             m_last_systray_r_down = true;
@@ -591,13 +585,11 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_last_systray_x1_down = false;
             m_last_systray_x2_down = false;
             return TRUE;
-        }
-        // else if (lp == WM_CONTEXTMENU)
-        else if (lp == WM_RBUTTONUP) {
+        } else if (lp == WM_RBUTTONUP) {
             if (m_last_systray_r_down) {
                 SetForegroundWindow(wnd);
 
-                POINT pt; // = {(short)LOWORD(lp),(short)HIWORD(lp)};
+                POINT pt;
                 GetCursorPos(&pt);
 
                 HMENU menu = CreatePopupMenu();
@@ -644,9 +636,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                             title.prealloc(14 + 25);
                             title << "Now Playing: " << title2;
-                            //            play_control::get()->playback_format_title_ex(track, title, "$puts(title,Now
-                            //            Playing:
-                            //            %title%)$ifgreater($len($get(title)),25,$cut($get(title),24)..,$get(title))",0,0,true);
                             track.release();
                             uFixAmpersandChars_v2(title, name);
 

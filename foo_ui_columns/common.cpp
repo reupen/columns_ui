@@ -74,7 +74,6 @@ StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(
 void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr>& p_items, const char* p_name)
 {
     pfc::string8 name = p_name;
-    // name << p_name;
 
     pfc::string_formatter ext;
     service_enum_t<playlist_loader> e;

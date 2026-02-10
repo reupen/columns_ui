@@ -263,8 +263,6 @@ void TabStackPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
         m_child_data.set_size(0);
         m_child->get_config_to_array(m_child_data, p_abort);
     }
-    // else
-    //    throw pfc::exception_not_implemented();
 }
 
 void TabStackPanel::get_name(pfc::string_base& p_out) const
@@ -457,8 +455,6 @@ void TabStackPanel::update_size_limits()
 
 void TabStackPanel::adjust_rect(bool b_larger, RECT* rc)
 {
-    // TabCtrl_AdjustRect(m_wnd_tabs, b_larger, rc);
-
     if (b_larger) {
         RECT rc_child = *rc;
         TabCtrl_AdjustRect(m_wnd_tabs, FALSE, &rc_child);
@@ -576,9 +572,6 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             on_size_changed(lpwp->cx, lpwp->cy);
         }
     } break;
-    /*case WM_SIZE:
-        on_size_changed(LOWORD(lp), HIWORD(lp));
-        break;*/
     case WM_GETMINMAXINFO: {
         auto lpmmi = (LPMINMAXINFO)lp;
 
@@ -586,11 +579,6 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         lpmmi->ptMinTrackSize.x = m_size_limits.min_width;
         lpmmi->ptMaxTrackSize.y = m_size_limits.max_height;
         lpmmi->ptMaxTrackSize.x = m_size_limits.max_width;
-
-        /*console::formatter() << "min height: " << m_size_limits.min_height
-            << " max height: " << m_size_limits.max_height
-            << " min width: " << m_size_limits.min_width
-            << " max width: " << m_size_limits.max_width;*/
     }
         return 0;
     case WM_SHOWWINDOW: {
@@ -626,8 +614,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         if (HWND(wp) == m_wnd_tabs) {
             ScreenToClient(m_wnd_tabs, &pt_client_tabs);
-            TCHITTESTINFO info;
-            // memset(&info, 0, sizeof(TCHITTESTINFO));
+            TCHITTESTINFO info{};
             info.pt = pt_client_tabs;
             const auto index = TabCtrl_HitTest(m_wnd_tabs, &info);
             if ((info.flags == TCHT_ONITEM || info.flags == TCHT_ONITEMLABEL || info.flags == TCHT_ONITEMICON)
@@ -906,13 +893,12 @@ void TabStackPanel::create_tabs()
     g_font.reset(fb2k::std_api_get<fonts::manager>()->get_font(g_guid_splitter_tabs));
     RECT rc;
     GetClientRect(get_wnd(), &rc);
-    DWORD flags = WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | (true ? WS_VISIBLE : 0)
+    DWORD flags = WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | WS_VISIBLE
         | WS_CLIPCHILDREN; // TCS_MULTILINE hack to prevent BS.
     m_wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Tab stack"), flags, 0, 0, rc.right, rc.bottom, get_wnd(),
         HMENU(2345), core_api::get_my_instance(), nullptr);
     SetWindowLongPtr(m_wnd_tabs, GWLP_USERDATA, (LPARAM)(this));
     m_tab_proc = (WNDPROC)SetWindowLongPtr(m_wnd_tabs, GWLP_WNDPROC, (LPARAM)g_hook_proc);
-    // SetWindowTheme(m_wnd_tabs, L"BrowserTab", NULL);
     SendMessage(m_wnd_tabs, WM_SETFONT, (WPARAM)g_font.get(), MAKELPARAM(0, 0));
 }
 
@@ -955,7 +941,6 @@ void TabStackPanel::on_size_changed(unsigned width, unsigned height)
     HDWP dwp = BeginDeferWindowPos(gsl::narrow<int>(m_active_panels.size() + 1));
     if (m_wnd_tabs)
         dwp = DeferWindowPos(dwp, m_wnd_tabs, nullptr, 0, 0, width, height, SWP_NOZORDER);
-    // SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 
     size_t count = m_active_panels.size();
     RECT rc = {0, 0, (LONG)width, (LONG)height};
@@ -964,7 +949,6 @@ void TabStackPanel::on_size_changed(unsigned width, unsigned height)
         if (m_active_panels[i]->m_wnd)
             dwp = DeferWindowPos(dwp, m_active_panels[i]->m_wnd, nullptr, rc.left, rc.top, rc.right - rc.left,
                 rc.bottom - rc.top, SWP_NOZORDER);
-        // SetWindowPos(m_active_panels[i]->m_wnd, NULL, rc.left, rc.top, RECT_CX(rc), RECT_CY(rc), SWP_NOZORDER);
     }
     EndDeferWindowPos(dwp);
 }

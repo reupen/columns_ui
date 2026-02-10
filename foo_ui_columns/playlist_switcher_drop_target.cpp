@@ -71,8 +71,6 @@ bool g_get_folder_name(IDataObject* pDataObj, pfc::string8& p_out)
     STGMEDIUM sm;
     HRESULT hr = E_FAIL;
 
-    // memset(&sm, 0, sizeof(0));
-
     fe.cfFormat = CF_HDROP;
     fe.ptd = nullptr;
     fe.dwAspect = DVASPECT_CONTENT;
@@ -85,18 +83,16 @@ bool g_get_folder_name(IDataObject* pDataObj, pfc::string8& p_out)
         // Display the data and release it.
         pfc::string8 temp;
 
-        unsigned int /*n,*/ t = uDragQueryFileCount((HDROP)sm.hGlobal);
-        if (t == 1) {
-            {
-                uDragQueryFile((HDROP)sm.hGlobal, 0, temp);
-                DWORD att = uGetFileAttributes(temp);
-                if (att != INVALID_FILE_ATTRIBUTES && (att & FILE_ATTRIBUTE_DIRECTORY)) {
-                    p_out.set_string(string_filename_ext(temp));
-                    ret = true;
-                } else {
-                    p_out.set_string(string_filename(temp));
-                    ret = true;
-                }
+        const auto file_count = uDragQueryFileCount((HDROP)sm.hGlobal);
+        if (file_count == 1) {
+            uDragQueryFile((HDROP)sm.hGlobal, 0, temp);
+            DWORD att = uGetFileAttributes(temp);
+            if (att != INVALID_FILE_ATTRIBUTES && (att & FILE_ATTRIBUTE_DIRECTORY)) {
+                p_out.set_string(string_filename_ext(temp));
+                ret = true;
+            } else {
+                p_out.set_string(string_filename(temp));
+                ret = true;
             }
         }
 
