@@ -977,7 +977,7 @@ void PlaylistView::notify_on_create()
 
     s_windows.push_back(this);
 
-    set_day_timer();
+    set_hour_timer();
 
     m_display_change_token
         = system_appearance_manager::add_display_changed_handler([this, self{ptr{this}}] { flush_artwork_images(); });

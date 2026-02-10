@@ -455,27 +455,27 @@ private:
     void on_time_change()
     {
         update_items(0, get_item_count());
-        set_day_timer();
+        set_hour_timer();
     }
 
-    bool m_day_timer_active{false};
+    bool m_hour_timer_active{false};
 
-    void kill_day_timer()
+    void kill_hour_timer()
     {
-        if (m_day_timer_active) {
+        if (m_hour_timer_active) {
             KillTimer(get_wnd(), timer_date_change);
-            m_day_timer_active = false;
+            m_hour_timer_active = false;
         }
     }
 
-    void set_day_timer()
+    void set_hour_timer()
     {
-        kill_day_timer();
+        kill_hour_timer();
         SYSTEMTIME st;
         GetLocalTime(&st);
         unsigned ms = 60 * 60 * 1000 - (st.wMilliseconds + (st.wMinute * 60 + st.wSecond) * 1000);
         SetTimer(get_wnd(), timer_date_change, ms, nullptr);
-        m_day_timer_active = true;
+        m_hour_timer_active = true;
     }
 
     void notify_sort_column(size_t index, bool b_descending, bool b_selection_only) override;
