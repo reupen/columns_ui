@@ -2,10 +2,8 @@
 #include "icons.h"
 
 /** Main window UI control IDs */
-#define ID_REBAR 2100
-#define ID_STATUS 2002
-
-#define ID_PLAYLIST_TOOLTIP 50
+constexpr auto ID_REBAR = 2100u;
+constexpr auto ID_STATUS = 2002u;
 
 /** Main window custom message numbers */
 enum {

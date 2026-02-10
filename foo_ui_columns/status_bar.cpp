@@ -355,8 +355,9 @@ void set_part_sizes(unsigned p_parts)
 void create_window()
 {
     if (cfg_status && !g_status) {
-        g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0,
-            main_window.get_wnd(), reinterpret_cast<HMENU>(ID_STATUS), core_api::get_my_instance(), nullptr);
+        g_status
+            = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0, main_window.get_wnd(),
+                reinterpret_cast<HMENU>(static_cast<size_t>(ID_STATUS)), core_api::get_my_instance(), nullptr);
 
         if (!g_status)
             return;
