@@ -141,7 +141,11 @@ public:
 
 class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
 public:
-    explicit PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {}
+    explicit PlaylistViewRenderer(class PlaylistView* playlist_view)
+        : DefaultRenderer(true)
+        , m_playlist_view{playlist_view}
+    {
+    }
 
     void render_begin(const uih::lv::RendererContext& context) override;
 
@@ -397,7 +401,8 @@ private:
     size_t column_index_display_to_actual(size_t display_index);
     size_t column_index_actual_to_display(size_t actual_index);
 
-    int measure_text_width(size_t item_index, size_t column_index) override;
+    std::optional<std::reference_wrapper<uih::text_style::FormatProperties>> get_initial_format(
+        size_t item_index, size_t column_index) override;
 
     void notify_on_initialisation() override;
     void notify_on_create() override;

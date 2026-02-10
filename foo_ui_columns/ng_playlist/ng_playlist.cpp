@@ -215,12 +215,11 @@ size_t PlaylistView::column_index_actual_to_display(size_t actual_index)
     // throw pfc::exception_bug_check();
 }
 
-int PlaylistView::measure_text_width(size_t item_index, size_t column_index)
+std::optional<std::reference_wrapper<uih::text_style::FormatProperties>> PlaylistView::get_initial_format(
+    size_t item_index, size_t column_index)
 {
-    const char* text = get_item_text(item_index, column_index);
     const style_data_t& style_data = get_style_data(item_index);
-    return uih::direct_write::measure_text_width_columns_and_styles(
-        *get_items_text_format(), mmh::to_utf16(text), 1_spx, 3_spx, style_data[column_index]->format_properties);
+    return style_data[column_index]->format_properties;
 }
 
 void PlaylistView::on_column_widths_change()
