@@ -1,20 +1,6 @@
 #pragma once
 #include "icons.h"
 
-namespace colours {
-enum ColourID {
-    COLOUR_TEXT,
-    COLOUR_SELECTED_TEXT,
-    COLOUR_BACK,
-    COLOUR_SELECTED_BACK,
-    COLOUR_SELECTED_BACK_NO_FOCUS,
-    COLOUR_SELECTED_TEXT_NO_FOCUS,
-    COLOUR_FRAME,
-};
-} // namespace colours
-
-COLORREF get_default_colour(colours::ColourID index, bool themed = false);
-
 /** Main window UI control IDs */
 #define ID_REBAR 2100
 #define ID_STATUS 2002
