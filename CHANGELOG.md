@@ -8,11 +8,10 @@
   vertically was added.
   [[#1586](https://github.com/reupen/columns_ui/pull/1586)]
 
-- CPU usage when moving the mouse over the playlist view and other list views
-  was reduced. [[#1585](https://github.com/reupen/columns_ui/pull/1585)]
-
-  In the playlist view, this improvement is only relevant when tooltips are
-  enabled.
+- CPU usage when moving the mouse over the playlist and other built-in list
+  views was reduced. [[#1585](https://github.com/reupen/columns_ui/pull/1585),
+  [#1590](https://github.com/reupen/columns_ui/pull/1590),
+  [#1591](https://github.com/reupen/columns_ui/pull/1591)]
 
 ## 3.3.0
 
