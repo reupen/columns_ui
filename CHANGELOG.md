@@ -14,6 +14,18 @@
   [#1590](https://github.com/reupen/columns_ui/pull/1590),
   [#1591](https://github.com/reupen/columns_ui/pull/1591)]
 
+- A main menu item, **View** › **Lock window size**, was added.
+  [[#1595](https://github.com/reupen/columns_ui/pull/1595)]
+
+  When enabled, the main window cannot be resized using its borders. It can
+  still be maximised or
+  [snapped](https://support.microsoft.com/en-gb/windows/snap-your-windows-885a9b1e-a983-a3b1-16cd-c531795e6241#windowsversion=windows_11).
+
+- When the **View** › **Transparent window** command is added to the Buttons
+  toolbar as a button, the button now appears pressed when main window
+  transparency is enabled.
+  [[#1595](https://github.com/reupen/columns_ui/pull/1595)]
+
 ### Bug fixes
 
 - Ellipses for truncated text were reinstated when using tab characters to

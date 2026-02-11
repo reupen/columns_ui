@@ -100,7 +100,8 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
     enum ItemID {
         identifier_status,
         identifier_status_pane,
-        identifier_allow_locked_panel_resizing
+        identifier_allow_locked_panel_resizing,
+        identifier_lock_main_window_size,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Misc layout"; }
     const GUID& get_group() const override { return cui::fcl::groups::layout; }
@@ -117,6 +118,7 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
         out.write_item(identifier_status, cfg_status);
         out.write_item(identifier_status_pane, settings::show_status_pane);
         out.write_item(identifier_allow_locked_panel_resizing, settings::allow_locked_panel_resizing.get_value());
+        out.write_item(identifier_lock_main_window_size, cui::lock_main_window_size.get());
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -138,6 +140,9 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
                 break;
             case identifier_allow_locked_panel_resizing:
                 settings::allow_locked_panel_resizing = reader.read_raw_item<bool>();
+                break;
+            case identifier_lock_main_window_size:
+                reader.read_item(cui::lock_main_window_size);
                 break;
             default:
                 reader.skip(element_size);

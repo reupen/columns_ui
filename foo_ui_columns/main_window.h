@@ -35,6 +35,9 @@ enum {
 } // namespace taskbar_buttons
 
 namespace cui {
+
+extern fbh::ConfigBool lock_main_window_size;
+
 class MainWindow {
 public:
     HWND initialise(user_interface::HookProc_t hook, bool is_hidden = false);

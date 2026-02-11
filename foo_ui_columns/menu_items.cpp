@@ -92,6 +92,13 @@ const MainMenuCommand decrease_font{{0xf2bc9f43, 0xf709, 0x4f6f, {0x9c, 0x65, 0x
 const MainMenuCommand increase_font{{0x8553d7fd, 0xebc5, 0x4ae7, {0xaa, 0x28, 0xb2, 0x6, 0xfe, 0x94, 0xa0, 0xb4}},
     "Increase font size", "Increases the playlist font size.", [] { panels::playlist_view::set_font_size(1.0f); }};
 
+const MainMenuCommand toggle_lock_main_window_size{
+    .guid{0xb6fc1a63, 0xf588, 0x4f50, {0x85, 0x82, 0x08, 0x44, 0x0a, 0x77, 0x29, 0x8f}},
+    .name = "Lock window size",
+    .description = "Toggles whether resizing the main window using its border is allowed.",
+    .execute_callback = [] { lock_main_window_size = !lock_main_window_size; },
+    .is_ticked_callback = [] { return lock_main_window_size.get(); }};
+
 const MainMenuCommand toggle_transparency{
     .guid{0x0d0dbf0a, 0x7c93, 0x414a, {0x99, 0xef, 0xcc, 0x25, 0x90, 0x19, 0x6a, 0x62}},
     .name = "Transparent window",
@@ -186,10 +193,11 @@ const MainMenuCommand use_system_mode{
     = [] { return colours::dark_mode_status == WI_EnumValue(colours::DarkModeStatus::UseSystemSetting); },
     .is_available_callback = [] { return system_appearance_manager::is_dark_mode_available(); }};
 
-class MainMenuCommands : public mainmenu_commands {
+template <class Base = mainmenu_commands>
+class GenericMainMenuCommands : public Base {
 public:
     template <class... Commands>
-    MainMenuCommands(GUID parent, uint32_t sort_priority, Commands&&... commands)
+    GenericMainMenuCommands(GUID parent, uint32_t sort_priority, Commands&&... commands)
         : m_parent(parent)
         , m_sort_priority(sort_priority)
         , m_commands{std::forward<Commands>(commands)...}
@@ -221,10 +229,10 @@ public:
             return false;
 
         if (command.is_ticked_callback && command.is_ticked_callback())
-            p_flags |= flag_checked;
+            p_flags |= mainmenu_commands::flag_checked;
 
         if (command.is_radio_selected_callback && command.is_radio_selected_callback())
-            p_flags |= flag_radiochecked;
+            p_flags |= mainmenu_commands::flag_radiochecked;
 
         const bool shift_down = GetKeyState(VK_SHIFT) < 0;
         return !command.hide_without_shift_key || shift_down;
@@ -235,14 +243,40 @@ public:
         m_commands[p_index].execute_callback();
     }
 
-private:
+protected:
     GUID m_parent{};
     uint32_t m_sort_priority{};
     std::vector<MainMenuCommand> m_commands;
 };
 
-service_factory_single_t<MainMenuCommands> _mainmenu_commands_view_transparency(
-    mainmenu_groups::view_alwaysontop, mainmenu_commands::sort_priority_base + 1, toggle_transparency);
+using MainMenuCommands = GenericMainMenuCommands<mainmenu_commands>;
+
+class MainMenuCommandsWithState : public GenericMainMenuCommands<mainmenu_commands_v3> {
+public:
+    using GenericMainMenuCommands::GenericMainMenuCommands;
+
+    uint32_t allowed_check_flags(uint32_t idx, const GUID& subCmd) override
+    {
+        const auto& command = m_commands[idx];
+        return (command.is_ticked_callback ? mainmenu_commands::flag_checked : 0)
+            | (command.is_radio_selected_callback ? mainmenu_commands::flag_radiochecked : 0);
+    }
+    void add_state_callback(state_callback* callback) override { m_state_callbacks.emplace_back(callback); }
+    void remove_state_callback(state_callback* callback) override { std::erase(m_state_callbacks, callback); }
+
+    void dispatch_state_changed_event(GUID command_id) const
+    {
+        for (auto* callback : m_state_callbacks)
+            callback->menu_state_changed(command_id, GUID{});
+    }
+
+private:
+    std::vector<state_callback*> m_state_callbacks;
+};
+
+service_factory_single_t<MainMenuCommandsWithState> mainmenu_commands_view_always_on_top_group(
+    mainmenu_groups::view_alwaysontop, mainmenu_commands::sort_priority_base + 1, toggle_lock_main_window_size,
+    toggle_transparency);
 
 service_factory_single_t<MainMenuCommands> _mainmenu_commands_view_ui_parts(groups::view_columns_part,
     mainmenu_commands::sort_priority_base + 3, show_status_bar, show_status_pane, show_toolbars);
@@ -317,6 +351,18 @@ class MainMenuLayoutPresets : public mainmenu_commands {
 mainmenu_commands_factory_t<MainMenuLayoutPresets> _mainmenu_commands_layout_presets;
 
 } // namespace
+
+void on_transparency_changed()
+{
+    mainmenu_commands_view_always_on_top_group.get_static_instance().dispatch_state_changed_event(
+        toggle_transparency.guid);
+}
+
+void on_lock_window_size_changed()
+{
+    mainmenu_commands_view_always_on_top_group.get_static_instance().dispatch_state_changed_event(
+        toggle_lock_main_window_size.guid);
+}
 
 } // namespace commands
 

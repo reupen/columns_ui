@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "main_window.h"
+#include "menu_items.h"
 #include "status_bar.h"
 
 namespace main_window {
@@ -76,6 +77,8 @@ void on_transparency_enabled_change()
                 RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW);
         }
     }
+
+    cui::main_menu::commands::on_transparency_changed();
 }
 void on_transparency_level_change()
 {

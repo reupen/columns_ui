@@ -256,108 +256,108 @@ std::wstring get_volume_text()
 
 void set_part_sizes(unsigned p_parts)
 {
-    if (g_status) {
-        RECT rect;
-        GetClientRect(g_status, &rect);
-        const auto scrollbar_height = GetSystemMetrics(SM_CXVSCROLL);
-        rect.right -= scrollbar_height;
+    if (!g_status)
+        return;
 
-        if (rect.right < rect.left)
-            rect.right = rect.left;
+    RECT rect{};
+    GetClientRect(g_status, &rect);
 
-        int borders[3]{};
-        SendMessage(g_status, SB_GETBORDERS, 0, reinterpret_cast<LPARAM>(&borders));
-        const auto part_spacing = borders[2];
-        const auto part_padding = 2 * (4_spx + part_spacing);
+    const auto total_width = static_cast<int>(wil::rect_width(rect));
+    const auto right_padding = std::max(0, GetSystemMetrics(SM_CXVSCROLL) - (lock_main_window_size ? 4_spx : 0));
+    const auto available_space = std::max(0, total_width - right_padding);
 
-        pfc::list_t<int> m_parts;
+    int borders[3]{};
+    SendMessage(g_status, SB_GETBORDERS, 0, reinterpret_cast<LPARAM>(&borders));
+    const auto part_spacing = borders[2];
+    const auto part_padding = 2 * (4_spx + part_spacing);
 
-        m_parts.add_item(-1); // dummy
+    pfc::list_t<int> m_parts;
 
-        uint8_t track_length_pos{};
-        uint8_t track_count_pos{};
-        uint8_t playlist_lock_pos{};
-        uint8_t volume_pos{};
+    m_parts.add_item(-1); // dummy
 
-        const auto playlist_api = playlist_manager::get();
-        const auto active = playlist_api->get_active_playlist();
+    uint8_t track_length_pos{};
+    uint8_t track_count_pos{};
+    uint8_t playlist_lock_pos{};
+    uint8_t volume_pos{};
 
-        const bool show_playlist_lock_part
-            = main_window::config_get_status_show_lock() && playlist_api->playlist_lock_is_present(active);
+    const auto playlist_api = playlist_manager::get();
+    const auto active = playlist_api->get_active_playlist();
 
-        if (show_playlist_lock_part) {
-            if (p_parts & t_part_lock) {
-                state->playlist_lock_text = get_playlist_lock_text();
-            }
+    const bool show_playlist_lock_part
+        = main_window::config_get_status_show_lock() && playlist_api->playlist_lock_is_present(active);
 
-            const auto part_size = calculate_playback_lock_size(state->playlist_lock_text) + part_padding;
-            playlist_lock_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
+    if (show_playlist_lock_part) {
+        if (p_parts & t_part_lock) {
+            state->playlist_lock_text = get_playlist_lock_text();
         }
 
-        if (cfg_show_seltime) {
-            if ((p_parts & t_part_length))
-                state->track_length_text = get_selected_length_text();
+        const auto part_size = calculate_playback_lock_size(state->playlist_lock_text) + part_padding;
+        playlist_lock_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
+    }
 
-            const auto part_size = calculate_selected_length_size(state->track_length_text) + part_padding;
-            track_length_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
+    if (cfg_show_seltime) {
+        if ((p_parts & t_part_length))
+            state->track_length_text = get_selected_length_text();
+
+        const auto part_size = calculate_selected_length_size(state->track_length_text) + part_padding;
+        track_length_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
+    }
+
+    if (cfg_show_selcount) {
+        if ((p_parts & t_part_count))
+            state->track_count_text = get_selected_count_text();
+
+        const auto part_size = calculate_selected_count_size(state->track_count_text) + part_padding;
+        track_count_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
+    }
+
+    if (cfg_show_vol) {
+        if ((p_parts & t_part_volume))
+            state->volume_text = get_volume_text();
+
+        const auto part_size = calculate_volume_size(state->volume_text) + part_padding;
+        volume_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
+    }
+
+    m_parts[0] = available_space;
+
+    const auto count = m_parts.get_count();
+
+    for (size_t n = 1; n < count; n++)
+        m_parts[0] -= m_parts[n];
+
+    if (count > 1) {
+        for (size_t n = count - 2; n; n--) {
+            for (size_t i = 0; i < n; i++)
+                m_parts[n] += m_parts[i];
         }
+    }
 
-        if (cfg_show_selcount) {
-            if ((p_parts & t_part_count))
-                state->track_count_text = get_selected_count_text();
+    m_parts[count - 1] = -1;
 
-            const auto part_size = calculate_selected_count_size(state->track_count_text) + part_padding;
-            track_count_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
-        }
+    SendMessage(g_status, SB_SETPARTS, m_parts.get_count(), (LPARAM)m_parts.get_ptr());
 
-        if (cfg_show_vol) {
-            if ((p_parts & t_part_volume))
-                state->volume_text = get_volume_text();
+    if (cfg_show_vol && (p_parts & t_part_volume))
+        SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | volume_pos, WI_EnumValue(StatusBarPartID::Volume));
 
-            const auto part_size = calculate_volume_size(state->volume_text) + part_padding;
-            volume_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
-        }
+    if (cfg_show_seltime && (p_parts & t_part_length))
+        SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | track_length_pos, WI_EnumValue(StatusBarPartID::TrackLength));
 
-        m_parts[0] = rect.right - rect.left;
+    if (cfg_show_selcount && (p_parts & t_part_count))
+        SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | track_count_pos, WI_EnumValue(StatusBarPartID::TrackCount));
 
-        const auto count = m_parts.get_count();
-        for (size_t n = 1; n < count; n++)
-            m_parts[0] -= m_parts[n];
-
-        if (count > 1) {
-            for (size_t n = count - 2; n; n--) {
-                for (size_t i = 0; i < n; i++)
-                    m_parts[n] += m_parts[i];
-            }
-        }
-        m_parts[count - 1] = -1;
-
-        SendMessage(g_status, SB_SETPARTS, m_parts.get_count(), (LPARAM)m_parts.get_ptr());
-
-        if (cfg_show_vol && (p_parts & t_part_volume))
-            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | volume_pos, WI_EnumValue(StatusBarPartID::Volume));
-
-        if (cfg_show_seltime && (p_parts & t_part_length))
-            SendMessage(
-                g_status, SB_SETTEXT, SBT_OWNERDRAW | track_length_pos, WI_EnumValue(StatusBarPartID::TrackLength));
-
-        if (cfg_show_selcount && (p_parts & t_part_count))
-            SendMessage(
-                g_status, SB_SETTEXT, SBT_OWNERDRAW | track_count_pos, WI_EnumValue(StatusBarPartID::TrackCount));
-
-        if (show_playlist_lock_part && (p_parts & t_part_lock)) {
-            SendMessage(
-                g_status, SB_SETTEXT, SBT_OWNERDRAW | playlist_lock_pos, WI_EnumValue(StatusBarPartID::PlaylistLock));
-        }
+    if (show_playlist_lock_part && (p_parts & t_part_lock)) {
+        SendMessage(
+            g_status, SB_SETTEXT, SBT_OWNERDRAW | playlist_lock_pos, WI_EnumValue(StatusBarPartID::PlaylistLock));
     }
 }
 
 void create_window()
 {
     if (cfg_status && !g_status) {
-        g_status
-            = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0, main_window.get_wnd(),
-                reinterpret_cast<HMENU>(static_cast<size_t>(ID_STATUS)), core_api::get_my_instance(), nullptr);
+        g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | (lock_main_window_size ? 0 : SBARS_SIZEGRIP),
+            0, 0, 0, 0, main_window.get_wnd(), reinterpret_cast<HMENU>(static_cast<size_t>(ID_STATUS)),
+            core_api::get_my_instance(), nullptr);
 
         if (!g_status)
             return;
