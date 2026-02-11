@@ -6,7 +6,8 @@
 
 - An option for playlist view group headers to stay in view when scrolling
   vertically was added.
-  [[#1586](https://github.com/reupen/columns_ui/pull/1586)]
+  [[#1586](https://github.com/reupen/columns_ui/pull/1586),
+  [#1594](https://github.com/reupen/columns_ui/pull/1594)]
 
 - CPU usage when moving the mouse over the playlist and other built-in list
   views was reduced. [[#1585](https://github.com/reupen/columns_ui/pull/1585),
