@@ -53,11 +53,8 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         }
 
         if (!missingpanels || type == cui::fcl::type_private) {
-            // cfg_layout.
             cfg_layout.set_presets(presets, active);
-            // feedback.add_warning("Some panels missing, main layout not imported");
         }
-        // else console::print("misspan");
     }
 
     [[nodiscard]] double get_import_priority() const override { return -100.0; }

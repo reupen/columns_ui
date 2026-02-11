@@ -75,7 +75,6 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             const auto vol_x = lpwp->cx - vol_cx - uih::scale_dpi_value(4);
             const auto vol_y = uih::scale_dpi_value(2) + (lpwp->cy - vol_cy) / 2;
             SetWindowPos(m_volume_control.get_wnd(), nullptr, vol_x, vol_y, vol_cx, vol_cy, SWP_NOZORDER);
-            // on_size(lpwp->cx, lpwp->cy);
         }
     } break;
     case WM_LBUTTONDBLCLK:

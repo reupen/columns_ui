@@ -160,8 +160,6 @@ void ItemDetails::get_config(stream_writer* p_writer, abort_callback& p_abort) c
 void ItemDetails::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
     p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeSourcePopup(this)));
-    // p_node = new menu_node_alignment_popup(this);
-    // p_hook.add_node(p_node);
     ui_extension::menu_node_ptr p_node = new MenuNodeHorizontalScrolling(this);
     p_hook.add_node(p_node);
     p_node = new MenuNodeWordWrap(this);
@@ -568,11 +566,6 @@ void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handl
             set_handles(m_selection_handles);
         }
     }
-
-    // pfc::hires_timer timer;
-    // timer.start();
-
-    // console::formatter() << "Selection properties panel refreshed in: " << timer.query() << " seconds";
 }
 
 void ItemDetails::on_tracking_mode_change()
@@ -792,7 +785,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         titleformat_compiler::get()->compile_safe(m_to, m_script);
 
-        on_size(/*lpcs->cx, lpcs->cy*/);
+        on_size();
         on_tracking_mode_change();
         refresh_contents(true, true);
 
@@ -1157,8 +1150,6 @@ ItemDetails::ItemDetails()
     , m_edge_style(cfg_item_details_edge_style)
     , m_hscroll(cfg_item_details_hscroll)
     , m_word_wrapping(cfg_item_details_word_wrapping)
-//, m_update_scrollbar_range_in_progress(false)
-// m_library_richedit(NULL), m_wnd_richedit(NULL)
 {
     m_script.replace_string("\n", "\r\n");
 }
@@ -1411,7 +1402,7 @@ const char* ItemDetails::MenuNodeAlignment::get_name(uint32_t source)
         return "Left";
     if (source == 1)
         return "Centre";
-    /*if (source == 2)*/
+
     return "Right";
 }
 

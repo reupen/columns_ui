@@ -1,25 +1,9 @@
 #pragma once
 #include "icons.h"
 
-namespace colours {
-enum ColourID {
-    COLOUR_TEXT,
-    COLOUR_SELECTED_TEXT,
-    COLOUR_BACK,
-    COLOUR_SELECTED_BACK,
-    COLOUR_SELECTED_BACK_NO_FOCUS,
-    COLOUR_SELECTED_TEXT_NO_FOCUS,
-    COLOUR_FRAME,
-};
-} // namespace colours
-
-COLORREF get_default_colour(colours::ColourID index, bool themed = false);
-
 /** Main window UI control IDs */
-#define ID_REBAR 2100
-#define ID_STATUS 2002
-
-#define ID_PLAYLIST_TOOLTIP 50
+constexpr auto ID_REBAR = 2100u;
+constexpr auto ID_STATUS = 2002u;
 
 /** Main window custom message numbers */
 enum {
@@ -98,9 +82,9 @@ private:
     bool m_shell_hook_registered{};
     bool m_gdiplus_initialised{};
     bool m_is_destroying{};
-    bool m_last_sysray_r_down{};
-    bool m_last_sysray_x1_down{};
-    bool m_last_sysray_x2_down{};
+    bool m_last_systray_r_down{};
+    bool m_last_systray_x1_down{};
+    bool m_last_systray_x2_down{};
     ULONG_PTR m_gdiplus_instance{};
     UINT m_wm_taskbarcreated{};
     UINT m_wm_taskbarbuttoncreated{};

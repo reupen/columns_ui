@@ -256,12 +256,10 @@ void cui::MainWindow::update_taskbar_buttons(bool update) const
         THUMBBUTTON tb[std::size(bitmap_indices)]{};
 
         for (size_t i = 0; i < std::size(bitmap_indices); i++) {
-            tb[i].dwMask = THB_BITMAP | THB_TOOLTIP /*|THB_FLAGS*/;
+            tb[i].dwMask = THB_BITMAP | THB_TOOLTIP;
             tb[i].iId = gsl::narrow<uint32_t>(taskbar_buttons::ID_FIRST + i);
             tb[i].iBitmap = bitmap_indices[i];
             wcscpy_s(tb[i].szTip, std::size(tb[i].szTip), ttips[i]);
-            // if (tb[i].iId == ID_STOP && !b_is_playing)
-            //    tb[i].dwFlags |= THBF_DISABLED;
         }
 
         if (update)
@@ -374,7 +372,7 @@ void cui::MainWindow::create_child_windows()
 
 void cui::MainWindow::resize_child_windows()
 {
-    if (!/*g_minimised*/ IsIconic(m_wnd) && !ui_initialising) {
+    if (!IsIconic(m_wnd) && !ui_initialising) {
         RECT rc_main_client;
         GetClientRect(m_wnd, &rc_main_client);
 
@@ -382,15 +380,11 @@ void cui::MainWindow::resize_child_windows()
         if (dwp) {
             int status_height = 0;
             if (g_status) {
-                // SendMessage(g_status, WM_SETREDRAW, FALSE, 0);
                 SendMessage(g_status, WM_SIZE, 0, 0);
                 RECT rc_status;
                 GetWindowRect(g_status, &rc_status);
 
                 status_height += rc_status.bottom - rc_status.top;
-
-                // dwp = DeferWindowPos(dwp, g_status, 0, 0, rc_main_client.bottom-status_height,
-                // rc_main_client.right-rc_main_client.left, status_height, SWP_NOZORDER|SWP_NOREDRAW);
             }
             if (status_pane::g_status_pane.get_wnd()) {
                 int cy = status_pane::g_status_pane.get_ideal_height();

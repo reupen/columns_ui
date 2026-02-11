@@ -27,7 +27,7 @@ void g_send_metadb_handles_to_playlist(
                 playlist_api->remove_playlist(index_old);
         }
     }
-    // size_t index_remove = playlist_api->find_playlist("Filter Results", pfc_infinite);
+
     size_t index = NULL;
     if (index_insert != pfc_infinite)
         index = playlist_api->create_playlist(
@@ -45,8 +45,6 @@ void g_send_metadb_handles_to_playlist(
         playlist_api->set_playing_playlist(index);
         playback_api->play_start(play_control::track_command_default);
     }
-    // if (index_remove != pfc_infinite)
-    //    playlist_api->remove_playlist(index+1);
 }
 
 void g_get_search_bar_sibling_streams(FilterSearchToolbar const* search_bar, pfc::list_t<FilterStream::ptr>& p_out)
@@ -182,8 +180,6 @@ void FilterSearchToolbar::activate()
 
 void FilterSearchToolbar::on_size(int cx, int cy)
 {
-    // RECT rc_tbb = {0};
-    // SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 0, (LPARAM)(&rc_tbb));
     SetWindowPos(m_search_editbox, nullptr, 0, 0, cx - m_toolbar_cx, 200, SWP_NOZORDER);
     SetWindowPos(m_wnd_toolbar, nullptr, cx - m_toolbar_cx, 0, m_toolbar_cx, cy, SWP_NOZORDER);
 }
@@ -538,7 +534,6 @@ void FilterSearchToolbar::update_favourite_icon(const char* p_new)
         tbbi.cbSize = sizeof(tbbi);
         tbbi.dwMask = TBIF_IMAGE;
         tbbi.iImage = new_state ? 1 : 0;
-        // tbbi.pszText = (LPWSTR)(new_state ? L"Remove from favourites" : L"Add to favourites");
         SendMessage(m_wnd_toolbar, TB_SETBUTTONINFO, idc_favourite, (LPARAM)&tbbi);
         UpdateWindow(m_wnd_toolbar);
         m_favourite_state = new_state;
@@ -549,11 +544,10 @@ void FilterSearchToolbar::create_edit()
 {
     m_favourite_state = false;
 
-    m_search_editbox
-        = CreateWindowEx(WS_EX_CLIENTEDGE, WC_COMBOBOX, L"" /*pfc::stringcvt::string_os_from_utf8("").get_ptr()*/,
-            WS_CHILD | WS_CLIPSIBLINGS | ES_LEFT | WS_VISIBLE | WS_CLIPCHILDREN | CBS_DROPDOWN | CBS_AUTOHSCROLL
-                | WS_TABSTOP | WS_VSCROLL,
-            0, 0, 100, 200, get_wnd(), HMENU(id_edit), core_api::get_my_instance(), nullptr);
+    m_search_editbox = CreateWindowEx(WS_EX_CLIENTEDGE, WC_COMBOBOX, L"",
+        WS_CHILD | WS_CLIPSIBLINGS | ES_LEFT | WS_VISIBLE | WS_CLIPCHILDREN | CBS_DROPDOWN | CBS_AUTOHSCROLL
+            | WS_TABSTOP | WS_VSCROLL,
+        0, 0, 100, 200, get_wnd(), HMENU(id_edit), core_api::get_my_instance(), nullptr);
 
     ComboBox_SetMinVisible(m_search_editbox, 25);
 
@@ -576,13 +570,12 @@ void FilterSearchToolbar::create_edit()
     tbb[0].idCommand = idc_clear;
     tbb[0].fsState = TBSTATE_ENABLED | (m_show_clear_button ? NULL : TBSTATE_HIDDEN);
     tbb[0].fsStyle = BTNS_AUTOSIZE | BTNS_BUTTON;
-    // tbb[0].iString = (INT_PTR)(L"C");
+
     tbb[1].iBitmap = 0;
     tbb[1].idCommand = idc_favourite;
     tbb[1].fsState = TBSTATE_ENABLED;
     tbb[1].fsStyle = BTNS_AUTOSIZE | BTNS_BUTTON;
     tbb[1].iString = -1;
-    // tb.iString = (INT_PTR)(L"Add to favourites");
 
     const auto ex_style = SendMessage(m_wnd_toolbar, TB_GETEXTENDEDSTYLE, 0, 0);
     SendMessage(m_wnd_toolbar, TB_SETEXTENDEDSTYLE, 0, ex_style | TBSTYLE_EX_DRAWDDARROWS | TBSTYLE_EX_MIXEDBUTTONS);
@@ -698,15 +691,6 @@ void FilterSearchToolbar::s_update_font()
 LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
-    case WM_KILLFOCUS:
-        // m_wnd_last_focused = NULL;
-        break;
-    case WM_SETFOCUS:
-        // m_wnd_last_focused = (HWND)wp;
-        break;
-    case WM_GETDLGCODE:
-        // return CallWindowProc(m_proc_search_edit,wnd,msg,wp,lp)|DLGC_WANTALLKEYS;
-        break;
     case WM_KEYDOWN:
         switch (wp) {
         case VK_TAB: {
@@ -718,21 +702,6 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
             if (m_wnd_last_focused && IsWindow(m_wnd_last_focused))
                 SetFocus(m_wnd_last_focused);
             return 0;
-        case VK_DELETE: {
-#if 0
-                if (ComboBox_GetDroppedState(m_search_editbox) == TRUE)
-                {
-                    int index = ComboBox_GetCurSel(m_search_editbox);
-                    if (index != -1 && (size_t)index < cfg_favourites.get_count())
-                    {
-                        cfg_favourites.remove_by_idx(index);
-                        for (size_t i = 0, count = g_active_instances.get_count(); i<count; i++)
-                            if (g_active_instances[i]->m_search_editbox)
-                                ComboBox_DeleteString(g_active_instances[i]->m_search_editbox, index);
-                    }
-                }
-#endif
-        } break;
         case VK_RETURN:
             if (m_query_timer_active) {
                 KillTimer(get_wnd(), TIMER_QUERY);

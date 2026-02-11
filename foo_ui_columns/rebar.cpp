@@ -4,8 +4,6 @@
 #include "dark_mode.h"
 #include "main_window.h"
 
-// extern HBITMAP buttons_images;
-
 namespace cui::rebar {
 
 RebarWindow* g_rebar_window{};
@@ -350,8 +348,8 @@ HWND RebarWindow::init()
         wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
             WS_BORDER | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE | RBS_AUTOSIZE
                 | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
-            0, 0, wil::rect_width(main_window_client_rect), 0, main_window.get_wnd(), reinterpret_cast<HMENU>(ID_REBAR),
-            wil::GetModuleInstanceHandle(), nullptr);
+            0, 0, wil::rect_width(main_window_client_rect), 0, main_window.get_wnd(),
+            reinterpret_cast<HMENU>(static_cast<size_t>(ID_REBAR)), wil::GetModuleInstanceHandle(), nullptr);
 
         if (!wnd_rebar)
             return nullptr;

@@ -48,10 +48,9 @@ void preview_to_console(const char* spec, bool extra)
 
         titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, &tf_hook_date);
 
-        // 0.9 fallout
         playlist_api->activeplaylist_item_format_title(
             idx, &tf_hook, temp, to_temp, nullptr, play_control::display_level_all);
-        //    if (map) temp.replace_char(6, 3);
+
         pfc::string_formatter formatter;
         popup_message::g_show(temp, formatter << "Preview of track " << (idx + 1));
     }
@@ -118,7 +117,6 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItem
 
     ComboBox_SetCurSel(wnd_combo, sel == -1 && insert_none ? idx_none : sel);
 
-    // menu_helpers::get_description(menu_item::TYPE_MAIN, item, desc);
     uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0, desc);
 }
 
@@ -137,7 +135,6 @@ void on_menu_combo_change(
     }
 
     pfc::string8 desc;
-    // if (cfg_menu_store != pfc::guid_null) menu_helpers::get_description(menu_item::TYPE_MAIN, cfg_menu_store, desc);
     uSendDlgItemMessageText(
         wnd, ID_DESC, WM_SETTEXT, 0, cache_idx < p_cache.size() ? p_cache[cache_idx].m_desc.get_ptr() : "");
 }

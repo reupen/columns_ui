@@ -88,8 +88,6 @@ HBITMAP LoadMonoBitmap(WORD uid, COLORREF cr_btntext)
             lpbi->bmiColors[1].rgbBlue = 0xFF;
         }
 
-        //        BITMAPINFOHEADER bmh = lpbi->bmiHeader;
-
         void* p_bits = &p_bih->bmiColors[num_colours];
 
         HDC dc = GetDC(nullptr);

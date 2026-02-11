@@ -15,7 +15,7 @@ class StatusPane
     public:
         static const TCHAR* get_class_name() { return _T("volume_toolbar_pain"); }
         static bool get_show_caption() { return false; }
-        static COLORREF get_background_colour() { return -1; /*RGB(230,230,255);*/ }
+        static COLORREF get_background_colour() { return -1; }
     };
     VolumeBar<false, false, StatusPaneVolumeBarAttributes> m_volume_control;
 

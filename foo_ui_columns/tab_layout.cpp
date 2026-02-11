@@ -147,8 +147,6 @@ void LayoutTab::remove_node(HWND wnd, HTREEITEM ti)
 
 void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after)
 {
-    // uie::splitter_item_simple_t p_item;
-    // p_item.set_panel_guid(p_guid);
     auto p_node = std::make_shared<LayoutTabNode>();
     *p_node->m_item = new uie::splitter_item_simple_t;
     p_node->m_item->get_ptr()->set_panel_guid(p_guid);
@@ -496,7 +494,6 @@ void LayoutTab::initialise_tree(HWND wnd)
 {
     m_node_root = std::make_shared<LayoutTabNode>();
     cfg_layout.get_preset(m_active_preset, *m_node_root->m_item);
-    // g_layout_window.get_child(*g_node_root->m_item);
     build_node_and_populate_tree(wnd, m_node_root);
 }
 
@@ -518,7 +515,6 @@ void LayoutTab::apply()
             cfg_layout.save_active_preset();
         cfg_layout.set_preset(m_active_preset, m_node_root->m_item->get_ptr());
         cfg_layout.set_active_preset(m_active_preset);
-        // g_layout_window.set_child(g_node_root->m_item->get_ptr());
     }
 }
 

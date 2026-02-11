@@ -130,7 +130,6 @@ void CommandPickerDialog::populate_commands()
                         const auto idx
                             = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(path.c_str()));
                         SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
-                        //                            n++;
                     }
                 }
             }

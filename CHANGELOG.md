@@ -13,6 +13,19 @@
   [#1590](https://github.com/reupen/columns_ui/pull/1590),
   [#1591](https://github.com/reupen/columns_ui/pull/1591)]
 
+### Bug fixes
+
+- Ellipses for truncated text were reinstated when using tab characters to
+  create columns or right-align text where this is supported.
+  [[#1589](https://github.com/reupen/columns_ui/pull/1589)]
+
+  This is intended to restore the behaviour of versions before 3.0.0.
+
+### Internal changes
+
+- Some code was cleaned up.
+  [[#1592](https://github.com/reupen/columns_ui/pull/1592)]
+
 ## 3.3.0
 
 - There were no changes from version 3.3.0-rc.1.

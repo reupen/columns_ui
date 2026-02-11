@@ -95,7 +95,6 @@ public:
 
     void set_entries_copy(ColumnListCRef entries, bool keep_reference_to_source_items = false)
     {
-        // remove_all();
         size_t count = entries.get_count();
         set_count(count);
         for (size_t i = 0; i < count; i++) {

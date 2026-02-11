@@ -212,7 +212,6 @@ size_t PlaylistView::column_index_actual_to_display(size_t actual_index)
         }
     }
     return pfc_infinite;
-    // throw pfc::exception_bug_check();
 }
 
 std::optional<std::reference_wrapper<uih::text_style::FormatProperties>> PlaylistView::get_initial_format(
@@ -978,7 +977,7 @@ void PlaylistView::notify_on_create()
 
     s_windows.push_back(this);
 
-    set_day_timer();
+    set_hour_timer();
 
     m_display_change_token
         = system_appearance_manager::add_display_changed_handler([this, self{ptr{this}}] { flush_artwork_images(); });
@@ -1440,8 +1439,7 @@ bool PlaylistView::notify_on_doubleleftclick_nowhere()
     return false;
 }
 
-void PlaylistView::get_insert_items(
-    /*size_t p_playlist, */ size_t start, size_t count, InsertItemsContainer& items)
+void PlaylistView::get_insert_items(size_t start, size_t count, InsertItemsContainer& items)
 {
     items.set_count(count);
 

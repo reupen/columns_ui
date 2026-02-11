@@ -170,7 +170,7 @@ HRESULT STDMETHODCALLTYPE SimpleListViewDropTarget::Drop(
         m_drop_target_helper->Drop(pDataObj, &screen_pt, *pdwEffect);
 
     *pdwEffect = DROPEFFECT_NONE;
-    if (check_data_object(pDataObj /*, pdwEffect*/)) {
+    if (check_data_object(pDataObj)) {
         *pdwEffect = DROPEFFECT_MOVE;
         const auto old_index = fbh::as_optional(m_list_view->get_selected_item_single());
 

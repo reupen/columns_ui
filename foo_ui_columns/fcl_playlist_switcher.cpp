@@ -87,9 +87,6 @@ class PlaylistSwitcherAppearanceDataSet : public fcl::dataset {
 
         if (font_read)
             refresh_appearance_prefs();
-        // update_playlist_switcher_panels();
-        // on_switcher_font_change();
-        // g_on_tabs_font_change();
     }
 };
 

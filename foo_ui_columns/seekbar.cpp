@@ -59,18 +59,14 @@ void SeekBarToolbar::update_seek_pos()
 
     const auto play_api = play_control::get();
 
-    if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
-        double position = 0;
-        double length = 0;
-        position = play_api->playback_get_position();
-        length = play_api->playback_get_length();
+    if (play_api->is_playing() && play_api->playback_get_length()) {
+        auto position = std::max(0., play_api->playback_get_position());
+        const auto length = play_api->playback_get_length();
 
-        if (position < 0)
-            position = 0;
         if (position > length)
             position = length;
 
-        auto pos_display = (int)(10.0 * position);
+        const auto pos_display = (int)(10.0 * position);
         m_child.set_position(pos_display);
     }
 }
@@ -94,7 +90,7 @@ void SeekBarToolbar::update_seek()
 
     const auto play_api = play_control::get();
 
-    if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
+    if (play_api->is_playing() && play_api->playback_get_length()) {
         double position = 0;
         double length = 0;
         position = play_api->playback_get_position();
@@ -107,12 +103,12 @@ void SeekBarToolbar::update_seek()
         if (position > length)
             position = length;
 
-        m_child.set_range((int)(10 * length)); // VC8
+        m_child.set_range((int)(10 * length));
 
         auto pos_display = (int)(10.0 * position);
         m_child.set_position(pos_display);
 
-        if (play_api->playback_can_seek() /* && play_api->playback_get_length()*/)
+        if (play_api->playback_can_seek())
             m_child.set_enabled(true);
 
     } else {

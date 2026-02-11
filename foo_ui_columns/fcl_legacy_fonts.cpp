@@ -50,7 +50,6 @@ class LegacyFontsDataSet : public fcl::dataset {
 
         if (font_read)
             refresh_appearance_prefs();
-        // on_status_font_change();
     }
 };
 

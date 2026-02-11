@@ -27,12 +27,10 @@ cfg_int cfg_legacy_vertical_scale(
     {0x3323c764, 0x875a, 0x4464, {0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c}}, scale_logarithmic);
 
 cfg_int cfg_legacy_spectrum_analyser_background_colour(
-    GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}},
-    get_default_colour(::colours::COLOUR_BACK));
+    GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}}, GetSysColor(COLOR_WINDOW));
 
 cfg_int cfg_legacy_spectrum_analyser_foreground_colour(
-    GUID{0x421d3d3f, 0x5289, 0xb1e4, {0x9b, 0x91, 0xab, 0x51, 0xd3, 0xad, 0xbc, 0x4d}},
-    get_default_colour(::colours::COLOUR_TEXT));
+    GUID{0x421d3d3f, 0x5289, 0xb1e4, {0x9b, 0x91, 0xab, 0x51, 0xd3, 0xad, 0xbc, 0x4d}}, GetSysColor(COLOR_WINDOWTEXT));
 
 cfg_bool has_migrated_spectrum_analyser_colours(
     {0x2ce47e0, 0xd964, 0x4f16, {0x83, 0x57, 0xd1, 0x1f, 0xb4, 0x43, 0xf2, 0x58}}, false);
@@ -47,8 +45,7 @@ void migrate_spectrum_analyser_colours(COLORREF foreground, COLORREF background)
     if (main_window::config_get_is_first_run())
         return;
 
-    if (foreground == get_default_colour(::colours::COLOUR_TEXT)
-        && background == get_default_colour(::colours::COLOUR_BACK))
+    if (foreground == GetSysColor(COLOR_WINDOWTEXT) && background == GetSysColor(COLOR_WINDOW))
         return;
 
     auto set_entry_colours = [foreground, background](const colours::Entry::Ptr& entry) {

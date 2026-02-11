@@ -12,7 +12,6 @@ class TabPlaylistViewGeneral : public PreferencesTab {
     void refresh_me(HWND wnd)
     {
         SendDlgItemMessage(wnd, IDC_HEADER, BM_SETCHECK, cfg_header, 0);
-        // SendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
         SendDlgItemMessage(wnd, IDC_NOHSCROLL, BM_SETCHECK, cfg_nohscroll, 0);
         SendDlgItemMessage(wnd, IDC_ELLIPSIS, BM_SETCHECK, cfg_ellipsis, 0);
         SendDlgItemMessage(wnd, IDC_PLEDGE, CB_SETCURSEL, cfg_frame, 0);
@@ -21,9 +20,7 @@ class TabPlaylistViewGeneral : public PreferencesTab {
             wnd, IDC_INLINE_MODE, BM_SETCHECK, main_window::config_get_inline_metafield_edit_mode() != 0, 0);
 
         SendDlgItemMessage(wnd, IDC_SELECTION_MODEL, BM_SETCHECK, cfg_alternative_sel, 0);
-        // SendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
 
-        // SendDlgItemMessage(wnd,IDC_SORTSELONLY,BM_SETCHECK,cfg_sortsel,0);
         SendDlgItemMessage(wnd, IDC_TOOLTIPS_CLIPPED, BM_SETCHECK, cfg_tooltips_clipped, 0);
 
         SendDlgItemMessage(wnd, IDC_HHTRACK, BM_SETCHECK, cfg_header_hottrack, 0);
@@ -48,8 +45,6 @@ public:
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Grey");
 
             SendDlgItemMessage(wnd, IDC_SPIN1, UDM_SETRANGE32, -100, 100);
-            //        SendDlgItemMessage(wnd,IDC_SPINPL,UDM_SETRANGE32,-100,100);
-            //        SendDlgItemMessage(wnd,IDC_SPINSEL,UDM_SETRANGE32,0,3);
 
             populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, m_menu_cache, true);
 

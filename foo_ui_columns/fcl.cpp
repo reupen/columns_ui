@@ -312,17 +312,6 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             size_t count = panel_info.get_count();
             if (count) {
                 throw exception_fcl_dependentpanelmissing();
-                /*pfc::string8 msg, name;
-                msg << "Import aborted: The following required panels are not present.\r\n\r\nGUID, Name\r\n";
-                size_t i, count = panel_info.get_count();
-                for (i=0; i<count; i++)
-                {
-                    msg << pfc::print_guid(panel_info[i].guid);
-                    msg << ", " << panel_info[i].name;
-                    msg << "\r\n";
-                    //required_panels.add_item(t_required_panel(
-                }
-                throw pfc::exception(msg);*/
             }
         }
         {
@@ -509,22 +498,6 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
                 p_file->write_lendian_t(feedback[j], p_abort);
                 p_file->write_string(name, p_abort);
             }
-            /*pfc::list_t<uie::window_ptr> windows;
-            uie::window_ptr ptr;
-            service_enum_t<uie::window> window_enum;
-            while (window_enum.next(ptr))
-            {
-                windows.add_item(ptr);
-            }
-            size_t i, count = windows.get_count();
-            p_file->write_lendian_t(count, p_abort);
-            for (i=0; i<count; i++)
-            {
-                pfc::string8 temp;
-                p_file->write_lendian_t(windows[i]->get_extension_guid(), p_abort);
-                windows[i]->get_name(temp);
-                p_file->write_string(temp, p_abort);
-            }*/
         }
 
         p_file->write_lendian_t(gsl::narrow<uint32_t>(actualtotal), p_abort);

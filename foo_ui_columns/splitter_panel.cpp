@@ -8,9 +8,6 @@ FlatSplitterPanel::Panel::Panel() : m_container(this) {}
 void FlatSplitterPanel::Panel::destroy()
 {
     if (m_child.is_valid()) {
-        //            pal.m_child_data.set_size(0);
-        //            stream_writer_memblock_ref blah(pal.m_child_data);
-        //            pal.m_child->get_config(&blah);
         m_child->destroy_window();
         m_wnd_child = nullptr;
         DestroyWindow(m_wnd);
@@ -25,7 +22,6 @@ void FlatSplitterPanel::Panel::on_size(int cx, int cy)
 {
     const auto caption_size = m_show_caption ? g_get_caption_size() : 0;
 
-    // get_orientation()
     unsigned x = m_caption_orientation == vertical ? caption_size : 0;
     unsigned y = m_caption_orientation == vertical ? 0 : caption_size;
 
@@ -68,7 +64,6 @@ void FlatSplitterPanel::Panel::read(stream_reader* t, abort_callback& p_abort)
     uint32_t size;
     t->read_lendian_t(size, p_abort);
     m_size = size;
-    // console::formatter() << "read panel, size: " << m_size;
     t->read_lendian_t(m_show_toggle_area, p_abort);
     unsigned data_size;
     t->read_lendian_t(data_size, p_abort);
@@ -91,7 +86,6 @@ void FlatSplitterPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
     uint32_t size;
     t->read_lendian_t(size, p_abort);
     m_size = size;
-    // console::formatter() << "read panel, size: " << m_size;
     t->read_lendian_t(m_show_toggle_area, p_abort);
     unsigned data_size;
     t->read_lendian_t(data_size, p_abort);
@@ -108,8 +102,6 @@ void FlatSplitterPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
         }
         refresh_child_data();
     }
-    // else
-    //    throw pfc::exception_not_implemented();
 }
 
 void FlatSplitterPanel::Panel::read_extra(stream_reader* reader, abort_callback& p_abort)
@@ -203,7 +195,7 @@ void FlatSplitterPanel::Panel::set_from_splitter_item(const uie::splitter_item_t
     p_source->get_panel_config_to_array(m_child_data, true);
 }
 
-uie::splitter_item_full_v2_t* FlatSplitterPanel::Panel::create_splitter_item(bool b_set_ptr /*= true*/)
+uie::splitter_item_full_v2_t* FlatSplitterPanel::Panel::create_splitter_item(bool b_set_ptr)
 {
     auto ret = new uie::splitter_item_full_v2_impl_t;
     ret->m_autohide = m_autohide;

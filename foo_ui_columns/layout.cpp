@@ -237,10 +237,7 @@ bool LayoutWindow::__set_focus_recur(const uie::window_ptr& p_wnd)
     service_ptr_t<uie::playlist_window> p_playlist_wnd;
     service_ptr_t<uie::splitter_window> p_splitter_wnd;
     if (p_wnd.is_valid()) {
-        if (p_wnd->service_query_t(
-                p_playlist_wnd)) // && (GetWindowLongPtr(p_playlist_wnd->get_wnd(), GWL_STYLE) & WS_VISIBLE)) //we
-                                 // cheat: IsWindowVisible checks parent/main win visibility as well
-        {
+        if (p_wnd->service_query_t(p_playlist_wnd)) {
             p_playlist_wnd->set_focus();
             return true;
         }
@@ -528,7 +525,6 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
 bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize, uint32_t mode,
     ConfigLayout::Preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
-    // uie::splitter_item_ptr item = new uie::splitter_item_simple_t;
     GUID guid;
     pfc::string8 name;
     p_reader->read_lendian_t(guid, p_abort);
@@ -574,10 +570,6 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
             return false;
     }
     return true;
-
-    // item->set_panel_guid(guid);
-    // item->set_panel_config(&stream_reader_memblock_ref(conf.get_ptr(), conf.get_size()), conf.get_size());
-    // p_out.set(item);
 }
 
 void LayoutWindow::export_config(

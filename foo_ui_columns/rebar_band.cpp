@@ -9,7 +9,6 @@ void RebarBandState::export_to_fcl_stream(stream_writer* writer, uint32_t fcl_ty
     uie::window_ptr ptr;
 
     if (uie::window::create_by_guid(m_guid, ptr)) {
-        // if (fcl_type==cui::fcl::type_public)
         try {
             ptr->set_config_from_ptr(m_config.get_ptr(), m_config.get_size(), aborter);
         } catch (const exception_io&) {

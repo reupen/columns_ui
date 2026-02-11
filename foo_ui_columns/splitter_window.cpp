@@ -274,11 +274,9 @@ void FlatSplitterPanel::get_panels_sizes(
     if (count) {
         pfc::array_t<t_size_info> size_info;
         size_info.set_size(count);
-        // size_info.fill(0);
         memset(size_info.get_ptr(), 0, size_info.get_size() * sizeof(t_size_info));
 
         unsigned caption_size = g_get_caption_size();
-        // unsigned divider_width = 2;
 
         int available_height = get_orientation() == horizontal ? client_width : client_height;
         unsigned available_parts = 0;
@@ -428,12 +426,10 @@ bool FlatSplitterPanel::can_resize_panel(size_t index) const
 
 int FlatSplitterPanel::override_size(const size_t panel, const int delta)
 {
-    // console::formatter() << "Overriding " << panel << " by " << delta;
     struct t_min_max_info {
         unsigned min_height;
         unsigned max_height;
         unsigned height;
-        // unsigned caption_height;
     };
 
     const auto count = m_panels.size();
@@ -446,7 +442,6 @@ int FlatSplitterPanel::override_size(const size_t panel, const int delta)
             pfc::array_t<t_min_max_info> minmax;
             minmax.set_size(count);
 
-            // minmax.fill(0);
             memset(minmax.get_ptr(), 0, minmax.get_size() * sizeof(t_min_max_info));
 
             for (n = 0; n < count; n++) {
@@ -474,25 +469,22 @@ int FlatSplitterPanel::override_size(const size_t panel, const int delta)
                     caption_height++;
                 }
 
-                // minmax[n].caption_height = caption_height;
                 minmax[n].min_height = min_height;
                 minmax[n].max_height = max_height;
                 minmax[n].height = m_panels[n]->m_hidden ? caption_height : m_panels[n]->m_size.get_scaled_value();
             }
 
-            bool is_up = delta < 0; // new_height < m_panels[panel].height;
-            bool is_down = delta > 0; // new_height > m_panels[panel].height;
+            bool is_up = delta < 0;
+            bool is_down = delta > 0;
 
-            if (is_up /*&& !m_panels[panel].locked*/) {
+            if (is_up) {
                 unsigned diff_abs = 0;
                 unsigned diff_avail = abs(delta);
 
                 auto n = panel + 1;
                 while (n < count && diff_abs < diff_avail) {
                     {
-                        unsigned height = minmax[n].height
-                            + (diff_avail - diff_abs); //(diff_avail-diff_abs > m_panels[n]->height ? 0 :
-                                                       // m_panels[n]->height-(diff_avail-diff_abs));
+                        unsigned height = minmax[n].height + (diff_avail - diff_abs);
 
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
@@ -512,12 +504,9 @@ int FlatSplitterPanel::override_size(const size_t panel, const int delta)
                 unsigned obtained = 0;
                 while (n > 0 && obtained < diff_abs) {
                     n--;
-                    //                    if (!m_panels[n]->locked)
                     {
                         unsigned height
                             = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
-
-                        // unsigned caption_height = m_panels[n]->m_show_caption ? the_caption_height : 0;
 
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
@@ -559,7 +548,7 @@ int FlatSplitterPanel::override_size(const size_t panel, const int delta)
                 }
                 return (abs(delta) - obtained);
             }
-            if (is_down /*&& !m_panels[panel].locked*/) {
+            if (is_down) {
                 unsigned diff_abs = 0;
                 unsigned diff_avail = abs(delta);
 
@@ -567,12 +556,7 @@ int FlatSplitterPanel::override_size(const size_t panel, const int delta)
                 while (n > 0 && diff_abs < diff_avail) {
                     n--;
                     {
-                        unsigned height = minmax[n].height
-                            + (diff_avail - diff_abs); //(diff_avail-diff_abs > m_panels[n]->height ? 0 :
-                        // m_panels[n]->height-(diff_avail-diff_abs));
-                        // console::formatter() << "1: " << height << " " << minmax[n].height << " " <<
-                        // (diff_avail-diff_abs);
-
+                        unsigned height = minmax[n].height + (diff_avail - diff_abs);
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
 
@@ -589,14 +573,10 @@ int FlatSplitterPanel::override_size(const size_t panel, const int delta)
                 unsigned obtained = 0;
                 while (n < count - 1 && obtained < diff_abs) {
                     n++;
-                    //                if (!m_panels[n]->locked)
                     {
                         unsigned height
                             = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
-                        // console::formatter() << "2: " << height << " " << minmax[n].height << " " <<
-                        // (diff_abs-obtained);
 
-                        // unsigned caption_height = minmax[n].caption_height;
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
 
@@ -635,7 +615,7 @@ int FlatSplitterPanel::override_size(const size_t panel, const int delta)
                     if (!m_panels[n]->m_hidden)
                         m_panels[n]->m_size = height;
                 }
-                // console::formatter() << "3: " << abs(delta) << " " << obtained;
+
                 return 0 - (abs(delta) - obtained);
             }
         }

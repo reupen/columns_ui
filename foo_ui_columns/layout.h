@@ -49,8 +49,6 @@ private:
     pfc::list_t<Preset> m_presets;
 
     size_t m_active;
-
-    // bool m_initialised;
 };
 
 class LayoutWindow

@@ -252,8 +252,8 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
             // Display the data and release it.
             pfc::string8 temp;
 
-            unsigned int /*n,*/ t = uDragQueryFileCount((HDROP)sm.hGlobal);
-            if (t == 1) {
+            const auto file_count = uDragQueryFileCount((HDROP)sm.hGlobal);
+            if (file_count == 1) {
                 uDragQueryFile((HDROP)sm.hGlobal, 0, temp);
                 if (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY) {
                     playlist_name.set_string(string_filename_ext(temp));

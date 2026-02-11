@@ -14,20 +14,4 @@ class AlwaysOnTopNotifyReceiver : public config_object_notify {
     }
 };
 
-/*class titleformat_config_callback_columns : public titleformat_config_callback
-{
-    virtual void on_change(const GUID & p_guid,const char * p_name,const char * p_value,unsigned p_value_length)
-    {
-        if (g_main_window)
-        {
-            if (p_guid == titleformat_config::config_windowtitle)
-                uPostMessage(g_main_window,MSG_UPDATE_TITLE,0,0);
-            else if (p_guid == titleformat_config::config_statusbar)
-                uPostMessage(g_main_window,MSG_UPDATE_STATUS,0,0);
-        }
-    }
-
-};*/
-
 service_factory_single_t<AlwaysOnTopNotifyReceiver> hj;
-// service_factory_single_t<titleformat_config_callback_columns> hjc;

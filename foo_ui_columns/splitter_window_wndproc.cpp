@@ -53,9 +53,6 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             on_size_changed(lpwp->cx, lpwp->cy);
         }
     } break;
-    /*case WM_SIZE:
-    on_size_changed(LOWORD(lp), HIWORD(lp));
-    break;*/
     case WM_GETMINMAXINFO: {
         auto lpmmi = (LPMINMAXINFO)lp;
 
@@ -288,7 +285,6 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_panel_dragging_valid = false;
             if (GetCapture() == wnd)
                 ReleaseCapture();
-            // SetCursor(LoadCursor(0, IDC_ARROW));
         }
         break;
 #if 0
