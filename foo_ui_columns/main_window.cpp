@@ -8,7 +8,6 @@
 
 #include "main_window.h"
 
-#include "config_appearance.h"
 #include "status_pane.h"
 #include "layout.h"
 #include "dark_mode.h"
@@ -18,9 +17,29 @@
 #include "status_bar.h"
 #include "migrate.h"
 #include "legacy_artwork_config.h"
+#include "menu_items.h"
 #include "rebar.h"
-#include "resource_utils.h"
-#include "svg.h"
+#include "win32.h"
+
+namespace cui {
+
+fbh::ConfigBool lock_main_window_size(
+    {0x588b1480, 0x7b00, 0x4e02, {0xbb, 0x9f, 0xf9, 0x7b, 0x64, 0xac, 0x24, 0x9a}}, false, [](auto&& new_value) {
+        if (!main_window.get_wnd())
+            return;
+
+        if (new_value)
+            win32::remove_window_styles(main_window.get_wnd(), WS_THICKFRAME);
+        else
+            win32::add_window_styles(main_window.get_wnd(), WS_THICKFRAME);
+
+        status_bar::destroy_window();
+        on_show_status_change();
+
+        main_menu::commands::on_lock_window_size_changed();
+    });
+
+} // namespace cui
 
 cui::rebar::RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
@@ -117,9 +136,10 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden
     }
 
     const DWORD ex_styles = main_window::config_get_transparency_enabled() ? WS_EX_LAYERED : 0;
-    constexpr DWORD styles = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+    const DWORD styles = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS
+        | (lock_main_window_size ? 0 : WS_THICKFRAME);
 
-    m_wnd = CreateWindowEx(ex_styles, main_window_class_name, _T("foobar2000"), styles, left, top, cx, cy, nullptr,
+    m_wnd = CreateWindowEx(ex_styles, main_window_class_name, L"foobar2000", styles, left, top, cx, cy, nullptr,
         nullptr, core_api::get_my_instance(), &main_window);
 
     main_window::on_transparency_enabled_change();
@@ -501,14 +521,15 @@ static service_factory_single_t<MainWindowPlaylistCallback> asdf2;
 
 void on_show_status_change()
 {
-    if (cui::main_window.get_wnd()) {
-        cui::status_bar::create_window();
-        if (g_status) {
-            ShowWindow(g_status, SW_SHOWNORMAL);
-            UpdateWindow(g_status);
-        }
-        cui::main_window.resize_child_windows();
-    }
+    if (!cui::main_window.get_wnd())
+        return;
+
+    cui::status_bar::create_window();
+
+    if (g_status)
+        ShowWindow(g_status, SW_SHOWNORMAL);
+
+    cui::main_window.resize_child_windows();
 }
 
 void on_show_status_pane_change()

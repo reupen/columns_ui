@@ -37,4 +37,16 @@ std::wstring get_display_device_key(HMONITOR monitor)
     return display_device.DeviceKey;
 }
 
+void add_window_styles(HWND wnd, DWORD styles_to_add)
+{
+    const auto current_styles = GetWindowLongPtr(wnd, GWL_STYLE);
+    SetWindowLongPtr(wnd, GWL_STYLE, current_styles | styles_to_add);
+}
+
+void remove_window_styles(HWND wnd, DWORD styles_to_remove)
+{
+    const auto current_styles = GetWindowLongPtr(wnd, GWL_STYLE);
+    SetWindowLongPtr(wnd, GWL_STYLE, current_styles & ~static_cast<DWORD_PTR>(styles_to_remove));
+}
+
 } // namespace cui::win32
