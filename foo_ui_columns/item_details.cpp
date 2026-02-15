@@ -11,7 +11,9 @@ namespace cui::panels::item_details {
 namespace {
 
 constexpr auto MSG_OCCLUSION_STATUS_CHANGED = WM_USER + 3;
+constexpr auto MSG_SMOOTH_SCROLL = WM_USER + 4;
 constexpr auto OCCLUSION_STATUS_TIMER_ID = 700;
+constexpr auto SMOOTH_SCROLL_TIMER_ID = 701;
 
 } // namespace
 
@@ -213,7 +215,7 @@ void ItemDetails::deregister_callback()
     m_callback_registered = false;
 }
 
-void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_position)
+void ItemDetails::update_scrollbar(uih::ScrollAxis axis, bool reset_position)
 {
     if (m_is_updating_scroll_bars)
         return;
@@ -221,15 +223,19 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
     m_is_updating_scroll_bars = true;
     auto _ = gsl::finally([this] { m_is_updating_scroll_bars = false; });
 
+    m_smooth_scroll_helper->abandon_animation(axis, !reset_position);
+
     update_display_info();
 
+    const auto scroll_bar_type = axis == uih::ScrollAxis::Horizontal ? SB_HORZ : SB_VERT;
     double percentage_scrolled{};
+
     if (!reset_position) {
         SCROLLINFO si_old{};
         si_old.cbSize = sizeof(si_old);
         si_old.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
 
-        GetScrollInfo(get_wnd(), static_cast<int>(scrollbar_type), &si_old);
+        GetScrollInfo(get_wnd(), scroll_bar_type, &si_old);
 
         if (const auto range = si_old.nMax - si_old.nMin + 1; range > 0)
             percentage_scrolled = static_cast<double>(si_old.nPos - si_old.nMin) / static_cast<double>(range);
@@ -243,7 +249,7 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
 
     si_new.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
 
-    if (scrollbar_type == ScrollbarType::vertical) {
+    if (axis == uih::ScrollAxis::Vertical) {
         si_new.nPage = std::max(wil::rect_height(rc), 1l);
         si_new.nMin = m_text_rect ? m_text_rect->top : 0l;
         si_new.nMax = m_text_rect ? std::max(m_text_rect->bottom - 1, m_text_rect->top) : 0l;
@@ -259,7 +265,7 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
     if (range >= gsl::narrow<int>(si_new.nPage)) {
         if (!reset_position) {
             si_new.nPos = si_new.nMin + static_cast<int>(percentage_scrolled * static_cast<double>(range));
-        } else if (scrollbar_type == ScrollbarType::vertical) {
+        } else if (axis == uih::ScrollAxis::Vertical) {
             si_new.nPos = si_new.nMin;
         } else {
             if (m_horizontal_alignment == uih::ALIGN_RIGHT)
@@ -271,18 +277,23 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
         }
     }
 
-    SetScrollInfo(get_wnd(), static_cast<int>(scrollbar_type), &si_new, TRUE);
+    const auto new_position = SetScrollInfo(get_wnd(), scroll_bar_type, &si_new, TRUE);
+
+    if (axis == uih::ScrollAxis::Vertical)
+        m_vertical_scroll_position = new_position;
+    else
+        m_horizontal_scroll_position = new_position;
 }
 
 void ItemDetails::update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position)
 {
     const auto last_client_height = m_last_cy;
     const auto last_client_width = m_last_cx;
-    update_scrollbar(ScrollbarType::vertical, reset_vertical_position);
-    update_scrollbar(ScrollbarType::horizontal, reset_horizontal_position);
+    update_scrollbar(uih::ScrollAxis::Vertical, reset_vertical_position);
+    update_scrollbar(uih::ScrollAxis::Horizontal, reset_horizontal_position);
 
     if (m_last_cy != last_client_height || (m_word_wrapping && m_last_cx != last_client_width))
-        update_scrollbar(ScrollbarType::vertical, reset_vertical_position);
+        update_scrollbar(uih::ScrollAxis::Vertical, reset_vertical_position);
 }
 
 void ItemDetails::set_handles(const metadb_handle_list& handles)
@@ -714,40 +725,72 @@ void ItemDetails::on_size(int cx, int cy)
 
     if (cx != m_last_cx) {
         m_last_cx = cx;
-        update_scrollbar(ScrollbarType::horizontal, false);
+        update_scrollbar(uih::ScrollAxis::Horizontal, false);
     }
 
     if (m_word_wrapping || cy != m_last_cy) {
         m_last_cy = cy;
-        update_scrollbar(ScrollbarType::vertical, false);
+        update_scrollbar(uih::ScrollAxis::Vertical, false);
     }
 }
 
-void ItemDetails::scroll(INT SB, int position, bool b_absolute)
+void ItemDetails::absolute_scroll(
+    uih::ScrollAxis axis, int new_position, bool supress_smooth_scroll, bool quick_animation)
 {
-    SCROLLINFO si{};
-    SCROLLINFO si2{};
-    si.cbSize = sizeof(si);
-    si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;
-    GetScrollInfo(get_wnd(), SB, &si);
-
-    int new_pos = si.nPos;
-
-    if (b_absolute)
-        new_pos = si.nPos + position;
-    else
-        new_pos = position;
-
-    new_pos = std::clamp(new_pos, si.nMin, si.nMax);
-
-    if (new_pos != si.nPos) {
-        si2.cbSize = sizeof(si);
-        si2.fMask = SIF_POS;
-        si2.nPos = new_pos;
-        SetScrollInfo(get_wnd(), SB, &si2, TRUE);
-
-        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+    if (config::use_smooth_scrolling && !supress_smooth_scroll) {
+        m_smooth_scroll_helper->absolute_scroll(
+            axis, new_position, quick_animation ? 50.ms : uih::SmoothScrollHelper::default_duration);
+        return;
     }
+
+    if (supress_smooth_scroll)
+        m_smooth_scroll_helper->abandon_animation(axis);
+
+    internal_scroll(axis, new_position, false);
+}
+
+void ItemDetails::delta_scroll(uih::ScrollAxis axis, int delta, bool supress_smooth_scroll)
+{
+    if (config::use_smooth_scrolling && !supress_smooth_scroll) {
+        m_smooth_scroll_helper->delta_scroll(axis, delta);
+        return;
+    }
+
+    if (supress_smooth_scroll)
+        m_smooth_scroll_helper->abandon_animation(axis);
+
+    internal_scroll(axis, delta, true);
+}
+
+void ItemDetails::internal_scroll(uih::ScrollAxis axis, int position, bool is_delta)
+{
+    if (!m_initialised)
+        return;
+
+    const auto scroll_bar_type = uih::scroll_axis_to_win32_type(axis);
+
+    SCROLLINFO current_si{};
+    current_si.cbSize = sizeof(current_si);
+    current_si.fMask = SIF_POS | SIF_RANGE;
+    GetScrollInfo(get_wnd(), scroll_bar_type, &current_si);
+
+    const auto new_pos = std::clamp(position + (is_delta ? current_si.nPos : 0), current_si.nMin, current_si.nMax);
+
+    if (new_pos == current_si.nPos)
+        return;
+
+    SCROLLINFO new_si{};
+    new_si.cbSize = sizeof(new_si);
+    new_si.fMask = SIF_POS;
+    new_si.nPos = new_pos;
+    const auto new_position = SetScrollInfo(get_wnd(), scroll_bar_type, &new_si, TRUE);
+
+    if (axis == uih::ScrollAxis::Vertical)
+        m_vertical_scroll_position = new_position;
+    else
+        m_horizontal_scroll_position = new_position;
+
+    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
 void ItemDetails::set_window_theme() const
@@ -759,6 +802,10 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
+        m_smooth_scroll_helper.emplace(
+            wnd, MSG_SMOOTH_SCROLL, SMOOTH_SCROLL_TIMER_ID, [this] { return m_vertical_scroll_position; },
+            [this] { return m_horizontal_scroll_position; },
+            [this](auto axis, auto new_position) { internal_scroll(axis, new_position, false); });
         set_window_theme();
         register_callback();
         play_callback_manager::get()->register_callback(
@@ -785,6 +832,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         titleformat_compiler::get()->compile_safe(m_to, m_script);
 
+        m_initialised = true;
+
         on_size();
         on_tracking_mode_change();
         refresh_contents(true, true);
@@ -795,6 +844,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_DESTROY: {
+        m_initialised = false;
+
         std::erase(s_windows, this);
 
         if (s_windows.empty())
@@ -822,8 +873,12 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_d2d_brush_cache.clear();
         m_d2d_factory.reset();
         m_dxgi_factory.reset();
+        m_smooth_scroll_helper->shut_down();
         break;
     }
+    case WM_NCDESTROY:
+        m_smooth_scroll_helper.reset();
+        break;
     case WM_SETFOCUS:
         deregister_callback();
         m_selection_holder = ui_selection_manager::get()->acquire();
@@ -838,93 +893,99 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!(lpwp->flags & SWP_NOSIZE) || (lpwp->flags & SWP_FRAMECHANGED)) {
             on_size();
         }
-    } break;
+        break;
+    }
+    case WM_MOUSEHWHEEL:
     case WM_MOUSEWHEEL: {
         LONG_PTR style = GetWindowLongPtr(get_wnd(), GWL_STYLE);
-        bool b_horz = (!(style & WS_VSCROLL) || ((wp & MK_CONTROL))) && (style & WS_HSCROLL);
+        const auto has_horizontal_scroll_bar = (style & WS_HSCROLL) != 0;
+        const auto has_vertical_scroll_bar = (style & WS_VSCROLL) != 0;
+        const auto is_ctrl_down = (wp & MK_CONTROL) != 0;
+
+        if (!(has_vertical_scroll_bar || has_horizontal_scroll_bar))
+            return 0;
+
+        if ((msg == WM_MOUSEHWHEEL || is_ctrl_down) && !has_horizontal_scroll_bar)
+            return 0;
+
+        const auto is_horizontal = msg == WM_MOUSEHWHEEL || !has_vertical_scroll_bar || is_ctrl_down;
 
         SCROLLINFO si{};
         si.cbSize = sizeof(SCROLLINFO);
-        si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;
-        GetScrollInfo(get_wnd(), b_horz ? SB_HORZ : SB_VERT, &si);
+        si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
+        GetScrollInfo(get_wnd(), is_horizontal ? SB_HORZ : SB_VERT, &si);
 
-        UINT scroll_lines = 3; // 3 is default
-        SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0); // we don't support Win9X
+        UINT system_scroll_lines{3};
+        SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &system_scroll_lines, 0);
 
         const auto line_height = m_text_format ? m_text_format->get_minimum_height() : 0;
 
-        if (!si.nPage)
-            si.nPage++;
+        const auto scroll_step = std::max(0,
+            system_scroll_lines == -1 ? gsl::narrow_cast<int>(si.nPage)
+                                      : gsl::narrow_cast<int>(system_scroll_lines) * line_height);
 
-        if (scroll_lines == -1)
-            scroll_lines = si.nPage - 1;
-        else
-            scroll_lines *= line_height;
+        const auto wheel_delta = GET_WHEEL_DELTA_WPARAM(wp);
 
-        int zDelta = short(HIWORD(wp));
+        auto scroll_delta = MulDiv(wheel_delta, scroll_step, WHEEL_DELTA);
 
-        if (scroll_lines == 0)
-            scroll_lines = 1;
+        if (msg == WM_MOUSEWHEEL)
+            scroll_delta *= -1;
 
-        int delta = -MulDiv(zDelta, scroll_lines, 120);
+        const auto axis = is_horizontal ? uih::ScrollAxis::Horizontal : uih::ScrollAxis::Vertical;
+        const auto should_supress_smooth_scroll
+            = !m_smooth_scroll_helper->should_smooth_scroll_mouse_wheel(axis, wheel_delta);
 
-        // Limit scrolling to one page ?!?!?! It was in Columns Playlist code...
-        if (delta < 0 && (UINT)(delta * -1) > si.nPage) {
-            delta = si.nPage * -1;
-            if (delta < -1)
-                delta++;
-        } else if (delta > 0 && (UINT)delta > si.nPage) {
-            delta = si.nPage;
-            if (delta > 1)
-                delta--;
-        }
-
-        scroll(b_horz ? SB_HORZ : SB_VERT, delta, true);
-    }
+        delta_scroll(axis, scroll_delta, should_supress_smooth_scroll);
         return 0;
+    }
     case WM_HSCROLL:
     case WM_VSCROLL: {
-        int SB = msg == WM_VSCROLL ? SB_VERT : SB_HORZ;
         SCROLLINFO si{};
-        SCROLLINFO si2{};
         si.cbSize = sizeof(si);
         si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;
-        GetScrollInfo(get_wnd(), SB, &si);
+        GetScrollInfo(get_wnd(), msg == WM_VSCROLL ? SB_VERT : SB_HORZ, &si);
 
-        int new_pos = si.nPos;
-
+        const auto axis = msg == WM_VSCROLL ? uih::ScrollAxis::Vertical : uih::ScrollAxis::Horizontal;
         const auto line_height = m_text_format ? m_text_format->get_minimum_height() : 0;
+        const auto command = LOWORD(wp);
 
-        WORD p_value = LOWORD(wp);
-
-        if (p_value == SB_LINEDOWN)
-            new_pos = si.nPos + line_height;
-        if (p_value == SB_LINEUP)
-            new_pos = si.nPos - line_height;
-        if (p_value == SB_PAGEUP)
-            new_pos = si.nPos - si.nPage;
-        if (p_value == SB_PAGEDOWN)
-            new_pos = si.nPos + si.nPage;
-        if (p_value == SB_THUMBTRACK)
-            new_pos = si.nTrackPos;
-        if (p_value == SB_BOTTOM)
-            new_pos = si.nMax;
-        if (p_value == SB_TOP)
-            new_pos = si.nMin;
-
-        new_pos = std::clamp(new_pos, si.nMin, si.nMax);
-
-        if (new_pos != si.nPos) {
-            si2.cbSize = sizeof(si);
-            si2.fMask = SIF_POS;
-            si2.nPos = new_pos;
-            SetScrollInfo(wnd, SB, &si2, TRUE);
-
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+        switch (command) {
+        case SB_LINEDOWN:
+            delta_scroll(axis, line_height);
+            break;
+        case SB_LINEUP:
+            delta_scroll(axis, -line_height);
+            break;
+        case SB_PAGEUP: {
+            delta_scroll(axis, -gsl::narrow_cast<int>(si.nPage));
+            break;
         }
+        case SB_PAGEDOWN: {
+            delta_scroll(axis, gsl::narrow_cast<int>(si.nPage));
+            break;
+        }
+        case SB_THUMBTRACK:
+        case SB_THUMBPOSITION:
+            absolute_scroll(axis, si.nTrackPos, false, true);
+            break;
+        case SB_BOTTOM:
+            absolute_scroll(axis, si.nMax);
+            break;
+        case SB_TOP:
+            absolute_scroll(axis, si.nMin);
+            break;
+        default:
+            break;
+        }
+
         return 0;
     }
     case WM_TIMER:
+        if (wp == SMOOTH_SCROLL_TIMER_ID) {
+            m_smooth_scroll_helper->on_timer();
+            return 0;
+        }
+
         if (wp != OCCLUSION_STATUS_TIMER_ID)
             return 0;
 
@@ -936,6 +997,9 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (m_d2d_render_target && (m_d2d_render_target->CheckWindowState() & D2D1_WINDOW_STATE_OCCLUDED) == 0)
             invalidate_all();
 
+        return 0;
+    case MSG_SMOOTH_SCROLL:
+        m_smooth_scroll_helper->on_message();
         return 0;
     case WM_POWERBROADCAST: {
         if (wp != PBT_POWERSETTINGCHANGE)
