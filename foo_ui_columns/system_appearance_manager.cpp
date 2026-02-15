@@ -15,8 +15,8 @@ using namespace winrt::Windows::UI::ViewManagement;
 std::optional<ModernColours> modern_colours_cached;
 bool modern_colours_fetch_attempted{};
 std::optional<bool> dark_mode_available_cached;
-std::vector<std::shared_ptr<GenericEventHandler>> modern_colours_changed_callbacks;
-std::vector<std::shared_ptr<GenericEventHandler>> display_changed_callbacks;
+std::vector<std::shared_ptr<mmh::GenericEventHandler>> modern_colours_changed_callbacks;
+std::vector<std::shared_ptr<mmh::GenericEventHandler>> display_changed_callbacks;
 std::optional<bool> cleartype_enabled_cached;
 std::optional<bool> font_smoothing_enabled_cached;
 
@@ -363,16 +363,16 @@ std::optional<ModernColours> get_modern_colours()
     return modern_colours_cached;
 }
 
-EventToken::Ptr add_modern_colours_change_handler(GenericEventHandler event_handler)
+mmh::EventToken::Ptr add_modern_colours_change_handler(mmh::GenericEventHandler event_handler)
 {
     initialise();
-    return make_event_token(modern_colours_changed_callbacks, std::move(event_handler));
+    return mmh::make_event_token(modern_colours_changed_callbacks, std::move(event_handler));
 }
 
-EventToken::Ptr add_display_changed_handler(GenericEventHandler event_handler)
+mmh::EventToken::Ptr add_display_changed_handler(mmh::GenericEventHandler event_handler)
 {
     initialise();
-    return make_event_token(display_changed_callbacks, std::move(event_handler));
+    return mmh::make_event_token(display_changed_callbacks, std::move(event_handler));
 }
 
 bool is_dark_mode_available()

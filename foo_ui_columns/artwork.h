@@ -181,9 +181,9 @@ private:
     std::optional<DWORD> m_occlusion_status_event_cookie;
     bool m_is_occlusion_status_timer_active{};
 
-    EventToken::Ptr m_use_hardware_acceleration_change_token;
-    EventToken::Ptr m_display_change_token;
-    EventToken::Ptr m_metadb_io_change_token;
+    mmh::EventToken::Ptr m_use_hardware_acceleration_change_token;
+    mmh::EventToken::Ptr m_display_change_token;
+    mmh::EventToken::Ptr m_metadb_io_change_token;
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
     ArtworkDecoder m_artwork_decoder;
     std::optional<std::jthread> m_show_in_explorer_thread;

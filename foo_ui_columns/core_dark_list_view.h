@@ -13,7 +13,7 @@ protected:
     void render_get_colour_data(ColourData& p_out) override;
 
 private:
-    EventToken::Ptr m_dark_mode_status_callback;
+    mmh::EventToken::Ptr m_dark_mode_status_callback;
     bool m_allow_cui_fallback{};
 };
 

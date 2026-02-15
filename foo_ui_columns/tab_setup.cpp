@@ -2,14 +2,13 @@
 #include "fcl.h"
 #include "config.h"
 #include "dark_mode.h"
-#include "event_token.h"
 #include "main_window.h"
 
 namespace cui::prefs {
 
 namespace {
 
-std::vector<std::shared_ptr<GenericEventHandler>> use_hardware_acceleration_changed_handlers;
+std::vector<std::shared_ptr<mmh::GenericEventHandler>> use_hardware_acceleration_changed_handlers;
 
 class SetupTab : public PreferencesTab {
 public:
@@ -112,9 +111,9 @@ PreferencesTab& get_setup_tab()
     return setup_tab;
 }
 
-std::unique_ptr<EventToken> add_use_hardware_acceleration_changed_handler(std::function<void()> event_handler)
+mmh::EventToken::Ptr add_use_hardware_acceleration_changed_handler(mmh::GenericEventHandler event_handler)
 {
-    return make_event_token(use_hardware_acceleration_changed_handlers, std::move(event_handler));
+    return mmh::make_event_token(use_hardware_acceleration_changed_handlers, std::move(event_handler));
 }
 
 } // namespace cui::prefs

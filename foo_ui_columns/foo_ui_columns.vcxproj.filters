@@ -917,9 +917,6 @@
     <ClInclude Include="dark_mode_active_ui.h">
       <Filter>Dark mode</Filter>
     </ClInclude>
-    <ClInclude Include="event_token.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="core_drop_down_list_toolbar.h">
       <Filter>Utilities</Filter>
     </ClInclude>
