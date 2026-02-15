@@ -22,15 +22,9 @@ const char* default_main_window_title_script
     = "//This is the default script for the title of the main window during playback.\r\n\r\n"
       "[%title% - ]foobar2000";
 
-void on_main_window_title_script_change(const char*)
-{
-    if (cui::main_window.get_wnd())
-        SendMessage(cui::main_window.get_wnd(), MSG_UPDATE_TITLE, 0, 0);
-}
-
 fbh::ConfigString config_status_bar_script(
     GUID{0xb5ca645b, 0xa5e0, 0x4c70, {0xa5, 0x98, 0xcd, 0x62, 0x5c, 0xf3, 0xcc, 0x37}}, default_status_bar_script,
-    [](auto&&) { cui::status_bar::regenerate_text(); });
+    [](auto&&, auto) { cui::status_bar::regenerate_text(); });
 
 fbh::ConfigString config_system_tray_icon_script(
     GUID{0x85d128cf, 0x8b01, 0x4ae9, {0xb8, 0x1c, 0x6b, 0xc4, 0xbe, 0x67, 0x59, 0x9f}},
@@ -38,7 +32,10 @@ fbh::ConfigString config_system_tray_icon_script(
 
 fbh::ConfigString config_main_window_title_script(
     GUID{0x28b799fb, 0xbc22, 0x4e1c, {0xb9, 0x99, 0xf1, 0xe6, 0xb1, 0xf2, 0x60, 0x40}},
-    default_main_window_title_script, &on_main_window_title_script_change);
+    default_main_window_title_script, [](auto&&, auto) {
+        if (cui::main_window.get_wnd())
+            SendMessage(cui::main_window.get_wnd(), MSG_UPDATE_TITLE, 0, 0);
+    });
 
 // {2B6EAF5C-970A-4432-B809-12E8CEF6DCDE}
 static const GUID guid_inline_metafield_edit_mode

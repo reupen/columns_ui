@@ -37,7 +37,8 @@
 ### Internal changes
 
 - Some code was cleaned up.
-  [[#1592](https://github.com/reupen/columns_ui/pull/1592)]
+  [[#1592](https://github.com/reupen/columns_ui/pull/1592),
+  [#1598](https://github.com/reupen/columns_ui/pull/1598)]
 
 ## 3.3.0
 

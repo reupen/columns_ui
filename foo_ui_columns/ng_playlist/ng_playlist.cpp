@@ -42,20 +42,21 @@ ConfigGroups g_groups(g_groups_guid);
 
 cfg_bool cfg_artwork_reflection(g_artwork_reflection, false);
 
-fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { button_items::ShowGroupsButton::s_on_change(); });
+fbh::ConfigBool cfg_grouping(
+    g_guid_grouping, true, [](auto, auto, auto) { button_items::ShowGroupsButton::s_on_change(); });
 fbh::ConfigBool cfg_sticky_group_headers(
     {0x12f598c6, 0xb9ac, 0x4f7b, {0xbe, 0x29, 0x9a, 0x2b, 0x4f, 0x68, 0x23, 0xb4}}, false);
 fbh::ConfigBool cfg_indent_groups({0x2e3d28c7, 0x7e99, 0x410f, {0xa5, 0x50, 0xd1, 0x5c, 0xc0, 0x6e, 0xa5, 0x51}}, true,
-    [](auto&&) { PlaylistView::s_on_indent_groups_change(); });
+    [](auto, auto, auto) { PlaylistView::s_on_indent_groups_change(); });
 fbh::ConfigBool cfg_use_custom_group_indentation_amount(
     {0x53cad633, 0xa735, 0x4880, {0x91, 0x45, 0xd9, 0x11, 0x98, 0x5e, 0x51, 0xe6}}, false,
-    [](auto&&) { PlaylistView::s_on_group_indentation_amount_change(); });
+    [](auto, auto, auto) { PlaylistView::s_on_group_indentation_amount_change(); });
 fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount(
     {0x3d1b3bce, 0x25d2, 0x4dde, {0x8e, 0x99, 0x20, 0xfb, 0xc9, 0x6c, 0xbf, 0xec}}, 7);
 fbh::ConfigInt32DpiAware cfg_root_group_indentation_amount(
     {0x29b0bf83, 0x9170, 0x4097, {0xb4, 0xcb, 0x43, 0xec, 0x23, 0x50, 0x44, 0x18}}, 0);
 fbh::ConfigBool cfg_show_artwork(
-    g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
+    g_show_artwork_guid, false, [](auto, auto, auto) { button_items::ShowArtworkButton::s_on_change(); });
 fbh::ConfigBool cfg_sticky_artwork(
     {0x4a496eb1, 0x9df7, 0x4008, {0xba, 0xc3, 0x29, 0xb7, 0x1e, 0x58, 0xe1, 0x76}}, false);
 fbh::ConfigBool cfg_artwork_group_header_spacing_enabled(

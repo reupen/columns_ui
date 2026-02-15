@@ -18,7 +18,7 @@ private:
     MetadbIoCallbackFunc m_callback;
 };
 
-class MetadbIoCallbackToken : public EventToken {
+class MetadbIoCallbackToken : public mmh::EventToken {
 public:
     explicit MetadbIoCallbackToken(MetadbIoCallbackFunc callback)
         : m_callback_wrapper(std::make_unique<MetadbIoCallbackImpl>(std::move(callback)))
@@ -31,7 +31,7 @@ private:
 
 } // namespace
 
-EventToken::Ptr add_metadb_io_callback(MetadbIoCallbackFunc callback)
+mmh::EventToken::Ptr add_metadb_io_callback(MetadbIoCallbackFunc callback)
 {
     return std::make_unique<MetadbIoCallbackToken>(std::move(callback));
 }

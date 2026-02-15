@@ -8,7 +8,7 @@ namespace cui::dark {
 
 namespace {
 
-class DarkModeStatusChangedToken : public EventToken {
+class DarkModeStatusChangedToken : public mmh::EventToken {
 public:
     DarkModeStatusChangedToken(std::function<void()> callback, bool allow_cui_fallback);
     void on_dark_mode_status_change() const { m_callback(); }
@@ -63,7 +63,7 @@ bool is_active_ui_dark(bool allow_cui_fallback)
     return allow_cui_fallback && main_window.get_wnd() && colours::is_dark_mode_active();
 }
 
-EventToken::Ptr add_status_callback(std::function<void()> callback, bool allow_cui_fallback)
+mmh::EventToken::Ptr add_status_callback(std::function<void()> callback, bool allow_cui_fallback)
 {
     return std::make_unique<DarkModeStatusChangedToken>(std::move(callback), allow_cui_fallback);
 }

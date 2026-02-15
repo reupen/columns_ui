@@ -508,8 +508,8 @@ private:
     void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 
 private:
-    EventToken::Ptr m_use_hardware_acceleration_change_token;
-    EventToken::Ptr m_display_change_token;
+    mmh::EventToken::Ptr m_use_hardware_acceleration_change_token;
+    mmh::EventToken::Ptr m_display_change_token;
     service_list_t<titleformat_object> m_scripts;
     pfc::list_t<ColumnData> m_column_data;
     pfc::array_t<bool> m_column_mask;
@@ -519,7 +519,7 @@ private:
     service_ptr_t<titleformat_object> m_script_global, m_script_global_style;
     service_ptr_t<playlist_manager_v4> m_playlist_api;
     bool m_ignore_callback{false};
-    EventToken::Ptr m_metadb_io_change_token;
+    mmh::EventToken::Ptr m_metadb_io_change_token;
 
     mainmenu_manager::ptr m_mainmenu_manager;
     contextmenu_manager::ptr m_contextmenu_manager;

@@ -1,5 +1,4 @@
 #pragma once
-#include "event_token.h"
 
 namespace cui::system_appearance_manager {
 
@@ -18,8 +17,8 @@ struct ModernColours {
 
 void initialise();
 [[nodiscard]] std::optional<ModernColours> get_modern_colours();
-[[nodiscard]] EventToken::Ptr add_modern_colours_change_handler(GenericEventHandler event_handler);
-[[nodiscard]] EventToken::Ptr add_display_changed_handler(GenericEventHandler event_handler);
+[[nodiscard]] mmh::EventToken::Ptr add_modern_colours_change_handler(mmh::GenericEventHandler event_handler);
+[[nodiscard]] mmh::EventToken::Ptr add_display_changed_handler(mmh::GenericEventHandler event_handler);
 [[nodiscard]] bool is_dark_mode_available();
 [[nodiscard]] bool is_dark_mode_enabled();
 

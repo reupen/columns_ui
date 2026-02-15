@@ -1,7 +1,5 @@
 #pragma once
 
-#include "d2d_utils.h"
-#include "event_token.h"
 #include "pch.h"
 #include "file_info_reader.h"
 #include "item_details_text.h"
@@ -286,7 +284,7 @@ private:
     wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
     wil::com_ptr<ID2D1SolidColorBrush> m_d2d_text_brush;
     std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> m_d2d_brush_cache;
-    EventToken::Ptr m_use_hardware_acceleration_change_token;
+    mmh::EventToken::Ptr m_use_hardware_acceleration_change_token;
     bool m_is_occlusion_status_timer_active{};
     std::optional<DWORD> m_occlusion_status_event_cookie;
     wil::unique_hpowernotify m_power_notify_handle;

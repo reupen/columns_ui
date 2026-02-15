@@ -15,6 +15,7 @@ extern advconfig_checkbox_factory advbool_close_to_system_tray_icon;
 extern cfg_bool cfg_playlist_tabs_middle_click;
 
 extern fbh::ConfigBool use_hardware_acceleration;
+extern fbh::ConfigObjectBoolFactory use_smooth_scrolling;
 
 } // namespace cui::config
 
@@ -53,7 +54,7 @@ public:
 namespace settings {
 extern cfg_bool show_status_pane;
 
-extern fbh::ConfigObjectBoolFactory<> allow_locked_panel_resizing;
+extern fbh::ConfigObjectBoolFactory allow_locked_panel_resizing;
 extern fbh::ConfigInt32DpiAware custom_splitter_divider_width;
 
 extern fbh::ConfigInt32DpiAware playlist_switcher_item_padding;

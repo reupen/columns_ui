@@ -152,7 +152,7 @@ private:
     int32_t m_mousewheel_delta{NULL};
     wil::unique_hfont g_font;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
-    std::unique_ptr<uih::EventToken> m_get_message_hook_token;
+    mmh::EventToken::Ptr m_get_message_hook_token;
     std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;
 };
 
