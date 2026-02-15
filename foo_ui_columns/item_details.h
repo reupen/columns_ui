@@ -32,10 +32,6 @@ class ItemDetails
     , public metadb_io_callback_dynamic {
     inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
-    enum {
-        MSG_REFRESH = WM_USER + 2,
-    };
-
     uie::container_window_v3_config get_window_config() override;
 
 public:
@@ -233,7 +229,11 @@ private:
     void on_tracking_mode_change();
     bool check_process_on_selection_changed();
 
-    void scroll(INT sb, int position, bool b_absolute);
+    void absolute_scroll(
+        uih::ScrollAxis axis, int new_position, bool supress_smooth_scroll = false, bool quick_animation = false);
+    void delta_scroll(
+        uih::ScrollAxis axis, int delta, bool supress_smooth_scroll = false, bool quick_animation = false);
+    void internal_scroll(uih::ScrollAxis axis, int position, bool is_delta);
 
     void set_window_theme() const;
     void invalidate_all() const;
@@ -245,12 +245,7 @@ private:
     void deregister_occlusion_event();
     bool check_occlusion_status(bool allow_deregister_event = false);
 
-    enum class ScrollbarType {
-        vertical = SB_VERT,
-        horizontal = SB_HORZ,
-    };
-
-    void update_scrollbar(ScrollbarType scrollbar_type, bool reset_position);
+    void update_scrollbar(uih::ScrollAxis axis, bool reset_position);
     void update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position);
 
     void on_size();
@@ -301,6 +296,9 @@ private:
     bool m_hscroll{};
     bool m_word_wrapping{};
     bool m_is_updating_scroll_bars{};
+    int m_vertical_scroll_position{};
+    int m_horizontal_scroll_position{};
+    std::optional<uih::SmoothScrollHelper> m_smooth_scroll_helper{};
 
     HWND m_wnd_config{};
 };
