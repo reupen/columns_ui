@@ -13,7 +13,7 @@ static const GUID custom_splitter_divider_width
     = {0x92416f05, 0xbd93, 0x4f50, {0x93, 0xbd, 0x55, 0x77, 0xc3, 0x7c, 0xf1, 0x4d}};
 } // namespace guids
 
-fbh::ConfigObjectBoolFactory<> allow_locked_panel_resizing(
+fbh::ConfigObjectBoolFactory allow_locked_panel_resizing(
     cui::config_objects::guid_bool_locked_panel_resizing_allowed, true);
 fbh::ConfigInt32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
 

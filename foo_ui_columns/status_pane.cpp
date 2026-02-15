@@ -26,7 +26,7 @@ const auto* default_status_pane_script
 }
 
 fbh::ConfigString status_pane_script(GUID{0x952b7029, 0x8dd5, 0x46e8, {0xbc, 0xbe, 0x67, 0xf, 0xd5, 0x2, 0x6f, 0x3f}},
-    default_status_pane_script, [](auto&&) { g_status_pane.refresh_playing_text_section(); });
+    default_status_pane_script, [](auto&&, auto) { g_status_pane.refresh_playing_text_section(); });
 
 ConfigMenuItem double_click_action(GUID{0x55c049ba, 0x9f46, 0x4986, {0xa4, 0xf5, 0xf8, 0x3d, 0x14, 0x49, 0x29, 0x9b}},
     cui::main_menu::commands::activate_now_playing_id);
