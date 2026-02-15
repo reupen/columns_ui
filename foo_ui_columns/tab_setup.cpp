@@ -32,6 +32,9 @@ public:
             if (config::use_hardware_acceleration)
                 Button_SetCheck(GetDlgItem(wnd, IDC_HARDWARE_ACCELERATION), BST_CHECKED);
 
+            if (config::use_smooth_scrolling)
+                Button_SetCheck(GetDlgItem(wnd, IDC_USE_SMOOTH_SCROLLING), BST_CHECKED);
+
             if (!main_window.get_wnd())
                 EnableWindow(GetDlgItem(wnd, IDC_QUICKSETUP), FALSE);
 
@@ -67,6 +70,9 @@ public:
                 for (auto&& handler : use_hardware_acceleration_changed_handlers)
                     (*handler)();
 
+                break;
+            case IDC_USE_SMOOTH_SCROLLING:
+                config::use_smooth_scrolling = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             }
             break;

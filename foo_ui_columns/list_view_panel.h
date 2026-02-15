@@ -15,8 +15,6 @@ public:
         std::unique_ptr<uih::lv::RendererBase> renderer = std::make_unique<uih::lv::DefaultRenderer>())
         : ListView(std::move(renderer))
     {
-        set_dark_edit_colours(
-            dark::get_dark_system_colour(COLOR_WINDOWTEXT), dark::get_dark_system_colour(COLOR_WINDOW));
     }
 
     HWND create_or_transfer_window(
@@ -31,6 +29,13 @@ public:
             SetWindowPos(get_wnd(), nullptr, p_position.x, p_position.y, p_position.cx, p_position.cy, SWP_NOZORDER);
         } else {
             m_window_host = host;
+
+            set_dark_edit_colours(
+                dark::get_dark_system_colour(COLOR_WINDOWTEXT), dark::get_dark_system_colour(COLOR_WINDOW));
+            set_use_smooth_scroll(config::use_smooth_scrolling);
+            m_use_smooth_scroll_change_token = config::use_smooth_scrolling.on_change(
+                [this](bool new_value, auto) { set_use_smooth_scroll(new_value); });
+
             this->create(
                 parent, {p_position.x, p_position.y, static_cast<int>(p_position.cx), static_cast<int>(p_position.cy)});
         }
@@ -39,6 +44,7 @@ public:
     }
     void destroy_window() override
     {
+        m_use_smooth_scroll_change_token.reset();
         destroy();
         m_window_host.release();
     }
@@ -100,6 +106,7 @@ protected:
 
 private:
     uie::window_host_ptr m_window_host;
+    mmh::EventToken::Ptr m_use_smooth_scroll_change_token;
 };
 
 } // namespace cui::utils

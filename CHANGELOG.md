@@ -9,6 +9,13 @@
   [[#1586](https://github.com/reupen/columns_ui/pull/1586),
   [#1594](https://github.com/reupen/columns_ui/pull/1594)]
 
+- An option to enable smooth (animated) scrolling was added.
+  [[#1599](https://github.com/reupen/columns_ui/pull/1599)]
+
+  This currently affects the playlist view, playlist switcher, Filter panel and
+  Item properties. The option is located on the Setup tab on the root Columns UI
+  preferences page.
+
 - CPU usage when moving the mouse over the playlist and other built-in list
   views was reduced. [[#1585](https://github.com/reupen/columns_ui/pull/1585),
   [#1590](https://github.com/reupen/columns_ui/pull/1590),
