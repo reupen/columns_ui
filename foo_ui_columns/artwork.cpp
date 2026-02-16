@@ -86,12 +86,6 @@ std::optional<unsigned> get_sdr_white_level(std::wstring_view device_name)
     return {};
 }
 
-int compute_intersection_area(RECT left, RECT right)
-{
-    return std::max(0l, std::min(left.right, right.right) - std::max(left.left, right.left))
-        * std::max(0l, std::min(left.bottom, right.bottom) - std::max(left.top, right.top));
-}
-
 bool can_open_path_in_explorer(const char* path)
 {
     if (filesystem::g_is_remote_or_unrecognized(path))
@@ -662,36 +656,13 @@ void ArtworkPanel::update_dxgi_output_desc()
     deregister_occlusion_event();
 
     if (!m_dxgi_factory || !m_dxgi_factory->IsCurrent()) {
-        THROW_IF_FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory2), m_dxgi_factory.put_void()));
+        m_dxgi_factory = uih::dxgi::create_dxgi_factory();
     }
 
     if (!m_dxgi_factory.try_query<IDXGIFactory6>())
         return;
 
-    wil::com_ptr<IDXGIAdapter1> dxgi_adapter;
-    THROW_IF_FAILED(m_dxgi_factory->EnumAdapters1(0, &dxgi_adapter));
-
-    unsigned index{};
-    wil::com_ptr<IDXGIOutput> current_output;
-    wil::com_ptr<IDXGIOutput> best_output;
-    float best_intersect_area{-1};
-
-    RECT window_rect{};
-    THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_wnd(), &window_rect));
-
-    while (dxgi_adapter->EnumOutputs(index, &current_output) != DXGI_ERROR_NOT_FOUND) {
-        DXGI_OUTPUT_DESC desc{};
-        THROW_IF_FAILED(current_output->GetDesc(&desc));
-        const RECT desktop_rect = desc.DesktopCoordinates;
-
-        const auto intersection_area = compute_intersection_area(window_rect, desktop_rect);
-        if (!best_output || intersection_area > best_intersect_area) {
-            best_output = current_output;
-            best_intersect_area = static_cast<float>(intersection_area);
-        }
-
-        index++;
-    }
+    const auto best_output = uih::dxgi::find_output_by_wnd(m_dxgi_factory, get_wnd());
 
     if (!best_output)
         return;
