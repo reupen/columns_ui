@@ -645,8 +645,12 @@ void ItemDetails::register_occlusion_event()
     if (m_is_occlusion_status_timer_active || m_occlusion_status_event_cookie)
         return;
 
-    if (!m_dxgi_factory)
-        LOG_IF_FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory2), m_dxgi_factory.put_void()));
+    if (!m_dxgi_factory) {
+        try {
+            m_dxgi_factory = uih::dxgi::create_dxgi_factory();
+        }
+        CATCH_LOG();
+    }
 
     if (!m_dxgi_factory)
         return;
