@@ -1,30 +1,21 @@
 #include "pch.h"
+
 #include "vis_spectrum.h"
+#include "vis_spectrum_renderer.h"
 
 #include "config_appearance.h"
 #include "dark_mode_dialog.h"
-#include "main_window.h"
 
 namespace cui::toolbars::spectrum_analyser {
 
 namespace {
-
-enum {
-    MODE_STANDARD,
-    MODE_BARS,
-};
-
-enum {
-    scale_linear,
-    scale_logarithmic,
-};
 
 const dark::DialogDarkModeConfig dark_mode_config{
     .button_ids = {IDOK, IDCANCEL}, .checkbox_ids = {IDC_BARS}, .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE}};
 
 // Legacy settings are no longer used (the values are preserved in case Columns UI is downgraded)
 cfg_int cfg_legacy_vertical_scale(
-    {0x3323c764, 0x875a, 0x4464, {0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c}}, scale_logarithmic);
+    {0x3323c764, 0x875a, 0x4464, {0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c}}, WI_EnumValue(Scale::Logarithmic));
 
 cfg_int cfg_legacy_spectrum_analyser_background_colour(
     GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}}, GetSysColor(COLOR_WINDOW));
@@ -61,69 +52,18 @@ void migrate_spectrum_analyser_colours(COLORREF foreground, COLORREF background)
     set_entry_colours(dark_entry);
 }
 
-constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, unsigned sample_rate, bool is_log)
-{
-    float start_bin{};
-    float end_bin{};
-
-    if (is_log) {
-        constexpr auto start_freq = 50.f;
-        constexpr auto end_freq = 22'050.f;
-        constexpr auto freq_ratio = end_freq / start_freq;
-        const auto nyquist_freq = static_cast<float>(sample_rate) / 2.f;
-
-        const auto normalised_x_start = static_cast<float>(x_index) / static_cast<float>(x_count);
-        const auto normalised_x_end = static_cast<float>(x_index + 1) / static_cast<float>(x_count);
-
-        const auto start = start_freq * std::pow(freq_ratio, normalised_x_start) / nyquist_freq;
-        const auto end = start_freq * std::pow(freq_ratio, normalised_x_end) / nyquist_freq;
-
-        start_bin = start * fft_size;
-        end_bin = end * fft_size;
-    } else {
-        start_bin = static_cast<float>(fft_size) * (static_cast<float>(x_index) / x_count);
-        end_bin = static_cast<float>(fft_size) * (static_cast<float>(x_index + 1) / x_count);
-    }
-
-    const size_t source_start
-        = static_cast<size_t>(std::clamp(static_cast<int>(std::lround(start_bin)), 0, static_cast<int>(fft_size) - 1));
-    size_t source_end
-        = static_cast<size_t>(std::clamp(static_cast<int>(std::lround(end_bin)), 0, static_cast<int>(fft_size) - 1));
-
-    if (source_end > source_start)
-        --source_end;
-
-    return std::make_tuple(source_start, source_end);
-}
-
-constexpr int calculate_y_position(audio_sample value, int y_count)
-{
-    constexpr auto min_db = -80.f;
-    constexpr auto max_db = 0.f;
-
-    const auto db = [&] {
-        if (value <= 0)
-            return min_db;
-
-        return std::clamp(20.f * log10(gsl::narrow_cast<float>(value)), min_db, max_db);
-    }();
-
-    const auto percentage = (db - min_db) / (max_db - min_db);
-    return std::clamp(static_cast<int>(std::lround(percentage * y_count)), 0, y_count);
-}
-
 constexpr GUID scale_config_id = {0xdfa4e08c, 0x325f, 0x4b32, {0x91, 0xeb, 0xcd, 0x9f, 0xd5, 0xd0, 0xad, 0x14}};
 
 cfg_int cfg_vis_edge(GUID{0x57cd2544, 0xd765, 0xef88, {0x30, 0xce, 0xd9, 0x9b, 0x47, 0xe4, 0x09, 0x94}}, 0);
-cfg_uint cfg_vis_mode(GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}}, MODE_BARS);
-cfg_uint cfg_scale(scale_config_id, scale_logarithmic);
+cfg_uint cfg_vis_mode(
+    GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}}, WI_EnumValue(Mode::Bars));
+cfg_uint cfg_scale(scale_config_id, WI_EnumValue(Scale::Logarithmic));
 
 class SpectrumAnalyserVisualisation
     : public uie::container_uie_window_v3
     , public play_callback {
 public:
     static void s_update_colours();
-    static void s_refresh_all(bool include_inactive = false);
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
@@ -148,74 +88,55 @@ public:
     void get_category(pfc::string_base& out) const override { out = "Visualisations"; }
     unsigned get_type() const override { return ui_extension::type_toolbar | ui_extension::type_panel; }
 
-    void update_colours();
-
-    void paint_background() const;
-
-    void clear() { refresh(nullptr); }
-
     bool have_config_popup() const override { return true; }
 
     bool show_config_popup(HWND wnd_parent) override;
 
-    static void s_register_stream(SpectrumAnalyserVisualisation* instance)
-    {
-        if (!s_active_instances.have_item(instance)) {
-            if (s_active_instances.add_item(instance) == 0) {
-                s_create_timer();
-            }
-        }
-    }
-
-    static void s_deregister_stream(SpectrumAnalyserVisualisation* instance, bool b_paused = false)
-    {
-        s_active_instances.remove_item(instance);
-
-        if (s_active_instances.size() == 0) {
-            s_destroy_timer();
-        }
-
-        if (!b_paused) {
-            if (instance->m_is_active)
-                instance->clear();
-        }
-    }
-
     friend class SpectrumAnalyserConfigData;
 
 private:
-    static void s_create_timer();
-    static void s_destroy_timer();
-    static void CALLBACK s_on_timer(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time) noexcept;
-
-    void make_dib();
-    void reset_dib();
-    void render_dib(HDC dc);
-
-    void fill_dib_rect(int left, int top, int right, int bottom, COLORREF colour) const;
     void set_frame_style(unsigned value);
 
-    void refresh();
-    void refresh(const audio_chunk* chunk);
+    void configure_renderer()
+    {
+        colours::helper colours(colour_client_id);
+        const auto foreground_colour = colours.get_colour(colours::colour_text);
+        const auto background_colour = colours.get_colour(colours::colour_background);
+        m_renderer->configure(m_mode, m_scale, foreground_colour, background_colour);
+    }
+
+    void restart_renderer()
+    {
+        m_renderer->stop();
+
+        configure_renderer();
+
+        if (m_playback_api->is_playing() && !m_playback_api->is_paused())
+            m_renderer->start();
+        else
+            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+    }
 
     void on_playback_starting(playback_control::t_track_command p_command, bool p_paused) override {}
     void on_playback_new_track(metadb_handle_ptr p_track) noexcept override
     {
         if (!m_playback_api->is_paused())
-            s_register_stream(this);
+            m_renderer->start();
     }
     void on_playback_stop(playback_control::t_stop_reason p_reason) noexcept override
     {
-        const auto should_clear = p_reason != playback_control::stop_reason_shutting_down;
-        s_deregister_stream(this, !should_clear);
+        m_renderer->request_stop();
+
+        if (p_reason != playback_control::stop_reason_shutting_down)
+            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
     }
     void on_playback_seek(double p_time) override {}
     void on_playback_pause(bool p_state) noexcept override
     {
         if (p_state)
-            s_deregister_stream(this, true);
+            m_renderer->request_stop();
         else
-            s_register_stream(this);
+            m_renderer->start();
     }
     void on_playback_edited(metadb_handle_ptr p_track) override {}
     void on_playback_dynamic_info(const file_info& p_info) override {}
@@ -231,164 +152,24 @@ private:
     void set_config(stream_reader* reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* writer, abort_callback& p_abort) const override;
 
-    inline static UINT_PTR s_timer_id{};
-    inline static audio_chunk_impl s_chunk;
-    inline static visualisation_stream_v2::ptr s_stream;
-    inline static pfc::ptr_list_t<SpectrumAnalyserVisualisation> s_instances;
-    inline static pfc::ptr_list_t<SpectrumAnalyserVisualisation> s_active_instances;
+    inline static std::vector<SpectrumAnalyserVisualisation*> s_instances;
 
+    std::optional<SpectrumAnalyserRenderer> m_renderer;
     playback_control::ptr m_playback_api;
     bool m_is_active{};
-    unsigned m_mode{cfg_vis_mode};
-    short m_bar_width{3};
-    short m_bar_gap{1};
-    uint32_t m_scale{cfg_scale};
-    uint32_t m_vertical_scale{scale_logarithmic};
+    Mode m_mode{static_cast<Mode>(cfg_vis_mode.get())};
+    Scale m_scale{static_cast<Scale>(cfg_scale.get())};
+    Scale m_vertical_scale{Scale::Logarithmic};
     int m_frame{cfg_vis_edge};
-    RECT m_client_rect{};
-    COLORREF m_foreground_colour{};
-    COLORREF m_background_colour{};
-    wil::unique_hdc_window m_dc;
-    wil::unique_hdc m_dib_dc;
-    wil::unique_select_object m_dib_dc_select_object;
-    wil::unique_hbitmap m_dib;
-    void* m_dib_bits{};
-    int m_stride{};
-    int m_width{};
-    int m_height{};
 };
-
-void SpectrumAnalyserVisualisation::update_colours()
-{
-    colours::helper colours(colour_client_id);
-    m_foreground_colour = colours.get_colour(colours::colour_text);
-    m_background_colour = colours.get_colour(colours::colour_background);
-}
-
-void SpectrumAnalyserVisualisation::paint_background() const
-{
-    if (!m_dib_bits)
-        return;
-
-    fill_dib_rect(0, 0, m_width, m_height, m_background_colour);
-}
 
 class SpectrumAnalyserConfigData {
 public:
-    unsigned mode{};
-    uint32_t scale{};
+    Mode mode{};
+    Scale scale{};
     service_ptr_t<SpectrumAnalyserVisualisation> instance{};
     int frame{};
 };
-
-void SpectrumAnalyserVisualisation::s_create_timer()
-{
-    if (!s_timer_id) {
-        s_timer_id = SetTimer(nullptr, NULL, 25, s_on_timer);
-        s_refresh_all();
-    }
-}
-
-void SpectrumAnalyserVisualisation::s_destroy_timer()
-{
-    if (s_timer_id) {
-        KillTimer(nullptr, s_timer_id);
-        s_timer_id = NULL;
-    }
-}
-
-void CALLBACK SpectrumAnalyserVisualisation::s_on_timer(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time) noexcept
-{
-    s_refresh_all();
-}
-
-void SpectrumAnalyserVisualisation::make_dib()
-{
-    assert(!(m_dib_bits || m_dib));
-
-    const int width = std::max<int>(0, m_client_rect.right - m_client_rect.left);
-    const int height = std::max<int>(0, m_client_rect.bottom - m_client_rect.top);
-
-    if (width <= 0 || height <= 0)
-        return;
-
-    BITMAPINFO bi{};
-    bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bi.bmiHeader.biWidth = width;
-    bi.bmiHeader.biHeight = -height;
-    bi.bmiHeader.biPlanes = 1;
-    bi.bmiHeader.biBitCount = 32;
-    bi.bmiHeader.biCompression = BI_RGB;
-
-    m_dib.reset(CreateDIBSection(nullptr, &bi, DIB_RGB_COLORS, &m_dib_bits, nullptr, 0));
-
-    if (!m_dib || !m_dib_bits)
-        return;
-
-    m_width = width;
-    m_height = height;
-    m_stride = width * 4;
-
-    paint_background();
-}
-
-void SpectrumAnalyserVisualisation::reset_dib()
-{
-    m_dib_dc_select_object.reset();
-    m_dib_dc.reset();
-    m_dib.reset();
-    m_dib_bits = nullptr;
-    m_width = 0;
-    m_height = 0;
-    m_stride = 0;
-}
-
-void SpectrumAnalyserVisualisation::render_dib(HDC dc)
-{
-    if (!m_dib_dc) {
-        m_dib_dc.reset(CreateCompatibleDC(m_dc.get()));
-        m_dib_dc_select_object = wil::SelectObject(m_dib_dc.get(), m_dib.get());
-    }
-
-    BitBlt(dc, 0, 0, m_width, m_height, m_dib_dc.get(), 0, 0, SRCCOPY);
-}
-
-void SpectrumAnalyserVisualisation::fill_dib_rect(int left, int top, int right, int bottom, COLORREF colour) const
-{
-    assert(m_dib_bits);
-    assert(left >= 0);
-    assert(top >= 0);
-    assert(right <= m_width);
-    assert(bottom <= m_height);
-
-    if (!m_dib_bits)
-        return;
-
-    if (left < 0)
-        left = 0;
-
-    if (top < 0)
-        top = 0;
-
-    if (right > m_width)
-        right = m_width;
-
-    if (bottom > m_height)
-        bottom = m_height;
-
-    if (right <= left || bottom <= top)
-        return;
-
-    const auto rgb_colour = RGB(GetBValue(colour), GetGValue(colour), GetRValue(colour));
-    const auto data = static_cast<uint8_t*>(m_dib_bits);
-
-    const int width = right - left;
-
-    for (int y = top; y < bottom; ++y) {
-        auto* row = reinterpret_cast<uint32_t*>(data + m_stride * y) + left;
-        std::fill_n(row, width, rgb_colour);
-    }
-}
 
 void SpectrumAnalyserVisualisation::set_frame_style(unsigned value)
 {
@@ -409,101 +190,6 @@ void SpectrumAnalyserVisualisation::set_frame_style(unsigned value)
     SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, flags);
     SetWindowPos(get_wnd(), nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
-}
-
-void SpectrumAnalyserVisualisation::refresh()
-{
-    refresh(m_playback_api->is_playing() && !s_chunk.is_empty() ? &s_chunk : nullptr);
-}
-
-void SpectrumAnalyserVisualisation::refresh(const audio_chunk* chunk)
-{
-    if (!m_dib)
-        make_dib();
-
-    if (!(m_dib && m_dib_bits))
-        return;
-
-    auto _ = wil::scope_exit([&] {
-        if (!IsWindowVisible(get_wnd()))
-            return;
-
-        if (!m_dc)
-            m_dc = wil::GetDC(get_wnd());
-
-        render_dib(m_dc.get());
-        // GdiFlush() is not called as even if the BitBlt() call gets batched, GetMessage() apparently
-        // flushes the current batch anyway
-    });
-
-    paint_background();
-
-    if (!chunk)
-        return;
-
-    const auto channel_count = chunk->get_channels();
-
-    // foo_input_sacd interferes with the visualisation API and can cause wrong channel counts
-    if (channel_count != 1) {
-#ifdef _DEBUG
-        console::print("Columns UI – visualisation chunk with incorrect channel count received");
-#endif
-        return;
-    }
-
-    const auto data = chunk->get_data();
-    const auto sample_count = chunk->get_sample_count();
-    const auto sample_rate = chunk->get_sample_rate();
-
-    if (m_mode == MODE_BARS) {
-        const int num_bars = m_width / m_bar_width;
-
-        if (num_bars <= 0)
-            return;
-
-        for (const auto bar_index : std::ranges::views::iota(0, num_bars)) {
-            const auto [start_bin, end_bin]
-                = get_fft_bins(sample_count, bar_index, num_bars, sample_rate, m_scale == scale_logarithmic);
-
-            audio_sample value{};
-            for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
-                const auto bin_value = data[bin_index];
-                value = std::max(value, bin_value);
-            }
-
-            const auto y_pos = calculate_y_position(value, (m_height) / 2);
-
-            const auto left = 1 + bar_index * m_bar_width;
-            const auto right = left + m_bar_width - m_bar_gap;
-            const auto bottom = m_height - 1;
-            const auto top = m_height - y_pos * 2;
-
-            for (int y = bottom; y > top; y -= 2)
-                fill_dib_rect(left, y - 1, right, y, m_foreground_colour);
-        }
-        return;
-    }
-
-    for (int x = 0; x < m_width; x++) {
-        const auto [start_bin, end_bin]
-            = get_fft_bins(sample_count, x, m_width, sample_rate, m_scale == scale_logarithmic);
-
-        audio_sample value{};
-
-        for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
-            const auto bin_value = data[bin_index];
-            value = std::max(value, bin_value);
-        }
-
-        const auto y_pos = calculate_y_position(value, m_height);
-
-        const auto left = x;
-        const auto right = x + 1;
-        const auto bottom = m_height;
-        const auto top = m_height - y_pos;
-
-        fill_dib_rect(left, top, right, bottom, m_foreground_colour);
-    }
 }
 
 void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_size, abort_callback& p_abort)
@@ -527,11 +213,11 @@ void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_s
 
     migrate_spectrum_analyser_colours(legacy_foreground, legacy_background);
 
-    reader->read_lendian_t(m_mode, p_abort);
+    m_mode = static_cast<Mode>(reader->read_lendian_t<int32_t>(p_abort));
 
     try {
-        reader->read_lendian_t(m_scale, p_abort);
-        reader->read_lendian_t(m_vertical_scale, p_abort);
+        m_scale = static_cast<Scale>(reader->read_lendian_t<int32_t>(p_abort));
+        m_vertical_scale = static_cast<Scale>(reader->read_lendian_t<int32_t>(p_abort));
     } catch (const exception_io_data_truncation&) {
     }
 }
@@ -547,40 +233,18 @@ void SpectrumAnalyserVisualisation::get_config(stream_writer* writer, abort_call
     stream_writer_memblock data;
     data.write_lendian_t(colours.get_colour(colours::colour_text), p_abort);
     data.write_lendian_t(colours.get_colour(colours::colour_background), p_abort);
-    data.write_lendian_t(m_mode, p_abort);
-    data.write_lendian_t(m_scale, p_abort);
-    data.write_lendian_t(m_vertical_scale, p_abort);
+    data.write_lendian_t(WI_EnumValue(m_mode), p_abort);
+    data.write_lendian_t(WI_EnumValue(m_scale), p_abort);
+    data.write_lendian_t(WI_EnumValue(m_vertical_scale), p_abort);
 
     writer->write_lendian_t(gsl::narrow<uint32_t>(data.m_data.get_size()), p_abort);
     writer->write(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
 }
 
-void SpectrumAnalyserVisualisation::s_refresh_all(bool include_inactive)
-{
-    bool is_active{};
-
-    if (s_stream.is_valid()) {
-        double time{};
-        s_stream->get_absolute_time(time);
-
-        constexpr auto fft_size = 4096u;
-        is_active = s_stream->get_spectrum_absolute(s_chunk, time, fft_size);
-
-        if (!is_active)
-            s_chunk.reset();
-    }
-
-    const auto& instances = include_inactive ? s_instances : s_active_instances;
-
-    for (const auto instance : instances) {
-        instance->refresh(is_active ? &s_chunk : nullptr);
-    }
-}
-
 void SpectrumAnalyserVisualisation::s_update_colours()
 {
     for (const auto instance : s_instances)
-        instance->update_colours();
+        instance->restart_renderer();
 }
 
 LRESULT SpectrumAnalyserVisualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -588,44 +252,22 @@ LRESULT SpectrumAnalyserVisualisation::on_message(HWND wnd, UINT msg, WPARAM wp,
     switch (msg) {
     case WM_CREATE: {
         m_is_active = true;
-
-        m_bar_width = 3_spx;
-        m_bar_gap = 1_spx;
-
         m_playback_api = playback_control::get();
-
-        update_colours();
-
-        if (s_instances.add_item(this) == 0) {
-            visualisation_manager::get()->create_stream(s_stream, visualisation_manager::KStreamFlagNewFFT);
-            s_stream->set_channel_mode(visualisation_stream_v2::channel_mode_mono);
-        }
+        s_instances.emplace_back(this);
 
         play_callback_manager::get()->register_callback(
             this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_pause, false);
 
-        if (m_playback_api->is_playing())
-            s_register_stream(this);
-
+        m_renderer.emplace(wnd);
+        restart_renderer();
         break;
     }
     case WM_DESTROY: {
         m_is_active = false;
-        s_instances.remove_item(this);
+        std::erase(s_instances, this);
         play_callback_manager::get()->unregister_callback(this);
-
-        if (m_playback_api->is_playing())
-            s_deregister_stream(this);
-
+        m_renderer.reset();
         m_playback_api.reset();
-
-        if (s_instances.size() == 0) {
-            s_stream.release();
-            s_chunk.reset();
-        }
-
-        m_dc.reset();
-        reset_dib();
         break;
     }
     case WM_ERASEBKGND:
@@ -633,12 +275,8 @@ LRESULT SpectrumAnalyserVisualisation::on_message(HWND wnd, UINT msg, WPARAM wp,
     case WM_PAINT: {
         PAINTSTRUCT ps{};
         const auto dc = wil::BeginPaint(wnd, &ps);
-
-        if (!m_dib)
-            make_dib();
-
-        render_dib(dc.get());
-        break;
+        m_renderer->handle_paint(dc.get(), ps.rcPaint, !m_playback_api->is_playing());
+        return 0;
     }
     case WM_GETMINMAXINFO: {
         const auto mmi = reinterpret_cast<LPMINMAXINFO>(lp);
@@ -650,9 +288,10 @@ LRESULT SpectrumAnalyserVisualisation::on_message(HWND wnd, UINT msg, WPARAM wp,
         if ((lpwp->flags & SWP_NOSIZE) && !(lpwp->flags & SWP_FRAMECHANGED))
             break;
 
-        GetClientRect(wnd, &m_client_rect);
-        reset_dib();
-        refresh();
+        m_renderer->resize();
+
+        if (m_playback_api->is_playing())
+            RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
         break;
     }
     }
@@ -664,7 +303,7 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, state.mode == MODE_BARS, 0);
+        SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, state.mode == Mode::Bars, 0);
 
         const auto wnd_frame_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
         ComboBox_AddString(wnd_frame_combo, L"None");
@@ -685,13 +324,13 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
             EndDialog(wnd, 0);
             return TRUE;
         case IDC_BARS:
-            state.mode = (Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED ? MODE_BARS : MODE_STANDARD);
+            state.mode = (Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED ? Mode::Bars : Mode::Standard);
             break;
         case IDC_FRAME_COMBO | (CBN_SELCHANGE << 16):
             state.frame = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             break;
         case IDC_SCALE | (CBN_SELCHANGE << 16):
-            state.scale = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+            state.scale = static_cast<Scale>(ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)));
             break;
         case IDOK:
             EndDialog(wnd, 1);
@@ -713,14 +352,14 @@ bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
         return false;
 
     m_mode = param.mode;
-    cfg_vis_mode = param.mode;
+    cfg_vis_mode = WI_EnumValue(param.mode);
     m_scale = param.scale;
-    cfg_scale = param.scale;
+    cfg_scale = WI_EnumValue(param.scale);
     set_frame_style(param.frame);
     cfg_vis_edge = param.frame;
 
     if (m_is_active)
-        refresh();
+        restart_renderer();
 
     return true;
 }
@@ -737,11 +376,7 @@ class ColourClient : public colours::client {
     uint32_t get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; }
     bool get_themes_supported() const override { return false; }
     void on_bool_changed(uint32_t mask) const override {}
-    void on_colour_changed(uint32_t mask) const override
-    {
-        SpectrumAnalyserVisualisation::s_update_colours();
-        SpectrumAnalyserVisualisation::s_refresh_all(true);
-    }
+    void on_colour_changed(uint32_t mask) const override { SpectrumAnalyserVisualisation::s_update_colours(); }
 };
 
 ColourClient::factory<ColourClient> _colour_client;
