@@ -12,7 +12,8 @@
 - An option to enable smooth (animated) scrolling was added.
   [[#1599](https://github.com/reupen/columns_ui/pull/1599),
   [#1604](https://github.com/reupen/columns_ui/pull/1604),
-  [#1605](https://github.com/reupen/columns_ui/pull/1605)]
+  [#1605](https://github.com/reupen/columns_ui/pull/1605),
+  [#1607](https://github.com/reupen/columns_ui/pull/1607)]
 
   This affects the playlist view, playlist switcher, Filter panel, Item details
   and Item properties. The option is located on the Setup tab on the root
