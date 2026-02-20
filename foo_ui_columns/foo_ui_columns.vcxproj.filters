@@ -662,6 +662,9 @@
     <ClCompile Include="permutation_utils.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="vis_spectrum_renderer.cpp">
+      <Filter>Spectrum analyser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -997,6 +1000,9 @@
     </ClInclude>
     <ClInclude Include="permutation_utils.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="vis_spectrum_renderer.h">
+      <Filter>Spectrum analyser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

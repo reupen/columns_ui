@@ -403,6 +403,7 @@
     <ClCompile Include="tab_playlist_dd.cpp" />
     <ClCompile Include="tab_status_bar.cpp" />
     <ClCompile Include="user_interface_impl.cpp" />
+    <ClCompile Include="vis_spectrum_renderer.cpp" />
     <ClCompile Include="volume.cpp" />
     <ClCompile Include="buttons.cpp" />
     <ClCompile Include="buttons_stock.cpp" />
@@ -526,6 +527,7 @@
     <ClInclude Include="tf_splitter_hook.h" />
     <ClInclude Include="tf_text_format.h" />
     <ClInclude Include="tf_utils.h" />
+    <ClInclude Include="vis_spectrum_renderer.h" />
     <ClInclude Include="volume.h" />
     <ClInclude Include="seekbar.h" />
     <ClInclude Include="config.h" />

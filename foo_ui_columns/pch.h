@@ -104,6 +104,7 @@
 #include "../svg-services/api/api.h"
 #include "../columns_ui-sdk/ui_extension.h"
 #include "../ui_helpers/stdafx.h"
+#include "../ui_helpers/dcomp_utils.h"
 #include "../ui_helpers/dxgi_utils.h"
 #include "../ui_helpers/direct_2d.h"
 #include "../ui_helpers/direct_3d.h"
