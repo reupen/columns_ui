@@ -742,8 +742,9 @@ void ItemDetails::absolute_scroll(
     uih::ScrollAxis axis, int new_position, bool supress_smooth_scroll, bool quick_animation)
 {
     if (config::use_smooth_scrolling && !supress_smooth_scroll) {
+        const auto clamped_new_position = uih::clamp_scroll_position(get_wnd(), axis, new_position);
         m_smooth_scroll_helper->absolute_scroll(
-            axis, new_position, quick_animation ? 50.ms : uih::SmoothScrollHelper::default_duration);
+            axis, clamped_new_position, quick_animation ? 50.ms : uih::SmoothScrollHelper::default_duration);
         return;
     }
 
@@ -756,7 +757,8 @@ void ItemDetails::absolute_scroll(
 void ItemDetails::delta_scroll(uih::ScrollAxis axis, int delta, bool supress_smooth_scroll)
 {
     if (config::use_smooth_scrolling && !supress_smooth_scroll) {
-        m_smooth_scroll_helper->delta_scroll(axis, delta);
+        const auto clamped_delta = uih::clamp_scroll_delta(get_wnd(), axis, delta);
+        m_smooth_scroll_helper->delta_scroll(axis, clamped_delta);
         return;
     }
 
