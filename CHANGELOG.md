@@ -15,7 +15,8 @@
   [#1605](https://github.com/reupen/columns_ui/pull/1605),
   [#1607](https://github.com/reupen/columns_ui/pull/1607),
   [#1609](https://github.com/reupen/columns_ui/pull/1609),
-  [#1612](https://github.com/reupen/columns_ui/pull/1612)]
+  [#1612](https://github.com/reupen/columns_ui/pull/1612),
+  [#1615](https://github.com/reupen/columns_ui/pull/1615)]
 
   This affects the playlist view, playlist switcher, Filter panel, Item details
   and Item properties. The option is located on the Setup tab on the root
