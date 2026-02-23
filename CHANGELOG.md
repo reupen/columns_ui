@@ -27,7 +27,8 @@
 - CPU usage when moving the mouse over the playlist and other built-in list
   views was reduced. [[#1585](https://github.com/reupen/columns_ui/pull/1585),
   [#1590](https://github.com/reupen/columns_ui/pull/1590),
-  [#1591](https://github.com/reupen/columns_ui/pull/1591)]
+  [#1591](https://github.com/reupen/columns_ui/pull/1591),
+  [#1613](https://github.com/reupen/columns_ui/pull/1613)]
 
 - The built-in spectrum analyser visualisation now renders in a background
   thread, allowing rendering to continue when the main thread is blocked (such
