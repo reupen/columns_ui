@@ -742,9 +742,8 @@ void ItemDetails::absolute_scroll(
     uih::ScrollAxis axis, int new_position, bool supress_smooth_scroll, bool quick_animation)
 {
     if (config::use_smooth_scrolling && !supress_smooth_scroll) {
-        const auto clamped_new_position = uih::clamp_scroll_position(get_wnd(), axis, new_position);
         m_smooth_scroll_helper->absolute_scroll(
-            axis, clamped_new_position, quick_animation ? 50.ms : uih::SmoothScrollHelper::default_duration);
+            axis, new_position, quick_animation ? 50.ms : uih::SmoothScrollHelper::default_duration);
         return;
     }
 
@@ -757,8 +756,7 @@ void ItemDetails::absolute_scroll(
 void ItemDetails::delta_scroll(uih::ScrollAxis axis, int delta, bool supress_smooth_scroll)
 {
     if (config::use_smooth_scrolling && !supress_smooth_scroll) {
-        const auto clamped_delta = uih::clamp_scroll_delta(get_wnd(), axis, delta);
-        m_smooth_scroll_helper->delta_scroll(axis, clamped_delta);
+        m_smooth_scroll_helper->delta_scroll(axis, delta);
         return;
     }
 
@@ -804,8 +802,12 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_CREATE: {
         m_smooth_scroll_helper.emplace(
-            wnd, MSG_SMOOTH_SCROLL, SMOOTH_SCROLL_TIMER_ID, [this] { return m_vertical_scroll_position; },
-            [this] { return m_horizontal_scroll_position; },
+            wnd, MSG_SMOOTH_SCROLL, SMOOTH_SCROLL_TIMER_ID,
+            [this](uih::ScrollAxis axis) {
+                return axis == uih::ScrollAxis::Vertical ? m_vertical_scroll_position : m_horizontal_scroll_position;
+            },
+            [this](
+                uih::ScrollAxis axis, int position) { return uih::clamp_scroll_position(get_wnd(), axis, position); },
             [this](auto axis, auto new_position) { internal_scroll(axis, new_position, false); });
         set_window_theme();
         register_callback();
