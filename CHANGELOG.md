@@ -48,6 +48,9 @@
   transparency is enabled.
   [[#1595](https://github.com/reupen/columns_ui/pull/1595)]
 
+- Some options in Preferences were renamed for clarity and simplicity.
+  [[#1611](https://github.com/reupen/columns_ui/pull/1611)]
+
 ### Bug fixes
 
 - Ellipses for truncated text were reinstated when using tab characters to

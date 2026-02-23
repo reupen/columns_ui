@@ -271,18 +271,19 @@ STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
-    CONTROL         "Display ellipses in truncated text",IDC_ELLIPSIS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,121,10
-    CONTROL         "Display tooltips for truncated text",IDC_TOOLTIPS_CLIPPED,
+    CONTROL         "Show ellipses when text is truncated",IDC_ELLIPSIS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,142,10
+    CONTROL         "Show tooltips for truncated text",IDC_TOOLTIPS_CLIPPED,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,49,123,10
     CONTROL         "Auto-size columns to use all space",IDC_NOHSCROLL,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,68,125,10
     CONTROL         "Allow mouse-activated inline editing",IDC_INLINE_MODE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,133,10
-    CONTROL         "Display column titles",IDC_HEADER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,30,80,10
-    CONTROL         "Enable sorting using column titles",IDC_HHTRACK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,49,129,10
-    CONTROL         "Put dropped files at end of playlist",IDC_DROP_AT_END,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,87,125,10
-    CONTROL         "Display sort indicators",IDC_SORT_ARROWS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,68,87,10
+    CONTROL         "Show column titles",IDC_HEADER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,30,80,10
+    CONTROL         "Allow sorting using column titles",IDC_HHTRACK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,49,123,10
+    CONTROL         "Put dropped files at the end of the playlist",IDC_DROP_AT_END,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,87,163,10
+    CONTROL         "Show sort indicators",IDC_SORT_ARROWS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,68,87,10
     LTEXT           "Vertical item padding",IDC_STATIC,7,125,75,8
     EDITTEXT        IDC_HEIGHT,7,136,31,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,50,138,12,10
@@ -291,9 +292,10 @@ BEGIN
     COMBOBOX        IDC_PLEDGE,7,170,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Action to perform when middle-clicking on a track",IDC_STATIC,7,194,168,8
     COMBOBOX        IDC_PLAYLIST_MIDDLE,7,205,313,136,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Alternative selection model",IDC_SELECTION_MODEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,106,102,10
+    CONTROL         "Use alternative selection model",IDC_SELECTION_MODEL,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,106,125,10
     LTEXT           "Appearance and behaviour",IDC_TITLE1,7,4,313,16
-    LTEXT           "Action to perform when double clicking in empty space",IDC_STATIC,7,229,185,8
+    LTEXT           "Action to perform when double-clicking in empty space",IDC_STATIC,7,229,190,8
     COMBOBOX        IDC_PLAYLIST_DOUBLE,7,240,313,136,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "",IDC_MENU_DESC,7,254,313,10
 END
@@ -368,7 +370,7 @@ FONT 8, "Tahoma", 0, 0, 0x0
 BEGIN
     LTEXT           "Grouping",IDC_TITLE1,7,4,307,16
     CONTROL         "Show groups",IDC_GROUPING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,57,10
-    CONTROL         "Keep group headers in view when scrolling",IDC_STICKY_GROUP_HEADERS,
+    CONTROL         "Keep group headings in view when scrolling",IDC_STICKY_GROUP_HEADERS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,48,169,10
     CONTROL         "Indent each level of grouping",IDC_INDENT_GROUPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,66,121,10
     CONTROL         "Use a custom amount of per-level indentation:",IDC_USE_CUSTOM_INDENTATION,
@@ -607,12 +609,12 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
     LTEXT           "Artwork",IDC_TITLE1,7,4,313,16
-    CONTROL         "Show artwork in groups",IDC_SHOWARTWORK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,105,10
+    CONTROL         "Show artwork in groups",IDC_SHOWARTWORK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,101,10
     CONTROL         "Keep artwork in view when scrolling",IDC_STICKY_ARTWORK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,49,147,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,49,142,10
     CONTROL         "Show reflection",IDC_ARTWORKREFLECTION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,68,69,10
-    CONTROL         "Add extra vertical spacing to increase distance between group headers and artwork",IDC_ARTWORK_HEADER_SPACING,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,313,10
+    CONTROL         "Add extra vertical spacing to increase distance between group headings and artwork",IDC_ARTWORK_HEADER_SPACING,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,305,10
     LTEXT           "Artwork width",IDC_ARTWORK_WIDTH_LABEL,7,106,53,8
     EDITTEXT        IDC_ARTWORKWIDTH,7,117,40,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_ARTWORKWIDTHSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,59,118,12,10
@@ -791,9 +793,9 @@ BEGIN
     PUSHBUTTON      "Export configuration...",IDC_FCL_EXPORT,7,79,107,14
     LTEXT           "Performance and scrolling",IDC_TITLE2,7,118,313,14
     CONTROL         "Use smooth (animated) scrolling",IDC_USE_SMOOTH_SCROLLING,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,143,133,10
-    CONTROL         "Allow Direct2D hardware acceleration in supported built-in panels",IDC_HARDWARE_ACCELERATION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,163,251,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,143,132,10
+    CONTROL         "Allow hardware acceleration in built-in panels",IDC_HARDWARE_ACCELERATION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,163,176,10
     LTEXT           "Documentation",IDC_TITLE3,7,195,313,14
     CONTROL         "<a href=""https://columns-ui.readthedocs.io"">Columns UI documentation site</a>",IDC_DOCUMENTATION_LINK,
                     "SysLink",WS_TABSTOP,7,219,123,10
