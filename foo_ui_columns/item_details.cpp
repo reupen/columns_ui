@@ -780,16 +780,11 @@ void ItemDetails::internal_scroll(uih::ScrollAxis axis, int position, bool is_de
     current_si.fMask = SIF_POS | SIF_RANGE;
     GetScrollInfo(get_wnd(), scroll_bar_type, &current_si);
 
-    const auto new_pos = std::clamp(position + (is_delta ? current_si.nPos : 0), current_si.nMin, current_si.nMax);
+    const auto clamped_pos = std::clamp(position + (is_delta ? current_si.nPos : 0), current_si.nMin, current_si.nMax);
+    const auto new_position = uih::set_scroll_position(get_wnd(), axis, current_si.nPos, clamped_pos);
 
-    if (new_pos == current_si.nPos)
+    if (new_position == current_si.nPos)
         return;
-
-    SCROLLINFO new_si{};
-    new_si.cbSize = sizeof(new_si);
-    new_si.fMask = SIF_POS;
-    new_si.nPos = new_pos;
-    const auto new_position = SetScrollInfo(get_wnd(), scroll_bar_type, &new_si, TRUE);
 
     if (axis == uih::ScrollAxis::Vertical)
         m_vertical_scroll_position = new_position;
