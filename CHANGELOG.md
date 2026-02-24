@@ -62,6 +62,10 @@
 
   This is intended to restore the behaviour of versions before 3.0.0.
 
+- A bug where, when the root panel in a layout has a configuration dialogue, its
+  ‘Configure panel…’ button on the Layout preferences tab did not work was
+  fixed. [[#1617](https://github.com/reupen/columns_ui/pull/1617)]
+
 ### Internal changes
 
 - Some code was cleaned up.
