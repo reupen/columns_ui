@@ -472,22 +472,15 @@ void LayoutTab::set_item_property_stream(HWND wnd, const GUID& guid, stream_read
 
 void LayoutTab::run_configure(HWND wnd)
 {
-    HTREEITEM ti = TreeView_GetSelection(m_wnd_tree);
-    if (!ti)
+    const auto selected_ti = TreeView_GetSelection(m_wnd_tree);
+
+    if (!selected_ti)
         return;
 
-    HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
-    if (!ti_parent)
-        return;
+    const auto node = m_node_map.at(selected_ti);
 
-    auto p_node = m_node_map.at(ti);
-    auto p_node_parent = m_node_map.at(ti_parent);
-    unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
-    if (index < p_node_parent->m_splitter->get_panel_count()) {
-        if (p_node->m_window.is_valid() && p_node->m_window->show_config_popup(wnd)) {
-            save_item(wnd, ti);
-        }
-    }
+    if (node->m_window.is_valid() && node->m_window->show_config_popup(wnd))
+        save_item(wnd, selected_ti);
 }
 
 void LayoutTab::initialise_tree(HWND wnd)
