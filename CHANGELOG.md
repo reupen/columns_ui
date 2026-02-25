@@ -1,10 +1,10 @@
 # Change log
 
-## Development version
+## v3.4.0-alpha.1
 
 ### Features
 
-- An option for playlist view group headers to stay in view when scrolling
+- An option for playlist view group headings to stay in view when scrolling
   vertically was added.
   [[#1586](https://github.com/reupen/columns_ui/pull/1586),
   [#1594](https://github.com/reupen/columns_ui/pull/1594)]
@@ -62,9 +62,19 @@
 
   This is intended to restore the behaviour of versions before 3.0.0.
 
-- A bug where, when the root panel in a layout has a configuration dialogue, its
-  ‘Configure panel…’ button on the Layout preferences tab did not work was
-  fixed. [[#1617](https://github.com/reupen/columns_ui/pull/1617)]
+- A bug where the ‘Configure panel…’ button on the Layout preferences tab did
+  not work for the root panel was fixed.
+  [[#1617](https://github.com/reupen/columns_ui/pull/1617)]
+
+  This fix is only relevant when the root panel has a configuration dialogue.
+
+- A bug where, when the built-in spectrum analyser visualisation was the root
+  panel in the layout, its context menu items did not appear when right-clicking
+  on the panel in the main window was fixed.
+  [[#1619](https://github.com/reupen/columns_ui/pull/1619)]
+
+  This fix also applies to any other panels that rely on the parent container to
+  show their context menu items.
 
 ### Internal changes
 
