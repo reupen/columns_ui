@@ -1,6 +1,6 @@
 # Change log
 
-## v3.4.0-alpha.1
+## 3.4.0-alpha.1
 
 ### Features
 
