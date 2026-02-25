@@ -1132,25 +1132,47 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case MSG_LAYOUT_SET_FOCUS:
         set_focus();
         break;
-#if 0
-    case WM_CONTEXTMENU:
-        {
-            if (m_layout_editing_active)
-            {
-                POINT pt = {GET_X_LPARAM(lp),GET_Y_LPARAM(lp)};
-                if (pt.x == -1 && pt.y == -1)
-                {
-                    RECT rc;
-                    GetRelativeRect(m_child_wnd, HWND_DESKTOP, &rc);
+    case WM_CONTEXTMENU: {
+        constexpr auto base_id = 1u;
 
-                    pt.x = rc.left + wil::rect_width(rc)/2;
-                    pt.y = rc.top + wil::rect_height(rc)/2;
-                }
-                run_live_edit_base(pt);
-            }
+        if (!m_child.is_valid() || !m_child_wnd)
+            return 0;
+
+        POINT screen_pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+
+        const auto is_keyboard = screen_pt.x == -1 && screen_pt.y == -1;
+
+        if (is_keyboard) {
+            RECT child_rect{};
+            GetClientRect(m_child_wnd, &child_rect);
+            screen_pt.x = (child_rect.left + child_rect.right) / 2;
+            screen_pt.y = (child_rect.top + child_rect.bottom) / 2;
+            ClientToScreen(m_child_wnd, &screen_pt);
         }
+
+        pfc::refcounted_object_ptr_t extension_menu_nodes = new ui_extension::menu_hook_impl;
+        m_child->get_menu_items(*extension_menu_nodes.get_ptr());
+
+        if (extension_menu_nodes->get_children_count() == 0)
+            return 0;
+
+        const wil::unique_hmenu menu(CreatePopupMenu());
+        extension_menu_nodes->win32_build_menu(menu.get(), base_id, std::numeric_limits<uint32_t>::max());
+
+        if (GetMenuItemCount(menu.get()) <= 0)
+            return 0;
+
+        menu_helpers::win32_auto_mnemonics(menu.get());
+
+        const auto cmd = static_cast<unsigned>(TrackPopupMenu(menu.get(),
+            TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD | (is_keyboard ? TPM_CENTERALIGN | TPM_VCENTERALIGN : 0),
+            screen_pt.x, screen_pt.y, 0, wnd, nullptr));
+
+        if (cmd >= base_id)
+            extension_menu_nodes->execute_by_id(cmd);
+
         return 0;
-#endif
+    }
     case WM_DESTROY:
         destroy_child();
         deregister_message_hook(uih::MessageHookType::type_get_message, this);
