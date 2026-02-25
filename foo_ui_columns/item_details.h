@@ -230,8 +230,8 @@ private:
     bool check_process_on_selection_changed();
 
     void absolute_scroll(
-        uih::ScrollAxis axis, int new_position, bool supress_smooth_scroll = false, bool quick_animation = false);
-    void delta_scroll(uih::ScrollAxis axis, int delta, bool supress_smooth_scroll = false);
+        uih::ScrollAxis axis, int new_position, bool suppress_smooth_scroll = false, bool quick_animation = false);
+    void delta_scroll(uih::ScrollAxis axis, int delta, bool suppress_smooth_scroll = false);
     void internal_scroll(uih::ScrollAxis axis, int position, bool is_delta);
 
     void set_window_theme() const;

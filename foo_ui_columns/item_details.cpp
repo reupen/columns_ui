@@ -739,28 +739,28 @@ void ItemDetails::on_size(int cx, int cy)
 }
 
 void ItemDetails::absolute_scroll(
-    uih::ScrollAxis axis, int new_position, bool supress_smooth_scroll, bool quick_animation)
+    uih::ScrollAxis axis, int new_position, bool suppress_smooth_scroll, bool quick_animation)
 {
-    if (config::use_smooth_scrolling && !supress_smooth_scroll) {
+    if (config::use_smooth_scrolling && !suppress_smooth_scroll) {
         m_smooth_scroll_helper->absolute_scroll(
             axis, new_position, quick_animation ? 50.ms : uih::SmoothScrollHelper::default_duration);
         return;
     }
 
-    if (supress_smooth_scroll)
+    if (suppress_smooth_scroll)
         m_smooth_scroll_helper->abandon_animation(axis);
 
     internal_scroll(axis, new_position, false);
 }
 
-void ItemDetails::delta_scroll(uih::ScrollAxis axis, int delta, bool supress_smooth_scroll)
+void ItemDetails::delta_scroll(uih::ScrollAxis axis, int delta, bool suppress_smooth_scroll)
 {
-    if (config::use_smooth_scrolling && !supress_smooth_scroll) {
+    if (config::use_smooth_scrolling && !suppress_smooth_scroll) {
         m_smooth_scroll_helper->delta_scroll(axis, delta);
         return;
     }
 
-    if (supress_smooth_scroll)
+    if (suppress_smooth_scroll)
         m_smooth_scroll_helper->abandon_animation(axis);
 
     internal_scroll(axis, delta, true);
@@ -935,10 +935,10 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             scroll_delta *= -1;
 
         const auto axis = is_horizontal ? uih::ScrollAxis::Horizontal : uih::ScrollAxis::Vertical;
-        const auto should_supress_smooth_scroll
+        const auto should_suppress_smooth_scroll
             = !m_smooth_scroll_helper->should_smooth_scroll_mouse_wheel(axis, wheel_delta);
 
-        delta_scroll(axis, scroll_delta, should_supress_smooth_scroll);
+        delta_scroll(axis, scroll_delta, should_suppress_smooth_scroll);
         return 0;
     }
     case WM_HSCROLL:
