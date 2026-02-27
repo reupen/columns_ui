@@ -80,13 +80,13 @@ jobs:
             ${{ matrix.enable-annotations && '"/logger:$Env:Temp\Reupen.MSBuild.GitHubLogger.dll"' }} `
             vc17\columns_ui-public.sln
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: matrix.publish-artefacts
         with:
           name: Component package (${{ matrix.configuration }}, ${{ matrix.platform }})
           path: vc17\release-*\foo_ui_columns*.fb2k-component
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: matrix.publish-artefacts
         with:
           name: Symbols for debugging (${{ matrix.configuration }}, ${{ matrix.platform }})
