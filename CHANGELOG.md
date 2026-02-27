@@ -1,5 +1,14 @@
 # Change log
 
+## 3.4.0-alpha.2
+
+### Bug fixes
+
+- A rendering glitch that occasionally happened when scrolling up in the
+  playlist view with both ‘Keep artwork in view when scrolling’ and ‘Keep group
+  headings in view when scrolling’ enabled was fixed.
+  [[#1626](https://github.com/reupen/columns_ui/pull/1626)]
+
 ## 3.4.0-alpha.1
 
 ### Features
