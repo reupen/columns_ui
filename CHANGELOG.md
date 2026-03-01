@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A bug where built-in list views used the wrong mouse pointer when the mouse
+  was over an inline editing text box was fixed.
+  [[#1628](https://github.com/reupen/columns_ui/pull/1628)]
+
 ## 3.4.0-alpha.2
 
 ### Bug fixes
