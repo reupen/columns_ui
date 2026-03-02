@@ -2,13 +2,14 @@
 
 #include "common.h"
 
-class PlaylistViewColumnBase {
-public:
+namespace cui::playlist_view {
+
+struct ColumnDefinition {
     pfc::string8 name;
     pfc::string8 spec;
-    bool use_custom_colour{false};
+    bool use_custom_colour{};
     pfc::string8 colour_spec;
-    bool use_custom_sort{false};
+    bool use_custom_sort{};
     pfc::string8 sort_spec;
     uih::IntegerAndDpi<int32_t> width{100};
     Alignment align{ALIGN_LEFT};
@@ -17,29 +18,9 @@ public:
     uint32_t parts{1};
     bool show{true};
     pfc::string8 edit_field;
-
-    PlaylistViewColumnBase() = default;
-
-    PlaylistViewColumnBase(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
-        bool b_use_custom_sort, const char* p_sort_spec, int p_width, Alignment p_align,
-        PlaylistFilterType p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
-        const char* p_edit_field)
-        : name(pname)
-        , spec(pspec)
-        , use_custom_colour(b_use_custom_colour)
-        , colour_spec(p_colour_spec)
-        , use_custom_sort(b_use_custom_sort)
-        , sort_spec(p_sort_spec)
-        , width(p_width)
-        , align(p_align)
-        , filter_type(p_filter_type)
-        , filter(p_filter_string)
-        , parts(p_parts)
-        , show(b_show)
-        , edit_field(p_edit_field)
-    {
-    }
 };
+
+} // namespace cui::playlist_view
 
 enum class ColumnStreamVersion {
     streamVersion0 = 0,
@@ -47,13 +28,14 @@ enum class ColumnStreamVersion {
     streamVersionCurrent = streamVersion1
 };
 
-class PlaylistViewColumn : public PlaylistViewColumnBase {
+class PlaylistViewColumn {
     using self_t = PlaylistViewColumn;
 
 public:
     using ptr = std::shared_ptr<self_t>;
 
     ptr source_item;
+    cui::playlist_view::ColumnDefinition def;
 
     void read(stream_reader* reader, abort_callback& abortCallback);
     void write(stream_writer* writer, abort_callback& abortCallback) const;
@@ -61,15 +43,7 @@ public:
     void write_extra(stream_writer* writer, abort_callback& abortCallback) const;
 
     PlaylistViewColumn() = default;
-
-    PlaylistViewColumn(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
-        bool b_use_custom_sort, const char* p_sort_spec, unsigned p_width, Alignment p_align,
-        PlaylistFilterType p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
-        const char* p_edit_field)
-        : PlaylistViewColumnBase(pname, pspec, b_use_custom_colour, p_colour_spec, b_use_custom_sort, p_sort_spec,
-              p_width, p_align, p_filter_type, p_filter_string, p_parts, b_show, p_edit_field)
-    {
-    }
+    PlaylistViewColumn(const cui::playlist_view::ColumnDefinition& def_) : def(def_) {}
 
     PlaylistViewColumn(const PlaylistViewColumn&) = default;
     PlaylistViewColumn& operator=(const PlaylistViewColumn&) = default;
@@ -116,7 +90,7 @@ class ConfigColumns
 public:
     void reset();
 
-    ConfigColumns(const GUID& p_guid, ColumnStreamVersion streamVersion);
+    ConfigColumns(const GUID& p_guid);
 
 protected:
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;

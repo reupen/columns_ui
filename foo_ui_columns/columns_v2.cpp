@@ -1,52 +1,72 @@
 #include "pch.h"
 #include "columns_v2.h"
 
+namespace cui::playlist_view {
+
+namespace {
+
+const std::initializer_list default_columns{
+    ColumnDefinition{
+        "Artist", "[%artist%]", false, "", false, "", 180, ALIGN_LEFT, FILTER_NONE, "", 180, true, "ARTIST"},
+    ColumnDefinition{
+        "#", "[%tracknumber%]", false, "", false, "", 18, ALIGN_RIGHT, FILTER_NONE, "", 18, true, "TRACKNUMBER"},
+    ColumnDefinition{"Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"},
+    ColumnDefinition{"Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"},
+    ColumnDefinition{"Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"},
+    ColumnDefinition{"Length", "[%_time_elapsed% / ]%_length%", false, "", true, "$num(%_length_seconds%,6)", 60,
+        ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""},
+};
+
+} // namespace
+
+} // namespace cui::playlist_view
+
 void PlaylistViewColumn::read(stream_reader* reader, abort_callback& abortCallback)
 {
-    width.dpi = uih::get_system_dpi_cached().cx;
-    reader->read_string(name, abortCallback);
-    reader->read_string(spec, abortCallback);
-    reader->read_lendian_t(use_custom_colour, abortCallback);
-    reader->read_string(colour_spec, abortCallback);
-    reader->read_lendian_t(use_custom_sort, abortCallback);
-    reader->read_string(sort_spec, abortCallback);
-    reader->read_lendian_t(width.value, abortCallback);
-    reader->read_lendian_t(align, abortCallback);
-    reader->read_lendian_t(filter_type, abortCallback);
-    reader->read_string(filter, abortCallback);
-    reader->read_lendian_t(parts, abortCallback);
-    reader->read_lendian_t(show, abortCallback);
-    reader->read_string(edit_field, abortCallback);
+    def.width.dpi = uih::get_system_dpi_cached().cx;
+    reader->read_string(def.name, abortCallback);
+    reader->read_string(def.spec, abortCallback);
+    reader->read_lendian_t(def.use_custom_colour, abortCallback);
+    reader->read_string(def.colour_spec, abortCallback);
+    reader->read_lendian_t(def.use_custom_sort, abortCallback);
+    reader->read_string(def.sort_spec, abortCallback);
+    reader->read_lendian_t(def.width.value, abortCallback);
+    reader->read_lendian_t(def.align, abortCallback);
+    reader->read_lendian_t(def.filter_type, abortCallback);
+    reader->read_string(def.filter, abortCallback);
+    reader->read_lendian_t(def.parts, abortCallback);
+    reader->read_lendian_t(def.show, abortCallback);
+    reader->read_string(def.edit_field, abortCallback);
 }
 
 void PlaylistViewColumn::read_extra(
     stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback)
 {
     if (streamVersion >= ColumnStreamVersion::streamVersion1) {
-        reader->read_lendian_t(width.dpi, abortCallback);
+        reader->read_lendian_t(def.width.dpi, abortCallback);
     }
 }
 
 void PlaylistViewColumn::write(stream_writer* out, abort_callback& abortCallback) const
 {
-    out->write_string(name.get_ptr(), abortCallback);
-    out->write_string(spec.get_ptr(), abortCallback);
-    out->write_lendian_t(use_custom_colour, abortCallback);
-    out->write_string(colour_spec, abortCallback);
-    out->write_lendian_t(use_custom_sort, abortCallback);
-    out->write_string(sort_spec, abortCallback);
-    out->write_lendian_t(width.value, abortCallback);
-    out->write_lendian_t(align, abortCallback);
-    out->write_lendian_t(filter_type, abortCallback);
-    out->write_string(filter, abortCallback);
-    out->write_lendian_t(parts, abortCallback);
-    out->write_lendian_t(show, abortCallback);
-    out->write_string(edit_field, abortCallback);
+    out->write_string(def.name.get_ptr(), abortCallback);
+    out->write_string(def.spec.get_ptr(), abortCallback);
+    out->write_lendian_t(def.use_custom_colour, abortCallback);
+    out->write_string(def.colour_spec, abortCallback);
+    out->write_lendian_t(def.use_custom_sort, abortCallback);
+    out->write_string(def.sort_spec, abortCallback);
+    out->write_lendian_t(def.width.value, abortCallback);
+    out->write_lendian_t(def.align, abortCallback);
+    out->write_lendian_t(def.filter_type, abortCallback);
+    out->write_string(def.filter, abortCallback);
+    out->write_lendian_t(def.parts, abortCallback);
+    out->write_lendian_t(def.show, abortCallback);
+    out->write_string(def.edit_field, abortCallback);
 }
 
 void PlaylistViewColumn::write_extra(stream_writer* out, abort_callback& abortCallback) const
 {
-    out->write_lendian_t(width.dpi, abortCallback);
+    out->write_lendian_t(def.width.dpi, abortCallback);
 }
 
 bool ColumnList::move_up(size_t idx)
@@ -159,21 +179,13 @@ void ConfigColumns::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abo
 void ConfigColumns::reset()
 {
     remove_all();
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Artist", "[%artist%]", false, "", false, "", 180, ALIGN_LEFT, FILTER_NONE, "", 180, true, "ARTIST"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "#", "[%tracknumber%]", false, "", false, "", 18, ALIGN_RIGHT, FILTER_NONE, "", 18, true, "TRACKNUMBER"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"));
-    add_item(std::make_shared<PlaylistViewColumn>("Length", "[%_time_elapsed% / ]%_length%", false, "", true,
-        "$num(%_length_seconds%,6)", 60, ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
+
+    for (const auto& def : cui::playlist_view::default_columns) {
+        add_item(std::make_shared<PlaylistViewColumn>(def));
+    }
 }
 
-ConfigColumns::ConfigColumns(const GUID& p_guid, ColumnStreamVersion streamVersion) : cfg_var(p_guid)
+ConfigColumns::ConfigColumns(const GUID& p_guid) : cfg_var(p_guid)
 {
     reset();
 }

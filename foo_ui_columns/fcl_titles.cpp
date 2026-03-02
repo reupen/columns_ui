@@ -50,20 +50,20 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
         for (size_t i = 0; i < count; i++) {
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
-            w.write_item(identifier_name, g_columns[i]->name);
-            w.write_item(identifier_display, g_columns[i]->spec);
-            w.write_item(identifier_style, g_columns[i]->colour_spec);
-            w.write_item(identifier_edit_field, g_columns[i]->edit_field);
-            w.write_item(identifier_filter, g_columns[i]->filter);
-            w.write_item(identifier_sort, g_columns[i]->sort_spec);
-            w.write_item(identifier_use_style, g_columns[i]->use_custom_colour);
-            w.write_item(identifier_use_sort, g_columns[i]->use_custom_sort);
-            w.write_item(identifier_show, g_columns[i]->show);
-            w.write_item(identifier_filter_type, (uint32_t)g_columns[i]->filter_type);
-            w.write_item(identifier_alignment, (uint32_t)g_columns[i]->align);
-            w.write_item(identifier_resize, g_columns[i]->parts);
-            w.write_item(identifier_width, g_columns[i]->width.value);
-            w.write_item(identifier_width_dpi, g_columns[i]->width.dpi);
+            w.write_item(identifier_name, g_columns[i]->def.name);
+            w.write_item(identifier_display, g_columns[i]->def.spec);
+            w.write_item(identifier_style, g_columns[i]->def.colour_spec);
+            w.write_item(identifier_edit_field, g_columns[i]->def.edit_field);
+            w.write_item(identifier_filter, g_columns[i]->def.filter);
+            w.write_item(identifier_sort, g_columns[i]->def.sort_spec);
+            w.write_item(identifier_use_style, g_columns[i]->def.use_custom_colour);
+            w.write_item(identifier_use_sort, g_columns[i]->def.use_custom_sort);
+            w.write_item(identifier_show, g_columns[i]->def.show);
+            w.write_item(identifier_filter_type, (uint32_t)g_columns[i]->def.filter_type);
+            w.write_item(identifier_alignment, (uint32_t)g_columns[i]->def.align);
+            w.write_item(identifier_resize, g_columns[i]->def.parts);
+            w.write_item(identifier_width, g_columns[i]->def.width.value);
+            w.write_item(identifier_width_dpi, g_columns[i]->def.width.dpi);
 
             out.write_item(identifier_column, sw.m_data.get_ptr(), gsl::narrow<uint32_t>(sw.m_data.get_size()));
         }
@@ -81,7 +81,7 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
             reader.read_item(column_id);
             reader.read_item(column_size);
 
-            PlaylistViewColumn::ptr item = std::make_shared<PlaylistViewColumn>();
+            cui::playlist_view::ColumnDefinition item;
 
             fbh::fcl::Reader reader2(reader, column_size, p_abort);
 
@@ -96,61 +96,63 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
 
                 switch (element_id) {
                 case identifier_name:
-                    reader2.read_item(item->name, element_size);
+                    reader2.read_item(item.name, element_size);
                     break;
                 case identifier_filter:
-                    reader2.read_item(item->filter, element_size);
+                    reader2.read_item(item.filter, element_size);
                     break;
                 case identifier_sort:
-                    reader2.read_item(item->sort_spec, element_size);
+                    reader2.read_item(item.sort_spec, element_size);
                     break;
                 case identifier_display:
-                    reader2.read_item(item->spec, element_size);
+                    reader2.read_item(item.spec, element_size);
                     break;
                 case identifier_edit_field:
-                    reader2.read_item(item->edit_field, element_size);
+                    reader2.read_item(item.edit_field, element_size);
                     break;
                 case identifier_style:
-                    reader2.read_item(item->colour_spec, element_size);
+                    reader2.read_item(item.colour_spec, element_size);
                     break;
                 case identifier_resize:
-                    reader2.read_item(item->parts);
+                    reader2.read_item(item.parts);
                     break;
                 case identifier_width:
-                    reader2.read_item(item->width.value);
+                    reader2.read_item(item.width.value);
                     break;
                 case identifier_width_dpi: {
-                    reader2.read_item(item->width.dpi);
+                    reader2.read_item(item.width.dpi);
                     dpiRead = true;
                     break;
                 }
                 case identifier_alignment: {
                     uint32_t temp;
                     reader2.read_item(temp);
-                    item->align = ((Alignment)temp);
+                    item.align = ((Alignment)temp);
                 } break;
                 case identifier_filter_type: {
                     uint32_t temp;
                     reader2.read_item(temp);
-                    item->filter_type = ((PlaylistFilterType)temp);
+                    item.filter_type = ((PlaylistFilterType)temp);
                 } break;
                 case identifier_use_sort:
-                    reader2.read_item(item->use_custom_sort);
+                    reader2.read_item(item.use_custom_sort);
                     break;
                 case identifier_use_style:
-                    reader2.read_item(item->use_custom_colour);
+                    reader2.read_item(item.use_custom_colour);
                     break;
                 case identifier_show:
-                    reader2.read_item(item->show);
+                    reader2.read_item(item.show);
                     break;
                 default:
                     reader2.skip(element_size);
                     break;
                 }
             }
+
             if (!dpiRead)
-                item->width.dpi = uih::get_system_dpi_cached().cx;
-            newcolumns.add_item(item);
+                item.width.dpi = uih::get_system_dpi_cached().cx;
+
+            newcolumns.add_item(std::make_shared<PlaylistViewColumn>(item));
         }
 
         g_columns.set_entries_ref(newcolumns);

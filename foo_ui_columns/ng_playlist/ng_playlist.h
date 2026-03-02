@@ -430,7 +430,7 @@ private:
     {
         size_t act = column_index_display_to_actual(index);
         if (act != pfc_infinite && act < g_columns.get_count()) {
-            g_columns[act]->width = new_width;
+            g_columns[act]->def.width = new_width;
             g_on_column_widths_change(this);
         }
     }

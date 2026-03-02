@@ -228,7 +228,7 @@ void PlaylistView::on_column_widths_change()
     std::vector<int> widths;
     for (size_t i = 0; i < count; i++)
         if (m_column_mask[i])
-            widths.emplace_back(g_columns[i]->width);
+            widths.emplace_back(g_columns[i]->def.width);
     set_column_widths(widths);
 }
 
@@ -263,34 +263,35 @@ void PlaylistView::refresh_columns()
     for (size_t i = 0; i < count; i++) {
         PlaylistViewColumn* source = g_columns[i].get();
         bool b_valid = false;
-        if (source->show) {
-            switch (source->filter_type) {
+        if (source->def.show) {
+            switch (source->def.filter_type) {
             case FILTER_NONE: {
                 b_valid = true;
                 break;
             }
             case FILTER_SHOW: {
-                if (wildcard_helper::test(playlist_name, source->filter, true))
+                if (wildcard_helper::test(playlist_name, source->def.filter, true))
                     b_valid = true;
             } break;
             case FILTER_HIDE: {
-                if (!wildcard_helper::test(playlist_name, source->filter, true))
+                if (!wildcard_helper::test(playlist_name, source->def.filter, true))
                     b_valid = true;
             } break;
             }
         }
         if (b_valid) {
             ColumnData temp;
-            columns.emplace_back(source->name, source->width, source->parts, (uih::alignment)source->align);
-            p_compiler->compile_safe(temp.m_display_script, source->spec);
-            if (source->use_custom_colour)
-                p_compiler->compile_safe(temp.m_style_script, source->colour_spec);
-            if (source->use_custom_sort)
-                p_compiler->compile_safe(temp.m_sort_script, source->sort_spec);
+            columns.emplace_back(
+                source->def.name, source->def.width, source->def.parts, (uih::alignment)source->def.align);
+            p_compiler->compile_safe(temp.m_display_script, source->def.spec);
+            if (source->def.use_custom_colour)
+                p_compiler->compile_safe(temp.m_style_script, source->def.colour_spec);
+            if (source->def.use_custom_sort)
+                p_compiler->compile_safe(temp.m_sort_script, source->def.sort_spec);
             else
                 temp.m_sort_script = temp.m_display_script;
             m_column_data.add_item(temp);
-            m_edit_fields.add_item(source->edit_field);
+            m_edit_fields.add_item(source->def.edit_field);
         }
         m_column_mask[i] = b_valid;
     }
@@ -1085,25 +1086,25 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         const auto e = g_columns.get_count();
         for (size_t s = 0; s < e; s++) {
             bool add = false;
-            switch (g_columns[s]->filter_type) {
+            switch (g_columns[s]->def.filter_type) {
             case FILTER_NONE: {
                 add = true;
                 break;
             }
             case FILTER_SHOW: {
-                if (wildcard_helper::test(playlist_name, g_columns[s]->filter, true)) {
+                if (wildcard_helper::test(playlist_name, g_columns[s]->def.filter, true)) {
                     add = true;
                 }
             } break;
             case FILTER_HIDE: {
-                if (!wildcard_helper::test(playlist_name, g_columns[s]->filter, true)) {
+                if (!wildcard_helper::test(playlist_name, g_columns[s]->def.filter, true)) {
                     add = true;
                 }
             } break;
             }
             if (add) {
-                uAppendMenu(menu, MF_STRING | (g_columns[s]->show ? MF_CHECKED : MF_UNCHECKED), IDM_CUSTOM_BASE + s,
-                    g_columns[s]->name);
+                uAppendMenu(menu, MF_STRING | (g_columns[s]->def.show ? MF_CHECKED : MF_UNCHECKED), IDM_CUSTOM_BASE + s,
+                    g_columns[s]->def.name);
             }
         }
 
@@ -1144,7 +1145,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         g_on_show_artwork_change();
     } else if (cmd >= IDM_CUSTOM_BASE) {
         if (size_t(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
-            g_columns[cmd - IDM_CUSTOM_BASE]->show = !g_columns[cmd - IDM_CUSTOM_BASE]->show; // g_columns
+            g_columns[cmd - IDM_CUSTOM_BASE]->def.show = !g_columns[cmd - IDM_CUSTOM_BASE]->def.show; // g_columns
             g_on_columns_change();
         }
     }
