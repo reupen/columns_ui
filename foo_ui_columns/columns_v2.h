@@ -6,18 +6,18 @@ namespace cui::playlist_view {
 
 struct ColumnDefinition {
     pfc::string8 title;
+    bool is_shown{true};
     pfc::string8 display_script;
+    pfc::string8 edit_field;
     bool use_custom_style_script{};
     pfc::string8 style_script;
     bool use_custom_sorting_script{};
     pfc::string8 sorting_script;
     uih::IntegerAndDpi<int32_t> width{100};
+    uint32_t weight{1};
     Alignment alignment{ALIGN_LEFT};
     PlaylistFilterType playlist_filter_mode{FILTER_NONE};
     pfc::string8 playlist_filter_pattern;
-    uint32_t weight{1};
-    bool is_shown{true};
-    pfc::string8 edit_field;
 };
 
 } // namespace cui::playlist_view

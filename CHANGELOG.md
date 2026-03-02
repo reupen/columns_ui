@@ -2,6 +2,14 @@
 
 ## Development version
 
+### Features
+
+- The predefined list of playlist view columns in new installations was updated.
+  [[#1630](https://github.com/reupen/columns_ui/pull/1630)]
+
+  More columns are now available out of the box, and the existing columns were
+  also tweaked.
+
 ### Bug fixes
 
 - A bug where built-in list views used the wrong mouse pointer when the mouse
