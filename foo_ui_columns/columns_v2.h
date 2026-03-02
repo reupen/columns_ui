@@ -5,18 +5,18 @@
 namespace cui::playlist_view {
 
 struct ColumnDefinition {
-    pfc::string8 name;
-    pfc::string8 spec;
-    bool use_custom_colour{};
-    pfc::string8 colour_spec;
-    bool use_custom_sort{};
-    pfc::string8 sort_spec;
+    pfc::string8 title;
+    pfc::string8 display_script;
+    bool use_custom_style_script{};
+    pfc::string8 style_script;
+    bool use_custom_sorting_script{};
+    pfc::string8 sorting_script;
     uih::IntegerAndDpi<int32_t> width{100};
-    Alignment align{ALIGN_LEFT};
-    PlaylistFilterType filter_type{FILTER_NONE};
-    pfc::string8 filter;
-    uint32_t parts{1};
-    bool show{true};
+    Alignment alignment{ALIGN_LEFT};
+    PlaylistFilterType playlist_filter_mode{FILTER_NONE};
+    pfc::string8 playlist_filter_pattern;
+    uint32_t weight{1};
+    bool is_shown{true};
     pfc::string8 edit_field;
 };
 

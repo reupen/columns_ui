@@ -263,18 +263,18 @@ void PlaylistView::refresh_columns()
     for (size_t i = 0; i < count; i++) {
         PlaylistViewColumn* source = g_columns[i].get();
         bool b_valid = false;
-        if (source->def.show) {
-            switch (source->def.filter_type) {
+        if (source->def.is_shown) {
+            switch (source->def.playlist_filter_mode) {
             case FILTER_NONE: {
                 b_valid = true;
                 break;
             }
             case FILTER_SHOW: {
-                if (wildcard_helper::test(playlist_name, source->def.filter, true))
+                if (wildcard_helper::test(playlist_name, source->def.playlist_filter_pattern, true))
                     b_valid = true;
             } break;
             case FILTER_HIDE: {
-                if (!wildcard_helper::test(playlist_name, source->def.filter, true))
+                if (!wildcard_helper::test(playlist_name, source->def.playlist_filter_pattern, true))
                     b_valid = true;
             } break;
             }
@@ -282,12 +282,12 @@ void PlaylistView::refresh_columns()
         if (b_valid) {
             ColumnData temp;
             columns.emplace_back(
-                source->def.name, source->def.width, source->def.parts, (uih::alignment)source->def.align);
-            p_compiler->compile_safe(temp.m_display_script, source->def.spec);
-            if (source->def.use_custom_colour)
-                p_compiler->compile_safe(temp.m_style_script, source->def.colour_spec);
-            if (source->def.use_custom_sort)
-                p_compiler->compile_safe(temp.m_sort_script, source->def.sort_spec);
+                source->def.title, source->def.width, source->def.weight, (uih::alignment)source->def.alignment);
+            p_compiler->compile_safe(temp.m_display_script, source->def.display_script);
+            if (source->def.use_custom_style_script)
+                p_compiler->compile_safe(temp.m_style_script, source->def.style_script);
+            if (source->def.use_custom_sorting_script)
+                p_compiler->compile_safe(temp.m_sort_script, source->def.sorting_script);
             else
                 temp.m_sort_script = temp.m_display_script;
             m_column_data.add_item(temp);
@@ -1086,25 +1086,25 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         const auto e = g_columns.get_count();
         for (size_t s = 0; s < e; s++) {
             bool add = false;
-            switch (g_columns[s]->def.filter_type) {
+            switch (g_columns[s]->def.playlist_filter_mode) {
             case FILTER_NONE: {
                 add = true;
                 break;
             }
             case FILTER_SHOW: {
-                if (wildcard_helper::test(playlist_name, g_columns[s]->def.filter, true)) {
+                if (wildcard_helper::test(playlist_name, g_columns[s]->def.playlist_filter_pattern, true)) {
                     add = true;
                 }
             } break;
             case FILTER_HIDE: {
-                if (!wildcard_helper::test(playlist_name, g_columns[s]->def.filter, true)) {
+                if (!wildcard_helper::test(playlist_name, g_columns[s]->def.playlist_filter_pattern, true)) {
                     add = true;
                 }
             } break;
             }
             if (add) {
-                uAppendMenu(menu, MF_STRING | (g_columns[s]->def.show ? MF_CHECKED : MF_UNCHECKED), IDM_CUSTOM_BASE + s,
-                    g_columns[s]->def.name);
+                uAppendMenu(menu, MF_STRING | (g_columns[s]->def.is_shown ? MF_CHECKED : MF_UNCHECKED),
+                    IDM_CUSTOM_BASE + s, g_columns[s]->def.title);
             }
         }
 
@@ -1145,7 +1145,8 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         g_on_show_artwork_change();
     } else if (cmd >= IDM_CUSTOM_BASE) {
         if (size_t(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
-            g_columns[cmd - IDM_CUSTOM_BASE]->def.show = !g_columns[cmd - IDM_CUSTOM_BASE]->def.show; // g_columns
+            g_columns[cmd - IDM_CUSTOM_BASE]->def.is_shown
+                = !g_columns[cmd - IDM_CUSTOM_BASE]->def.is_shown; // g_columns
             g_on_columns_change();
         }
     }

@@ -24,18 +24,18 @@ const std::initializer_list default_columns{
 void PlaylistViewColumn::read(stream_reader* reader, abort_callback& abortCallback)
 {
     def.width.dpi = uih::get_system_dpi_cached().cx;
-    reader->read_string(def.name, abortCallback);
-    reader->read_string(def.spec, abortCallback);
-    reader->read_lendian_t(def.use_custom_colour, abortCallback);
-    reader->read_string(def.colour_spec, abortCallback);
-    reader->read_lendian_t(def.use_custom_sort, abortCallback);
-    reader->read_string(def.sort_spec, abortCallback);
+    reader->read_string(def.title, abortCallback);
+    reader->read_string(def.display_script, abortCallback);
+    reader->read_lendian_t(def.use_custom_style_script, abortCallback);
+    reader->read_string(def.style_script, abortCallback);
+    reader->read_lendian_t(def.use_custom_sorting_script, abortCallback);
+    reader->read_string(def.sorting_script, abortCallback);
     reader->read_lendian_t(def.width.value, abortCallback);
-    reader->read_lendian_t(def.align, abortCallback);
-    reader->read_lendian_t(def.filter_type, abortCallback);
-    reader->read_string(def.filter, abortCallback);
-    reader->read_lendian_t(def.parts, abortCallback);
-    reader->read_lendian_t(def.show, abortCallback);
+    reader->read_lendian_t(def.alignment, abortCallback);
+    reader->read_lendian_t(def.playlist_filter_mode, abortCallback);
+    reader->read_string(def.playlist_filter_pattern, abortCallback);
+    reader->read_lendian_t(def.weight, abortCallback);
+    reader->read_lendian_t(def.is_shown, abortCallback);
     reader->read_string(def.edit_field, abortCallback);
 }
 
@@ -49,18 +49,18 @@ void PlaylistViewColumn::read_extra(
 
 void PlaylistViewColumn::write(stream_writer* out, abort_callback& abortCallback) const
 {
-    out->write_string(def.name.get_ptr(), abortCallback);
-    out->write_string(def.spec.get_ptr(), abortCallback);
-    out->write_lendian_t(def.use_custom_colour, abortCallback);
-    out->write_string(def.colour_spec, abortCallback);
-    out->write_lendian_t(def.use_custom_sort, abortCallback);
-    out->write_string(def.sort_spec, abortCallback);
+    out->write_string(def.title.get_ptr(), abortCallback);
+    out->write_string(def.display_script.get_ptr(), abortCallback);
+    out->write_lendian_t(def.use_custom_style_script, abortCallback);
+    out->write_string(def.style_script, abortCallback);
+    out->write_lendian_t(def.use_custom_sorting_script, abortCallback);
+    out->write_string(def.sorting_script, abortCallback);
     out->write_lendian_t(def.width.value, abortCallback);
-    out->write_lendian_t(def.align, abortCallback);
-    out->write_lendian_t(def.filter_type, abortCallback);
-    out->write_string(def.filter, abortCallback);
-    out->write_lendian_t(def.parts, abortCallback);
-    out->write_lendian_t(def.show, abortCallback);
+    out->write_lendian_t(def.alignment, abortCallback);
+    out->write_lendian_t(def.playlist_filter_mode, abortCallback);
+    out->write_string(def.playlist_filter_pattern, abortCallback);
+    out->write_lendian_t(def.weight, abortCallback);
+    out->write_lendian_t(def.is_shown, abortCallback);
     out->write_string(def.edit_field, abortCallback);
 }
 

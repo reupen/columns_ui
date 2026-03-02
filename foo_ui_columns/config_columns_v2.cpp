@@ -81,7 +81,8 @@ public:
         EnableWindow(GetDlgItem(wnd, IDC_PARTS), show);
         EnableWindow(GetDlgItem(wnd, IDC_SHOW_COLUMN), show);
         EnableWindow(GetDlgItem(wnd, IDC_ALIGNMENT), show);
-        const auto enable_filter_pattern_controls = show && m_column && m_column->def.filter_type != FILTER_NONE;
+        const auto enable_filter_pattern_controls
+            = show && m_column && m_column->def.playlist_filter_mode != FILTER_NONE;
         EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), enable_filter_pattern_controls);
         ShowWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_HINT), enable_filter_pattern_controls ? SW_SHOW : SW_HIDE);
         EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_TYPE), show);
@@ -93,16 +94,18 @@ public:
         initialising = true;
 
         if (m_column) {
-            uSendDlgItemMessageText(wnd, IDC_NAME, WM_SETTEXT, 0, m_column->def.name);
-            uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, m_column->def.filter);
+            uSendDlgItemMessageText(wnd, IDC_NAME, WM_SETTEXT, 0, m_column->def.title);
+            uSendDlgItemMessageText(
+                wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, m_column->def.playlist_filter_pattern);
             uSendDlgItemMessageText(wnd, IDC_EDITFIELD, WM_SETTEXT, 0, m_column->def.edit_field);
 
-            SendDlgItemMessage(wnd, IDC_SHOW_COLUMN, BM_SETCHECK, m_column->def.show, 0);
-            SendDlgItemMessage(wnd, IDC_ALIGNMENT, CB_SETCURSEL, (size_t)m_column->def.align, 0);
-            SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (size_t)m_column->def.filter_type, 0);
+            SendDlgItemMessage(wnd, IDC_SHOW_COLUMN, BM_SETCHECK, m_column->def.is_shown, 0);
+            SendDlgItemMessage(wnd, IDC_ALIGNMENT, CB_SETCURSEL, (size_t)m_column->def.alignment, 0);
+            SendDlgItemMessage(
+                wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (size_t)m_column->def.playlist_filter_mode, 0);
 
             SetDlgItemInt(wnd, IDC_WIDTH, m_column->def.width, false);
-            SetDlgItemInt(wnd, IDC_PARTS, m_column->def.parts, false);
+            SetDlgItemInt(wnd, IDC_PARTS, m_column->def.weight, false);
         }
 
         initialising = false;
@@ -124,7 +127,7 @@ public:
             return;
 
         initialising = true;
-        uSendDlgItemMessageText(m_wnd, IDC_NAME, WM_SETTEXT, 0, m_column->def.name);
+        uSendDlgItemMessageText(m_wnd, IDC_NAME, WM_SETTEXT, 0, m_column->def.title);
         initialising = false;
     }
 
@@ -160,13 +163,14 @@ public:
             switch (wp) {
             case (CBN_SELCHANGE << 16) | IDC_ALIGNMENT: {
                 if (!initialising && m_column) {
-                    m_column->def.align = ((Alignment)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
+                    m_column->def.alignment = ((Alignment)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
                 }
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_FILTER_TYPE: {
                 if (!initialising && m_column) {
-                    m_column->def.filter_type = ((PlaylistFilterType)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
-                    const auto enable_filter_pattern_controls = m_column->def.filter_type != FILTER_NONE;
+                    m_column->def.playlist_filter_mode
+                        = ((PlaylistFilterType)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
+                    const auto enable_filter_pattern_controls = m_column->def.playlist_filter_mode != FILTER_NONE;
                     EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), enable_filter_pattern_controls);
                     ShowWindow(
                         GetDlgItem(wnd, IDC_PLAYLIST_FILTER_HINT), enable_filter_pattern_controls ? SW_SHOW : SW_HIDE);
@@ -174,12 +178,12 @@ public:
             } break;
             case IDC_SHOW_COLUMN: {
                 if (!initialising && m_column) {
-                    m_column->def.show = ((SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0));
+                    m_column->def.is_shown = ((SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_SORT: {
                 if (!initialising && m_column) {
-                    m_column->def.sort_spec = (uGetWindowText((HWND)lp));
+                    m_column->def.sorting_script = (uGetWindowText((HWND)lp));
                 }
             } break;
             case IDC_PICK_COLOUR:
@@ -192,12 +196,12 @@ public:
             } break;
             case (EN_CHANGE << 16) | IDC_PARTS: {
                 if (!initialising && m_column) {
-                    m_column->def.parts = (GetDlgItemInt(wnd, IDC_PARTS, nullptr, false));
+                    m_column->def.weight = (GetDlgItemInt(wnd, IDC_PARTS, nullptr, false));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_PLAYLIST_FILTER_STRING: {
                 if (!initialising && m_column) {
-                    m_column->def.filter = (uGetWindowText((HWND)lp));
+                    m_column->def.playlist_filter_pattern = (uGetWindowText((HWND)lp));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_EDITFIELD: {
@@ -207,7 +211,7 @@ public:
             } break;
             case (EN_CHANGE << 16) | IDC_NAME: {
                 if (!initialising && m_column) {
-                    m_column->def.name = uGetWindowText((HWND)lp);
+                    m_column->def.title = uGetWindowText((HWND)lp);
                     SendMessage(GetAncestor(wnd, GA_PARENT), MSG_COLUMN_NAME_CHANGED, NULL, NULL);
                 }
             } break;
@@ -295,7 +299,7 @@ private:
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
         if (m_column) {
-            uSetWindowText(edit_control(), m_column->def.spec);
+            uSetWindowText(edit_control(), m_column->def.display_script);
         } else {
             uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
         }
@@ -327,7 +331,7 @@ private:
                 break;
             case EN_CHANGE << 16 | IDC_DISPLAY_SCRIPT:
                 if (!initialising && m_column)
-                    m_column->def.spec = uGetWindowText(reinterpret_cast<HWND>(lp));
+                    m_column->def.display_script = uGetWindowText(reinterpret_cast<HWND>(lp));
                 break;
             }
         }
@@ -374,8 +378,9 @@ private:
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
         if (m_column) {
-            uSetWindowText(edit_control(), m_column->def.colour_spec);
-            Button_SetCheck(custom_colour_control(), m_column->def.use_custom_colour ? BST_CHECKED : BST_UNCHECKED);
+            uSetWindowText(edit_control(), m_column->def.style_script);
+            Button_SetCheck(
+                custom_colour_control(), m_column->def.use_custom_style_script ? BST_CHECKED : BST_UNCHECKED);
         } else {
             uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
             Button_SetCheck(custom_colour_control(), BST_UNCHECKED);
@@ -409,12 +414,13 @@ private:
                 break;
             case IDC_CUSTOM_COLOUR:
                 if (!initialising && m_column) {
-                    m_column->def.use_custom_colour = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                    m_column->def.use_custom_style_script
+                        = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 }
                 break;
             case EN_CHANGE << 16 | IDC_STYLE_SCRIPT:
                 if (!initialising && m_column)
-                    m_column->def.colour_spec = uGetWindowText(reinterpret_cast<HWND>(lp));
+                    m_column->def.style_script = uGetWindowText(reinterpret_cast<HWND>(lp));
                 break;
             }
         }
@@ -465,8 +471,9 @@ private:
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
         if (m_column) {
-            uSetWindowText(edit_control(), m_column->def.sort_spec);
-            Button_SetCheck(custom_sorting_control(), m_column->def.use_custom_sort ? BST_CHECKED : BST_UNCHECKED);
+            uSetWindowText(edit_control(), m_column->def.sorting_script);
+            Button_SetCheck(
+                custom_sorting_control(), m_column->def.use_custom_sorting_script ? BST_CHECKED : BST_UNCHECKED);
         } else {
             uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
             Button_SetCheck(custom_sorting_control(), BST_UNCHECKED);
@@ -497,12 +504,13 @@ private:
                 break;
             case IDC_CUSTOM_SORT:
                 if (!initialising && m_column) {
-                    m_column->def.use_custom_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                    m_column->def.use_custom_sorting_script
+                        = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 }
                 break;
             case EN_CHANGE << 16 | IDC_SORTING_SCRIPT:
                 if (!initialising && m_column)
-                    m_column->def.sort_spec = uGetWindowText(reinterpret_cast<HWND>(lp));
+                    m_column->def.sorting_script = uGetWindowText(reinterpret_cast<HWND>(lp));
                 break;
             }
         }
@@ -577,7 +585,7 @@ void TabColumns::refresh_me(HWND wnd, bool init)
     insert_items.reserve(m_columns.get_count());
 
     std::ranges::transform(m_columns, std::back_inserter(insert_items),
-        [](const auto& column) { return uih::ListView::InsertItem{{column->def.name.c_str()}, {}}; });
+        [](const auto& column) { return uih::ListView::InsertItem{{column->def.title.c_str()}, {}}; });
 
     m_columns_list_view.insert_items(0, insert_items.size(), insert_items.data());
 
@@ -639,7 +647,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         if (index != std::numeric_limits<size_t>::max()) {
             const std::vector<uih::ListView::InsertItem> items{
-                uih::ListView::InsertItem{{m_columns[index]->def.name.c_str()}, {}}};
+                uih::ListView::InsertItem{{m_columns[index]->def.title.c_str()}, {}}};
             m_columns_list_view.replace_items(index, items.size(), items.data());
         }
         return 0;
@@ -721,7 +729,7 @@ bool TabColumns::ColumnsListView::notify_create_inline_edit(const pfc::list_base
 
     const auto edit_index = indices[0];
     m_inline_edit_column = m_tab.m_columns[edit_index];
-    p_text = m_inline_edit_column->def.name;
+    p_text = m_inline_edit_column->def.title;
     return true;
 }
 
@@ -732,7 +740,7 @@ void TabColumns::ColumnsListView::notify_save_inline_edit(const char* value)
     if (!m_inline_edit_column)
         return;
 
-    m_inline_edit_column->def.name = value;
+    m_inline_edit_column->def.title = value;
 
     const auto index = fbh::as_optional(m_tab.m_columns.find_item(m_inline_edit_column));
 
@@ -797,7 +805,7 @@ void TabColumns::on_column_list_reorder(size_t old_index, size_t new_index)
     std::vector<uih::ListView::InsertItem> insert_items(affected_count);
 
     for (const auto index : ranges::views::iota(size_t{}, affected_count)) {
-        insert_items[index].m_subitems.emplace_back(m_columns[first_affected + index]->def.name);
+        insert_items[index].m_subitems.emplace_back(m_columns[first_affected + index]->def.title);
     }
 
     m_columns_list_view.replace_items(first_affected, insert_items.size(), insert_items.data());
@@ -806,12 +814,12 @@ void TabColumns::on_column_list_reorder(size_t old_index, size_t new_index)
 void TabColumns::add_column(size_t index)
 {
     const PlaylistViewColumn::ptr column = std::make_shared<PlaylistViewColumn>();
-    column->def.name = "New column";
+    column->def.title = "New column";
 
     const size_t insert_index
         = m_columns.insert_item(column, index < m_columns.get_count() ? index : m_columns.get_count());
 
-    const std::vector<uih::ListView::InsertItem> insert_items{{{column->def.name}, {}}};
+    const std::vector<uih::ListView::InsertItem> insert_items{{{column->def.title}, {}}};
     m_columns_list_view.insert_items(insert_index, insert_items.size(), insert_items.data());
     m_columns_list_view.set_item_selected_single(insert_index);
     m_columns_list_view.ensure_visible(insert_index);
@@ -841,7 +849,7 @@ void TabColumns::move_column_up(size_t index)
 
     const auto selection_index = m_columns_list_view.get_selected_item_single();
     const std::vector<uih::ListView::InsertItem> insert_items{
-        {{m_columns[index - 1]->def.name}, {}}, {{m_columns[index]->def.name}, {}}};
+        {{m_columns[index - 1]->def.title}, {}}, {{m_columns[index]->def.title}, {}}};
 
     m_columns_list_view.replace_items(index - 1, insert_items.size(), insert_items.data());
 
@@ -859,7 +867,7 @@ void TabColumns::move_column_down(size_t index)
 
     const auto selection_index = m_columns_list_view.get_selected_item_single();
     std::vector<uih::ListView::InsertItem> insert_items{
-        {{m_columns[index]->def.name}, {}}, {{m_columns[index + 1]->def.name}, {}}};
+        {{m_columns[index]->def.title}, {}}, {{m_columns[index + 1]->def.title}, {}}};
 
     m_columns_list_view.replace_items(index, insert_items.size(), insert_items.data());
 

@@ -50,18 +50,18 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
         for (size_t i = 0; i < count; i++) {
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
-            w.write_item(identifier_name, g_columns[i]->def.name);
-            w.write_item(identifier_display, g_columns[i]->def.spec);
-            w.write_item(identifier_style, g_columns[i]->def.colour_spec);
+            w.write_item(identifier_name, g_columns[i]->def.title);
+            w.write_item(identifier_display, g_columns[i]->def.display_script);
+            w.write_item(identifier_style, g_columns[i]->def.style_script);
             w.write_item(identifier_edit_field, g_columns[i]->def.edit_field);
-            w.write_item(identifier_filter, g_columns[i]->def.filter);
-            w.write_item(identifier_sort, g_columns[i]->def.sort_spec);
-            w.write_item(identifier_use_style, g_columns[i]->def.use_custom_colour);
-            w.write_item(identifier_use_sort, g_columns[i]->def.use_custom_sort);
-            w.write_item(identifier_show, g_columns[i]->def.show);
-            w.write_item(identifier_filter_type, (uint32_t)g_columns[i]->def.filter_type);
-            w.write_item(identifier_alignment, (uint32_t)g_columns[i]->def.align);
-            w.write_item(identifier_resize, g_columns[i]->def.parts);
+            w.write_item(identifier_filter, g_columns[i]->def.playlist_filter_pattern);
+            w.write_item(identifier_sort, g_columns[i]->def.sorting_script);
+            w.write_item(identifier_use_style, g_columns[i]->def.use_custom_style_script);
+            w.write_item(identifier_use_sort, g_columns[i]->def.use_custom_sorting_script);
+            w.write_item(identifier_show, g_columns[i]->def.is_shown);
+            w.write_item(identifier_filter_type, (uint32_t)g_columns[i]->def.playlist_filter_mode);
+            w.write_item(identifier_alignment, (uint32_t)g_columns[i]->def.alignment);
+            w.write_item(identifier_resize, g_columns[i]->def.weight);
             w.write_item(identifier_width, g_columns[i]->def.width.value);
             w.write_item(identifier_width_dpi, g_columns[i]->def.width.dpi);
 
@@ -96,25 +96,25 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
 
                 switch (element_id) {
                 case identifier_name:
-                    reader2.read_item(item.name, element_size);
+                    reader2.read_item(item.title, element_size);
                     break;
                 case identifier_filter:
-                    reader2.read_item(item.filter, element_size);
+                    reader2.read_item(item.playlist_filter_pattern, element_size);
                     break;
                 case identifier_sort:
-                    reader2.read_item(item.sort_spec, element_size);
+                    reader2.read_item(item.sorting_script, element_size);
                     break;
                 case identifier_display:
-                    reader2.read_item(item.spec, element_size);
+                    reader2.read_item(item.display_script, element_size);
                     break;
                 case identifier_edit_field:
                     reader2.read_item(item.edit_field, element_size);
                     break;
                 case identifier_style:
-                    reader2.read_item(item.colour_spec, element_size);
+                    reader2.read_item(item.style_script, element_size);
                     break;
                 case identifier_resize:
-                    reader2.read_item(item.parts);
+                    reader2.read_item(item.weight);
                     break;
                 case identifier_width:
                     reader2.read_item(item.width.value);
@@ -127,21 +127,21 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
                 case identifier_alignment: {
                     uint32_t temp;
                     reader2.read_item(temp);
-                    item.align = ((Alignment)temp);
+                    item.alignment = ((Alignment)temp);
                 } break;
                 case identifier_filter_type: {
                     uint32_t temp;
                     reader2.read_item(temp);
-                    item.filter_type = ((PlaylistFilterType)temp);
+                    item.playlist_filter_mode = ((PlaylistFilterType)temp);
                 } break;
                 case identifier_use_sort:
-                    reader2.read_item(item.use_custom_sort);
+                    reader2.read_item(item.use_custom_sorting_script);
                     break;
                 case identifier_use_style:
-                    reader2.read_item(item.use_custom_colour);
+                    reader2.read_item(item.use_custom_style_script);
                     break;
                 case identifier_show:
-                    reader2.read_item(item.show);
+                    reader2.read_item(item.is_shown);
                     break;
                 default:
                     reader2.skip(element_size);
