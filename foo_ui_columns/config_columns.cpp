@@ -58,7 +58,7 @@ void speedtest(ColumnListCRef columns, bool b_global)
 
     {
         for (size_t i = 0; i < column_count; i++)
-            if (!columns[i]->use_custom_colour) {
+            if (!columns[i]->def.use_custom_style_script) {
                 b_global_colour_used = true;
                 break;
             }
@@ -175,7 +175,7 @@ void speedtest(ColumnListCRef columns, bool b_global)
                         times_columns[n].to_display.release();
                         pfc::hires_timer timer;
                         timer.start();
-                        titleformat_api->compile_safe(times_columns[n].to_display, columns[n]->spec);
+                        titleformat_api->compile_safe(times_columns[n].to_display, columns[n]->def.display_script);
                         time_temp += timer.query();
                     }
                     times_columns[n].time_display_compile = time_temp / 10;
@@ -200,14 +200,14 @@ void speedtest(ColumnListCRef columns, bool b_global)
                     times_columns[n].time_colour_compile = 0;
                     times_columns[n].time_colour = 0;
 
-                    if (columns[n]->use_custom_colour) {
+                    if (columns[n]->def.use_custom_style_script) {
                         double time_temp = 0;
                         unsigned i;
                         for (i = 0; i < 10; i++) {
                             times_columns[n].to_colour.release();
                             pfc::hires_timer timer;
                             timer.start();
-                            titleformat_api->compile_safe(times_columns[n].to_colour, columns[n]->colour_spec);
+                            titleformat_api->compile_safe(times_columns[n].to_colour, columns[n]->def.style_script);
                             time_temp += timer.query();
                         }
                         times_columns[n].time_colour_compile = time_temp / 10;

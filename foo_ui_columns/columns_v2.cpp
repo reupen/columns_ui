@@ -1,52 +1,254 @@
 #include "pch.h"
 #include "columns_v2.h"
 
+namespace cui::playlist_view {
+
+namespace {
+const std::initializer_list default_columns{
+    ColumnDefinition{
+        .title{"Artist"},
+        .display_script{"[%artist%]"},
+        .edit_field{"ARTIST"},
+        .width{180},
+        .weight{100},
+    },
+    ColumnDefinition{
+        .title{"#"},
+        .display_script{"$ifgreater(%totaldiscs%,1,%disc%.,)[%tracknumber%]"},
+        .edit_field{"TRACKNUMBER"},
+        .width{22},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Title"},
+        .display_script{"[%title%]"},
+        .edit_field{"TITLE"},
+        .width{300},
+        .weight{150},
+    },
+    ColumnDefinition{
+        .title{"Album artist"},
+        .is_shown{false},
+        .display_script{"[%album artist%]"},
+        .edit_field{"ALBUM ARTIST"},
+        .width{180},
+        .weight{100},
+    },
+    ColumnDefinition{
+        .title{"Album"},
+        .display_script{"[%album%]"},
+        .edit_field{"ALBUM"},
+        .width{200},
+        .weight{100},
+    },
+    ColumnDefinition{
+        .title{"Composer"},
+        .is_shown{false},
+        .display_script{"[%composer%]"},
+        .edit_field{"COMPOSER"},
+        .width{180},
+        .weight{100},
+    },
+    ColumnDefinition{
+        .title{"Comments"},
+        .is_shown{false},
+        .display_script{"[%comment%]"},
+        .edit_field{"COMMENT"},
+        .width{200},
+        .weight{100},
+    },
+    ColumnDefinition{
+        .title{"Genre"},
+        .is_shown{false},
+        .display_script{"[%genre%]"},
+        .edit_field{"GENRE"},
+        .width{100},
+        .weight{20},
+    },
+    ColumnDefinition{
+        .title{"Year"},
+        .display_script{"$if3(%year%,$year($meta(date,0)),)"},
+        .edit_field{"DATE"},
+        .width{40},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Date"},
+        .is_shown{false},
+        .display_script{"[%date%]"},
+        .edit_field{"DATE"},
+        .width{80},
+        .weight{20},
+    },
+    ColumnDefinition{
+        .title{"Rating"},
+        .is_shown{false},
+        .display_script{"$if(%rating%,$repeat(★,%rating%)$repeat(☆,$sub(5,%rating%)),)"},
+        .edit_field{"RATING"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[%rating%]"},
+        .width{100},
+        .weight{10},
+    },
+    ColumnDefinition{
+        .title{"Codec"},
+        .is_shown{false},
+        .display_script{"%codec%[ · %codec_profile%]"},
+        .width{100},
+        .weight{20},
+    },
+    ColumnDefinition{
+        .title{"Channels"},
+        .is_shown{false},
+        .display_script{"[%channels%]"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[$info(channels)]"},
+        .width{80},
+        .weight{10},
+
+    },
+    ColumnDefinition{
+        .title{"Sample rate"},
+        .is_shown{false},
+        .display_script{"[%samplerate% Hz]"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[%samplerate%]"},
+        .width{80},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Bit rate"},
+        .is_shown{false},
+        .display_script{"[%bitrate% kbps]"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[%bitrate%]"},
+        .width{65},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Track gain"},
+        .is_shown{false},
+        .display_script{"[%replaygain_track_gain%]"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[$add($replace(%replaygain_track_gain%,.,),100000)]"},
+        .width{80},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Album gain"},
+        .is_shown{false},
+        .display_script{"[%replaygain_album_gain%]"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[$add($replace(%replaygain_album_gain%,.,),100000)]"},
+        .width{80},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Path"},
+        .is_shown{false},
+        .display_script{"[%path%]"},
+        .width{200},
+        .weight{150},
+    },
+    ColumnDefinition{
+        .title{"Last modified"},
+        .is_shown{false},
+        .display_script{"[%last_modified%]"},
+        .width{120},
+        .weight{10},
+    },
+    ColumnDefinition{
+        .title{"Size"},
+        .is_shown{false},
+        .display_script{"[%filesize_natural%]"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[%filesize%]"},
+        .width{80},
+        .weight{20},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Play count"},
+        .is_shown{false},
+        .display_script{"[%play_count%]"},
+        .width{70},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+    ColumnDefinition{
+        .title{"Last played"},
+        .is_shown{false},
+        .display_script{"[%last_played%]"},
+        .width{120},
+        .weight{10},
+    },
+    ColumnDefinition{
+        .title{"Length"},
+        .display_script{"[%playback_time% ∕ ]%length%"},
+        .use_custom_sorting_script{true},
+        .sorting_script{"[%length_seconds%]"},
+        .width{80},
+        .weight{10},
+        .alignment{ALIGN_RIGHT},
+    },
+};
+
+} // namespace
+
+} // namespace cui::playlist_view
+
 void PlaylistViewColumn::read(stream_reader* reader, abort_callback& abortCallback)
 {
-    width.dpi = uih::get_system_dpi_cached().cx;
-    reader->read_string(name, abortCallback);
-    reader->read_string(spec, abortCallback);
-    reader->read_lendian_t(use_custom_colour, abortCallback);
-    reader->read_string(colour_spec, abortCallback);
-    reader->read_lendian_t(use_custom_sort, abortCallback);
-    reader->read_string(sort_spec, abortCallback);
-    reader->read_lendian_t(width.value, abortCallback);
-    reader->read_lendian_t(align, abortCallback);
-    reader->read_lendian_t(filter_type, abortCallback);
-    reader->read_string(filter, abortCallback);
-    reader->read_lendian_t(parts, abortCallback);
-    reader->read_lendian_t(show, abortCallback);
-    reader->read_string(edit_field, abortCallback);
+    def.width.dpi = uih::get_system_dpi_cached().cx;
+    reader->read_string(def.title, abortCallback);
+    reader->read_string(def.display_script, abortCallback);
+    reader->read_lendian_t(def.use_custom_style_script, abortCallback);
+    reader->read_string(def.style_script, abortCallback);
+    reader->read_lendian_t(def.use_custom_sorting_script, abortCallback);
+    reader->read_string(def.sorting_script, abortCallback);
+    reader->read_lendian_t(def.width.value, abortCallback);
+    reader->read_lendian_t(def.alignment, abortCallback);
+    reader->read_lendian_t(def.playlist_filter_mode, abortCallback);
+    reader->read_string(def.playlist_filter_pattern, abortCallback);
+    reader->read_lendian_t(def.weight, abortCallback);
+    reader->read_lendian_t(def.is_shown, abortCallback);
+    reader->read_string(def.edit_field, abortCallback);
 }
 
 void PlaylistViewColumn::read_extra(
     stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback)
 {
     if (streamVersion >= ColumnStreamVersion::streamVersion1) {
-        reader->read_lendian_t(width.dpi, abortCallback);
+        reader->read_lendian_t(def.width.dpi, abortCallback);
     }
 }
 
 void PlaylistViewColumn::write(stream_writer* out, abort_callback& abortCallback) const
 {
-    out->write_string(name.get_ptr(), abortCallback);
-    out->write_string(spec.get_ptr(), abortCallback);
-    out->write_lendian_t(use_custom_colour, abortCallback);
-    out->write_string(colour_spec, abortCallback);
-    out->write_lendian_t(use_custom_sort, abortCallback);
-    out->write_string(sort_spec, abortCallback);
-    out->write_lendian_t(width.value, abortCallback);
-    out->write_lendian_t(align, abortCallback);
-    out->write_lendian_t(filter_type, abortCallback);
-    out->write_string(filter, abortCallback);
-    out->write_lendian_t(parts, abortCallback);
-    out->write_lendian_t(show, abortCallback);
-    out->write_string(edit_field, abortCallback);
+    out->write_string(def.title.get_ptr(), abortCallback);
+    out->write_string(def.display_script.get_ptr(), abortCallback);
+    out->write_lendian_t(def.use_custom_style_script, abortCallback);
+    out->write_string(def.style_script, abortCallback);
+    out->write_lendian_t(def.use_custom_sorting_script, abortCallback);
+    out->write_string(def.sorting_script, abortCallback);
+    out->write_lendian_t(def.width.value, abortCallback);
+    out->write_lendian_t(def.alignment, abortCallback);
+    out->write_lendian_t(def.playlist_filter_mode, abortCallback);
+    out->write_string(def.playlist_filter_pattern, abortCallback);
+    out->write_lendian_t(def.weight, abortCallback);
+    out->write_lendian_t(def.is_shown, abortCallback);
+    out->write_string(def.edit_field, abortCallback);
 }
 
 void PlaylistViewColumn::write_extra(stream_writer* out, abort_callback& abortCallback) const
 {
-    out->write_lendian_t(width.dpi, abortCallback);
+    out->write_lendian_t(def.width.dpi, abortCallback);
 }
 
 bool ColumnList::move_up(size_t idx)
@@ -159,21 +361,13 @@ void ConfigColumns::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abo
 void ConfigColumns::reset()
 {
     remove_all();
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Artist", "[%artist%]", false, "", false, "", 180, ALIGN_LEFT, FILTER_NONE, "", 180, true, "ARTIST"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "#", "[%tracknumber%]", false, "", false, "", 18, ALIGN_RIGHT, FILTER_NONE, "", 18, true, "TRACKNUMBER"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
-    add_item(std::make_shared<PlaylistViewColumn>(
-        "Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"));
-    add_item(std::make_shared<PlaylistViewColumn>("Length", "[%_time_elapsed% / ]%_length%", false, "", true,
-        "$num(%_length_seconds%,6)", 60, ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
+
+    for (const auto& def : cui::playlist_view::default_columns) {
+        add_item(std::make_shared<PlaylistViewColumn>(def));
+    }
 }
 
-ConfigColumns::ConfigColumns(const GUID& p_guid, ColumnStreamVersion streamVersion) : cfg_var(p_guid)
+ConfigColumns::ConfigColumns(const GUID& p_guid) : cfg_var(p_guid)
 {
     reset();
 }
