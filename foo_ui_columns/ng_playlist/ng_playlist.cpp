@@ -825,8 +825,10 @@ void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending
             order2[source_indices[n]] = source_indices[order[n]];
         }
         m_playlist_api->activeplaylist_reorder_items(order2.data(), count);
-    } else
+    } else {
+        auto _ = suspend_smooth_scrolling();
         m_playlist_api->activeplaylist_reorder_items(order.data(), count);
+    }
 }
 
 void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending, bool b_selection_only)
@@ -898,6 +900,7 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
     m_playlist_api->activeplaylist_undo_backup();
 
     if (!b_selection_only) {
+        auto _ = suspend_smooth_scrolling();
         m_playlist_api->activeplaylist_reorder_items(sorted_items_order.data(), playlist_size);
     } else {
         std::vector<size_t> source_indices;
