@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.4.0-beta.1
 
 ### Features
 
@@ -9,6 +9,9 @@
 
   More columns are now available out of the box, and the existing columns were
   also tweaked.
+
+- Smooth scrolling is now suppressed when sorting by a column in the playlist
+  view. [[#1632](https://github.com/reupen/columns_ui/pull/1632)]
 
 ### Bug fixes
 
