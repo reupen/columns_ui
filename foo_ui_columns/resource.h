@@ -63,14 +63,27 @@
 #define IDD_PREFS_PLAYLISTS_DRAGDROP    197
 #define IDI_LIGHT_STOP_AFTER_CURRENT    197
 #define IDD_PREFS_LAYOUT_PRESETS        198
+#define IDI_DARK_CLOSE                  198
+#define IDI_DARK_DOWN                   199
 #define IDD_RENAME_PLAYLIST             200
+#define IDI_DARK_UP                     200
 #define IDD_PREFS_TAB_HOST              201
+#define IDI_LIGHT_CLOSE                 201
 #define IDD_PREFS_PLAYLIST_TABS         202
+#define IDI_LIGHT_DOWN                  202
 #define IDD_PREFS_SYSTEM_TRAY           203
+#define IDI_ICON4                       203
+#define IDI_LIGHT_UP                    203
 #define IDD_SPECTRUM_ANALYSER_OPTIONS   204
+#define IDV_DARK_CLOSE                  204
+#define IDV_DARK_DOWN                   205
 #define IDD_BUTTON_COMMAND_PICKER       206
+#define IDV_DARK_UP                     206
 #define IDD_FCL_IMPORT                  207
+#define IDV_LIGHT_CLOSE                 207
+#define IDV_LIGHT_DOWN                  208
 #define IDD_RESULTS                     209
+#define IDV_LIGHT_UP                    209
 #define IDD_FCL_EXPORT                  210
 #define IDD_EDIT_GROUP                  213
 #define IDD_PREFS_PVIEW_GROUPS          214
@@ -97,6 +110,7 @@
 #define IDD_FONT_AXES                   238
 #define IDD_FORMAT_CODE_GENERATOR       239
 #define IDD_PREFS_SETUP                 240
+#define IDD_PREFS_PVIEW_SEARCH          241
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
@@ -320,6 +334,10 @@
 #define IDC_ARTWORK_WIDTH_LABEL         1213
 #define IDC_ARTWORK_WIDTH_PX            1214
 #define IDC_USE_SMOOTH_SCROLLING        1215
+#define IDC_USE_SEARCH_BAR              1216
+#define IDC_SEARCH_BAR_MODE             1217
+#define IDC_SEARCH_BAR_SCRIPT           1218
+#define IDC_IGNORE_SYMBOLS              1219
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -327,9 +345,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        198
+#define _APS_NEXT_RESOURCE_VALUE        210
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1216
+#define _APS_NEXT_CONTROL_VALUE         1220
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -802,6 +802,21 @@ BEGIN
                     "SysLink",WS_TABSTOP,7,219,123,10
 END
 
+IDD_PREFS_PVIEW_SEARCH DIALOGEX 0, 0, 327, 272
+STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "Tahoma", 0, 0, 0x1
+BEGIN
+    LTEXT           "Integrated search bar",IDC_TITLE1,7,4,313,16
+    CONTROL         "Open search bar instead of pop-up playlist search when using Ctrl+F or F3",IDC_USE_SEARCH_BAR,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,274,10
+    LTEXT           "Search mode",IDC_STATIC,7,50,50,8
+    COMBOBOX        IDC_SEARCH_BAR_MODE,7,62,313,136,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SEARCH_BAR_SCRIPT,7,96,313,31,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Title format to match",IDC_STATIC,7,84,78,8
+    CONTROL         "Ignore symbols",IDC_IGNORE_SYMBOLS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,138,71,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1135,6 +1150,14 @@ BEGIN
         TOPMARGIN, 4
         BOTTOMMARGIN, 265
     END
+
+    IDD_PREFS_PVIEW_SEARCH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 320
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 265
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1202,6 +1225,18 @@ IDI_DARK_STOP_AFTER_CURRENT ICON                    "assets\\vectors\\rendered\\
 
 IDI_LIGHT_STOP_AFTER_CURRENT ICON                    "assets\\vectors\\rendered\\light-stop-after-current.ico"
 
+IDI_DARK_CLOSE          ICON                    "assets\\vectors\\rendered\\dark-close.ico"
+
+IDI_DARK_DOWN           ICON                    "assets\\vectors\\rendered\\dark-down.ico"
+
+IDI_DARK_UP             ICON                    "assets\\vectors\\rendered\\dark-up.ico"
+
+IDI_LIGHT_CLOSE         ICON                    "assets\\vectors\\rendered\\light-close.ico"
+
+IDI_LIGHT_DOWN          ICON                    "assets\\vectors\\rendered\\light-down.ico"
+
+IDI_LIGHT_UP            ICON                    "assets\\vectors\\rendered\\light-up.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1265,6 +1300,18 @@ IDV_LIGHT_PADLOCK       SVG                     "assets\\vectors\\minified\\ligh
 IDV_DARK_STOP_AFTER_CURRENT SVG                     "assets\\vectors\\minified\\dark-stop-after-current.svg"
 
 IDV_LIGHT_STOP_AFTER_CURRENT SVG                     "assets\\vectors\\minified\\light-stop-after-current.svg"
+
+IDV_DARK_CLOSE          SVG                     "assets\\vectors\\minified\\dark-close.svg"
+
+IDV_DARK_DOWN           SVG                     "assets\\vectors\\minified\\dark-down.svg"
+
+IDV_DARK_UP             SVG                     "assets\\vectors\\minified\\dark-up.svg"
+
+IDV_LIGHT_CLOSE         SVG                     "assets\\vectors\\minified\\light-close.svg"
+
+IDV_LIGHT_DOWN          SVG                     "assets\\vectors\\minified\\light-down.svg"
+
+IDV_LIGHT_UP            SVG                     "assets\\vectors\\minified\\light-up.svg"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

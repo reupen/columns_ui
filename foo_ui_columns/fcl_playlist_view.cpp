@@ -36,6 +36,10 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         identifier_root_group_indentation_amount,
         identifier_artwork_group_header_spacing_enabled,
         identifier_sticky_group_headers,
+        identifier_use_search_bar,
+        identifier_search_bar_mode,
+        identifier_search_bar_script,
+        identifier_ignore_symbols,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours"; }
     const GUID& get_group() const override { return fcl::groups::colours_and_fonts; }
@@ -66,6 +70,10 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         out.write_item(identifier_artwork_group_header_spacing_enabled,
             panels::playlist_view::cfg_artwork_group_header_spacing_enabled);
         out.write_item(identifier_sticky_group_headers, panels::playlist_view::cfg_sticky_group_headers);
+        out.write_item(identifier_use_search_bar, panels::playlist_view::cfg_use_search_bar);
+        out.write_item(identifier_search_bar_mode, playlist_search::cfg_search_bar_mode);
+        out.write_item(identifier_search_bar_script, playlist_search::cfg_search_bar_script);
+        out.write_item(identifier_ignore_symbols, playlist_search::cfg_search_bar_ignore_symbols);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -128,6 +136,21 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
                 break;
             case identifier_root_group_indentation_amount:
                 reader.read_item(panels::playlist_view::cfg_root_group_indentation_amount);
+                break;
+            case identifier_use_search_bar:
+                reader.read_item(panels::playlist_view::cfg_use_search_bar);
+                break;
+            case identifier_search_bar_mode:
+                reader.read_item(playlist_search::cfg_search_bar_mode);
+                break;
+            case identifier_search_bar_script: {
+                pfc::string8 value;
+                reader.read_item(value, element_size);
+                playlist_search::cfg_search_bar_script = std::move(value);
+                break;
+            }
+            case identifier_ignore_symbols:
+                reader.read_item(playlist_search::cfg_search_bar_ignore_symbols);
                 break;
             case colours_pview_scheme: {
                 int use_custom_colours{};

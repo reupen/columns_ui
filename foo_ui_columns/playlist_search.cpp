@@ -1,166 +1,302 @@
 #include "pch.h"
 
-#ifdef QUICKFIND_ENABLED
 #include "playlist_search.h"
 
-#define cfg_default_search "%artist% - %title%"
-#define cfg_default_search_mode 0
+namespace cui::playlist_search {
 
-quickfind_window::quickfind_window()
-    : wnd_edit(0)
-    , m_is_running(false)
-    , m_initialised(false)
-    , m_editproc(0)
-    , m_pattern(cfg_default_search)
-    , height(0)
-    , wnd_prev(0)
-    , m_mode(cfg_default_search_mode)
+fbh::ConfigInt32 cfg_search_bar_mode({0x8b8e6b11, 0x180a, 0x4f69, {0xa9, 0xf9, 0x9d, 0xf1, 0xb1, 0xd4, 0xc4, 0x22}}, 0);
+fbh::ConfigString cfg_search_bar_script(
+    {0xf9892211, 0xc021, 0x4a5b, {0x8c, 0x95, 0x2a, 0x0c, 0x12, 0xc0, 0x05, 0x3f}}, "[%artist%] [%title%] [%album%]");
+fbh::ConfigBool cfg_search_bar_ignore_symbols(
+    {0x8dbd88a1, 0x9ec2, 0x4eb0, {0xad, 0x8c, 0xa2, 0x79, 0xbd, 0x75, 0x20, 0x4b}}, true);
+
+namespace {
+
+auto split_into_words(std::wstring_view text)
 {
+    return text | ranges::views::split_when([](auto&& character) { return std::iswspace(character); })
+        | ranges::views::filter([](auto&& word) { return !ranges::empty(word); })
+        | ranges::views::transform([](auto&& word) {
+              const auto size = ranges::distance(word);
+              return size > 0 ? std::wstring_view(&*ranges::begin(word), size) : std::wstring_view{};
+          });
 }
 
-quickfind_window::~quickfind_window() {}
-
-void quickfind_window::on_size(unsigned cx, unsigned cy)
+bool match_string(
+    std::wstring_view full_string, std::wstring_view partial_string, bool ignore_symbols, bool starts_with)
 {
-    SetWindowPos(wnd_edit, 0, 0, 0, cx, height, SWP_NOZORDER);
+    const auto match_index = FindNLSStringEx(LOCALE_NAME_USER_DEFAULT,
+        (starts_with ? FIND_STARTSWITH : FIND_FROMSTART) | LINGUISTIC_IGNOREDIACRITIC | NORM_IGNORECASE
+            | NORM_IGNOREWIDTH | NORM_LINGUISTIC_CASING | (ignore_symbols ? NORM_IGNORESYMBOLS : 0),
+        full_string.data(), gsl::narrow<int>(full_string.size()), partial_string.data(),
+        gsl::narrow<int>(partial_string.size()), nullptr, nullptr, nullptr, 0);
+
+    return match_index >= 0;
 }
-void quickfind_window::on_size()
+
+} // namespace
+
+void PlaylistSearch::init()
 {
-    RECT rc;
-    GetWindowRect(get_wnd(), &rc);
-    on_size(wil::rect_width(rc), wil::rect_height(rc));
-}
+    if (m_running)
+        return;
 
-LRESULT quickfind_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_CREATE: {
-        m_initialised = true;
+    titleformat_compiler::get()->compile(m_titleformat_object, cfg_search_bar_script);
 
-        modeless_dialog_manager::g_add(wnd);
+    m_playlist_index = m_playlist_api->get_active_playlist();
+    const auto count = m_playlist_api->playlist_get_item_count(m_playlist_index);
+    m_tracks.prealloc(count);
+    m_playlist_api->playlist_get_all_items(m_playlist_index, m_tracks);
+    m_matches.set_size(count);
+    m_matches.fill(true);
 
-        long flags = 0;
-        if (cfg_frame == 1)
-            flags |= WS_EX_CLIENTEDGE;
-        else if (cfg_frame == 2)
-            flags |= WS_EX_STATICEDGE;
+    const auto mode = static_cast<SearchMode>(cfg_search_bar_mode.get());
 
-        m_search.set_pattern(m_pattern);
-        m_search.set_mode(m_mode);
+    if (mode == SearchMode::mode_match_words_beginning_formatted_title
+        || mode == SearchMode::mode_match_words_anywhere_formatted_title) {
+        m_formatted.resize(count);
 
-        wnd_edit = CreateWindowEx(flags, WC_EDIT, _T(""), WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL, 0, 0, 0,
-            0, wnd, HMENU(IDC_TREE), core_api::get_my_instance(), NULL);
+        const auto metadb_v2_api = metadb_v2::tryGet();
 
-        if (wnd_edit) {
-            m_font = CreateFontIndirect(&cfg_font.get_value());
-            SendMessage(wnd_edit, WM_SETFONT, (WPARAM)m_font.get(), MAKELPARAM(FALSE, 0));
+        if (fb2k::isLowMemModeActive() && metadb_v2_api.is_valid()) {
+            metadb_v2_api->queryMultiParallelEx_<std::string>(
+                m_tracks, [this](size_t index, const metadb_v2::rec_t& rec, auto&& buffer) {
+                    metadb_handle_v2::ptr track;
+                    track &= m_tracks[index];
 
-            SetWindowLongPtr(wnd_edit, GWLP_USERDATA, (LPARAM)(this));
-            m_editproc = (WNDPROC)SetWindowLongPtr(wnd_edit, GWLP_WNDPROC, (LPARAM)(hook_proc));
+                    mmh::StringAdaptor adapted_string(buffer);
+                    track->formatTitle_v2(rec, nullptr, adapted_string, m_titleformat_object, nullptr);
+                    m_formatted[index] = mmh::to_utf16(buffer);
+                });
+        } else {
+            concurrency::parallel_for(size_t{}, count, [this](auto&& n) {
+                thread_local std::string buffer;
+                mmh::StringAdaptor adapted_string(buffer);
+                m_tracks[n]->format_title(nullptr, adapted_string, m_titleformat_object, nullptr);
+                m_formatted[n] = mmh::to_utf16(buffer);
+            });
         }
-
-        height = uGetFontHeight(m_font) + 2;
-        SetFocus(wnd_edit);
-
-        SendMessage(wnd_edit, EM_SETSEL, 0, -1);
-        uGetWindowText text(wnd_edit);
-        m_search.init();
-        if (text.length())
-            m_search.set_string(text);
-        on_size();
-    } break;
-    case WM_GETMINMAXINFO: {
-        LPMINMAXINFO mmi = LPMINMAXINFO(lp);
-        mmi->ptMinTrackSize.y = height;
-        mmi->ptMaxTrackSize.y = height;
-        return 0;
+    } else {
+        m_formatted.clear();
     }
-    case WM_SIZE:
-        on_size(LOWORD(lp), HIWORD(lp));
-        break;
-    case WM_COMMAND:
-        switch (wp) {
-        case IDOK:
-            if (m_search.on_key(VK_RETURN))
-                return 0;
-            break;
-        case IDCANCEL: {
-            SetFocus(wnd_prev);
+
+    if (!m_playlist_callback)
+        m_playlist_callback.emplace([&] { mark_results_stale(); });
+
+    m_running = true;
+    m_are_results_stale = false;
+    m_last_mode = mode;
+}
+
+void PlaylistSearch::reset()
+{
+    m_running = false;
+    m_are_results_stale = false;
+    m_match_index = 0;
+    m_match_count = 0;
+    m_matches.set_size(0);
+    m_tracks.remove_all();
+    m_string.clear();
+    m_formatted.clear();
+    m_playlist_callback.reset();
+}
+
+void PlaylistSearch::on_return() const
+{
+    if (!m_running)
+        return;
+
+    const auto focus_index = fbh::as_optional(m_playlist_api->playlist_get_focus_item(m_playlist_index));
+
+    if (!focus_index)
+        return;
+
+    const auto is_ctrl_down = (GetKeyState(VK_CONTROL) & KF_UP) != 0;
+
+    if (is_ctrl_down) {
+        metadb_handle_ptr track;
+        m_playlist_api->queue_add_item_playlist(m_playlist_index, *focus_index);
+    } else {
+        m_playlist_api->playlist_execute_default_action(m_playlist_index, *focus_index);
+    }
+}
+
+void PlaylistSearch::run()
+{
+    assert(m_matches.size() == m_playlist_api->activeplaylist_get_item_count());
+
+    const auto mode = m_last_mode;
+    auto clear_selection = mode == SearchMode::mode_query;
+
+    m_match_count = 0;
+    std::optional<std::string> query_error;
+
+    if (mode == SearchMode::mode_query && !m_string.empty()) {
+        const auto filter_api = search_filter_manager_v2::get();
+        const auto string_utf8 = mmh::to_utf8(m_string);
+        search_filter_v2::ptr filter;
+
+        try {
+            filter = filter_api->create_ex(string_utf8.c_str(), new service_impl_t<completion_notify_dummy>(),
+                search_filter_manager_v2::KFlagSuppressNotify);
+            clear_selection = false;
+        } catch (const pfc::exception& ex) {
+            query_error = ex.what();
         }
-            return 0;
-        }
-        break;
-    case WM_DESTROY:
-        wnd_edit = 0;
-        if (m_initialised) {
-            m_initialised = false;
-            modeless_dialog_manager::g_remove(wnd);
-        }
-        m_font.release();
+
+        if (filter.is_valid())
+            filter->test_multi(m_tracks, m_matches.get_ptr());
+    }
+
+    if (clear_selection || m_string.empty()) {
+        m_playlist_api->playlist_clear_selection(m_playlist_index);
+
+        if (query_error)
+            dispatch_results_statistics_change(QueryError, {}, {}, *query_error);
+        else
+            dispatch_results_statistics_change(NoQuery);
+        return;
+    }
+
+    const auto is_words_match = mode == SearchMode::mode_match_words_beginning_formatted_title
+        || mode == SearchMode::mode_match_words_anywhere_formatted_title;
+
+    const auto terms = is_words_match ? split_into_words(m_string) | ranges::to<std::vector<std::wstring_view>>()
+                                      : std::vector<std::wstring_view>{};
+
+    if (mode == SearchMode::mode_match_words_beginning_formatted_title) {
+        concurrency::parallel_for(size_t{}, m_formatted.size(), [this, &terms](auto&& index) {
+            if (!m_matches[index])
+                return;
+
+            const auto& target_string = m_formatted[index];
+            auto target_words = split_into_words(target_string);
+
+            const auto all_terms_match = ranges::all_of(terms, [&](auto&& term) {
+                return ranges::any_of(target_words, [&](auto&& target_word) {
+                    return match_string(target_word, term, cfg_search_bar_ignore_symbols, true);
+                });
+            });
+
+            if (!all_terms_match || terms.empty())
+                m_matches[index] = false;
+        });
+    } else if (mode == SearchMode::mode_match_words_anywhere_formatted_title) {
+        concurrency::parallel_for(size_t{}, m_formatted.size(), [this, &terms](auto&& index) {
+            if (!m_matches[index])
+                return;
+
+            const auto& target_string = m_formatted[index];
+            const auto all_terms_match = ranges::all_of(terms,
+                [&](auto&& term) { return match_string(target_string, term, cfg_search_bar_ignore_symbols, false); });
+
+            if (!all_terms_match || terms.empty())
+                m_matches[index] = false;
+        });
+    }
+
+    m_match_count = std::ranges::count(m_matches, true);
+
+    m_playlist_api->playlist_set_selection(
+        m_playlist_index, bit_array_true(), pfc::bit_array_lambda([&](auto index) { return m_matches[index]; }));
+
+    if (m_match_count == 0) {
+        dispatch_results_statistics_change(NoMatches, 0, m_match_count);
+        return;
+    }
+
+    const auto existing_focus = fbh::as_optional(m_playlist_api->playlist_get_focus_item(m_playlist_index)).value_or(0);
+    const auto total_items = m_matches.size();
+
+    const auto target_focus = [&] {
+        if (m_matches[existing_focus])
+            return existing_focus;
+
+        auto matches_views = ranges::views::iota(size_t{1}, total_items) | ranges::views::transform([&](auto index) {
+            return index < (total_items - existing_focus) ? existing_focus + index
+                                                          : index - (total_items - existing_focus);
+        }) | ranges::views::filter([&](auto index) { return m_matches[index]; });
+
+        return matches_views.front();
+    }();
+
+    m_ensure_visible_func(target_focus);
+    m_playlist_api->playlist_set_focus_item(m_playlist_index, target_focus);
+
+    m_match_index = std::ranges::count(m_matches | std::views::take(target_focus), true);
+    dispatch_results_statistics_change(Matches, m_match_index + 1, m_match_count);
+}
+
+void PlaylistSearch::dispatch_results_statistics_change(Status status, std::optional<size_t> match_index,
+    std::optional<size_t> match_count, std::string_view query_error) const
+{
+    m_results_statistics_change_func(status, match_index, match_count, query_error);
+}
+
+void PlaylistSearch::refresh()
+{
+    init();
+    run();
+}
+
+bool PlaylistSearch::refresh_if_stale()
+{
+    if (!m_are_results_stale && WI_EnumValue(m_last_mode) == cfg_search_bar_mode.get())
+        return false;
+
+    m_running = false;
+    refresh();
+    return true;
+}
+void PlaylistSearch::mark_results_stale()
+{
+    if (!m_running)
+        return;
+
+    m_are_results_stale = true;
+    dispatch_results_statistics_change(Stale);
+}
+
+void PlaylistSearch::handle_next_or_previous(NavigationType navigation_type)
+{
+    if (!m_running)
+        return;
+
+    if (refresh_if_stale())
+        return;
+
+    const auto total_items = m_matches.size();
+
+    if (m_match_count == 0 || total_items <= 1)
+        return;
+
+    const auto focus = m_playlist_api->playlist_get_focus_item(m_playlist_index);
+    auto matches_views = ranges::views::iota(size_t{1}, total_items) | ranges::views::transform([&](auto index) {
+        if (navigation_type == NavigationType::Next)
+            return index < (total_items - focus) ? focus + index : index - (total_items - focus);
+
+        return index < focus ? focus - index : (total_items - index + focus - 1);
+    });
+
+    for (const auto index : matches_views) {
+        if (!m_matches[index])
+            continue;
+
+        m_ensure_visible_func(index);
+
+        if (!m_playlist_api->playlist_is_item_selected(m_playlist_index, index))
+            m_playlist_api->playlist_set_selection(m_playlist_index, pfc::bit_array_true(), pfc::bit_array_one(index));
+
+        m_playlist_api->playlist_set_focus_item(m_playlist_index, index);
+
+        if (navigation_type == NavigationType::Next)
+            m_match_index = m_match_index + 1 == m_match_count ? 0 : m_match_index + 1;
+        else
+            m_match_index = m_match_index == 0 ? m_match_count - 1 : m_match_index - 1;
+
+        dispatch_results_statistics_change(Matches, m_match_index + 1, m_match_count);
         break;
     }
-    return DefWindowProc(wnd, msg, wp, lp);
 }
 
-LRESULT WINAPI quickfind_window::hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    quickfind_window* p_this;
-    LRESULT rv;
-
-    p_this = reinterpret_cast<quickfind_window*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-
-    rv = p_this ? p_this->on_hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-
-    return rv;
-}
-
-LRESULT WINAPI quickfind_window::on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_KEYDOWN:
-        if (wp == VK_TAB) {
-            ui_extension::window::g_on_tab(wnd);
-        } else if (m_search.on_key(wp))
-            return 0;
-        else if (wp == VK_DELETE) {
-            LRESULT ret = CallWindowProc(m_editproc, wnd, msg, wp, lp);
-            m_search.set_string(uGetWindowText(wnd));
-            return ret;
-        }
-        /*
-        else if (wp == VK_ESCAPE)
-        {
-            SetFocus(wnd_prev);
-            return 0;
-        }*/
-        break;
-    case WM_SYSKEYDOWN:
-        break;
-    case WM_CHAR: {
-        bool ctrl_down = 0 != (GetKeyState(VK_CONTROL) & KF_UP);
-        if (wp == VK_RETURN || (wp == 0xa && ctrl_down) || wp == VK_ESCAPE)
-            return 0;
-        else if (!ctrl_down) {
-            // assert (wp != VK_DELETE);
-            unsigned start, end;
-            SendMessage(wnd, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
-            if (wp == VK_BACK || start != end || end != SendMessage(wnd, WM_GETTEXTLENGTH, 0, 0)) {
-                LRESULT ret = CallWindowProc(m_editproc, wnd, msg, wp, lp);
-                m_search.set_string(uGetWindowText(wnd));
-                return ret;
-            }
-            m_search.add_char(wp);
-        }
-    } break;
-    case WM_SETFOCUS:
-        wnd_prev = (HWND)wp;
-        break;
-    case WM_KILLFOCUS: {
-        m_search.reset();
-        destroy();
-    } break;
-    }
-    return CallWindowProc(m_editproc, wnd, msg, wp, lp);
-}
-
-#endif
+} // namespace cui::playlist_search

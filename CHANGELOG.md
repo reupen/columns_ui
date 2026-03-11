@@ -1,5 +1,18 @@
 # Change log
 
+## Development version
+
+### Features
+
+- A new integrated search bar has been added to the playlist view.
+
+  This allows searching the active playlist using a text-based search against
+  specified title formatting fields or using the foobar2000 query language.
+
+  The search bar can be configured or disabled on the Search tab on the Playlist
+  view page in Preferences.
+  [[#1671](https://github.com/reupen/columns_ui/pull/1671)]
+
 ## 3.4.1
 
 ### Bug fixes

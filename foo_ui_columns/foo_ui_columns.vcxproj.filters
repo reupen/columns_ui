@@ -665,6 +665,9 @@
     <ClCompile Include="vis_spectrum_renderer.cpp">
       <Filter>Spectrum analyser</Filter>
     </ClCompile>
+    <ClCompile Include="tab_pview_search.cpp">
+      <Filter>Config UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1080,6 +1083,24 @@
     <None Include="assets\vectors\minified\light-stop-after-current.svg">
       <Filter>Resources\svg</Filter>
     </None>
+    <None Include="assets\vectors\minified\dark-close.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-down.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-up.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-close.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-down.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-up.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="foo_ui_columns.rc">
@@ -1166,6 +1187,24 @@
       <Filter>Resources\ico</Filter>
     </Image>
     <Image Include="assets\vectors\rendered\light-stop-after-current.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-down.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-close.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-up.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-up.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-close.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-down.ico">
       <Filter>Resources\ico</Filter>
     </Image>
   </ItemGroup>

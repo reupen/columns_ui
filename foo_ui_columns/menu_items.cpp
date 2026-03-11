@@ -68,6 +68,14 @@ namespace commands {
 
 namespace {
 
+constexpr GUID playlist_view_search_id{0xb284f957, 0x32cb, 0x4ab1, {0xb2, 0xb5, 0x4c, 0x07, 0x1f, 0x7f, 0x9d, 0x5e}};
+
+const MainMenuCommand playlist_view_search{.guid = playlist_view_search_id,
+    .name = "Search playlist",
+    .description = "Opens and activates the playlist view search bar.",
+    .execute_callback = [] { panels::playlist_view::PlaylistView::s_show_search_bar(); },
+    .is_available_callback = [] { return panels::playlist_view::PlaylistView::s_has_active_instance(); }};
+
 const MainMenuCommand activate_now_playing{activate_now_playing_id, "Activate now playing",
     "Activates the currently playing item.", [] { playlist_manager::get()->highlight_playing_item(); }};
 
@@ -285,7 +293,7 @@ service_factory_single_t<MainMenuCommands> _mainmenu_commands_layout(
     groups::view_layout_commands, mainmenu_commands::sort_priority_base, live_editing);
 
 service_factory_single_t<MainMenuCommands> _mainmenu_commands_playlist_misc(
-    groups::playlist_misc_part, mainmenu_commands::sort_priority_dontcare, activate_now_playing);
+    groups::playlist_misc_part, mainmenu_commands::sort_priority_dontcare, playlist_view_search, activate_now_playing);
 
 service_factory_single_t<MainMenuCommands> _mainmenu_commands_playlist_settings(
     groups::playlist_settings_part, mainmenu_commands::sort_priority_dontcare, show_groups, show_artwork);

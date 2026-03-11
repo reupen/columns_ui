@@ -303,6 +303,7 @@
     <ClCompile Include="seekbar_callbacks.cpp" />
     <ClCompile Include="status_bar_callbacks.cpp" />
     <ClCompile Include="tab_dark_mode.cpp" />
+    <ClCompile Include="tab_pview_search.cpp" />
     <ClCompile Include="tab_playlist_swticher.cpp" />
     <ClCompile Include="tab_setup.cpp" />
     <ClCompile Include="tab_status_pane.cpp" />
@@ -558,6 +559,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
+    <None Include="assets\vectors\minified\dark-close.svg" />
+    <None Include="assets\vectors\minified\dark-down.svg" />
     <None Include="assets\vectors\minified\dark-next.svg" />
     <None Include="assets\vectors\minified\dark-open.svg" />
     <None Include="assets\vectors\minified\dark-padlock.svg" />
@@ -570,6 +573,9 @@
     <None Include="assets\vectors\minified\dark-star-grey.svg" />
     <None Include="assets\vectors\minified\dark-stop-after-current.svg" />
     <None Include="assets\vectors\minified\dark-stop.svg" />
+    <None Include="assets\vectors\minified\dark-up.svg" />
+    <None Include="assets\vectors\minified\light-close.svg" />
+    <None Include="assets\vectors\minified\light-down.svg" />
     <None Include="assets\vectors\minified\light-next.svg" />
     <None Include="assets\vectors\minified\light-open.svg" />
     <None Include="assets\vectors\minified\light-padlock.svg" />
@@ -582,6 +588,7 @@
     <None Include="assets\vectors\minified\light-star-grey.svg" />
     <None Include="assets\vectors\minified\light-stop-after-current.svg" />
     <None Include="assets\vectors\minified\light-stop.svg" />
+    <None Include="assets\vectors\minified\light-up.svg" />
     <None Include="version.h.template" />
   </ItemGroup>
   <ItemGroup>
@@ -612,6 +619,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\blank.bmp" />
+    <Image Include="assets\vectors\rendered\dark-close.ico" />
+    <Image Include="assets\vectors\rendered\dark-down.ico" />
     <Image Include="assets\vectors\rendered\dark-next.ico" />
     <Image Include="assets\vectors\rendered\dark-open.ico" />
     <Image Include="assets\vectors\rendered\dark-padlock.ico" />
@@ -625,6 +634,9 @@
     <Image Include="assets\vectors\rendered\dark-star-grey.ico" />
     <Image Include="assets\vectors\rendered\dark-stop-after-current.ico" />
     <Image Include="assets\vectors\rendered\dark-stop.ico" />
+    <Image Include="assets\vectors\rendered\dark-up.ico" />
+    <Image Include="assets\vectors\rendered\light-close.ico" />
+    <Image Include="assets\vectors\rendered\light-down.ico" />
     <Image Include="assets\vectors\rendered\light-next.ico" />
     <Image Include="assets\vectors\rendered\light-open.ico" />
     <Image Include="assets\vectors\rendered\light-padlock.ico" />
@@ -638,6 +650,7 @@
     <Image Include="assets\vectors\rendered\light-star-grey.ico" />
     <Image Include="assets\vectors\rendered\light-stop-after-current.ico" />
     <Image Include="assets\vectors\rendered\light-stop.ico" />
+    <Image Include="assets\vectors\rendered\light-up.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -104,6 +104,7 @@ PreferencesTab* g_get_tab_playlist_dd();
 PreferencesTab* g_get_tab_playlist_switcher();
 PreferencesTab* g_get_tab_playlist_tabs();
 PreferencesTab* g_get_tab_pview_artwork();
+PreferencesTab* g_get_tab_playlist_view_search();
 PreferencesTab* g_get_tab_status_bar();
 PreferencesTab* g_get_tab_status_pane();
 PreferencesTab* g_get_tab_system_tray();
