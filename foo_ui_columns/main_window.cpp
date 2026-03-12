@@ -49,10 +49,8 @@ HIMAGELIST g_imagelist = nullptr;
 
 HWND g_status = nullptr;
 
-bool g_icon_created = false;
-bool ui_initialising = false, g_minimised = false;
-
-HICON g_icon = nullptr;
+bool ui_initialising{};
+bool g_minimised{};
 
 bool remember_window_pos()
 {
@@ -193,10 +191,6 @@ void cui::MainWindow::shutdown()
     DestroyWindow(m_wnd);
     UnregisterClass(main_window_class_name, core_api::get_my_instance());
     m_wnd = nullptr;
-    if (g_icon)
-        DestroyIcon(g_icon);
-    g_icon = nullptr;
-
     OleUninitialize();
 }
 

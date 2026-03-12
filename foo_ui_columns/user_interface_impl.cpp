@@ -5,8 +5,6 @@
 #include "system_tray.h"
 #include "main_window.h"
 
-extern bool g_icon_created;
-
 namespace cui {
 
 namespace {
@@ -184,7 +182,7 @@ public:
 
         cfg_main_window_is_hidden = false;
 
-        if (g_icon_created && !cfg_show_systray)
+        if (systray::is_system_tray_icon_created && !cfg_show_systray)
             systray::remove_icon();
 
         if (GetForegroundWindow() != wnd)

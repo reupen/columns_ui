@@ -16,7 +16,7 @@ const char* default_status_bar_script
 const char* default_system_tray_icon_script
     = "//This is the default script for the content of the system tray icon tooltip "
       "during playback.\r\n\r\n"
-      "[%title%]$crlf()[%artist%][$crlf()%album%]";
+      "[%title%][$char(10)%artist%][$char(10)%album%]";
 
 const char* default_main_window_title_script
     = "//This is the default script for the title of the main window during playback.\r\n\r\n"
