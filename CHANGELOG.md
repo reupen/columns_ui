@@ -1,5 +1,13 @@
 # Change log
 
+## 3.4.0
+
+### Bug fixes
+
+- A bug where some operations in the Layout tree in Preferences may have behaved
+  incorrectly after changing the container type of the root panel was fixed.
+  [[#1642](https://github.com/reupen/columns_ui/pull/1642)]
+
 ## 3.4.0-beta.1
 
 ### Features
