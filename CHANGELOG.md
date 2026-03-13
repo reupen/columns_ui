@@ -31,6 +31,10 @@
   automatically dismissed.
   [[#1643](https://github.com/reupen/columns_ui/pull/1643)]
 
+- A problem that may have delayed the spectrum analyser renderer and smooth
+  scroll threads from exiting after using a debugger was fixed.
+  [[#1645](https://github.com/reupen/columns_ui/pull/1645)]
+
 ## 3.4.0-beta.1
 
 ### Features
