@@ -2,11 +2,31 @@
 
 ## 3.4.0
 
+### Features
+
+- System tray icon tooltips are now truncated with an ellipsis when they exceed
+  the maximum number of characters that Windows supports.
+  [[#1643](https://github.com/reupen/columns_ui/pull/1643)]
+
+  Additionally, the character limit is now mentioned on the ‘System tray’ tab in
+  Preferences.
+
+- The default system tray icon tooltip title formatting script was updated to
+  use `$char(10)` instead of `$crlf()` to use less of the character limit.
+  [[#1643](https://github.com/reupen/columns_ui/pull/1643)]
+
+- The word ‘Unpaused’ was changed to ‘Resumed’ in system tray balloon tips.
+  [[#1643](https://github.com/reupen/columns_ui/pull/1643)]
+
 ### Bug fixes
 
 - A bug where some operations in the Layout tree in Preferences may have behaved
   incorrectly after changing the container type of the root panel was fixed.
   [[#1642](https://github.com/reupen/columns_ui/pull/1642)]
+
+- If there is an active system tray balloon tip when stopping playback, it’s now
+  automatically dismissed.
+  [[#1643](https://github.com/reupen/columns_ui/pull/1643)]
 
 ## 3.4.0-beta.1
 

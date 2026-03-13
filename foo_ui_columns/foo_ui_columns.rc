@@ -115,7 +115,8 @@ BEGIN
     CONTROL         "Show now playing sub-menu in icon context menu",IDC_NOWPL,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,120,183,10
     LTEXT           "Tooltip title formatting script",IDC_STATIC,7,140,97,8
-    EDITTEXT        IDC_STRING,7,151,313,113,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    EDITTEXT        IDC_STRING,7,151,313,103,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "System tray tooltips are limited to approximately 127 characters.",IDC_STATIC,7,256,216,8
 END
 
 IDD_PREFS_PLAYLISTS_DRAGDROP DIALOGEX 0, 0, 327, 271

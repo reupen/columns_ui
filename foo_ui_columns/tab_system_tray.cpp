@@ -49,18 +49,15 @@ public:
             case IDC_USE_CUSTOM_ICON: {
                 cfg_custom_icon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 EnableWindow(GetDlgItem(wnd, IDC_BROWSE_ICON), cfg_custom_icon);
-                cui::systray::create_icon_handle();
-                cui::systray::create_icon();
+                systray::create_icon_handle();
             } break;
             case IDC_BROWSE_ICON: {
                 pfc::string8 path = cfg_tray_icon_path;
                 if (uGetOpenFileName(wnd, "Icon Files (*.ico)|*.ico|All Files (*.*)|*.*", 0, "ico", "Choose Icon",
                         nullptr, path, FALSE)) {
                     cfg_tray_icon_path = path;
-                    if (cfg_custom_icon) {
-                        cui::systray::create_icon_handle();
-                        cui::systray::create_icon();
-                    }
+                    if (cfg_custom_icon)
+                        systray::create_icon_handle();
                 }
             } break;
 

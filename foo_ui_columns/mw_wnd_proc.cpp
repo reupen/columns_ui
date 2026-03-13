@@ -11,7 +11,6 @@
 #include "system_tray.h"
 
 extern HWND g_status;
-extern bool g_icon_created;
 
 namespace statusbar_contextmenus {
 enum {
@@ -66,8 +65,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 
     if (m_wm_taskbarcreated && msg == m_wm_taskbarcreated) {
-        if (g_icon_created) {
-            g_icon_created = false;
+        if (systray::is_system_tray_icon_created) {
+            systray::is_system_tray_icon_created = false;
             systray::create_icon();
             systray::update_icon_tooltip();
         }
@@ -178,7 +177,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         status_bar::destroy_window();
         m_taskbar_list.reset();
         RevokeDragDrop(m_wnd);
-        systray::remove_icon();
+        systray::deinitialise();
         on_destroy();
         m_is_destroying = false;
         break;
@@ -511,9 +510,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
             if (styles & WS_MINIMIZE) {
                 cfg_main_window_is_hidden = cfg_main_window_is_hidden || cfg_minimise_to_tray;
-                if (!g_icon_created && cfg_main_window_is_hidden)
+                if (!systray::is_system_tray_icon_created && cfg_main_window_is_hidden)
                     systray::create_icon();
-                if (g_icon_created && cfg_main_window_is_hidden)
+                if (systray::is_system_tray_icon_created && cfg_main_window_is_hidden)
                     ShowWindow(wnd, SW_HIDE);
             } else {
                 resize_child_windows();

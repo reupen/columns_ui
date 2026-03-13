@@ -1,9 +1,5 @@
 #include "pch.h"
-#include "main_window.h"
 #include "system_tray.h"
-
-extern HICON g_icon;
-extern bool g_icon_created;
 
 namespace cui::systray {
 
@@ -20,15 +16,14 @@ public:
 
     void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override
     {
-        if (g_icon_created && p_reason != play_control::stop_reason_shutting_down) {
-            uShellNotifyIcon(NIM_MODIFY, main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon,
-                core_version_info_v2::get()->get_name());
-        }
+        if (is_system_tray_icon_created && p_reason != play_control::stop_reason_shutting_down)
+            update_icon_tooltip();
     }
+
     void on_playback_seek(double p_time) override {}
     void on_playback_pause(bool b_state) noexcept override
     {
-        update_icon_tooltip(b_state ? BalloonTipTitle::Paused : BalloonTipTitle::Unpaused);
+        update_icon_tooltip(b_state ? BalloonTipTitle::Paused : BalloonTipTitle::Resumed);
     }
 
     void on_playback_edited(metadb_handle_ptr p_track) override {}
