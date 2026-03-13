@@ -18,6 +18,9 @@
 - The word ‘Unpaused’ was changed to ‘Resumed’ in system tray balloon tips.
   [[#1643](https://github.com/reupen/columns_ui/pull/1643)]
 
+- Call paths in crash logs are now set for some additional Columns UI background
+  threads. [[#1644](https://github.com/reupen/columns_ui/pull/1644)]
+
 ### Bug fixes
 
 - A bug where some operations in the Layout tree in Preferences may have behaved

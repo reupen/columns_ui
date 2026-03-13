@@ -148,6 +148,7 @@ void SpectrumAnalyserRenderer::start()
     reset_dib();
 
     m_render_thread = std::jthread([this](std::stop_token stop_token) {
+        TRACK_CALL_TEXT("SpectrumAnalyserRenderer::thread");
         mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] Spectrum analyser renderer");
 
         GdiSetBatchLimit(1);
