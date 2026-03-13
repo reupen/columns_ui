@@ -1140,6 +1140,7 @@ void ArtworkPanel::show_in_file_explorer()
         return;
 
     m_show_in_explorer_thread = std::jthread([this, self{ptr{this}}, path{std::string{path}}] {
+        TRACK_CALL_TEXT("ArtworkPanel::show_in_file_explorer::thread");
         (void)mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] Show in Explorer");
 
         auto scope_exit
