@@ -1,5 +1,14 @@
 # Change log
 
+## 3.4.1
+
+### Bug fixes
+
+- A long-standing bug affecting built-in list views with a themed appearance
+  where, in light mode, the backgrounds of selected items were slightly darker
+  than expected was fixed.
+  [[#1651](https://github.com/reupen/columns_ui/pull/1651)]
+
 ## 3.4.0
 
 ### Features

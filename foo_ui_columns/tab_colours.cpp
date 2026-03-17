@@ -292,17 +292,19 @@ void TabColours::update_fills()
 {
     colours::helper p_manager(m_element_guid);
 
+    const auto background_colour = p_manager.get_colour(colours::colour_background);
+
     if (p_manager.get_themed() && (!m_element_api.is_valid() || m_element_api->get_themes_supported())) {
         const auto is_dark = colours::is_dark_mode_active();
         const auto list_view_theme_class = is_dark ? L"DarkMode_ItemsView::ListView"sv : L"Explorer::ListView"sv;
 
         g_fill_selection_background.set_fill_themed(uih::FillWindow::Mode::ThemeBackgroundFill,
             list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTED, is_dark,
-            p_manager.get_colour(colours::colour_selection_background));
+            p_manager.get_colour(colours::colour_selection_background), background_colour);
 
         g_fill_selection_background_inactive.set_fill_themed(uih::FillWindow::Mode::ThemeBackgroundFill,
             list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTEDNOTFOCUS, is_dark,
-            p_manager.get_colour(colours::colour_inactive_selection_background));
+            p_manager.get_colour(colours::colour_inactive_selection_background), background_colour);
 
         g_fill_selection_text.set_fill_themed(uih::FillWindow::Mode::ThemeTextColourFill, list_view_theme_class.data(),
             LVP_LISTITEM, LISS_SELECTED, is_dark, p_manager.get_colour(colours::colour_selection_text));
@@ -320,7 +322,7 @@ void TabColours::update_fills()
     }
 
     g_fill_text.set_fill_colour(p_manager.get_colour(colours::colour_text));
-    g_fill_background.set_fill_colour(p_manager.get_colour(colours::colour_background));
+    g_fill_background.set_fill_colour(background_colour);
     g_fill_active_item_frame.set_fill_colour(p_manager.get_colour(colours::colour_active_item_frame));
 
     Button_SetCheck(

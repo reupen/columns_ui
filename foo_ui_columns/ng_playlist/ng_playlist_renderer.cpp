@@ -82,9 +82,6 @@ void PlaylistViewRenderer::render_item(const uih::lv::RendererContext& context, 
         if (FAILED(GetThemeColor(context.list_view_theme, LVP_LISTITEM, LISS_SELECTED, TMT_TEXTCOLOR, &text_colour)))
             text_colour = GetThemeSysColor(context.list_view_theme, is_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
 
-        if (IsThemeBackgroundPartiallyTransparent(context.list_view_theme, LVP_LISTITEM, theme_state))
-            DrawThemeParentBackground(context.wnd, context.dc, &rc);
-
         RECT rc_background{rc};
         if (context.use_dark_mode || is_windows_11_22h2_or_newer())
             // Hide borders present on newer versions of Windows
