@@ -10,8 +10,8 @@ const char* default_status_bar_script
     = "// This is the default script for the content of the main status bar section during "
       "playback.\r\n"
       "\r\n"
-      "$if(%ispaused%,Paused,Playing) | %codec% | %bitrate% kbps | %samplerate% Hz"
-      " | $caps(%channels%) | %playback_time%[ / %length%]";
+      "$if(%ispaused%,Paused,Playing) | %codec%[ · %codec_profile%] | %bitrate% kbps | %samplerate% Hz"
+      " | $caps(%channels%) | %playback_time%[$char(8200)/$char(8200)%length%]";
 
 const char* default_system_tray_icon_script
     = "//This is the default script for the content of the system tray icon tooltip "

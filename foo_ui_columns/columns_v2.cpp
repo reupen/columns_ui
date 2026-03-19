@@ -102,7 +102,7 @@ const std::initializer_list default_columns{
     ColumnDefinition{
         .title{"Channels"},
         .is_shown{false},
-        .display_script{"[%channels%]"},
+        .display_script{"[$caps(%channels%)]"},
         .use_custom_sorting_script{true},
         .sorting_script{"[$info(channels)]"},
         .width{80},
@@ -190,7 +190,7 @@ const std::initializer_list default_columns{
     },
     ColumnDefinition{
         .title{"Length"},
-        .display_script{"[%playback_time% ∕ ]%length%"},
+        .display_script{"[%playback_time%$char(8200)/$char(8200)]%length%"},
         .use_custom_sorting_script{true},
         .sorting_script{"[%length_seconds%]"},
         .width{80},

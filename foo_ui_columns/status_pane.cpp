@@ -21,7 +21,8 @@ const auto* default_status_pane_script
       "\r\n"
       "%artist% – %title%\r\n"
       "$crlf()\r\n"
-      "%codec% | %bitrate% kbps | %samplerate% Hz | $caps(%channels%) | %playback_time%[ / %length%]";
+      "%codec%[ · %codec_profile%] | %bitrate% kbps | %samplerate% Hz | $caps(%channels%) | "
+      "%playback_time%[$char(8200)/$char(8200)%length%]";
 
 }
 
