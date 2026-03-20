@@ -9,6 +9,10 @@
   than expected was fixed.
   [[#1651](https://github.com/reupen/columns_ui/pull/1651)]
 
+- Some minor changes were made to the default title formatting scripts in the
+  status bar, status pane and the playlist view to make them more consistent.
+  [[#1652](https://github.com/reupen/columns_ui/pull/1652)]
+
 ## 3.4.0
 
 ### Features
