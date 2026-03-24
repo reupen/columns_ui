@@ -33,9 +33,6 @@ Stable and pre-release versions can be downloaded from the
 
 ### Development versions
 
-> [!WARNING]
-> [32-bit development builds are broken.](https://github.com/reupen/columns_ui/issues/1335)
-
 If you’re logged into GitHub, you can download the latest development version by
 visiting the
 [list of recent GitHub Actions builds](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amain),
@@ -69,19 +66,16 @@ This repo makes use of Git submodules. If you're not familiar with them,
 
 ### Build instructions
 
-> [!WARNING]
-> [Version 14.44 of the Visual Studio C++ build tools can’t be used for 32-bit builds.](https://github.com/reupen/columns_ui/issues/1335)
-
 To build Columns UI, you need:
 
-- Visual Studio 2022
+- Visual Studio 2026
 - Windows 11 SDK, version 10.0.26100.0 or newer
 - [vcpkg](https://github.com/Microsoft/vcpkg)
-- Python 3.12 (including the `py` launcher)
+- Python 3.12 or newer (including the `py` launcher)
 
 #### Installing Visual Studio
 
-[Download Visual Studio 2022](https://www.visualstudio.com/downloads/). During
+[Download Visual Studio 2026](https://www.visualstudio.com/downloads/). During
 installation, select the Desktop development with C++ workload and version
 10.0.26100 or newer of the Windows 11 SDK from the right-hand side.
 
@@ -103,30 +97,30 @@ updated package metatdata.)
 
 #### Building using the Visual Studio IDE
 
-Open `vc17/columns_ui-public.sln` in Visual Studio 2022.
+Open `vc18/columns_ui-public.sln` in Visual Studio 2026.
 
 Select the Release configuration and a platform (Win32 or x64), and build the
 solution.
 
 If the build is successful, `foo_ui_columns.<architecture>.fb2k-component` will
-be output in `vc17\release-<platform>-v143`.
+be output in `vc18\release-<platform>-v145`.
 
 #### Building using MSBuild on the command line
 
 You can use MSBuild if you prefer. To build a 32-bit component, start a
-Developer Command Prompt for VS 2022 (from the start menu), and run:
+Developer Command Prompt for VS 2026 (from the start menu), and run:
 
 ```powershell
-msbuild /m "/p:Platform=Win32;Configuration=Release" vc17\columns_ui-public.sln
+msbuild /m "/p:Platform=Win32;Configuration=Release" vc18\columns_ui-public.sln
 ```
 
 If the build is successful, `foo_ui_columns.x86.fb2k-component` will be output
-in `vc17\release-win32-v143`.
+in `vc18\release-win32-v145`.
 
 For a clean build, run:
 
 ```powershell
-msbuild /m "/p:Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_ui-public.sln
+msbuild /m "/p:Platform=Win32;Configuration=Release" "/t:Rebuild" vc18\columns_ui-public.sln
 ```
 
 ##### Using the Clang compiler (experimental)
@@ -138,15 +132,15 @@ msbuild /m "/p:Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_u
 Columns UI can be also compiled using the version of Clang distributed with
 Visual Studio.
 
-(Note that Clang is not installed by default – in the Visual Studio 2022
+(Note that Clang is not installed by default – in the Visual Studio 2026
 installer, you will need to select the Clang compiler and the Clang build tools
 components.)
 
-With these installed, open a Developer Command Prompt for VS 2022 from the start
+With these installed, open a Developer Command Prompt for VS 2026 from the start
 menu, switch to the Columns UI source directory and run:
 
 ```powershell
-msbuild /m "/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;VcpkgAutoLink=true;Platform=Win32;Configuration=Release" vc17\columns_ui-public.sln
+msbuild /m "/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;VcpkgAutoLink=true;Platform=Win32;Configuration=Release" vc18\columns_ui-public.sln
 ```
 
 (Note: Currently `lld-link.exe` can't be used due to
