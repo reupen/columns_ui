@@ -15,7 +15,7 @@ jobs:
 
       - name: Extract change log
         id: extract
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('node:fs');
@@ -43,7 +43,7 @@ jobs:
           EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create draft GitHub release
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           VERSION: ${{ steps.extract.outputs.version }}
           CHANGELOG: ${{ steps.pandoc.outputs.changelog }}
