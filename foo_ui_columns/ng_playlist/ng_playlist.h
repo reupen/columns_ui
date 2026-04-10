@@ -1,12 +1,14 @@
 #pragma once
 
 #include "core_dark_list_view.h"
+#include "icons.h"
 #include "list_view_drop_target.h"
 #include "ng_playlist_artwork.h"
 #include "ng_playlist_groups.h"
 #include "ng_playlist_style.h"
 #include "../config.h"
 #include "../list_view_panel.h"
+#include "../playlist_search.h"
 
 namespace cui::panels::playlist_view {
 
@@ -25,6 +27,7 @@ extern fbh::ConfigInt32DpiAware cfg_root_group_indentation_amount;
 extern fbh::ConfigBool cfg_show_artwork;
 extern fbh::ConfigBool cfg_sticky_artwork;
 extern fbh::ConfigBool cfg_artwork_group_header_spacing_enabled;
+extern fbh::ConfigBool cfg_use_search_bar;
 
 void set_font_size(float point_delta);
 
@@ -204,6 +207,8 @@ public:
     static void g_on_edge_style_change();
     static void s_redraw_all();
     static void g_on_time_change();
+    static void s_show_search_bar();
+    static bool s_has_active_instance() { return !s_windows.empty(); }
 
     void on_font_change();
     void on_group_font_change();
@@ -274,6 +279,37 @@ private:
         metadb_v2::ptr m_metadb{metadb_v2::get()};
         titleformat_object::ptr m_global_script{};
         titleformat_object::ptr m_column_script{};
+    };
+
+    class PlaylistViewSearchBarHost : public uih::lv::SearchBarHost {
+    public:
+        PlaylistViewSearchBarHost(playlist_search::PlaylistSearch& playlist_search) : m_playlist_search(playlist_search)
+        {
+        }
+
+        void on_previous() override { m_playlist_search.on_previous(); }
+        void on_next() override { m_playlist_search.on_next(); }
+        void on_return() override { m_playlist_search.on_return(); }
+        void on_char(const wchar_t chr) override { m_playlist_search.add_char(chr); }
+        void on_string_replaced(const wchar_t* text) override { m_playlist_search.set_string(text); }
+        void on_close() override { m_playlist_search.reset(); }
+
+        std::variant<wil::unique_hbitmap, wil::unique_hicon> create_icon(
+            uih::lv::SearchBarIconId icon_id, int width, int height, bool is_dark) override
+        {
+            switch (icon_id) {
+            case uih::lv::SearchBarIconId::Up:
+                return icons::load_icon_or_svg(icons::built_in::up, width, height, is_dark);
+            case uih::lv::SearchBarIconId::Down:
+                return icons::load_icon_or_svg(icons::built_in::down, width, height, is_dark);
+            case uih::lv::SearchBarIconId::Close:
+            default:
+                return icons::load_icon_or_svg(icons::built_in::close, width, height, is_dark);
+            }
+        }
+
+    private:
+        playlist_search::PlaylistSearch& m_playlist_search;
     };
 
     static void s_create_message_window();
@@ -520,6 +556,7 @@ private:
     service_ptr_t<playlist_manager_v4> m_playlist_api;
     bool m_ignore_callback{false};
     mmh::EventToken::Ptr m_metadb_io_change_token;
+    std::optional<playlist_search::PlaylistSearch> m_playlist_search;
 
     mainmenu_manager::ptr m_mainmenu_manager;
     contextmenu_manager::ptr m_contextmenu_manager;

@@ -20,16 +20,26 @@ bool use_svg_icon(int width, int height)
     return svg::is_available() && !is_standard_size(width, height);
 }
 
-wil::unique_hbitmap render_svg(IconConfig icon_config, int width, int height, svg_services::PixelFormat pixel_format)
+wil::unique_hbitmap render_svg(
+    IconConfig icon_config, int width, int height, svg_services::PixelFormat pixel_format, bool is_dark)
 {
-    const auto [data, size] = resource_utils::get_resource_data(icon_config.svg_id(), L"SVG");
+    const auto [data, size] = resource_utils::get_resource_data(icon_config.svg_id(is_dark), L"SVG");
     return svg::render_to_hbitmap(width, height, data, size, svg_services::ScalingMode::Stretch, pixel_format);
 }
 
-wil::unique_hicon load_icon(IconConfig icon_config, int width, int height)
+wil::unique_hicon load_icon(IconConfig icon_config, int width, int height, bool is_dark)
 {
-    return wil::unique_hicon(static_cast<HICON>(LoadImage(
-        wil::GetModuleInstanceHandle(), MAKEINTRESOURCE(icon_config.icon_id()), IMAGE_ICON, width, height, NULL)));
+    return wil::unique_hicon(static_cast<HICON>(LoadImage(wil::GetModuleInstanceHandle(),
+        MAKEINTRESOURCE(icon_config.icon_id(is_dark)), IMAGE_ICON, width, height, NULL)));
+}
+
+std::variant<wil::unique_hbitmap, wil::unique_hicon> load_icon_or_svg(
+    IconConfig icon_config, int width, int height, bool is_dark)
+{
+    if (use_svg_icon(width, height))
+        return render_svg(icon_config, width, height, svg_services::PixelFormat::BGRA);
+
+    return load_icon(icon_config, width, height, is_dark);
 }
 
 } // namespace cui::icons

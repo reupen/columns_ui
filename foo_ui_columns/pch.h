@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <atomic>
 #include <complex>
+#include <cwctype>
 #include <future>
 #include <iostream>
 #include <map>

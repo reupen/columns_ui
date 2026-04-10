@@ -1,234 +1,152 @@
 #pragma once
+#include "fb2k_callbacks.h"
 
-/** What's all this? Never finished, obsolete or abandoned? Based on Typefind code. */
+namespace cui::playlist_search {
 
-#ifdef QUICKFIND_ENABLED
+extern fbh::ConfigInt32 cfg_search_bar_mode;
+extern fbh::ConfigString cfg_search_bar_script;
+extern fbh::ConfigBool cfg_search_bar_ignore_symbols;
 
-#define SEARCH_CACHING_ENABLED
-
-enum t_search_mode {
-    mode_pattern_beginning = 0,
-    mode_query = 1,
+enum class SearchMode : uint32_t {
+    mode_match_words_beginning_formatted_title = 0,
+    mode_match_words_anywhere_formatted_title = 1,
+    mode_query = 2,
 };
 
-class progressive_search {
-    bool m_running;
-    metadb_handle_list_t<pfc::alloc_fast_aggressive> m_entries;
-    service_ptr_t<titleformat_object> m_to;
-    pfc::array_t<bool> m_filter;
-    pfc::string8_fastalloc m_string;
-    pfc::string8_fastalloc m_buffer;
-    const auto api = playlist_manager::get();
-    unsigned active;
-    uint32_t m_mode;
-#ifdef SEARCH_CACHING_ENABLED
-    pfc::array_t<pfc::string_simple> m_formatted;
-#endif
-    void run()
-    {
-        const auto filter_api = search_filter_manager::get();
-        search_filter::ptr filter;
-        bool b_clear = false;
-        if (m_mode == mode_query) {
-            b_clear = false;
-            try {
-                filter_api->create(m_string);
-            } catch (const pfc::exception&) {
-                b_clear = true;
-            }
-        }
-        if (m_string.length() && !b_clear) {
-            bool b_first = true;
-            unsigned focus;
-            unsigned n, count = m_entries.get_count();
-            if (m_mode == mode_query)
-                filter->test_multi(m_entries, m_filter.get_ptr());
-
-            for (n = 0; n < count; n++) {
-                if (m_mode == mode_query) {
-                    if (m_filter[n]) {
-                        if (b_first) {
-                            focus = n;
-                            b_first = false;
-                        }
-                    }
-                } else {
-                    if (m_filter[n]) {
-#ifdef SEARCH_CACHING_ENABLED
-                        if (!stricmp_utf8_max(m_formatted[n], m_string, m_string.length()))
-#else
-                        m_entries[n]->format_title(0, m_buffer, m_to, 0);
-                        if (!stricmp_utf8_max(m_buffer, m_string, m_string.length()))
-#endif
-                        {
-                            if (b_first) {
-                                focus = n;
-                                b_first = false;
-                            }
-                        } else
-                            m_filter[n] = false;
-                    }
-                }
-            }
-            api->playlist_set_selection(
-                active, pfc::bit_array_true(), pfc::bit_array_table_t<bool>(m_filter.get_ptr(), m_filter.get_size()));
-            unsigned the_focus = api->playlist_get_focus_item(active);
-            if (!b_first && !(the_focus < m_filter.get_size() && m_filter[the_focus])) {
-                api->playlist_set_focus_item(active, focus);
-            } else if (!b_first && the_focus != -1)
-                api->playlist_ensure_visible(active, the_focus);
-        } else {
-            api->playlist_clear_selection(active);
-        }
-    }
-
+class PlaylistSearchPlaylistCallback : public playlist_callback_single_impl_base {
 public:
-    void init()
+    PlaylistSearchPlaylistCallback(std::function<void()> on_playlist_changed)
+        : playlist_callback_single_impl_base(
+              flag_on_items_added | flag_on_items_removed | flag_on_items_replaced | flag_on_playlist_switch)
+        , m_on_playlist_changed(std::move(on_playlist_changed))
     {
-        if (!m_running) {
-            active = api->get_active_playlist();
-            unsigned count = api->playlist_get_item_count(active);
-            m_entries.prealloc(count);
-            api->playlist_get_all_items(active, m_entries);
-            m_filter.set_size(count);
-            m_filter.fill(true);
-            m_buffer.prealloc(256);
-#ifdef SEARCH_CACHING_ENABLED
-            unsigned n;
-            m_formatted.set_size(count);
-            if (m_mode == mode_pattern_beginning) {
-                for (n = 0; n < count; n++) {
-                    m_entries[n]->format_title(0, m_buffer, m_to, 0);
-                    m_formatted[n] = m_buffer;
-                }
-            }
-#endif
-        }
-        m_running = true;
-    }
-    void reset()
-    {
-        m_running = false;
-        m_filter.set_size(0);
-        m_entries.remove_all();
-        m_string.force_reset();
-        m_buffer.force_reset();
-#ifdef SEARCH_CACHING_ENABLED
-        m_formatted.set_size(0);
-#endif
-    }
-    void add_char(unsigned c)
-    {
-        // hires_timer timer;
-        // timer.start();
-        init();
-        m_string.add_char(c);
-        run();
-        // console::info(string_printf("search time: %u",(unsigned)(timer.query()*100000)));
-    }
-    void set_string(const char* src)
-    {
-        if (m_running)
-            m_filter.fill(true);
-        init();
-        m_string.set_string(src);
-        run();
-    }
-    void set_pattern(const char* src)
-    {
-        const auto tf_api = titleformat_compiler::get();
-        tf_api->compile(m_to, src);
-    }
-    void set_mode(uint32_t mode) { m_mode = mode; }
-    bool on_key(WPARAM wp)
-    {
-        switch (wp) {
-        case VK_RETURN:
-            if (m_running) {
-                bool ctrl_down = 0 != (GetKeyState(VK_CONTROL) & KF_UP);
-                if (ctrl_down) {
-                    metadb_handle_ptr mh;
-                    size_t focus = api->playlist_get_focus_item(active);
-                    if (focus != pfc_infinite)
-                        api->queue_add_item_playlist(active, focus);
-                } else {
-                    api->set_playing_playlist(active);
-                    const auto play_control = play_control::get();
-                    play_control->play_start(play_control::track_command_settrack);
-                }
-            }
-            return true;
-        case VK_DOWN: {
-            if (m_running) {
-                unsigned focus = api->playlist_get_focus_item(active);
-                unsigned count = m_filter.get_size();
-                unsigned n;
-                for (n = focus + 1; n < count; n++) {
-                    if (m_filter[n]) {
-                        api->playlist_set_focus_item(active, n);
-                        break;
-                    }
-                }
-            }
-        }
-            return true;
-        case VK_UP: {
-            if (m_running) {
-                unsigned focus = api->playlist_get_focus_item(active);
-                unsigned count = m_filter.get_size();
-                unsigned n;
-                for (n = focus; (n > 0) && (n - 1 < count); n--) {
-                    if (m_filter[n - 1]) {
-                        api->playlist_set_focus_item(active, n - 1);
-                        break;
-                    }
-                }
-            }
-        }
-            return true;
-        }
-        return false;
-    }
-    progressive_search() : m_running(false), active(0), m_mode(mode_pattern_beginning) {}
-    ~progressive_search() {}
-};
+        m_metadb_io_change_token
+            = fb2k_utils::add_metadb_io_callback([this](metadb_handle_list_cref tracks, bool from_hook) {
+                  if (from_hook)
+                      return;
 
-class quickfind_window : public ui_helpers::container_window {
-    bool m_initialised;
-    WNDPROC m_editproc;
+                  bool any_modified{};
 
-    bool m_is_running;
+                  playlist_manager::get()->activeplaylist_enum_items(
+                      [&tracks, &any_modified](size_t index, const metadb_handle_ptr& track, bool _selected) {
+                          size_t modified_index;
+                          any_modified = tracks.bsearch_t(
+                              pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, track, modified_index);
 
-    progressive_search m_search;
+                          return any_modified;
+                      },
+                      bit_array_true());
 
-    unsigned height;
-    pfc::string8 m_pattern;
-    uint32_t m_mode;
+                  if (any_modified)
+                      m_on_playlist_changed();
+              });
+    }
 
 protected:
-    HWND wnd_edit;
-    HWND wnd_prev;
-
-public:
-    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
-    LRESULT WINAPI on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    static LRESULT WINAPI hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
-    quickfind_window();
-
-    ~quickfind_window();
-
-    virtual class_data& get_class_data() const
+    void on_items_added(t_size p_base, metadb_handle_list_cref p_data, const bit_array& p_selection) override
     {
-        __implement_get_class_data(_T("{89A3759F-348A-4e3f-BF43-3D16BC059186}"), true);
+        m_on_playlist_changed();
     }
-
-    void on_size(unsigned cx, unsigned cy);
-    void on_size();
+    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
+    {
+        m_on_playlist_changed();
+    }
+    void on_items_replaced(const bit_array& p_mask,
+        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
+    {
+        m_on_playlist_changed();
+    }
+    void on_playlist_switch() override { m_on_playlist_changed(); }
 
 private:
-    gdi_object_t<HFONT>::ptr_t m_font;
+    mmh::EventToken::Ptr m_metadb_io_change_token;
+    std::function<void()> m_on_playlist_changed;
 };
 
-#endif
+enum Status {
+    NoMatches,
+    Matches,
+    Stale,
+    NoQuery,
+    QueryError,
+};
+
+class PlaylistSearch {
+public:
+    using EnsureVisibleFunc = std::function<void(size_t index)>;
+    using ResultsStatisticsChange = std::function<void(Status status, std::optional<size_t> match_index,
+        std::optional<size_t> match_count, std::string_view query_error)>;
+
+    static void s_mark_results_stale()
+    {
+        for (auto&& instance : s_instances)
+            instance->mark_results_stale();
+    }
+
+    PlaylistSearch() { s_instances.push_back(this); }
+    ~PlaylistSearch() { std::erase(s_instances, this); }
+
+    void on_ensure_visible(EnsureVisibleFunc func) { m_ensure_visible_func = std::move(func); }
+    void on_results_statistics_change(ResultsStatisticsChange func)
+    {
+        m_results_statistics_change_func = std::move(func);
+    }
+
+    void reset();
+
+    void add_char(unsigned c)
+    {
+        m_string.push_back(c);
+        refresh();
+    }
+
+    void set_string(std::wstring text)
+    {
+        if (m_running)
+            m_matches.fill(true);
+
+        m_string = std::move(text);
+        refresh();
+    }
+
+    void on_previous() { handle_next_or_previous(NavigationType::Previous); }
+    void on_next() { handle_next_or_previous(NavigationType::Next); }
+    void on_return() const;
+
+private:
+    void init();
+    void run();
+    void refresh();
+    bool refresh_if_stale();
+    void mark_results_stale();
+
+    void dispatch_results_statistics_change(Status status, std::optional<size_t> match_index = {},
+        std::optional<size_t> match_count = {}, std::string_view query_error = {}) const;
+
+    enum class NavigationType {
+        Previous,
+        Next,
+    };
+
+    void handle_next_or_previous(NavigationType navigation_type);
+
+    inline static std::vector<PlaylistSearch*> s_instances;
+
+    bool m_running{};
+    metadb_handle_list_t<pfc::alloc_fast_aggressive> m_tracks;
+    service_ptr_t<titleformat_object> m_titleformat_object;
+    pfc::array_t<bool> m_matches;
+    size_t m_match_index{};
+    size_t m_match_count{};
+    std::wstring m_string;
+    static_api_ptr_t<playlist_manager> m_playlist_api;
+    size_t m_playlist_index{};
+    SearchMode m_last_mode{};
+    std::vector<std::wstring> m_formatted;
+    std::optional<PlaylistSearchPlaylistCallback> m_playlist_callback;
+    bool m_are_results_stale{};
+    EnsureVisibleFunc m_ensure_visible_func;
+    ResultsStatisticsChange m_results_statistics_change_func;
+};
+
+} // namespace cui::playlist_search

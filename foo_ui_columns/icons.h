@@ -34,8 +34,12 @@ struct IconConfig {
 bool is_standard_size(int width, int height);
 bool use_svg_icon(int width, int height);
 wil::unique_hbitmap render_svg(IconConfig icon_config, int width, int height,
-    svg_services::PixelFormat pixel_format = svg_services::PixelFormat::BGRA);
-wil::unique_hicon load_icon(IconConfig icon_config, int width, int height);
+    svg_services::PixelFormat pixel_format = svg_services::PixelFormat::BGRA,
+    bool is_dark = colours::is_dark_mode_active());
+wil::unique_hicon load_icon(
+    IconConfig icon_config, int width, int height, bool is_dark = colours::is_dark_mode_active());
+std::variant<wil::unique_hbitmap, wil::unique_hicon> load_icon_or_svg(
+    IconConfig icon_config, int width, int height, bool is_dark = colours::is_dark_mode_active());
 
 namespace built_in {
 
@@ -51,6 +55,9 @@ constexpr IconConfig random(MAKE_ICON_CONFIG_CTOR_ARGS(RAND));
 constexpr IconConfig reset(MAKE_ICON_CONFIG_CTOR_ARGS(RESET));
 constexpr IconConfig stop(MAKE_ICON_CONFIG_CTOR_ARGS(STOP));
 constexpr IconConfig stop_after_current(MAKE_ICON_CONFIG_CTOR_ARGS(STOP_AFTER_CURRENT));
+constexpr IconConfig up(MAKE_ICON_CONFIG_CTOR_ARGS(UP));
+constexpr IconConfig down(MAKE_ICON_CONFIG_CTOR_ARGS(DOWN));
+constexpr IconConfig close(MAKE_ICON_CONFIG_CTOR_ARGS(CLOSE));
 
 } // namespace built_in
 

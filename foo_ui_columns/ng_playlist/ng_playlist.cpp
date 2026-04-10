@@ -63,6 +63,9 @@ fbh::ConfigBool cfg_artwork_group_header_spacing_enabled(
     {0x033c8541, 0xa27b, 0x4265, {0xb7, 0x72, 0x2d, 0xa5, 0xd7, 0xcd, 0xf0, 0x10}}, true);
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 150);
 
+fbh::ConfigBool cfg_use_search_bar(
+    {0xf8320bb8, 0x3482, 0x436f, {0x95, 0x52, 0xf9, 0x31, 0x0d, 0xaa, 0x17, 0x77}}, true);
+
 void ConfigGroups::swap(size_t index1, size_t index2)
 {
     m_groups.swap_items(index1, index2);
@@ -534,6 +537,19 @@ void PlaylistView::g_on_time_change()
         window->on_time_change();
 }
 
+void PlaylistView::s_show_search_bar()
+{
+    if (s_windows.empty())
+        return;
+
+    const auto first_window = s_windows.front();
+
+    if (!first_window->get_host()->is_visible(first_window->get_wnd()))
+        first_window->get_host()->set_window_visibility(first_window->get_wnd(), true);
+
+    first_window->show_search_box("Search playlist");
+}
+
 void PlaylistView::on_font_change()
 {
     recreate_items_text_format(item_text_layout_cache_size);
@@ -958,6 +974,35 @@ void PlaylistView::notify_on_initialisation()
     m_playlist_cache.initialise(m_initial_scroll_positions);
     m_initial_scroll_positions.clear();
 
+    m_playlist_search.emplace();
+
+    m_playlist_search->on_ensure_visible(
+        [this](size_t index) { ensure_visible(index, EnsureVisibleMode::PreferMinimalScrolling); });
+
+    m_playlist_search->on_results_statistics_change(
+        [this](playlist_search::Status status, auto&& match_index, auto&& match_count, auto&& query_error) {
+            switch (status) {
+            case playlist_search::NoMatches:
+                set_search_bar_results_text(L"No matches found");
+                break;
+            case playlist_search::Matches:
+                set_search_bar_results_text(std::format(
+                    L"{:L} of {:L} match{}", *match_index, *match_count, *match_count != 1 ? L"es"sv : L""sv));
+                break;
+            case playlist_search::Stale:
+                set_search_bar_results_text(L"Results are out of date");
+                break;
+            case playlist_search::NoQuery:
+                set_search_bar_results_text(L"");
+                break;
+            case playlist_search::QueryError:
+                set_search_bar_results_text(mmh::to_utf16(query_error));
+                break;
+            }
+        });
+
+    set_search_bar_host(std::make_shared<PlaylistViewSearchBarHost>(*m_playlist_search));
+
     refresh_columns();
     refresh_groups();
 }
@@ -1033,6 +1078,7 @@ void PlaylistView::notify_on_destroy()
     m_artwork_manager.reset();
 
     m_selection_holder.release();
+    m_playlist_search.reset();
 }
 
 void PlaylistView::notify_on_set_focus(HWND wnd_lost)
@@ -1533,6 +1579,11 @@ bool PlaylistView::notify_on_keyboard_keydown_remove()
 
 bool PlaylistView::notify_on_keyboard_keydown_search()
 {
+    if (cfg_use_search_bar) {
+        show_search_box("Search playlist");
+        return true;
+    }
+
     return standard_commands::main_playlist_search();
 }
 
