@@ -13,6 +13,12 @@
   view page in Preferences.
   [[#1671](https://github.com/reupen/columns_ui/pull/1671)]
 
+### Bug fixes
+
+- A bug where the text ‘Inactive selected item:’ was truncated at some display
+  scales on the Colours tab on the Colours and fonts preferences page was fixed.
+  [[#1673](https://github.com/reupen/columns_ui/pull/1673)]
+
 ## 3.4.1
 
 ### Bug fixes

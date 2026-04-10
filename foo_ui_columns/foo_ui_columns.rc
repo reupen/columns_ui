@@ -484,23 +484,23 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     LTEXT           "Colours",IDC_TITLE1,7,4,313,16
-    LTEXT           "Element:",IDC_STATIC,7,28,30,8
+    LTEXT           "Element:",IDC_STATIC,7,28,34,8
     COMBOBOX        IDC_COLOURS_ELEMENT,185,26,135,12,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Scheme:",IDC_STATIC,7,51,31,8
+    LTEXT           "Scheme:",IDC_STATIC,7,51,37,8
     COMBOBOX        IDC_COLOURS_SCHEME,185,49,135,12,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Foreground",IDC_STATIC,159,80,39,8
-    LTEXT           "Background",IDC_STATIC,262,80,39,8
-    LTEXT           "Item:",IDC_STATIC,7,97,19,8
+    LTEXT           "Foreground",IDC_STATIC,159,80,43,8
+    LTEXT           "Background",IDC_STATIC,262,80,44,8
+    LTEXT           "Item:",IDC_STATIC,7,97,24,8
     PUSHBUTTON      "Change...",IDC_CHANGE_TEXT_FORE,164,94,52,14
     PUSHBUTTON      "Change...",IDC_CHANGE_TEXT_BACK,268,94,52,14
-    LTEXT           "Selected item:",IDC_STATIC,7,120,48,8
+    LTEXT           "Selected item:",IDC_STATIC,7,120,54,8
     PUSHBUTTON      "Change...",IDC_CHANGE_SEL_FORE,164,117,52,14
     PUSHBUTTON      "Change...",IDC_CHANGE_SELBACK,268,117,52,14
-    LTEXT           "Inactive selected item:",IDC_STATIC,7,143,75,8
+    LTEXT           "Inactive selected item:",IDC_STATIC,7,143,81,8
     PUSHBUTTON      "Change...",IDC_CHANGE_SEL_INACTIVE_FORE,164,140,52,14
     PUSHBUTTON      "Change...",IDC_CHANGE_SEL_INACTIVE_BACK,268,140,52,14
-    CONTROL         "Use custom active item frame",IDC_CUSTOM_FRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,166,113,10
-    LTEXT           "Active item frame:",IDC_STATIC,7,189,62,8
+    CONTROL         "Use custom active item frame",IDC_CUSTOM_FRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,166,117,10
+    LTEXT           "Active item frame:",IDC_STATIC,7,189,68,8
     PUSHBUTTON      "Change...",IDC_CHANGE_FRAME,164,186,52,14
 END
 
