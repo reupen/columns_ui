@@ -236,6 +236,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         panels::playlist_view::PlaylistView::s_on_sticky_artwork_change();
         panels::playlist_view::PlaylistView::s_on_artwork_group_header_spacing_change();
         panels::playlist_view::PlaylistView::s_on_sticky_group_headers_change();
+        playlist_search::PlaylistSearch::s_mark_results_stale();
     }
 };
 
