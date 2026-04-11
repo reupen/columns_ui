@@ -38,7 +38,7 @@ bool match_string(
 
 void PlaylistSearch::init()
 {
-    if (m_running)
+    if (m_are_results_current)
         return;
 
     titleformat_compiler::get()->compile(m_titleformat_object, cfg_search_bar_script);
@@ -83,27 +83,25 @@ void PlaylistSearch::init()
     if (!m_playlist_callback)
         m_playlist_callback.emplace([&] { mark_results_stale(); });
 
-    m_running = true;
-    m_are_results_stale = false;
+    m_are_results_current = true;
     m_last_mode = mode;
 }
 
 void PlaylistSearch::reset()
 {
-    m_running = false;
-    m_are_results_stale = false;
+    m_are_results_current = false;
     m_match_index = 0;
     m_match_count = 0;
     m_matches.set_size(0);
     m_tracks.remove_all();
-    m_string.clear();
+    m_search_terms.clear();
     m_formatted.clear();
     m_playlist_callback.reset();
 }
 
 void PlaylistSearch::on_return() const
 {
-    if (!m_running)
+    if (!m_are_results_current)
         return;
 
     const auto focus_index = fbh::as_optional(m_playlist_api->playlist_get_focus_item(m_playlist_index));
@@ -131,9 +129,9 @@ void PlaylistSearch::run()
     m_match_count = 0;
     std::optional<std::string> query_error;
 
-    if (mode == SearchMode::mode_query && !m_string.empty()) {
+    if (mode == SearchMode::mode_query && !m_search_terms.empty()) {
         const auto filter_api = search_filter_manager_v2::get();
-        const auto string_utf8 = mmh::to_utf8(m_string);
+        const auto string_utf8 = mmh::to_utf8(m_search_terms);
         search_filter_v2::ptr filter;
 
         try {
@@ -148,20 +146,20 @@ void PlaylistSearch::run()
             filter->test_multi(m_tracks, m_matches.get_ptr());
     }
 
-    if (clear_selection || m_string.empty()) {
+    if (clear_selection || m_search_terms.empty()) {
         m_playlist_api->playlist_clear_selection(m_playlist_index);
 
         if (query_error)
-            dispatch_results_statistics_change(QueryError, {}, {}, *query_error);
+            dispatch_results_statistics_change(Status::QueryError, {}, {}, *query_error);
         else
-            dispatch_results_statistics_change(NoQuery);
+            dispatch_results_statistics_change(Status::NoQuery);
         return;
     }
 
     const auto is_words_match = mode == SearchMode::mode_match_words_beginning_formatted_title
         || mode == SearchMode::mode_match_words_anywhere_formatted_title;
 
-    const auto terms = is_words_match ? split_into_words(m_string) | ranges::to<std::vector<std::wstring_view>>()
+    const auto terms = is_words_match ? split_into_words(m_search_terms) | ranges::to<std::vector<std::wstring_view>>()
                                       : std::vector<std::wstring_view>{};
 
     if (mode == SearchMode::mode_match_words_beginning_formatted_title) {
@@ -201,7 +199,7 @@ void PlaylistSearch::run()
         m_playlist_index, bit_array_true(), pfc::bit_array_lambda([&](auto index) { return m_matches[index]; }));
 
     if (m_match_count == 0) {
-        dispatch_results_statistics_change(NoMatches, 0, m_match_count);
+        dispatch_results_statistics_change(Status::NoMatches, 0, m_match_count);
         return;
     }
 
@@ -224,7 +222,7 @@ void PlaylistSearch::run()
     m_playlist_api->playlist_set_focus_item(m_playlist_index, target_focus);
 
     m_match_index = std::ranges::count(m_matches | std::views::take(target_focus), true);
-    dispatch_results_statistics_change(Matches, m_match_index + 1, m_match_count);
+    dispatch_results_statistics_change(Status::Matches, m_match_index + 1, m_match_count);
 }
 
 void PlaylistSearch::dispatch_results_statistics_change(Status status, std::optional<size_t> match_index,
@@ -239,31 +237,26 @@ void PlaylistSearch::refresh()
     run();
 }
 
-bool PlaylistSearch::refresh_if_stale()
-{
-    if (!m_are_results_stale && WI_EnumValue(m_last_mode) == cfg_search_bar_mode.get())
-        return false;
-
-    m_running = false;
-    refresh();
-    return true;
-}
 void PlaylistSearch::mark_results_stale()
 {
-    if (!m_running)
+    if (!m_are_results_current)
         return;
 
-    m_are_results_stale = true;
-    dispatch_results_statistics_change(Stale);
+    m_are_results_current = false;
+
+    if (!m_search_terms.empty())
+        dispatch_results_statistics_change(Status::Stale);
 }
 
 void PlaylistSearch::handle_next_or_previous(NavigationType navigation_type)
 {
-    if (!m_running)
+    if (m_search_terms.empty())
         return;
 
-    if (refresh_if_stale())
+    if (!m_are_results_current) {
+        refresh();
         return;
+    }
 
     const auto total_items = m_matches.size();
 
@@ -294,7 +287,7 @@ void PlaylistSearch::handle_next_or_previous(NavigationType navigation_type)
         else
             m_match_index = m_match_index == 0 ? m_match_count - 1 : m_match_index - 1;
 
-        dispatch_results_statistics_change(Matches, m_match_index + 1, m_match_count);
+        dispatch_results_statistics_change(Status::Matches, m_match_index + 1, m_match_count);
         break;
     }
 }

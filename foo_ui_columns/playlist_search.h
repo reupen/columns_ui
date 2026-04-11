@@ -63,7 +63,7 @@ private:
     std::function<void()> m_on_playlist_changed;
 };
 
-enum Status {
+enum class Status {
     NoMatches,
     Matches,
     Stale,
@@ -96,16 +96,16 @@ public:
 
     void add_char(unsigned c)
     {
-        m_string.push_back(c);
+        m_search_terms.push_back(c);
         refresh();
     }
 
     void set_string(std::wstring text)
     {
-        if (m_running)
+        if (m_are_results_current)
             m_matches.fill(true);
 
-        m_string = std::move(text);
+        m_search_terms = std::move(text);
         refresh();
     }
 
@@ -117,7 +117,6 @@ private:
     void init();
     void run();
     void refresh();
-    bool refresh_if_stale();
     void mark_results_stale();
 
     void dispatch_results_statistics_change(Status status, std::optional<size_t> match_index = {},
@@ -132,19 +131,18 @@ private:
 
     inline static std::vector<PlaylistSearch*> s_instances;
 
-    bool m_running{};
+    bool m_are_results_current{};
     metadb_handle_list_t<pfc::alloc_fast_aggressive> m_tracks;
     service_ptr_t<titleformat_object> m_titleformat_object;
     pfc::array_t<bool> m_matches;
     size_t m_match_index{};
     size_t m_match_count{};
-    std::wstring m_string;
+    std::wstring m_search_terms;
     static_api_ptr_t<playlist_manager> m_playlist_api;
     size_t m_playlist_index{};
     SearchMode m_last_mode{};
     std::vector<std::wstring> m_formatted;
     std::optional<PlaylistSearchPlaylistCallback> m_playlist_callback;
-    bool m_are_results_stale{};
     EnsureVisibleFunc m_ensure_visible_func;
     ResultsStatisticsChange m_results_statistics_change_func;
 };

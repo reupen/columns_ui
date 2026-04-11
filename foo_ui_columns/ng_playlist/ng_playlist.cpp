@@ -982,20 +982,20 @@ void PlaylistView::notify_on_initialisation()
     m_playlist_search->on_results_statistics_change(
         [this](playlist_search::Status status, auto&& match_index, auto&& match_count, auto&& query_error) {
             switch (status) {
-            case playlist_search::NoMatches:
+            case playlist_search::Status::NoMatches:
                 set_search_bar_results_text(L"No matches found");
                 break;
-            case playlist_search::Matches:
+            case playlist_search::Status::Matches:
                 set_search_bar_results_text(std::format(
                     L"{:L} of {:L} match{}", *match_index, *match_count, *match_count != 1 ? L"es"sv : L""sv));
                 break;
-            case playlist_search::Stale:
+            case playlist_search::Status::Stale:
                 set_search_bar_results_text(L"Results are out of date");
                 break;
-            case playlist_search::NoQuery:
+            case playlist_search::Status::NoQuery:
                 set_search_bar_results_text(L"");
                 break;
-            case playlist_search::QueryError:
+            case playlist_search::Status::QueryError:
                 set_search_bar_results_text(mmh::to_utf16(query_error));
                 break;
             }
