@@ -81,7 +81,8 @@ void PlaylistSearch::init()
     }
 
     if (!m_playlist_callback)
-        m_playlist_callback.emplace([&] { mark_results_stale(); });
+        m_playlist_callback.emplace([this] { mark_results_stale(); },
+            [this](const size_t* order, size_t count) { on_playlist_reordered(order, count); });
 
     m_are_results_current = true;
     m_last_mode = mode;
@@ -90,6 +91,7 @@ void PlaylistSearch::init()
 void PlaylistSearch::reset()
 {
     m_are_results_current = false;
+    m_match_track_index = 0;
     m_match_index = 0;
     m_match_count = 0;
     m_matches.set_size(0);
@@ -97,6 +99,30 @@ void PlaylistSearch::reset()
     m_search_terms.clear();
     m_formatted.clear();
     m_playlist_callback.reset();
+}
+
+void PlaylistSearch::on_playlist_reordered(const size_t* order, size_t count)
+{
+    if (!m_are_results_current)
+        return;
+
+    assert(m_matches.size() == count);
+    assert(m_last_mode == SearchMode::mode_query || m_formatted.size() == count);
+    assert(m_match_count == 0 || m_match_track_index < count);
+
+    m_tracks.reorder(order);
+    pfc::reorder_t(m_matches, order, count);
+
+    if (m_last_mode == SearchMode::mode_match_words_beginning_formatted_title
+        || m_last_mode == SearchMode::mode_match_words_anywhere_formatted_title)
+        pfc::reorder_t(m_formatted, order, count);
+
+    if (m_match_track_index < count && m_match_count > 0) {
+        const std::span permutation(order, count);
+        m_match_track_index = std::distance(permutation.begin(), ranges::find(permutation, m_match_track_index));
+        m_match_index = std::ranges::count(m_matches | std::views::take(m_match_track_index), true);
+        dispatch_results_statistics_change(Status::Matches, m_match_index + 1, m_match_count);
+    }
 }
 
 void PlaylistSearch::on_return() const
@@ -221,6 +247,7 @@ void PlaylistSearch::run()
     m_ensure_visible_func(target_focus);
     m_playlist_api->playlist_set_focus_item(m_playlist_index, target_focus);
 
+    m_match_track_index = target_focus;
     m_match_index = std::ranges::count(m_matches | std::views::take(target_focus), true);
     dispatch_results_statistics_change(Status::Matches, m_match_index + 1, m_match_count);
 }
@@ -282,11 +309,16 @@ void PlaylistSearch::handle_next_or_previous(NavigationType navigation_type)
 
         m_playlist_api->playlist_set_focus_item(m_playlist_index, index);
 
-        if (navigation_type == NavigationType::Next)
-            m_match_index = m_match_index + 1 == m_match_count ? 0 : m_match_index + 1;
-        else
-            m_match_index = m_match_index == 0 ? m_match_count - 1 : m_match_index - 1;
+        if (m_match_track_index == focus) {
+            if (navigation_type == NavigationType::Next)
+                m_match_index = m_match_index + 1 == m_match_count ? 0 : m_match_index + 1;
+            else
+                m_match_index = m_match_index == 0 ? m_match_count - 1 : m_match_index - 1;
+        } else {
+            m_match_index = std::ranges::count(m_matches | std::views::take(index), true);
+        }
 
+        m_match_track_index = index;
         dispatch_results_statistics_change(Status::Matches, m_match_index + 1, m_match_count);
         break;
     }
