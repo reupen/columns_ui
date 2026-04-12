@@ -12,7 +12,8 @@
   The search bar can be configured or disabled on the Search tab on the Playlist
   view page in Preferences.
   [[#1671](https://github.com/reupen/columns_ui/pull/1671),
-  [#1676](https://github.com/reupen/columns_ui/pull/1676)]
+  [#1676](https://github.com/reupen/columns_ui/pull/1676),
+  [#1679](https://github.com/reupen/columns_ui/pull/1679)]
 
 ### Bug fixes
 
