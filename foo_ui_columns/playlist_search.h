@@ -15,10 +15,12 @@ enum class SearchMode : uint32_t {
 
 class PlaylistSearchPlaylistCallback : public playlist_callback_single_impl_base {
 public:
-    PlaylistSearchPlaylistCallback(std::function<void()> on_playlist_changed)
-        : playlist_callback_single_impl_base(
-              flag_on_items_added | flag_on_items_removed | flag_on_items_replaced | flag_on_playlist_switch)
+    PlaylistSearchPlaylistCallback(
+        std::function<void()> on_playlist_changed, std::function<void(const size_t*, size_t)> on_playlist_reordered)
+        : playlist_callback_single_impl_base(flag_on_items_added | flag_on_items_reordered | flag_on_items_removed
+              | flag_on_items_replaced | flag_on_playlist_switch)
         , m_on_playlist_changed(std::move(on_playlist_changed))
+        , m_on_playlist_reordered(std::move(on_playlist_reordered))
     {
         m_metadb_io_change_token
             = fb2k_utils::add_metadb_io_callback([this](metadb_handle_list_cref tracks, bool from_hook) {
@@ -43,24 +45,33 @@ public:
     }
 
 protected:
-    void on_items_added(t_size p_base, metadb_handle_list_cref p_data, const bit_array& p_selection) override
+    void on_items_added(size_t p_base, metadb_handle_list_cref p_data, const bit_array& p_selection) override
     {
         m_on_playlist_changed();
     }
-    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
+
+    void on_items_reordered(const size_t* p_order, size_t p_count) override
+    {
+        m_on_playlist_reordered(p_order, p_count);
+    }
+
+    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
     {
         m_on_playlist_changed();
     }
+
     void on_items_replaced(const bit_array& p_mask,
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
     {
         m_on_playlist_changed();
     }
+
     void on_playlist_switch() override { m_on_playlist_changed(); }
 
 private:
     mmh::EventToken::Ptr m_metadb_io_change_token;
     std::function<void()> m_on_playlist_changed;
+    std::function<void(const size_t*, size_t)> m_on_playlist_reordered;
 };
 
 enum class Status {
@@ -109,6 +120,7 @@ public:
         refresh();
     }
 
+    void on_playlist_reordered(const size_t* order, size_t count);
     void on_previous() { handle_next_or_previous(NavigationType::Previous); }
     void on_next() { handle_next_or_previous(NavigationType::Next); }
     void on_return() const;
@@ -135,6 +147,7 @@ private:
     metadb_handle_list_t<pfc::alloc_fast_aggressive> m_tracks;
     service_ptr_t<titleformat_object> m_titleformat_object;
     pfc::array_t<bool> m_matches;
+    size_t m_match_track_index{};
     size_t m_match_index{};
     size_t m_match_count{};
     std::wstring m_search_terms;
