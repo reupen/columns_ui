@@ -22,6 +22,10 @@
   scales on the Colours tab on the Colours and fonts preferences page was fixed.
   [[#1673](https://github.com/reupen/columns_ui/pull/1673)]
 
+### Internal changes
+
+- The component is now compiled with Visual Studio 2026, toolset version 14.50.
+
 ## 3.4.1
 
 ### Bug fixes
