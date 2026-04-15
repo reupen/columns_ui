@@ -88,6 +88,7 @@ private:
     bool m_last_systray_r_down{};
     bool m_last_systray_x1_down{};
     bool m_last_systray_x2_down{};
+    bool m_ignore_next_wm_syschar_message{};
     ULONG_PTR m_gdiplus_instance{};
     UINT m_wm_taskbarcreated{};
     UINT m_wm_taskbarbuttoncreated{};

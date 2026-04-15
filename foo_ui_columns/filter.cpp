@@ -536,9 +536,7 @@ bool FilterPanel::do_drag_drop(WPARAM wp)
 
 bool FilterPanel::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
-    uie::window_ptr p_this = this;
-    bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-    return ret;
+    return g_process_keydown_keyboard_shortcuts(wp);
 }
 
 void FilterPanel::get_selection_handles(

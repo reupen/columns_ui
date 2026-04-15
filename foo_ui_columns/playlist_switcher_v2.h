@@ -153,9 +153,7 @@ public:
 
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override
     {
-        uie::window_ptr p_this = this;
-        bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-        return ret;
+        return g_process_keydown_keyboard_shortcuts(wp);
     }
 
     bool notify_on_middleclick(bool on_item, size_t index) override

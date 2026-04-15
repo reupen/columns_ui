@@ -285,8 +285,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {
-        if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
-            && g_process_keydown_keyboard_shortcuts(wp))
+        if (wp != VK_LEFT && wp != VK_RIGHT && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
         if (wp == VK_TAB) {
             g_on_tab(wnd);
@@ -295,8 +294,14 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_SYSKEYDOWN:
-        if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
+        if ((m_ignore_next_wm_syschar_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
+        break;
+    case WM_SYSCHAR:
+        if (m_ignore_next_wm_syschar_message) {
+            m_ignore_next_wm_syschar_message = false;
+            return 0;
+        }
         break;
     case WM_LBUTTONDOWN: {
         {

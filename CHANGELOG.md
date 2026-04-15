@@ -31,6 +31,13 @@
   scales on the Colours tab on the Colours and fonts preferences page was fixed.
   [[#1673](https://github.com/reupen/columns_ui/pull/1673)]
 
+- When a custom keyboard shortcut is assigned to a key combination, such as
+  Alt+F, that would normally open a main menu, that keyboard shortcut now only
+  activates the configured command when used in built-in panels.
+  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]]
+
+  (Previously, the menu was opened and the custom command was activated.)
+
 ### Removals
 
 - Windows 7, 8 and 8.1 are no longer supported.

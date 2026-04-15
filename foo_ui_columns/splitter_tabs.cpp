@@ -542,18 +542,24 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_KEYDOWN: {
-        if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
-            && g_process_keydown_keyboard_shortcuts(wp))
+        if (wp != VK_LEFT && wp != VK_RIGHT && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
         if (wp == VK_TAB) {
             g_on_tab(wnd);
             return 0;
         }
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
-    } break;
+        break;
+    }
     case WM_SYSKEYDOWN:
-        if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
+        if ((m_ignore_next_wm_syschar_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
+        break;
+    case WM_SYSCHAR:
+        if (m_ignore_next_wm_syschar_message) {
+            m_ignore_next_wm_syschar_message = false;
+            return 0;
+        }
         break;
     case WM_DESTROY:
         m_get_message_hook_token.reset();
@@ -1149,18 +1155,24 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {
-        if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
-            && g_process_keydown_keyboard_shortcuts(wp))
+        if (wp != VK_LEFT && wp != VK_RIGHT && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
         if (wp == VK_TAB) {
             g_on_tab(wnd);
             return 0;
         }
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
-    } break;
+        break;
+    }
     case WM_SYSKEYDOWN:
-        if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
+        if ((m_ignore_next_wm_syschar_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
+        break;
+    case WM_SYSCHAR:
+        if (m_ignore_next_wm_syschar_message) {
+            m_ignore_next_wm_syschar_message = false;
+            return 0;
+        }
         break;
     case WM_MOUSEWHEEL: {
         if ((GetWindowLongPtr(wnd, GWL_STYLE) & TCS_MULTILINE) != 0)

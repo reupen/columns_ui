@@ -858,9 +858,7 @@ void ItemProperties::notify_on_column_size_change(size_t index, int new_width)
 
 bool ItemProperties::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
-    uie::window_ptr p_this = this;
-    bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-    return ret;
+    return g_process_keydown_keyboard_shortcuts(wp);
 }
 
 bool ItemProperties::notify_on_keyboard_keydown_copy()

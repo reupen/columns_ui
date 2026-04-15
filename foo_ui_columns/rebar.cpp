@@ -318,11 +318,6 @@ public:
         return api->override_status_text_create(p_out);
     }
 
-    virtual bool on_key(UINT msg, LPARAM lp, WPARAM wp, bool process_keyboard_shortcuts)
-    {
-        return process_keydown(msg, lp, wp, false, process_keyboard_shortcuts);
-    }
-
     void relinquish_ownership(HWND wnd) override
     {
         if (g_rebar_window) {
