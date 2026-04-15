@@ -125,10 +125,15 @@ void PlaylistSearch::on_playlist_reordered(const size_t* order, size_t count)
     }
 }
 
-void PlaylistSearch::on_return() const
+void PlaylistSearch::on_return()
 {
-    if (!m_are_results_current)
+    if (m_search_terms.empty())
         return;
+
+    if (!m_are_results_current) {
+        refresh();
+        return;
+    }
 
     const auto focus_index = fbh::as_optional(m_playlist_api->playlist_get_focus_item(m_playlist_index));
 

@@ -123,7 +123,7 @@ public:
     void on_playlist_reordered(const size_t* order, size_t count);
     void on_previous() { handle_next_or_previous(NavigationType::Previous); }
     void on_next() { handle_next_or_previous(NavigationType::Next); }
-    void on_return() const;
+    void on_return();
 
 private:
     void init();
