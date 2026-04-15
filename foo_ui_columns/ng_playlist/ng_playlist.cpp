@@ -1566,10 +1566,9 @@ size_t PlaylistView::get_highlight_item()
 
 bool PlaylistView::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
-    uie::window_ptr p_this = this;
-    bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-    return ret;
+    return g_process_keydown_keyboard_shortcuts(wp);
 }
+
 bool PlaylistView::notify_on_keyboard_keydown_remove()
 {
     m_playlist_api->activeplaylist_undo_backup();

@@ -1,14 +1,16 @@
 #pragma once
 
-#include "core_dark_list_view.h"
-#include "icons.h"
-#include "list_view_drop_target.h"
+#include "../config.h"
+#include "../core_dark_list_view.h"
+#include "../fb2k_misc.h"
+#include "../icons.h"
+#include "../list_view_drop_target.h"
+#include "../list_view_panel.h"
+#include "../playlist_search.h"
+
 #include "ng_playlist_artwork.h"
 #include "ng_playlist_groups.h"
 #include "ng_playlist_style.h"
-#include "../config.h"
-#include "../list_view_panel.h"
-#include "../playlist_search.h"
 
 namespace cui::panels::playlist_view {
 
@@ -293,6 +295,7 @@ private:
         void on_char(const wchar_t chr) override { m_playlist_search.add_char(chr); }
         void on_string_replaced(const wchar_t* text) override { m_playlist_search.set_string(text); }
         void on_close() override { m_playlist_search.reset(); }
+        bool on_keydown(WPARAM wp) override { return fb2k_utils::process_edit_keyboard_shortcuts(wp); }
 
         std::variant<wil::unique_hbitmap, wil::unique_hicon> create_icon(
             uih::lv::SearchBarIconId icon_id, int width, int height, bool is_dark) override
@@ -537,6 +540,7 @@ private:
         pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
     void notify_save_inline_edit(const char* value) override;
     void notify_exit_inline_edit() override;
+    bool notify_inline_edit_keydown(WPARAM wp) override;
 
     void notify_on_set_focus(HWND wnd_lost) override;
     void notify_on_kill_focus(HWND wnd_receiving) override;

@@ -221,6 +221,7 @@ private:
         pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
     void notify_save_inline_edit(const char* value) override;
     void notify_exit_inline_edit() override;
+    bool notify_inline_edit_keydown(WPARAM wp) override;
     void notify_on_set_focus(HWND wnd_lost) override;
     void notify_on_kill_focus(HWND wnd_receiving) override;
     void notify_on_create() override;

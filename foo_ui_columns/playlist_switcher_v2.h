@@ -142,6 +142,7 @@ public:
     bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
         pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
     void notify_save_inline_edit(const char* value) override;
+    bool notify_inline_edit_keydown(WPARAM wp) override;
 
     const char* get_drag_unit_singular() const override { return "playlist"; }
     const char* get_drag_unit_plural() const override { return "playlists"; }
@@ -152,9 +153,7 @@ public:
 
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override
     {
-        uie::window_ptr p_this = this;
-        bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-        return ret;
+        return g_process_keydown_keyboard_shortcuts(wp);
     }
 
     bool notify_on_middleclick(bool on_item, size_t index) override

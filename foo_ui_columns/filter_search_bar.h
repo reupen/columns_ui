@@ -131,6 +131,8 @@ private:
     bool m_favourite_state{};
     bool m_query_timer_active{};
     bool m_show_clear_button{cfg_showsearchclearbutton};
+    bool m_ignore_next_wm_char_message{};
+    bool m_ignore_next_wm_syschar_message{};
     pfc::string8 m_active_search_string;
     metadb_handle_list m_active_handles;
     std::optional<SortOverride> m_sort_override;

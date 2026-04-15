@@ -17,11 +17,26 @@
   [#1680](https://github.com/reupen/columns_ui/pull/1680),
   [#1686](https://github.com/reupen/columns_ui/pull/1686)]
 
+- A subset of keyboard shortcuts configured in Preferences are now processed in
+  the Filter search toolbar and in inline editing edit boxes in the playlist
+  view, playlist switcher, Filter panel and Item properties.
+  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]]
+
+  This allows common shortcuts such as Ctrl+P (for Preferences) to work while
+  not interfering with typing and manipulating text.
+
 ### Bug fixes
 
 - A bug where the text ‘Inactive selected item:’ was truncated at some display
   scales on the Colours tab on the Colours and fonts preferences page was fixed.
   [[#1673](https://github.com/reupen/columns_ui/pull/1673)]
+
+- When a custom keyboard shortcut is assigned to a key combination, such as
+  Alt+F, that would normally open a main menu, that keyboard shortcut now only
+  activates the configured command when used in built-in panels.
+  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]]
+
+  (Previously, the menu was opened and the custom command was activated.)
 
 ### Removals
 

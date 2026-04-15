@@ -1,4 +1,7 @@
 #include "pch.h"
+
+#include "fb2k_misc.h"
+
 #include "filter.h"
 
 namespace cui::panels::filter {
@@ -62,6 +65,11 @@ void FilterPanel::notify_exit_inline_edit()
     m_edit_fields.clear();
     m_edit_handles.remove_all();
     m_edit_previous_value.reset();
+}
+
+bool FilterPanel::notify_inline_edit_keydown(WPARAM wp)
+{
+    return fb2k_utils::process_edit_keyboard_shortcuts(wp);
 }
 
 } // namespace cui::panels::filter

@@ -3,6 +3,8 @@
 #include "filter_search_bar.h"
 
 #include "dark_mode_dialog.h"
+#include "fb2k_callbacks.h"
+#include "fb2k_misc.h"
 #include "filter_config_var.h"
 #include "filter_utils.h"
 #include "icons.h"
@@ -691,16 +693,23 @@ void FilterSearchToolbar::s_update_font()
 LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
-    case WM_KEYDOWN:
-        switch (wp) {
-        case VK_TAB: {
-            g_on_tab(wnd);
+    case WM_SYSKEYDOWN:
+        if (fb2k_utils::process_edit_keyboard_shortcuts(wp)) {
+            m_ignore_next_wm_syschar_message = true;
+            return 0;
         }
-        // return 0;
         break;
+    case WM_KEYDOWN:
+        m_ignore_next_wm_char_message = false;
+        switch (wp) {
+        case VK_TAB:
+            g_on_tab(wnd);
+            return 0;
         case VK_ESCAPE:
-            if (m_wnd_last_focused && IsWindow(m_wnd_last_focused))
+            if (m_wnd_last_focused && IsWindow(m_wnd_last_focused)) {
                 SetFocus(m_wnd_last_focused);
+                m_ignore_next_wm_char_message = true;
+            }
             return 0;
         case VK_RETURN:
             if (m_query_timer_active) {
@@ -708,13 +717,24 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
                 m_query_timer_active = false;
             }
             commit_search_results(uGetWindowText(m_search_editbox), true);
+            m_ignore_next_wm_char_message = true;
+            return 0;
+        }
+    default:
+        if (fb2k_utils::process_edit_keyboard_shortcuts(wp)) {
+            m_ignore_next_wm_char_message = true;
             return 0;
         }
         break;
     case WM_CHAR:
-        switch (wp) {
-        case VK_ESCAPE:
-        case VK_RETURN:
+        if (m_ignore_next_wm_char_message) {
+            m_ignore_next_wm_char_message = false;
+            return 0;
+        }
+        break;
+    case WM_SYSCHAR:
+        if (m_ignore_next_wm_syschar_message) {
+            m_ignore_next_wm_syschar_message = false;
             return 0;
         }
         break;

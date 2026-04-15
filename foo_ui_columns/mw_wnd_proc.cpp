@@ -546,13 +546,15 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (process_keydown(msg, lp, wp))
             return 0;
         break;
-    case WM_SYSKEYUP:
-        if (process_keydown(msg, lp, wp))
+    case WM_SYSKEYDOWN:
+        if ((m_ignore_next_wm_syschar_message = process_keydown(msg, lp, wp)))
             return 0;
         break;
-    case WM_SYSKEYDOWN:
-        if (process_keydown(msg, lp, wp))
+    case WM_SYSCHAR:
+        if (m_ignore_next_wm_syschar_message) {
+            m_ignore_next_wm_syschar_message = false;
             return 0;
+        }
         break;
     case MSG_SYSTEM_TRAY_ICON:
         if (lp == WM_LBUTTONUP) {

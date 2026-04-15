@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "item_properties.h"
 
+#include "fb2k_misc.h"
 #include "file_info_utils.h"
 
 namespace cui::panels::item_properties {
@@ -771,6 +772,11 @@ void ItemProperties::notify_save_inline_edit(const char* value)
         metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui, nullptr);
 }
 
+bool ItemProperties::notify_inline_edit_keydown(WPARAM wp)
+{
+    return fb2k_utils::process_edit_keyboard_shortcuts(wp);
+}
+
 void ItemProperties::execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl)
 {
     activate_inline_editing(index, 1);
@@ -852,9 +858,7 @@ void ItemProperties::notify_on_column_size_change(size_t index, int new_width)
 
 bool ItemProperties::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
-    uie::window_ptr p_this = this;
-    bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-    return ret;
+    return g_process_keydown_keyboard_shortcuts(wp);
 }
 
 bool ItemProperties::notify_on_keyboard_keydown_copy()

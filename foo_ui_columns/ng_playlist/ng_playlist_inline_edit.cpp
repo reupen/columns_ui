@@ -1,7 +1,9 @@
 #include "pch.h"
 
-#include "file_info_utils.h"
 #include "ng_playlist.h"
+
+#include "../fb2k_misc.h"
+#include "../file_info_utils.h"
 
 namespace cui::panels::playlist_view {
 
@@ -80,6 +82,11 @@ void PlaylistView::notify_exit_inline_edit()
 {
     m_edit_field.reset();
     m_edit_handles.remove_all();
+}
+
+bool PlaylistView::notify_inline_edit_keydown(WPARAM wp)
+{
+    return fb2k_utils::process_edit_keyboard_shortcuts(wp);
 }
 
 } // namespace cui::panels::playlist_view

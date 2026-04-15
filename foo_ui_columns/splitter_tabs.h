@@ -139,6 +139,7 @@ public:
 
 private:
     bool m_refresh_children_in_progress{};
+    bool m_ignore_next_wm_syschar_message{};
     service_ptr_t<TabStackSplitterHost> m_window_host;
     std::vector<Panel::Ptr> m_panels;
     std::vector<Panel::Ptr> m_active_panels;

@@ -124,7 +124,8 @@ private:
     WNDPROC m_order_proc{};
     int m_max_item_width{0};
     bool m_initialised{false};
-    bool m_process_next_char{true};
+    bool m_ignore_next_wm_char_message{};
+    bool m_ignore_next_wm_syschar_message{};
     bool m_processing_selection_change{false};
     int32_t m_mousewheel_delta{0};
 };
@@ -370,26 +371,28 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {
-        const auto processed = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-        m_process_next_char = !processed;
-        if (processed)
+        if ((m_ignore_next_wm_char_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
 
         if (wp == VK_TAB)
             g_on_tab(wnd);
+
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
         break;
     }
-    case WM_SYSKEYDOWN: {
-        const auto processed = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-        m_process_next_char = !processed;
-        if (processed)
+    case WM_SYSKEYDOWN:
+        if ((m_ignore_next_wm_syschar_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
         break;
-    }
     case WM_CHAR:
-        if (!m_process_next_char) {
-            m_process_next_char = true;
+        if (m_ignore_next_wm_char_message) {
+            m_ignore_next_wm_char_message = false;
+            return 0;
+        }
+        break;
+    case WM_SYSCHAR:
+        if (m_ignore_next_wm_syschar_message) {
+            m_ignore_next_wm_syschar_message = false;
             return 0;
         }
         break;

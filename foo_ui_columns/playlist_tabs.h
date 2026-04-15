@@ -178,6 +178,7 @@ private:
     bool m_switch_timer{false};
     unsigned m_switch_playlist{0};
     bool initialised{false};
+    bool m_ignore_next_wm_syschar_message{};
 
     int32_t m_mousewheel_delta{0};
     UINT ID_CUSTOM_BASE{NULL};
