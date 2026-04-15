@@ -37,4 +37,6 @@ private:
 
 wil::com_ptr_t<IDataObject> create_data_object_safe(const metadb_handle_list& tracks);
 
+bool process_edit_keyboard_shortcuts(WPARAM wp);
+
 } // namespace cui::fb2k_utils

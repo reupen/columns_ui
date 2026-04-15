@@ -1,4 +1,6 @@
 #include "pch.h"
+
+#include "fb2k_misc.h"
 #include "playlist_switcher_v2.h"
 
 namespace cui::panels::playlist_switcher {
@@ -30,6 +32,11 @@ void PlaylistSwitcher::notify_save_inline_edit(const char* value)
         }
     }
     m_edit_playlist.reset();
+}
+
+bool PlaylistSwitcher::notify_inline_edit_keydown(WPARAM wp)
+{
+    return fb2k_utils::process_edit_keyboard_shortcuts(wp);
 }
 
 } // namespace cui::panels::playlist_switcher

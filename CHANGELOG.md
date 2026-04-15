@@ -17,6 +17,14 @@
   [#1680](https://github.com/reupen/columns_ui/pull/1680),
   [#1686](https://github.com/reupen/columns_ui/pull/1686)]
 
+- A subset of keyboard shortcuts configured in Preferences are now processed in
+  the Filter search toolbar and in inline editing edit boxes in the playlist
+  view, playlist switcher, Filter panel and Item properties.
+  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]]
+
+  This allows common shortcuts such as Ctrl+P (for Preferences) to work while
+  not interfering with typing and manipulating text.
+
 ### Bug fixes
 
 - A bug where the text ‘Inactive selected item:’ was truncated at some display
