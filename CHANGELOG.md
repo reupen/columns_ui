@@ -14,13 +14,21 @@
   [[#1671](https://github.com/reupen/columns_ui/pull/1671),
   [#1676](https://github.com/reupen/columns_ui/pull/1676),
   [#1679](https://github.com/reupen/columns_ui/pull/1679),
-  [#1680](https://github.com/reupen/columns_ui/pull/1680)]
+  [#1680](https://github.com/reupen/columns_ui/pull/1680),
+  [#1686](https://github.com/reupen/columns_ui/pull/1686)]
 
 ### Bug fixes
 
 - A bug where the text ‘Inactive selected item:’ was truncated at some display
   scales on the Colours tab on the Colours and fonts preferences page was fixed.
   [[#1673](https://github.com/reupen/columns_ui/pull/1673)]
+
+### Removals
+
+- Windows 7, 8 and 8.1 are no longer supported.
+  [[#1683](https://github.com/reupen/columns_ui/pull/1683)]
+
+  Windows 10 is now the minimum required version.
 
 ### Internal changes
 
