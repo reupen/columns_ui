@@ -992,6 +992,9 @@ void PlaylistView::notify_on_initialisation()
             case playlist_search::Status::Stale:
                 set_search_bar_results_text(L"Results are out of date");
                 break;
+            case playlist_search::Status::StaleInitial:
+                set_search_bar_results_text(L"Press F3 to repeat previous search");
+                break;
             case playlist_search::Status::NoQuery:
                 set_search_bar_results_text(L"");
                 break;

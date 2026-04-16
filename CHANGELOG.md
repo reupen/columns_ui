@@ -15,7 +15,8 @@
   [#1676](https://github.com/reupen/columns_ui/pull/1676),
   [#1679](https://github.com/reupen/columns_ui/pull/1679),
   [#1680](https://github.com/reupen/columns_ui/pull/1680),
-  [#1686](https://github.com/reupen/columns_ui/pull/1686)]
+  [#1686](https://github.com/reupen/columns_ui/pull/1686),
+  [#1689](https://github.com/reupen/columns_ui/pull/1689)]
 
 - A subset of keyboard shortcuts configured in Preferences are now processed in
   the Filter search toolbar and in inline editing edit boxes in the playlist

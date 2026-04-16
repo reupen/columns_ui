@@ -293,7 +293,10 @@ private:
         void on_next() override { m_playlist_search.on_next(); }
         void on_return() override { m_playlist_search.on_return(); }
         void on_char(const wchar_t chr) override { m_playlist_search.add_char(chr); }
-        void on_string_replaced(const wchar_t* text) override { m_playlist_search.set_string(text); }
+        void on_string_replaced(const wchar_t* text, bool is_initial) override
+        {
+            m_playlist_search.set_string(text, is_initial);
+        }
         void on_close() override { m_playlist_search.reset(); }
         bool on_keydown(WPARAM wp) override { return fb2k_utils::process_edit_keyboard_shortcuts(wp); }
 

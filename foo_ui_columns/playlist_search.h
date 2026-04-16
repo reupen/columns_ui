@@ -78,6 +78,7 @@ enum class Status {
     NoMatches,
     Matches,
     Stale,
+    StaleInitial,
     NoQuery,
     QueryError,
 };
@@ -111,12 +112,18 @@ public:
         refresh();
     }
 
-    void set_string(std::wstring text)
+    void set_string(std::wstring text, bool is_initial)
     {
+        m_search_terms = std::move(text);
+
         if (m_are_results_current)
             m_matches.fill(true);
 
-        m_search_terms = std::move(text);
+        if (is_initial) {
+            dispatch_results_statistics_change(Status::StaleInitial);
+            return;
+        }
+
         refresh();
     }
 
