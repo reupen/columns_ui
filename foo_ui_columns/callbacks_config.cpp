@@ -9,7 +9,7 @@ class AlwaysOnTopNotifyReceiver : public config_object_notify {
         if (cui::main_window.get_wnd()) {
             bool aot = false;
             p_object->get_data_bool(aot);
-            uPostMessage(cui::main_window.get_wnd(), MSG_SET_AOT, aot, 0);
+            PostMessage(cui::main_window.get_wnd(), MSG_SET_AOT, aot, 0);
         }
     }
 };
