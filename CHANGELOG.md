@@ -26,6 +26,12 @@
   This allows common shortcuts such as Ctrl+P (for Preferences) to work while
   not interfering with typing and manipulating text.
 
+- The menu toolbar font can now be customised.
+  [[#1690](https://github.com/reupen/columns_ui/pull/1690)]
+
+  The configured font applies only to the toolbar itself and not to any opened
+  menus.
+
 ### Bug fixes
 
 - A bug where the text ‘Inactive selected item:’ was truncated at some display

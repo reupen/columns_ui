@@ -10,6 +10,8 @@ constexpr auto MSG_SHOW_MENUACC = WM_USER + 4u;
 constexpr auto MSG_CREATE_MENU = WM_USER + 5u;
 constexpr auto MSG_SIZE_LIMIT_CHANGE = WM_USER + 6u;
 
+constexpr GUID font_id{0x6f3b4d11, 0xebe6, 0x4d30, {0x8b, 0x1f, 0xea, 0x2e, 0x2f, 0x16, 0x2b, 0x04}};
+
 class MainMenuRootGroup {
 public:
     pfc::string8 m_name;
@@ -61,6 +63,8 @@ class MenuToolbar
 public:
     static constexpr GUID extension_guid{0x76e6db50, 0xde3, 0x4f30, {0xa7, 0xe4, 0x93, 0xfd, 0x62, 0x8b, 0x14, 0x1}};
 
+    static void s_on_font_change();
+
     MenuToolbar();
 
     uie::container_window_v3_config get_window_config() override
@@ -73,6 +77,9 @@ public:
     LRESULT WINAPI handle_toolbar_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI s_handle_toolbar_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
+
+    void on_font_change();
+    void on_size(int client_width, int client_height) const;
 
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
     void make_menu(int idx);
@@ -97,9 +104,11 @@ public:
     HWND get_previous_focus_window() const override;
 
 private:
-    void set_window_theme();
+    void set_window_theme() const;
 
     inline static bool s_hooked{};
+    inline static std::vector<MenuToolbar*> s_instances;
+    inline static wil::unique_hfont s_font;
 
     bool m_redrop_menu{true};
     bool m_is_submenu{false};
@@ -119,6 +128,15 @@ private:
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 
+void MenuToolbar::s_on_font_change()
+{
+    auto old_font = std::move(s_font);
+    s_font.reset(fonts::create_hfont_with_fallback(font_id));
+
+    for (auto&& instance : s_instances)
+        instance->on_font_change();
+}
+
 MenuToolbar::MenuToolbar() : m_manager(nullptr) {}
 
 bool MenuToolbar::is_menu_focused() const
@@ -131,9 +149,10 @@ HWND MenuToolbar::get_previous_focus_window() const
     return m_previous_focus_wnd;
 }
 
-void MenuToolbar::set_window_theme()
+void MenuToolbar::set_window_theme() const
 {
     SetWindowTheme(m_toolbar_wnd, cui::colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
+    SetWindowFont(m_toolbar_wnd, s_font.get(), FALSE);
 }
 
 LRESULT WINAPI MenuToolbar::s_handle_toolbar_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
@@ -147,6 +166,11 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_CREATE: {
         m_is_initialised = true;
+
+        s_instances.push_back(this);
+
+        if (s_instances.size() == 1)
+            s_font.reset(fonts::create_hfont_with_fallback(font_id));
 
         MainMenuRootGroup::g_get_root_items(m_buttons);
         size_t button_count = m_buttons.get_count();
@@ -165,6 +189,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetWindowLongPtr(m_toolbar_wnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
 
         set_window_theme();
+
         m_dark_mode_notifier
             = std::make_unique<cui::colours::dark_mode_notifier>([this, self = ptr{this}] { set_window_theme(); });
 
@@ -193,24 +218,15 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_WINDOWPOSCHANGED: {
-        auto lpwp = (LPWINDOWPOS)lp;
+        const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+
         if (!(lpwp->flags & SWP_NOSIZE)) {
-            RECT rc = {0, 0, 0, 0};
-            size_t count = m_buttons.get_count();
-            int cx = lpwp->cx;
-            int cy = lpwp->cy;
-            int extra = 0;
-            if (count && (BOOL)SendMessage(m_toolbar_wnd, TB_GETITEMRECT, count - 1, (LPARAM)(&rc))) {
-                cx = std::min(cx, gsl::narrow_cast<int>(rc.right));
-                cy = std::min(cy, gsl::narrow_cast<int>(rc.bottom));
-                extra = (lpwp->cy - rc.bottom) / 2;
-            }
-            SetWindowPos(m_toolbar_wnd, nullptr, 0, extra, cx, cy, SWP_NOZORDER);
-            RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+            on_size(lpwp->cx, lpwp->cy);
+            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
         }
+
         break;
     }
-
     case WM_NOTIFY: {
         if (((LPNMHDR)lp)->idFrom == ID_MENU) {
             switch (((LPNMHDR)lp)->code) {
@@ -323,10 +339,62 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_toolbar_wnd = nullptr;
         m_buttons.remove_all();
         m_is_initialised = false;
+
+        std::erase(s_instances, this);
+
+        if (s_instances.empty())
+            s_font.reset();
+
         break;
     }
     }
     return DefWindowProc(wnd, msg, wp, lp);
+}
+
+void MenuToolbar::on_font_change()
+{
+    SetWindowRedraw(m_toolbar_wnd, FALSE);
+    SetWindowFont(m_toolbar_wnd, s_font.get(), FALSE);
+
+    TBBUTTONINFO tbbi{};
+    tbbi.cbSize = sizeof(tbbi);
+    tbbi.dwMask = TBIF_TEXT | TBIF_BYINDEX;
+
+    for (auto&& [index, button] : ranges::views::enumerate(m_buttons)) {
+        tbbi.pszText = button.m_name_with_accelerators.get_ptr();
+        SendMessage(m_toolbar_wnd, TB_SETBUTTONINFO, index, reinterpret_cast<LPARAM>(&tbbi));
+    }
+
+    SetWindowRedraw(m_toolbar_wnd, TRUE);
+    get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
+
+    RECT client_rect{};
+    GetClientRect(get_wnd(), &client_rect);
+    on_size(wil::rect_width(client_rect), wil::rect_height(client_rect));
+}
+
+void MenuToolbar::on_size(int client_width, int client_height) const
+{
+    size_t button_count = m_buttons.get_count();
+
+    if (!m_toolbar_wnd) {
+        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+        return;
+    }
+
+    RECT last_button_rect{};
+    int extra{};
+    int toolbar_width{};
+    int toolbar_height{};
+
+    if (button_count > 0
+        && SendMessage(m_toolbar_wnd, TB_GETITEMRECT, button_count - 1, reinterpret_cast<LPARAM>(&last_button_rect))) {
+        toolbar_width = std::min(client_width, static_cast<int>(last_button_rect.right));
+        toolbar_height = std::min(client_height, static_cast<int>(last_button_rect.bottom));
+        extra = std::max(0, (client_height - static_cast<int>(last_button_rect.bottom)) / 2);
+    }
+
+    SetWindowPos(m_toolbar_wnd, nullptr, 0, extra, toolbar_width, toolbar_height, SWP_NOZORDER);
 }
 
 LRESULT WINAPI MenuToolbar::handle_toolbar_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -598,8 +666,20 @@ bool MenuToolbar::on_menuchar(unsigned short chr)
 
 namespace {
 
+class MenuToolbarFontClient : public fonts::client {
+public:
+    const GUID& get_client_guid() const override { return font_id; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Menu toolbar"; }
+
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
+
+    void on_font_changed() const override { MenuToolbar::s_on_font_change(); }
+};
+
 ui_extension::window_factory<MenuToolbar> _menu_toolbar_factory;
 
-}
+fonts::client::factory<MenuToolbarFontClient> _menu_font_client_factory;
+
+} // namespace
 
 } // namespace cui::toolbars::menu
