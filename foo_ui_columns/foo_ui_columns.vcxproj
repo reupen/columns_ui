@@ -446,6 +446,9 @@
     <ClInclude Include="artwork_decoder.h" />
     <ClInclude Include="artwork_reader.h" />
     <ClInclude Include="buttons.h" />
+    <ClInclude Include="buttons_button.h" />
+    <ClInclude Include="buttons_button_image.h" />
+    <ClInclude Include="buttons_config.h" />
     <ClInclude Include="colour_manager_data.h" />
     <ClInclude Include="colour_utils.h" />
     <ClInclude Include="columns_v2.h" />

@@ -3,7 +3,7 @@
 
 namespace cui::toolbars::buttons {
 
-void ButtonsToolbar::Button::reset_state()
+void Button::reset_state()
 {
     m_interface.reset();
     m_mainmenu_commands_v3.reset();
@@ -12,7 +12,7 @@ void ButtonsToolbar::Button::reset_state()
     m_mainmenu_state_callback.reset();
 }
 
-void ButtonsToolbar::Button::write(stream_writer* out, abort_callback& p_abort) const
+void Button::write(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t(m_type, p_abort);
     out->write_lendian_t(m_filter, p_abort);
@@ -32,7 +32,7 @@ void ButtonsToolbar::Button::write(stream_writer* out, abort_callback& p_abort) 
         out->write_string(m_text, p_abort);
 }
 
-void ButtonsToolbar::Button::read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
+void Button::read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
 {
     *this = Button{};
 
@@ -58,7 +58,7 @@ void ButtonsToolbar::Button::read(ConfigVersion p_version, stream_reader* reader
     }
 }
 
-std::string ButtonsToolbar::Button::get_display_text() const
+std::string Button::get_display_text() const
 {
     if (m_use_custom_text)
         return m_text.c_str();
@@ -66,7 +66,7 @@ std::string ButtonsToolbar::Button::get_display_text() const
     return get_name(true);
 }
 
-std::string ButtonsToolbar::Button::get_type_desc() const
+std::string Button::get_type_desc() const
 {
     switch (m_type) {
     case TYPE_BUTTON:
@@ -82,7 +82,7 @@ std::string ButtonsToolbar::Button::get_type_desc() const
     }
 }
 
-std::string ButtonsToolbar::Button::get_name(bool short_form) const
+std::string Button::get_name(bool short_form) const
 {
     switch (m_type) {
     case TYPE_BUTTON: {
@@ -101,13 +101,13 @@ std::string ButtonsToolbar::Button::get_name(bool short_form) const
     }
 }
 
-std::string ButtonsToolbar::Button::get_name_with_type() const
+std::string Button::get_name_with_type() const
 {
     return "["s + get_type_desc() + "] "s + get_name();
 }
 
-void ButtonsToolbar::Button::read_from_file(FCBVersion p_version, const char* p_base, const char* p_name,
-    stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
+void Button::read_from_file(FCBVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
+    unsigned p_size, abort_callback& p_abort)
 {
     size_t read = 0;
     while (read < p_size) {
@@ -162,7 +162,7 @@ void ButtonsToolbar::Button::read_from_file(FCBVersion p_version, const char* p_
     }
 }
 
-void ButtonsToolbar::Button::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
+void Button::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file.write_lendian_t(I_BUTTON_TYPE, p_abort);
     p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_type), p_abort);

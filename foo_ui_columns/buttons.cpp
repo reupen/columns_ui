@@ -1,9 +1,12 @@
 #include "pch.h"
-#include "buttons.h"
 
 #include "dark_mode.h"
 #include "dark_mode_dialog.h"
 #include "menu_items.h"
+
+#include "buttons.h"
+#include "buttons_button.h"
+#include "buttons_button_image.h"
 
 #define ID_BUTTONS 2001
 
@@ -30,7 +33,7 @@ void update_button_state(HWND toolbar_wnd, int button_id, bool is_enabled, bool 
 
 } // namespace
 
-void ButtonsToolbar::ButtonStateCallback::on_button_state_change(unsigned p_new_state)
+void ButtonStateCallback::on_button_state_change(unsigned p_new_state)
 {
     const auto is_enabled = (p_new_state & uie::BUTTON_STATE_ENABLED) != 0;
     const auto is_pressed = (p_new_state & uie::BUTTON_STATE_PRESSED) != 0;
@@ -38,7 +41,7 @@ void ButtonsToolbar::ButtonStateCallback::on_button_state_change(unsigned p_new_
     update_button_state(m_toolbar_wnd, m_button_id, is_enabled, is_pressed);
 }
 
-void ButtonsToolbar::MainMenuStateCallback::menu_state_changed(const GUID& main, const GUID& sub)
+void MainMenuStateCallback::menu_state_changed(const GUID& main, const GUID& sub)
 {
     pfc::string8 _;
     uint32_t flags{};
@@ -135,8 +138,6 @@ ButtonsToolbar::ButtonsToolbar()
 }
 
 ButtonsToolbar::~ButtonsToolbar() = default;
-
-const TCHAR* ButtonsToolbar::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFFE56A16}");
 
 void ButtonsToolbar::create_toolbar()
 {
@@ -466,7 +467,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
-    case WM_USER + 2: {
+    case WM_USER + 3: {
         if (!wnd_toolbar || wp >= m_buttons.size() || !m_buttons[wp].m_interface.is_valid())
             break;
 
@@ -483,7 +484,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         switch (reinterpret_cast<LPNMHDR>(lp)->code) {
         case TBN_ENDDRAG: {
             const auto lpnmtb = reinterpret_cast<LPNMTOOLBARW>(lp);
-            PostMessage(wnd, WM_USER + 2, lpnmtb->iItem, NULL);
+            PostMessage(wnd, WM_USER + 3, lpnmtb->iItem, NULL);
             break;
         }
         case TBN_GETINFOTIP: {
@@ -761,10 +762,6 @@ bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
     }
     return false;
 }
-
-// {D8E65660-64ED-42e7-850B-31D828C25294}
-const GUID ButtonsToolbar::extension_guid
-    = {0xd8e65660, 0x64ed, 0x42e7, {0x85, 0xb, 0x31, 0xd8, 0x28, 0xc2, 0x52, 0x94}};
 
 ui_extension::window_factory<ButtonsToolbar> blah;
 

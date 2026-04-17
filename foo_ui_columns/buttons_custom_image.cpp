@@ -3,7 +3,7 @@
 
 namespace cui::toolbars::buttons {
 
-ButtonsToolbar::CustomImageContentType ButtonsToolbar::Button::CustomImage::content_type() const
+CustomImageContentType CustomImage::content_type() const
 {
     const auto extension = string_extension(m_path);
 
@@ -16,7 +16,7 @@ ButtonsToolbar::CustomImageContentType ButtonsToolbar::Button::CustomImage::cont
     return CustomImageContentType::Other;
 }
 
-pfc::string8 ButtonsToolbar::Button::CustomImage::get_path() const
+pfc::string8 CustomImage::get_path() const
 {
     pfc::string8 full_path;
 
@@ -37,7 +37,7 @@ pfc::string8 ButtonsToolbar::Button::CustomImage::get_path() const
 
     return full_path;
 }
-void ButtonsToolbar::Button::CustomImage::write(stream_writer* out, abort_callback& p_abort) const
+void CustomImage::write(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_string(m_path, p_abort);
     out->write_lendian_t(m_mask_type, p_abort);
@@ -46,7 +46,7 @@ void ButtonsToolbar::Button::CustomImage::write(stream_writer* out, abort_callba
     } else if (m_mask_type == uie::MASK_COLOUR)
         out->write_lendian_t(m_mask_colour, p_abort);
 }
-void ButtonsToolbar::Button::CustomImage::read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
+void CustomImage::read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
 {
     pfc::string8 temp;
     reader->read_string(temp, p_abort);
@@ -59,8 +59,8 @@ void ButtonsToolbar::Button::CustomImage::read(ConfigVersion p_version, stream_r
         reader->read_lendian_t(m_mask_colour, p_abort);
 }
 
-void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, const char* p_base, const char* p_name,
-    stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
+void CustomImage::read_from_file(FCBVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
+    unsigned p_size, abort_callback& p_abort)
 {
     t_filesize read = 0;
     while (read < p_size) {
@@ -250,7 +250,7 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
     }
 }
 
-void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
+void CustomImage::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file.write_lendian_t(I_CUSTOM_BUTTON_MASK_TYPE, p_abort);
     p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_mask_type), p_abort);

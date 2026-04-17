@@ -1007,6 +1007,15 @@
     <ClInclude Include="vis_spectrum_renderer.h">
       <Filter>Spectrum analyser</Filter>
     </ClInclude>
+    <ClInclude Include="buttons_button.h">
+      <Filter>Buttons toolbar</Filter>
+    </ClInclude>
+    <ClInclude Include="buttons_button_image.h">
+      <Filter>Buttons toolbar</Filter>
+    </ClInclude>
+    <ClInclude Include="buttons_config.h">
+      <Filter>Buttons toolbar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
