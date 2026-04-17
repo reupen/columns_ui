@@ -14,6 +14,8 @@ namespace cui::toolbars::buttons {
 
 namespace {
 
+constexpr GUID font_id{0x70982c67, 0x3a74, 0x4c95, {0xa6, 0xef, 0x63, 0x2c, 0x7f, 0x25, 0xa6, 0x23}};
+
 void update_button_state(HWND toolbar_wnd, int button_id, bool is_enabled, bool is_pressed)
 {
     auto tb_state = LOWORD(SendMessage(toolbar_wnd, TB_GETSTATE, button_id, 0));
@@ -101,6 +103,15 @@ void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_ab
     param.export_to_stream(p_writer, false, p_abort);
 }
 
+void ButtonsToolbar::on_font_change()
+{
+    destroy_toolbar();
+    create_toolbar();
+
+    if (get_host().is_valid())
+        get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
+}
+
 void ButtonsToolbar::reset_buttons(std::vector<Button>& p_buttons)
 {
     const std::initializer_list<std::tuple<GUID, Type, Show, const char*>> default_buttons{
@@ -160,6 +171,8 @@ void ButtonsToolbar::create_toolbar()
 
     if (wnd_toolbar) {
         set_window_theme();
+
+        SetWindowFont(wnd_toolbar, s_font.get(), FALSE);
 
         bool b_need_hot = false;
 
@@ -410,12 +423,27 @@ void ButtonsToolbar::set_window_theme() const
     SetWindowTheme(wnd_toolbar, colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
 }
 
+void ButtonsToolbar::s_on_font_change()
+{
+    auto old_font = std::move(s_font);
+    s_font.reset(fonts::create_hfont_with_fallback(font_id));
+
+    for (auto&& instance : s_instances)
+        instance->on_font_change();
+}
+
 LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
         wnd_host = wnd;
         initialised = true;
+
+        s_instances.push_back(this);
+
+        if (s_instances.size() == 1)
+            s_font.reset(fonts::create_hfont_with_fallback(font_id));
+
         create_toolbar();
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] {
             destroy_toolbar();
@@ -430,6 +458,12 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_dark_mode_notifier.reset();
         destroy_toolbar();
         wnd_host = nullptr;
+
+        std::erase(s_instances, this);
+
+        if (s_instances.empty())
+            s_font.reset();
+
         initialised = false;
         break;
     case WM_WINDOWPOSCHANGED: {
@@ -764,5 +798,21 @@ bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
 }
 
 ui_extension::window_factory<ButtonsToolbar> blah;
+
+namespace {
+
+class ButtonsToolbarFontClient : public fonts::client {
+public:
+    const GUID& get_client_guid() const override { return font_id; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Buttons toolbar"; }
+
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
+
+    void on_font_changed() const override { ButtonsToolbar::s_on_font_change(); }
+};
+
+fonts::client::factory<ButtonsToolbarFontClient> _menu_font_client_factory;
+
+} // namespace
 
 } // namespace cui::toolbars::buttons

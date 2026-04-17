@@ -50,6 +50,8 @@ class ButtonsToolbar : public uie::container_uie_window_v3 {
 public:
     static constexpr GUID extension_guid{0xd8e65660, 0x64ed, 0x42e7, {0x85, 0xb, 0x31, 0xd8, 0x28, 0xc2, 0x52, 0x94}};
 
+    static void s_on_font_change();
+
     HWND wnd_toolbar{nullptr};
     HWND wnd_host{nullptr};
 
@@ -158,6 +160,11 @@ private:
         config.invalidate_children_on_move_or_resize = true;
         return config;
     }
+
+    void on_font_change();
+
+    inline static std::vector<ButtonsToolbar*> s_instances;
+    inline static wil::unique_hfont s_font;
 
     WNDPROC menuproc{nullptr};
     bool initialised{false};

@@ -32,6 +32,9 @@
   The configured font applies only to the toolbar itself and not to any opened
   menus.
 
+- The Buttons toolbar font can now be customised.
+  [[#1692](https://github.com/reupen/columns_ui/pull/1692)]
+
 ### Bug fixes
 
 - A bug where the text ‘Inactive selected item:’ was truncated at some display
