@@ -2,6 +2,7 @@
 #include "layout.h"
 #include "main_window.h"
 #include "rebar.h"
+#include "splitter.h"
 
 class LayoutDataSet : public cui::fcl::dataset_v2 {
     void get_name(pfc::string_base& p_out) const override { p_out = "Layout"; }
@@ -102,6 +103,7 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
         identifier_status_pane,
         identifier_allow_locked_panel_resizing,
         identifier_lock_main_window_size,
+        identifier_use_legacy_panel_sizing,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Misc layout"; }
     const GUID& get_group() const override { return cui::fcl::groups::layout; }
@@ -119,6 +121,7 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
         out.write_item(identifier_status_pane, settings::show_status_pane);
         out.write_item(identifier_allow_locked_panel_resizing, settings::allow_locked_panel_resizing.get_value());
         out.write_item(identifier_lock_main_window_size, cui::lock_main_window_size.get());
+        out.write_item(identifier_use_legacy_panel_sizing, settings::use_legacy_splitter_child_sizing);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -144,6 +147,9 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
             case identifier_lock_main_window_size:
                 reader.read_item(cui::lock_main_window_size);
                 break;
+            case identifier_use_legacy_panel_sizing:
+                reader.read_item(settings::use_legacy_splitter_child_sizing);
+                break;
             default:
                 reader.skip(element_size);
                 break;
@@ -152,6 +158,7 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
 
         on_show_status_change();
         on_show_status_pane_change();
+        cui::panels::splitter::FlatSplitterPanel::s_on_size_change();
     }
 };
 cui::fcl::dataset_factory<MiscLayoutDataSet> g_export_layout_misc;

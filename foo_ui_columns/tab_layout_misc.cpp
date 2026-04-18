@@ -24,8 +24,10 @@ INT_PTR LayoutMiscTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetDlgItemInt(wnd, IDC_HIDE_DELAY, cfg_sidebar_hide_delay, FALSE);
         EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
         EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
-        SendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
+        SendDlgItemMessage(
+            wnd, IDC_USE_LEGACY_PANEL_SIZING, BM_SETCHECK, settings::use_legacy_splitter_child_sizing, 0);
         SendDlgItemMessage(wnd, IDC_ALLOW_LOCKED_PANEL_RESIZING, BM_SETCHECK, settings::allow_locked_panel_resizing, 0);
+        SendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
 
         uih::enhance_edit_control(wnd, IDC_SHOW_DELAY);
         SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10'000);
@@ -69,13 +71,17 @@ INT_PTR LayoutMiscTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 const int new_width = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
                 if (result)
                     settings::custom_splitter_divider_width = new_width;
-                panels::splitter::FlatSplitterPanel::g_on_size_change();
+                panels::splitter::FlatSplitterPanel::s_on_size_change();
             }
             break;
         case IDC_USE_CUSTOM_SHOW_DELAY:
             cfg_sidebar_use_custom_show_delay = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
             EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
             EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
+            break;
+        case IDC_USE_LEGACY_PANEL_SIZING:
+            settings::use_legacy_splitter_child_sizing = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+            panels::splitter::FlatSplitterPanel::s_on_size_change();
             break;
         case IDC_ALLOW_LOCKED_PANEL_RESIZING:
             settings::allow_locked_panel_resizing = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;

@@ -198,9 +198,10 @@ void apply_first_run_defaults()
     if (!cfg_layout.get_presets().get_count())
         cfg_layout.reset_presets();
 
-    if (fb2k::imageViewer::ptr api; fb2k::imageViewer::tryGet(api)) {
+    if (fb2k::imageViewer::ptr api; fb2k::imageViewer::tryGet(api))
         artwork_panel::click_action = WI_EnumValue(artwork_panel::ClickAction::open_image_viewer);
-    }
+
+    settings::use_legacy_splitter_child_sizing = false;
 }
 
 } // namespace cui::migrate

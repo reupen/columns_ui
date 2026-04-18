@@ -139,6 +139,7 @@ void FlatSplitterPanel::refresh_children()
                     panel->m_wnd = wnd_host;
                     panel->m_wnd_child = wnd_panel;
                     panel->m_child = p_ext;
+
                     panel->m_size_limits.min_height = mmi.ptMinTrackSize.y;
                     panel->m_size_limits.min_width = mmi.ptMinTrackSize.x;
                     panel->m_size_limits.max_width = mmi.ptMaxTrackSize.x;
@@ -263,127 +264,123 @@ void FlatSplitterPanel::save_sizes()
 void FlatSplitterPanel::get_panels_sizes(
     unsigned client_width, unsigned client_height, pfc::list_base_t<unsigned>& p_out)
 {
-    struct t_size_info {
-        unsigned height;
-        bool sized;
-        unsigned parts;
+    struct SizeInfo {
+        int size{};
+        bool is_sized{};
+        int parts{};
     };
 
+    if (m_panels.empty())
+        return;
+
     const auto count = m_panels.size();
+    std::vector<SizeInfo> size_infos(count);
 
-    if (count) {
-        pfc::array_t<t_size_info> size_info;
-        size_info.set_size(count);
-        memset(size_info.get_ptr(), 0, size_info.get_size() * sizeof(t_size_info));
+    const auto caption_size = g_get_caption_size();
 
-        unsigned caption_size = g_get_caption_size();
+    int available_size = get_orientation() == horizontal ? client_width : client_height;
+    int available_parts{};
 
-        int available_height = get_orientation() == horizontal ? client_width : client_height;
-        unsigned available_parts = 0;
+    for (auto&& [index, panel, size_info] :
+        ranges::views::zip(ranges::views::iota(size_t{}, count), m_panels, size_infos)) {
+        const auto panel_divider_size = get_panel_divider_size(index);
 
-        for (size_t n = 0; n < count; n++) {
-            unsigned panel_divider_size = get_panel_divider_size(n);
+        const auto size
+            = std::min(max_panel_dimension, panel->m_hidden ? 0 : static_cast<int>(panel->m_size.get_scaled_value()));
 
-            unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size.get_scaled_value();
-            if (height > MAXLONG)
-                height = MAXLONG;
-            if (available_height > (-MAXLONG + (int)height))
-                available_height -= height;
-            else
-                available_height = -MAXLONG;
-            if (available_height > (-MAXLONG + (int)panel_divider_size))
-                available_height -= panel_divider_size;
-            else
-                available_height = -MAXLONG;
+        available_size -= size + panel_divider_size;
+        size_info.size = size + panel_divider_size;
+        size_info.parts = [&] {
+            if (panel->m_locked || panel->m_hidden)
+                return 0;
 
-            size_info[n].height = height + panel_divider_size;
-            size_info[n].parts = (m_panels[n]->m_locked || m_panels[n]->m_hidden) ? 0 : 1;
-            available_parts += size_info[n].parts;
-        }
+            if (settings::use_legacy_splitter_child_sizing)
+                return 1;
 
-        do {
-            unsigned this_pass_available_parts = available_parts;
-            int this_pass_available_height = available_height;
+            return size;
+        }();
 
-            for (size_t n = 0; n < count; n++) {
-                if (!size_info[n].sized) {
-                    unsigned panel_divider_size = get_panel_divider_size(n);
-                    unsigned panel_caption_size
-                        = (get_orientation() != m_panels[n]->m_caption_orientation && m_panels[n]->m_show_caption)
-                        ? caption_size
-                        : 0;
-
-                    unsigned height = size_info[n].height;
-
-                    int adjustment = 0;
-                    {
-                        adjustment = this_pass_available_parts
-                            ? MulDiv(this_pass_available_height, size_info[n].parts, this_pass_available_parts)
-                            : 0;
-                        this_pass_available_parts -= size_info[n].parts;
-                        this_pass_available_height -= adjustment;
-                    }
-
-                    if ((adjustment < 0
-                            && (height > panel_divider_size ? height - panel_divider_size : 0)
-                                < (unsigned)(adjustment * -1))) {
-                        adjustment = (height > panel_divider_size ? height - panel_divider_size : 0) * -1;
-                        size_info[n].sized = true;
-                    }
-
-                    unsigned unadjusted = height;
-
-                    bool hidden = m_panels[n]->m_hidden;
-
-                    height += adjustment;
-
-                    unsigned min_height = hidden
-                        ? 0
-                        : (get_orientation() == horizontal ? m_panels[n]->m_size_limits.min_width
-                                                           : m_panels[n]->m_size_limits.min_height);
-                    if (min_height < (unsigned)(pfc_infinite)-panel_divider_size - caption_size)
-                        min_height += panel_divider_size + panel_caption_size;
-
-                    unsigned max_height = hidden
-                        ? 0
-                        : (get_orientation() == horizontal ? m_panels[n]->m_size_limits.max_width
-                                                           : m_panels[n]->m_size_limits.max_height);
-                    if (max_height < (unsigned)(pfc_infinite)-panel_divider_size - caption_size)
-                        max_height += panel_divider_size + panel_caption_size;
-
-                    if (get_orientation() == horizontal && m_panels[n]->m_show_toggle_area
-                        && !m_panels[n]->m_autohide) {
-                        if (max_height < unsigned(pfc_infinite) - 1)
-                            max_height++;
-                        if (min_height < unsigned(pfc_infinite) - 1)
-                            min_height++;
-                    }
-
-                    if (height < min_height) {
-                        height = min_height;
-                        adjustment = (height - unadjusted);
-                        size_info[n].sized = true;
-                    } else if (height > max_height) {
-                        height = max_height;
-                        adjustment = (height - unadjusted);
-                        size_info[n].sized = true;
-                    }
-                    if (m_panels[n]->m_locked || hidden)
-                        size_info[n].sized = true;
-
-                    if (size_info[n].sized)
-                        available_parts -= size_info[n].parts;
-
-                    available_height -= (height - unadjusted);
-                    size_info[n].height = height;
-                }
-            }
-        } while (available_parts && available_height);
-
-        for (size_t n = 0; n < count; n++) {
-            p_out.add_item(size_info[n].height);
-        }
+        available_parts += size_info.parts;
     }
+
+    do {
+        auto this_pass_available_parts = available_parts;
+        auto this_pass_available_size = available_size;
+
+        for (auto&& [index, panel, size_info] :
+            ranges::views::zip(ranges::views::iota(size_t{}, count), m_panels, size_infos)) {
+            if (size_info.is_sized)
+                continue;
+
+            const auto panel_divider_size = get_panel_divider_size(index);
+            const auto panel_caption_size
+                = (get_orientation() != panel->m_caption_orientation && panel->m_show_caption) ? caption_size : 0;
+
+            int size = size_info.size;
+
+            int adjustment = this_pass_available_parts
+                ? MulDiv(this_pass_available_size, size_info.parts, this_pass_available_parts)
+                : 0;
+            this_pass_available_parts -= size_info.parts;
+            this_pass_available_size -= adjustment;
+
+            if (adjustment < 0 && (size > panel_divider_size ? size - panel_divider_size : 0) < adjustment * -1) {
+                adjustment = (size > panel_divider_size ? size - panel_divider_size : 0) * -1;
+                size_info.is_sized = true;
+            }
+
+            const int unadjusted = size;
+
+            const auto hidden = panel->m_hidden;
+
+            size += adjustment;
+
+            auto min_size = [&] {
+                if (hidden)
+                    return 0;
+
+                return get_orientation() == horizontal ? panel->m_size_limits.min_width
+                                                       : panel->m_size_limits.min_height;
+            }();
+
+            min_size += panel_divider_size + panel_caption_size;
+
+            auto max_size = [&] {
+                if (hidden)
+                    return 0;
+
+                return get_orientation() == horizontal ? panel->m_size_limits.max_width
+                                                       : panel->m_size_limits.max_height;
+            }();
+
+            max_size += panel_divider_size + panel_caption_size;
+
+            if (get_orientation() == horizontal && panel->m_show_toggle_area && !panel->m_autohide) {
+                ++max_size;
+                ++min_size;
+            }
+
+            if (size < min_size) {
+                size = min_size;
+                size_info.is_sized = true;
+            } else if (size > max_size) {
+                size = max_size;
+                size_info.is_sized = true;
+            }
+
+            if (panel->m_locked || hidden)
+                size_info.is_sized = true;
+
+            if (size_info.is_sized)
+                available_parts -= size_info.parts;
+
+            available_size -= size - unadjusted;
+            size_info.size = size;
+        }
+    } while (available_parts > 0 && available_size != 0);
+
+    for (const auto& size_info : size_infos)
+        p_out.add_item(size_info.size);
 }
 
 bool FlatSplitterPanel::can_resize_divider(size_t index) const
@@ -426,200 +423,192 @@ bool FlatSplitterPanel::can_resize_panel(size_t index) const
 
 int FlatSplitterPanel::override_size(const size_t panel, const int delta)
 {
-    struct t_min_max_info {
-        unsigned min_height;
-        unsigned max_height;
-        unsigned height;
+    struct SizeInfo {
+        int min_size{};
+        int max_size{};
+        int size{};
     };
 
+    if (m_panels.empty())
+        return 0;
+
+    save_sizes();
+
     const auto count = m_panels.size();
-    if (count) {
-        save_sizes();
-        if (panel + 1 < count) {
-            size_t n = 0;
 
-            unsigned the_caption_height = g_get_caption_size();
-            pfc::array_t<t_min_max_info> minmax;
-            minmax.set_size(count);
+    if (panel + 1 >= count)
+        return 0;
 
-            memset(minmax.get_ptr(), 0, minmax.get_size() * sizeof(t_min_max_info));
+    const auto default_caption_size = g_get_caption_size();
+    std::vector<SizeInfo> size_infos(count);
 
-            for (n = 0; n < count; n++) {
-                unsigned caption_height
-                    = m_panels[n]->m_show_caption && m_panels[n]->m_caption_orientation != get_orientation()
-                    ? the_caption_height
-                    : 0;
-                unsigned min_height = m_panels[n]->m_hidden ? 0
-                    : get_orientation() == vertical         ? m_panels[n]->m_size_limits.min_height
-                                                            : m_panels[n]->m_size_limits.min_width;
-                unsigned max_height = m_panels[n]->m_hidden ? 0
-                    : get_orientation() == vertical         ? m_panels[n]->m_size_limits.max_height
-                                                            : m_panels[n]->m_size_limits.max_width;
+    for (auto&& [panel, size_info] : ranges::views::zip(m_panels, size_infos)) {
+        auto panel_caption_size
+            = panel->m_show_caption && panel->m_caption_orientation != get_orientation() ? default_caption_size : 0;
+        auto min_size = panel->m_hidden     ? 0
+            : get_orientation() == vertical ? panel->m_size_limits.min_height
+                                            : panel->m_size_limits.min_width;
+        auto max_size = panel->m_hidden     ? 0
+            : get_orientation() == vertical ? panel->m_size_limits.max_height
+                                            : panel->m_size_limits.max_width;
 
-                if (min_height < (unsigned)(0 - caption_height))
-                    min_height += caption_height;
-                if (max_height < (unsigned)(0 - caption_height))
-                    max_height += caption_height;
+        min_size += panel_caption_size;
+        max_size += panel_caption_size;
 
-                if (get_orientation() == horizontal && m_panels[n]->m_show_toggle_area && !m_panels[n]->m_autohide) {
-                    if (max_height < unsigned(pfc_infinite) - 1)
-                        max_height++;
-                    if (min_height < unsigned(pfc_infinite) - 1)
-                        min_height++;
-                    caption_height++;
-                }
-
-                minmax[n].min_height = min_height;
-                minmax[n].max_height = max_height;
-                minmax[n].height = m_panels[n]->m_hidden ? caption_height : m_panels[n]->m_size.get_scaled_value();
-            }
-
-            bool is_up = delta < 0;
-            bool is_down = delta > 0;
-
-            if (is_up) {
-                unsigned diff_abs = 0;
-                unsigned diff_avail = abs(delta);
-
-                auto n = panel + 1;
-                while (n < count && diff_abs < diff_avail) {
-                    {
-                        unsigned height = minmax[n].height + (diff_avail - diff_abs);
-
-                        unsigned min_height = minmax[n].min_height;
-                        unsigned max_height = minmax[n].max_height;
-
-                        if (height < min_height) {
-                            height = min_height;
-                        } else if (height > max_height) {
-                            height = max_height;
-                        }
-
-                        diff_abs += height - minmax[n].height;
-                    }
-                    n++;
-                }
-
-                n = panel + 1;
-                unsigned obtained = 0;
-                while (n > 0 && obtained < diff_abs) {
-                    n--;
-                    {
-                        unsigned height
-                            = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
-
-                        unsigned min_height = minmax[n].min_height;
-                        unsigned max_height = minmax[n].max_height;
-
-                        if (height < min_height) {
-                            height = min_height;
-                        } else if (height > max_height) {
-                            height = max_height;
-                        }
-
-                        obtained += minmax[n].height - height;
-                        minmax[n].height = height;
-                        if (!m_panels[n]->m_hidden)
-                            m_panels[n]->m_size = height;
-                    }
-                }
-                n = panel;
-                unsigned obtained2 = obtained;
-
-                while (n < count - 1 && obtained2) {
-                    n++;
-                    unsigned height = (minmax[n].height);
-
-                    unsigned min_height = minmax[n].min_height;
-                    unsigned max_height = minmax[n].max_height;
-
-                    height += obtained2;
-
-                    if (height < min_height) {
-                        height = min_height;
-                    } else if (height > max_height) {
-                        height = max_height;
-                    }
-
-                    obtained2 -= height - minmax[n].height;
-                    minmax[n].height = height;
-                    if (!m_panels[n]->m_hidden)
-                        m_panels[n]->m_size = height;
-                }
-                return (abs(delta) - obtained);
-            }
-            if (is_down) {
-                unsigned diff_abs = 0;
-                unsigned diff_avail = abs(delta);
-
-                n = panel + 1;
-                while (n > 0 && diff_abs < diff_avail) {
-                    n--;
-                    {
-                        unsigned height = minmax[n].height + (diff_avail - diff_abs);
-                        unsigned min_height = minmax[n].min_height;
-                        unsigned max_height = minmax[n].max_height;
-
-                        if (height < min_height) {
-                            height = min_height;
-                        } else if (height > max_height) {
-                            height = max_height;
-                        }
-
-                        diff_abs += height - minmax[n].height;
-                    }
-                }
-                n = panel;
-                unsigned obtained = 0;
-                while (n < count - 1 && obtained < diff_abs) {
-                    n++;
-                    {
-                        unsigned height
-                            = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
-
-                        unsigned min_height = minmax[n].min_height;
-                        unsigned max_height = minmax[n].max_height;
-
-                        if (height < min_height) {
-                            height = min_height;
-                        } else if (height > max_height) {
-                            height = max_height;
-                        }
-
-                        obtained += minmax[n].height - height;
-                        minmax[n].height = height;
-                        if (!m_panels[n]->m_hidden)
-                            m_panels[n]->m_size = height;
-                    }
-                }
-                n = panel + 1;
-                unsigned obtained2 = obtained;
-                while (n > 0 && obtained2) {
-                    n--;
-                    unsigned height = (minmax[n].height);
-                    unsigned min_height = minmax[n].min_height;
-                    unsigned max_height = minmax[n].max_height;
-
-                    height += obtained2;
-
-                    if (height < min_height) {
-                        height = min_height;
-                    } else if (height > max_height) {
-                        height = max_height;
-                    }
-
-                    obtained2 -= height - minmax[n].height;
-
-                    minmax[n].height = height;
-
-                    if (!m_panels[n]->m_hidden)
-                        m_panels[n]->m_size = height;
-                }
-
-                return 0 - (abs(delta) - obtained);
-            }
+        if (get_orientation() == horizontal && panel->m_show_toggle_area && !panel->m_autohide) {
+            ++max_size;
+            ++min_size;
+            ++panel_caption_size;
         }
+
+        size_info.min_size = min_size;
+        size_info.max_size = max_size;
+        size_info.size = panel->m_hidden ? panel_caption_size : panel->m_size.get_scaled_value();
     }
+
+    const auto is_moving_up_or_left = delta < 0;
+    const auto is_moving_down_or_right = delta > 0;
+
+    if (is_moving_up_or_left) {
+        int abs_diff{};
+        const int available_diff = abs(delta);
+
+        auto index = panel + 1;
+        while (index < count && abs_diff < available_diff) {
+            auto size = size_infos[index].size + (available_diff - abs_diff);
+
+            const auto min_size = size_infos[index].min_size;
+            const auto max_size = size_infos[index].max_size;
+
+            if (size < min_size)
+                size = min_size;
+            else if (size > max_size)
+                size = max_size;
+
+            abs_diff += size - size_infos[index].size;
+            ++index;
+        }
+
+        index = panel + 1;
+        int obtained_above{};
+
+        while (index > 0 && obtained_above < abs_diff) {
+            --index;
+
+            auto size = abs_diff - obtained_above > size_infos[index].size
+                ? 0
+                : size_infos[index].size - (abs_diff - obtained_above);
+            const auto min_size = size_infos[index].min_size;
+            const auto max_size = size_infos[index].max_size;
+
+            if (size < min_size)
+                size = min_size;
+            else if (size > max_size)
+                size = max_size;
+
+            obtained_above += size_infos[index].size - size;
+            size_infos[index].size = size;
+
+            if (!m_panels[index]->m_hidden)
+                m_panels[index]->m_size = size;
+        }
+
+        index = panel;
+        auto to_reallocate = obtained_above;
+
+        while (index < count - 1 && to_reallocate != 0) {
+            ++index;
+            auto size = size_infos[index].size;
+
+            const auto min_size = size_infos[index].min_size;
+            const auto max_size = size_infos[index].max_size;
+
+            size += to_reallocate;
+
+            if (size < min_size)
+                size = min_size;
+            else if (size > max_size)
+                size = max_size;
+
+            to_reallocate -= size - size_infos[index].size;
+            size_infos[index].size = size;
+
+            if (!m_panels[index]->m_hidden)
+                m_panels[index]->m_size = size;
+        }
+        return abs(delta) - obtained_above;
+    }
+
+    if (is_moving_down_or_right) {
+        int abs_diff{};
+        const int available_diff = abs(delta);
+
+        auto index = panel + 1;
+        while (index > 0 && abs_diff < available_diff) {
+            --index;
+
+            auto size = size_infos[index].size + (available_diff - abs_diff);
+            const auto min_size = size_infos[index].min_size;
+            const auto max_size = size_infos[index].max_size;
+
+            if (size < min_size)
+                size = min_size;
+            else if (size > max_size)
+                size = max_size;
+
+            abs_diff += size - size_infos[index].size;
+        }
+        index = panel;
+        int obtained_below{};
+
+        while (index < count - 1 && obtained_below < abs_diff) {
+            ++index;
+
+            auto size = abs_diff - obtained_below > size_infos[index].size
+                ? 0
+                : size_infos[index].size - (abs_diff - obtained_below);
+            const auto min_size = size_infos[index].min_size;
+            const auto max_size = size_infos[index].max_size;
+
+            if (size < min_size)
+                size = min_size;
+            else if (size > max_size)
+                size = max_size;
+
+            obtained_below += size_infos[index].size - size;
+            size_infos[index].size = size;
+
+            if (!m_panels[index]->m_hidden)
+                m_panels[index]->m_size = size;
+        }
+
+        index = panel + 1;
+        auto to_allocate = obtained_below;
+
+        while (index > 0 && to_allocate != 0) {
+            --index;
+            auto size = size_infos[index].size;
+            const auto min_size = size_infos[index].min_size;
+            const auto max_size = size_infos[index].max_size;
+
+            size += to_allocate;
+
+            if (size < min_size)
+                size = min_size;
+            else if (size > max_size)
+                size = max_size;
+
+            to_allocate -= size - size_infos[index].size;
+
+            size_infos[index].size = size;
+
+            if (!m_panels[index]->m_hidden)
+                m_panels[index]->m_size = size;
+        }
+
+        return 0 - (abs(delta) - obtained_below);
+    }
+
     return 0;
 }
 
@@ -1074,11 +1063,13 @@ void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, un
     MINMAXINFO mmi{};
     mmi.ptMaxTrackSize.x = MAXLONG;
     mmi.ptMaxTrackSize.y = MAXLONG;
-    SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-    p_ext->m_size_limits.min_width = std::min(mmi.ptMinTrackSize.x, static_cast<long>(MAXSHORT));
-    p_ext->m_size_limits.min_height = std::min(mmi.ptMinTrackSize.y, static_cast<long>(MAXSHORT));
-    p_ext->m_size_limits.max_height = std::min(mmi.ptMaxTrackSize.y, static_cast<long>(MAXSHORT));
-    p_ext->m_size_limits.max_width = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
+    SendMessage(wnd, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));
+    helpers::clip_minmaxinfo(mmi);
+
+    p_ext->m_size_limits.min_width = mmi.ptMinTrackSize.x;
+    p_ext->m_size_limits.min_height = mmi.ptMinTrackSize.y;
+    p_ext->m_size_limits.max_height = mmi.ptMaxTrackSize.y;
+    p_ext->m_size_limits.max_width = mmi.ptMaxTrackSize.x;
     pfc::string8 name;
     p_ext->m_child->get_name(name);
 
@@ -1110,7 +1101,7 @@ const GUID& FlatSplitterPanel::FlatSplitterPanelHost::get_host_guid() const
     return rv;
 }
 
-void FlatSplitterPanel::g_on_size_change()
+void FlatSplitterPanel::s_on_size_change()
 {
     for (size_t index = 0; index < g_instances.get_count(); index++) {
         g_instances[index]->on_size_changed();
