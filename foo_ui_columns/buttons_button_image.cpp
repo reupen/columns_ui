@@ -1,18 +1,21 @@
 #include "pch.h"
-#include "buttons.h"
+
 #include "svg.h"
 #include "wic.h"
 
+#include "buttons.h"
+#include "buttons_button_image.h"
+
 namespace cui::toolbars::buttons {
 
-bool ButtonsToolbar::ButtonImage::is_valid() const
+bool ButtonImage::is_valid() const
 {
     return m_bm || m_icon;
 }
 
-void ButtonsToolbar::ButtonImage::preload(const Button::CustomImage& p_image)
+void ButtonImage::preload(const CustomImage& p_image)
 {
-    TRACK_CALL_TEXT("cui::ButtonsToolbar::ButtonImage::preload");
+    TRACK_CALL_TEXT("cui::ButtonImage::preload");
 
     m_mask_type = p_image.m_mask_type;
     m_mask_colour = p_image.m_mask_colour;
@@ -33,7 +36,7 @@ void ButtonsToolbar::ButtonImage::preload(const Button::CustomImage& p_image)
     }
 }
 
-bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& custom_image, int width, int height)
+bool ButtonImage::load_custom_image(const CustomImage& custom_image, int width, int height)
 {
     const pfc::string8 full_path = custom_image.get_path();
     const auto content_type = custom_image.content_type();
@@ -76,7 +79,7 @@ bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& c
     return false;
 }
 
-void ButtonsToolbar::ButtonImage::load_custom_svg_image(const char* full_path, int width, int height)
+void ButtonImage::load_custom_svg_image(const char* full_path, int width, int height)
 {
     svg::ensure_available();
 
@@ -90,7 +93,7 @@ void ButtonsToolbar::ButtonImage::load_custom_svg_image(const char* full_path, i
         render_width, render_height, svg_data->data(), svg_data->size(), svg_services::ScalingMode::Fit);
 }
 
-void ButtonsToolbar::ButtonImage::load_default_image(
+void ButtonImage::load_default_image(
     const service_ptr_t<uie::button>& button_ptr, COLORREF colour_btnface, int width, int height)
 {
     uie::button_v2::ptr button_v2_ptr;
@@ -129,10 +132,10 @@ void ButtonsToolbar::ButtonImage::load_default_image(
     }
 }
 
-bool ButtonsToolbar::ButtonImage::load(std::optional<std::reference_wrapper<Button::CustomImage>> custom_image,
+bool ButtonImage::load(std::optional<std::reference_wrapper<CustomImage>> custom_image,
     const service_ptr_t<uie::button>& button_ptr, COLORREF colour_btnface, int width, int height)
 {
-    TRACK_CALL_TEXT("cui::ButtonsToolbar::ButtonImage::load");
+    TRACK_CALL_TEXT("cui::ButtonImage::load");
 
     if (custom_image) {
         return load_custom_image(custom_image->get(), width, height);
@@ -146,7 +149,7 @@ bool ButtonsToolbar::ButtonImage::load(std::optional<std::reference_wrapper<Butt
     return false;
 }
 
-unsigned ButtonsToolbar::ButtonImage::add_to_imagelist(HIMAGELIST iml)
+unsigned ButtonImage::add_to_imagelist(HIMAGELIST iml)
 {
     unsigned rv = I_IMAGECALLBACK;
     if (m_icon) {

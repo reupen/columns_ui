@@ -1,15 +1,20 @@
 #include "pch.h"
-#include "buttons.h"
 
 #include "dark_mode.h"
 #include "dark_mode_dialog.h"
 #include "menu_items.h"
+
+#include "buttons.h"
+#include "buttons_button.h"
+#include "buttons_button_image.h"
 
 #define ID_BUTTONS 2001
 
 namespace cui::toolbars::buttons {
 
 namespace {
+
+constexpr GUID font_id{0x70982c67, 0x3a74, 0x4c95, {0xa6, 0xef, 0x63, 0x2c, 0x7f, 0x25, 0xa6, 0x23}};
 
 void update_button_state(HWND toolbar_wnd, int button_id, bool is_enabled, bool is_pressed)
 {
@@ -30,7 +35,7 @@ void update_button_state(HWND toolbar_wnd, int button_id, bool is_enabled, bool 
 
 } // namespace
 
-void ButtonsToolbar::ButtonStateCallback::on_button_state_change(unsigned p_new_state)
+void ButtonStateCallback::on_button_state_change(unsigned p_new_state)
 {
     const auto is_enabled = (p_new_state & uie::BUTTON_STATE_ENABLED) != 0;
     const auto is_pressed = (p_new_state & uie::BUTTON_STATE_PRESSED) != 0;
@@ -38,7 +43,7 @@ void ButtonsToolbar::ButtonStateCallback::on_button_state_change(unsigned p_new_
     update_button_state(m_toolbar_wnd, m_button_id, is_enabled, is_pressed);
 }
 
-void ButtonsToolbar::MainMenuStateCallback::menu_state_changed(const GUID& main, const GUID& sub)
+void MainMenuStateCallback::menu_state_changed(const GUID& main, const GUID& sub)
 {
     pfc::string8 _;
     uint32_t flags{};
@@ -98,6 +103,15 @@ void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_ab
     param.export_to_stream(p_writer, false, p_abort);
 }
 
+void ButtonsToolbar::on_font_change()
+{
+    destroy_toolbar();
+    create_toolbar();
+
+    if (get_host().is_valid())
+        get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
+}
+
 void ButtonsToolbar::reset_buttons(std::vector<Button>& p_buttons)
 {
     const std::initializer_list<std::tuple<GUID, Type, Show, const char*>> default_buttons{
@@ -136,8 +150,6 @@ ButtonsToolbar::ButtonsToolbar()
 
 ButtonsToolbar::~ButtonsToolbar() = default;
 
-const TCHAR* ButtonsToolbar::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFFE56A16}");
-
 void ButtonsToolbar::create_toolbar()
 {
     const auto is_dark = colours::is_dark_mode_active();
@@ -159,6 +171,8 @@ void ButtonsToolbar::create_toolbar()
 
     if (wnd_toolbar) {
         set_window_theme();
+
+        SetWindowFont(wnd_toolbar, s_font.get(), FALSE);
 
         bool b_need_hot = false;
 
@@ -409,12 +423,27 @@ void ButtonsToolbar::set_window_theme() const
     SetWindowTheme(wnd_toolbar, colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
 }
 
+void ButtonsToolbar::s_on_font_change()
+{
+    auto old_font = std::move(s_font);
+    s_font.reset(fonts::create_hfont_with_fallback(font_id));
+
+    for (auto&& instance : s_instances)
+        instance->on_font_change();
+}
+
 LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
         wnd_host = wnd;
         initialised = true;
+
+        s_instances.push_back(this);
+
+        if (s_instances.size() == 1)
+            s_font.reset(fonts::create_hfont_with_fallback(font_id));
+
         create_toolbar();
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] {
             destroy_toolbar();
@@ -429,6 +458,12 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_dark_mode_notifier.reset();
         destroy_toolbar();
         wnd_host = nullptr;
+
+        std::erase(s_instances, this);
+
+        if (s_instances.empty())
+            s_font.reset();
+
         initialised = false;
         break;
     case WM_WINDOWPOSCHANGED: {
@@ -466,7 +501,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
-    case WM_USER + 2: {
+    case WM_USER + 3: {
         if (!wnd_toolbar || wp >= m_buttons.size() || !m_buttons[wp].m_interface.is_valid())
             break;
 
@@ -483,7 +518,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         switch (reinterpret_cast<LPNMHDR>(lp)->code) {
         case TBN_ENDDRAG: {
             const auto lpnmtb = reinterpret_cast<LPNMTOOLBARW>(lp);
-            PostMessage(wnd, WM_USER + 2, lpnmtb->iItem, NULL);
+            PostMessage(wnd, WM_USER + 3, lpnmtb->iItem, NULL);
             break;
         }
         case TBN_GETINFOTIP: {
@@ -762,10 +797,22 @@ bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
     return false;
 }
 
-// {D8E65660-64ED-42e7-850B-31D828C25294}
-const GUID ButtonsToolbar::extension_guid
-    = {0xd8e65660, 0x64ed, 0x42e7, {0x85, 0xb, 0x31, 0xd8, 0x28, 0xc2, 0x52, 0x94}};
-
 ui_extension::window_factory<ButtonsToolbar> blah;
+
+namespace {
+
+class ButtonsToolbarFontClient : public fonts::client {
+public:
+    const GUID& get_client_guid() const override { return font_id; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Buttons toolbar"; }
+
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
+
+    void on_font_changed() const override { ButtonsToolbar::s_on_font_change(); }
+};
+
+fonts::client::factory<ButtonsToolbarFontClient> _menu_font_client_factory;
+
+} // namespace
 
 } // namespace cui::toolbars::buttons
