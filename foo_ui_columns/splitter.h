@@ -2,6 +2,8 @@
 
 namespace cui::panels::splitter {
 
+constexpr auto max_panel_dimension = 0x7fff;
+
 enum Orientation {
     horizontal,
     vertical,
@@ -77,14 +79,14 @@ public:
     void get_supported_panels(
         const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported) override;
 
-    static void g_on_size_change();
+    static void s_on_size_change();
 
 private:
     struct SizeLimit {
-        unsigned min_height{0};
-        unsigned max_height{0};
-        unsigned min_width{0};
-        unsigned max_width{0};
+        int min_height{};
+        int max_height{};
+        int min_width{};
+        int max_width{};
         SizeLimit() = default;
     };
     class Panel : public std::enable_shared_from_this<Panel> {

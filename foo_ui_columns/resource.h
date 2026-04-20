@@ -72,7 +72,6 @@
 #define IDD_PREFS_PLAYLIST_TABS         202
 #define IDI_LIGHT_DOWN                  202
 #define IDD_PREFS_SYSTEM_TRAY           203
-#define IDI_ICON4                       203
 #define IDI_LIGHT_UP                    203
 #define IDD_SPECTRUM_ANALYSER_OPTIONS   204
 #define IDV_DARK_CLOSE                  204
@@ -338,6 +337,7 @@
 #define IDC_SEARCH_BAR_MODE             1217
 #define IDC_SEARCH_BAR_SCRIPT           1218
 #define IDC_IGNORE_SYMBOLS              1219
+#define IDC_USE_LEGACY_PANEL_SIZING     1220
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -347,7 +347,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        210
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1220
+#define _APS_NEXT_CONTROL_VALUE         1221
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

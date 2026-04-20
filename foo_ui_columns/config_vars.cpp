@@ -16,6 +16,8 @@ static const GUID custom_splitter_divider_width
 fbh::ConfigObjectBoolFactory allow_locked_panel_resizing(
     cui::config_objects::guid_bool_locked_panel_resizing_allowed, true);
 fbh::ConfigInt32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
+fbh::ConfigBool use_legacy_splitter_child_sizing(
+    {0x5fecdd1e, 0x9db6, 0x40ab, {0x94, 0x24, 0x3e, 0x6e, 0x5d, 0x2d, 0xc3, 0x96}}, true);
 
 fbh::ConfigInt32DpiAware playlist_switcher_item_padding(
     GUID{0xc8f7e065, 0xeb66, 0xe282, {0xbd, 0xe3, 0x70, 0xaa, 0xf4, 0x3a, 0x10, 0x97}}, 4),

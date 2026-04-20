@@ -56,6 +56,7 @@ extern cfg_bool show_status_pane;
 
 extern fbh::ConfigObjectBoolFactory allow_locked_panel_resizing;
 extern fbh::ConfigInt32DpiAware custom_splitter_divider_width;
+extern fbh::ConfigBool use_legacy_splitter_child_sizing;
 
 extern fbh::ConfigInt32DpiAware playlist_switcher_item_padding;
 extern fbh::ConfigInt32DpiAware playlist_view_item_padding;

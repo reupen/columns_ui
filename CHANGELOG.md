@@ -19,6 +19,21 @@
   [#1689](https://github.com/reupen/columns_ui/pull/1689),
   [#1693](https://github.com/reupen/columns_ui/pull/1693)]
 
+- The default behaviour of rows and columns was changed in new installations so
+  that they resize (non-locked) panels proportionally when the row or column
+  itself is resized (for example, when the main window is resized).
+  [[#1694](https://github.com/reupen/columns_ui/pull/1694)]
+
+  The new behaviour yields behaviour similar to defining widths or heights using
+  percentages, while the old behaviour resized each panel by an equal amount.
+  The difference is most noticeable when there are at least two non-locked
+  panels in a row or column with a large difference in size.
+
+  The previous non-proportional resizing behaviour can be enabled using the ‘Use
+  non-proportional panel sizing (deprecated)’ option on the Misc tab on the
+  Layout preferences page. The legacy behaviour is enabled by default for
+  upgrades to avoid unwanted layout changes.
+
 - A subset of keyboard shortcuts configured in Preferences are now processed in
   the Filter search toolbar and in inline editing edit boxes in the playlist
   view, playlist switcher, Filter panel and Item properties.
