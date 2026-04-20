@@ -57,6 +57,10 @@
   scales on the Colours tab on the Colours and fonts preferences page was fixed.
   [[#1673](https://github.com/reupen/columns_ui/pull/1673)]
 
+- The position of one of the ‘px’ labels on the Grouping tab on the Playlist
+  view preferences page was corrected.
+  [[#1696](https://github.com/reupen/columns_ui/pull/1696)]
+
 - When a custom keyboard shortcut is assigned to a key combination, such as
   Alt+F, that would normally open a main menu, that keyboard shortcut now only
   activates the configured command when used in built-in panels.
