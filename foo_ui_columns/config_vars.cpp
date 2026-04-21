@@ -117,7 +117,10 @@ cfg_string cfg_pgenstring(GUID{0x07bee8c2, 0xc6f1, 0x9db3, {0x52, 0x55, 0x43, 0x
     "%album%\\$directory(%_path%,2)");
 
 const char* default_global_style_script
-    = "// Uncomment the next line to enable the shading of alternate rows\r\n"
+    = "// Uncomment the next line to hide horizontal lines to the right of group headings\r\n"
+      "// $set_style(group-line,false)\r\n"
+      "\r\n"
+      "// Uncomment the next line to enable the shading of alternate rows\r\n"
       "// $puts(shade-alternate-rows,1)\r\n"
       "\r\n"
       "$if($get(shade-alternate-rows),$if($and(%isplaying%,$not(%_is_group%)),\r\n"

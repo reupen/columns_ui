@@ -34,6 +34,14 @@
   Layout preferences page. The legacy behaviour is enabled by default for
   upgrades to avoid unwanted layout changes.
 
+- The horizontal lines next to group headings in the playlist view can now be
+  customised using the global style script.
+  [[#1699](https://github.com/reupen/columns_ui/pull/1699)]
+
+  This covers hiding the lines and changing the colour of them. See
+  [Style script](https://columns-ui.readthedocs.io/page/playlist-view/style-script.html#setting-the-group-line-style)
+  for more details.
+
 - A subset of keyboard shortcuts configured in Preferences are now processed in
   the Filter search toolbar and in inline editing edit boxes in the playlist
   view, playlist switcher, Filter panel and Item properties.

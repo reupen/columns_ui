@@ -204,7 +204,10 @@ void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context,
     bool b_theme_enabled = p_helper.get_themed();
 
     const auto* group = m_playlist_view->get_item(item_index)->get_group(group_index);
-    if (!group->m_style_data.is_valid())
+
+    const auto& style_data = group->m_style_data;
+
+    if (!style_data.is_valid())
         m_playlist_view->notify_update_item_data(item_index);
 
     COLORREF cr = NULL;
@@ -212,9 +215,9 @@ void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context,
             && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADER, NULL)
             && SUCCEEDED(
                 GetThemeColor(context.list_view_theme, LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
-        cr = group->m_style_data->text_colour;
+        cr = style_data->text_colour;
 
-    if (const auto background_colour = group->m_style_data->background_colour;
+    if (const auto background_colour = style_data->background_colour;
         background_colour != p_helper.get_colour(colours::colour_identifier_t::colour_background)) {
         SetDCBrushColor(context.dc, background_colour);
         PatBlt(context.dc, rc.left, rc.top, wil::rect_width(rc), wil::rect_height(rc), PATCOPY);
@@ -227,7 +230,10 @@ void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context,
         x_offset, border, rc, cr,
         {.bitmap_render_target = context.bitmap_render_target,
             .enable_ellipses = cfg_ellipsis != 0,
-            .initial_format = group->m_style_data->format_properties});
+            .initial_format = style_data->format_properties});
+
+    if (!style_data->show_group_line)
+        return;
 
     const auto line_height = 1_spx;
     const auto line_top = rc.top + wil::rect_height(rc) / 2 - line_height / 2;
@@ -238,25 +244,34 @@ void PlaylistViewRenderer::render_group(const uih::lv::RendererContext& context,
         line_top + line_height,
     };
 
-    if (rc_line.right > rc_line.left) {
-        if (b_theme_enabled && context.list_view_theme
-            && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADERLINE, NULL)
-            && SUCCEEDED(DrawThemeBackground(
-                context.list_view_theme, context.dc, LVP_GROUPHEADERLINE, LVGH_OPEN, &rc_line, nullptr))) {
-        } else {
-            COLORREF cr = NULL;
-            if (!(b_theme_enabled && context.list_view_theme
-                    && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADER, NULL)
-                    && SUCCEEDED(GetThemeColor(
-                        context.list_view_theme, LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
-                cr = group->m_style_data->text_colour;
-            wil::unique_hpen pen(CreatePen(PS_SOLID, uih::scale_dpi_value(1), cr));
-            HPEN pen_old = SelectPen(context.dc, pen.get());
-            MoveToEx(context.dc, rc_line.left, rc_line.top, nullptr);
-            LineTo(context.dc, rc_line.right, rc_line.top);
-            SelectPen(context.dc, pen_old);
-        }
+    if (rc_line.right <= rc_line.left)
+        return;
+
+    if (b_theme_enabled && context.list_view_theme && !style_data->group_line_colour
+        && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADERLINE, NULL)
+        && SUCCEEDED(DrawThemeBackground(
+            context.list_view_theme, context.dc, LVP_GROUPHEADERLINE, LVGH_OPEN, &rc_line, nullptr))) {
+        return;
     }
+
+    const auto line_colour = [&]() -> COLORREF {
+        if (style_data->group_line_colour)
+            return *style_data->group_line_colour;
+
+        if (COLORREF theme_line_colour{}; b_theme_enabled && context.list_view_theme
+            && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADER, NULL)
+            && SUCCEEDED(GetThemeColor(
+                context.list_view_theme, LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &theme_line_colour)))
+            return theme_line_colour;
+
+        return style_data->text_colour;
+    }();
+
+    wil::unique_hpen pen(CreatePen(PS_SOLID, 1_spx, line_colour));
+
+    auto _select_pen = wil::SelectObject(context.dc, pen.get());
+    MoveToEx(context.dc, rc_line.left, rc_line.top, nullptr);
+    LineTo(context.dc, rc_line.right, rc_line.top);
 }
 
 } // namespace cui::panels::playlist_view

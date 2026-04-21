@@ -19,6 +19,8 @@ struct CellStyleData {
     bool use_frame_top : 1 {};
     bool use_frame_right : 1 {};
     bool use_frame_bottom : 1 {};
+    bool show_group_line : 1 {true};
+    std::optional<Colour> group_line_colour;
     uih::text_style::FormatProperties format_properties;
 
     static CellStyleData create_default();
