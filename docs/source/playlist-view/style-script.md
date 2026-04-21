@@ -6,13 +6,13 @@ Per-column style scripts can be used to set colours for a particular column.
 
 ## Functions
 
-### \$set_style
+### \$set_style()
 
 A single function, `$set_style()`, is used to set colours. Colours are specified
 using the `$rgb()` function.
 
 ```{note}
-Selection colours can not be overridden if the chosen colour scheme
+Selection colours cannot be overridden if the chosen colour scheme
 for the playlist view is Themed on the Colours and fonts preferences page. You
 must use the Custom or System scheme to override selection colours.
 ```
@@ -35,6 +35,31 @@ You can set the background colour as follows:
 $set_style(back,<background colour>,<selected item background colour>[,<selected item background colour when window is not focused>])
 ```
 
+##### Setting the group line style
+
+Horizontal lines to the right of group headings can be configured using the
+global style script.
+
+To hide these lines, use:
+
+```
+$set_style(group-line,false)
+```
+
+To change the colour of these lines, use:
+
+```
+$set_style(group-line,true,<colour>)
+```
+
+where `<colour>` is a colour code.
+
+For example, this makes these lines red:
+
+```
+$set_style(group-line,true,$rgb(255,0,0))
+```
+
 ##### Setting the frame style
 
 You can set the frame style as follows:
@@ -46,8 +71,12 @@ $set_style(<frame part>,<enabled state>[,<colour>])
 where
 
 - `<frame part>` is either `frame-top`,`frame-left`,`frame-bottom`,`frame-right`
-- `<enabled state>` is either `1` (true) or `0` (false).
+- `<enabled state>` is any of `true`, `1`, `false` or `0`
 - `<colour>` is the colour of the frame, required if `<enabled state>` is `1`.
+
+```{note}
+Support for using `true` and `false` for the second paramter, instead of `0` and `1`, was added in Columns UI 3.5.0
+```
 
 #### Example
 

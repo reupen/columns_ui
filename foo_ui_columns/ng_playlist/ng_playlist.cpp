@@ -397,8 +397,11 @@ void PlaylistView::update_all_items()
         p_compiler->compile_safe(m_script_global, cfg_globalstring);
     p_compiler->compile_safe(m_script_global_style, cfg_colour);
 
-    refresh_all_items_text();
+    invalidate_styles(0, get_item_count());
+    ListView::update_items(0, get_item_count(), false);
+    invalidate_all();
 }
+
 void PlaylistView::refresh_all_items_text()
 {
     update_items(0, get_item_count());

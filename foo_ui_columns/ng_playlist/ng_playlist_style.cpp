@@ -208,9 +208,16 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                     p_colours.selected_background_colour_non_focus = get_colour_param(*p_params, 3);
                 else
                     p_colours.selected_background_colour_non_focus = p_colours.selected_background_colour;
+            } else if (!stricmp_utf8_ex(name.data(), name.size(), "group-line", SIZE_MAX)) {
+                const auto param_1 = tf::get_param(*p_params, 1);
+                p_colours.show_group_line = param_1 == "1"sv || param_1 == "true"sv;
+
+                if (p_params->get_param_count() == 3)
+                    p_colours.group_line_colour = get_colour_param(*p_params, 2);
             } else if (name.size() >= 6 && !stricmp_utf8_ex(name.data(), 6, "frame-", SIZE_MAX)) {
                 const auto side_name = name.substr(6);
-                const auto use_frame = tf::get_param(*p_params, 1) == "1"sv;
+                const auto param_1 = tf::get_param(*p_params, 1);
+                const auto use_frame = param_1 == "1"sv || param_1 == "true"sv;
                 const auto colour = p_params->get_param_count() >= 3
                     ? std::make_optional(get_colour_param(*p_params, 2))
                     : std::nullopt;
