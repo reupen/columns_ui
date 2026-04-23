@@ -19,6 +19,22 @@
   [#1689](https://github.com/reupen/columns_ui/pull/1689),
   [#1693](https://github.com/reupen/columns_ui/pull/1693)]
 
+- The horizontal lines next to group headings in the playlist view can now be
+  customised using the global style script.
+  [[#1699](https://github.com/reupen/columns_ui/pull/1699)]
+
+  This covers hiding the lines and changing the colour of them. See
+  [Style script](https://columns-ui.readthedocs.io/page/playlist-view/style-script.html#setting-the-group-line-style)
+  for more details.
+
+- When grouping is used in the playlist view, item indentation is now calculated
+  using the maximum grouping level (excluding hidden grouping levels) used in
+  the entire playlist, rather than the number of groups defined after applying
+  playlist filters. [[#1703](https://github.com/reupen/columns_ui/pull/1703)]
+
+  This means that if a group title formatting script evaluates to an empty
+  string for all items in a playlist, it will no longer affect item indentation.
+
 - The default behaviour of rows and columns was changed in new installations so
   that they resize (non-locked) panels proportionally when the row or column
   itself is resized (for example, when the main window is resized).
@@ -33,14 +49,6 @@
   non-proportional panel sizing (deprecated)’ option on the Misc tab on the
   Layout preferences page. The legacy behaviour is enabled by default for
   upgrades to avoid unwanted layout changes.
-
-- The horizontal lines next to group headings in the playlist view can now be
-  customised using the global style script.
-  [[#1699](https://github.com/reupen/columns_ui/pull/1699)]
-
-  This covers hiding the lines and changing the colour of them. See
-  [Style script](https://columns-ui.readthedocs.io/page/playlist-view/style-script.html#setting-the-group-line-style)
-  for more details.
 
 - A subset of keyboard shortcuts configured in Preferences are now processed in
   the Filter search toolbar and in inline editing edit boxes in the playlist
@@ -60,6 +68,10 @@
   [[#1692](https://github.com/reupen/columns_ui/pull/1692)]
 
 ### Bug fixes
+
+- A bug in the playlist view where, when auto-sizing columns and grouping are
+  enabled, columns weren’t resized correctly when changing the items font was
+  fixed. [[#1703](https://github.com/reupen/columns_ui/pull/1703)]
 
 - A bug where the text ‘Inactive selected item:’ was truncated at some display
   scales on the Colours tab on the Colours and fonts preferences page was fixed.
