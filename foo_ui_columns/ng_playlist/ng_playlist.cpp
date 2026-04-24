@@ -682,6 +682,16 @@ const char* PlaylistView::PlaylistViewSearchContext::get_item_text(size_t index)
     return m_items[index]->c_str();
 }
 
+bool PlaylistView::PlaylistViewSearchBarHost::on_context_menu(HWND wnd, POINT pt)
+{
+    uih::Menu menu;
+    uih::MenuCommandCollector collector;
+    menu.append_command(collector.add([] { cui::prefs::page_playlist_view.get_static_instance().show_tab("Search"); }),
+        L"Search bar options");
+    collector.execute(menu.run(wnd, pt));
+    return true;
+}
+
 void PlaylistView::s_create_message_window()
 {
     uie::container_window_v3_config config(L"{columns_ui_playlist_view_message_window_goJRO8xwg7s}", false);
