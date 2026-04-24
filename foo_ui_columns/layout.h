@@ -125,6 +125,7 @@ private:
     HWND m_child_wnd{nullptr};
     bool m_layout_editing_active{false};
     LiveEditData m_live_edit_data;
+    mmh::EventToken::Ptr m_low_level_token;
 };
 
 extern LayoutWindow g_layout_window;
