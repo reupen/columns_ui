@@ -299,6 +299,7 @@ private:
         }
         void on_close() override { m_playlist_search.reset(); }
         bool on_keydown(WPARAM wp) override { return fb2k_utils::process_edit_keyboard_shortcuts(wp); }
+        bool on_context_menu(HWND wnd, POINT pt) override;
 
         std::variant<wil::unique_hbitmap, wil::unique_hicon> create_icon(
             uih::lv::SearchBarIconId icon_id, int width, int height, bool is_dark) override

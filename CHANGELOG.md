@@ -17,7 +17,8 @@
   [#1680](https://github.com/reupen/columns_ui/pull/1680),
   [#1686](https://github.com/reupen/columns_ui/pull/1686),
   [#1689](https://github.com/reupen/columns_ui/pull/1689),
-  [#1693](https://github.com/reupen/columns_ui/pull/1693)]
+  [#1693](https://github.com/reupen/columns_ui/pull/1693),
+  [#1704](https://github.com/reupen/columns_ui/pull/1704)]
 
 - The horizontal lines next to group headings in the playlist view can now be
   customised using the global style script.
