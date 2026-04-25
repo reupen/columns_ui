@@ -525,6 +525,7 @@ private:
 
     void sort_by_column_fb2k_v1(size_t column_index, bool b_descending, bool b_selection_only);
     void sort_by_column_fb2k_v2(size_t index, bool b_descending, bool b_selection_only);
+    void sort_by_column_fb2k_v2_26(size_t column_index, bool is_descending, bool is_selection_only);
 
     size_t storage_get_focus_item() override;
     void storage_set_focus_item(size_t index) override;

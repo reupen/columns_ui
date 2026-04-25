@@ -69,11 +69,12 @@ void PlaylistSearch::init()
                     m_formatted[index] = mmh::to_utf16(buffer);
                 });
         } else {
-            concurrency::parallel_for(size_t{}, count, [this](auto&& n) {
-                thread_local std::string buffer;
-                mmh::StringAdaptor adapted_string(buffer);
+            concurrency::combinable<std::string> buffer;
+            concurrency::parallel_for(size_t{}, count, [&](auto&& n) {
+                auto& buffer_ref = buffer.local();
+                mmh::StringAdaptor adapted_string(buffer_ref);
                 m_tracks[n]->format_title(nullptr, adapted_string, m_titleformat_object, nullptr);
-                m_formatted[n] = mmh::to_utf16(buffer);
+                m_formatted[n] = mmh::to_utf16(buffer_ref);
             });
         }
     } else {

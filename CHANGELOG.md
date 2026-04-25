@@ -36,6 +36,12 @@
   This means that if a group title formatting script evaluates to an empty
   string for all items in a playlist, it will no longer affect item indentation.
 
+- Sorting by playlist-specific fields such as `%queue_index%` is now supported
+  when sorting by a column in the playlist view on foobar2000 2.26 preview
+  versions. [[#1706](https://github.com/reupen/columns_ui/pull/1706)]
+
+  This is not supported when low-memory mode has been activated in foobar2000.
+
 - The default behaviour of rows and columns was changed in new installations so
   that they resize (non-locked) panels proportionally when the row or column
   itself is resized (for example, when the main window is resized).
