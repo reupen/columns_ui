@@ -770,7 +770,9 @@ void PlaylistView::notify_sort_column(size_t index, bool b_descending, bool b_se
             && (m_playlist_api->playlist_lock_get_filter_mask(active_playlist) & playlist_lock::filter_reorder)))
         return;
 
-    if (static_api_test_t<metadb_v2>())
+    if (!fb2k::isLowMemModeActive() && core_version_info_v2::get()->test_version(2, 26, 0, 0))
+        sort_by_column_fb2k_v2_26(index, b_descending, b_selection_only);
+    else if (static_api_test_t<metadb_v2>())
         sort_by_column_fb2k_v2(index, b_descending, b_selection_only);
     else
         sort_by_column_fb2k_v1(index, b_descending, b_selection_only);
@@ -946,6 +948,98 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
             all_items_order[source_indices[index]] = source_indices[sorted_items_order[index]];
         }
         m_playlist_api->activeplaylist_reorder_items(all_items_order.data(), playlist_size);
+    }
+}
+
+void PlaylistView::sort_by_column_fb2k_v2_26(size_t column_index, bool is_descending, bool is_selection_only)
+{
+    const auto playlist_item_count = m_playlist_api->activeplaylist_get_item_count();
+    const auto use_global_variables = m_script_global.is_valid() && cfg_global_sort;
+
+    bit_array_bittable mask;
+
+    if (is_selection_only) {
+        mask.resize(playlist_item_count);
+        m_playlist_api->activeplaylist_get_selection_mask(mask);
+    }
+
+    tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
+
+    SYSTEMTIME st{};
+    GetLocalTime(&st);
+
+    std::vector<size_t> source_indices;
+
+    if (is_selection_only) {
+        source_indices = ranges::views::iota(size_t{}, playlist_item_count)
+            | ranges::views::filter([&](auto index) { return mask[index]; }) | ranges::to<std::vector>;
+    }
+
+    const auto sort_item_count = is_selection_only ? source_indices.size() : playlist_item_count;
+    std::vector<std::wstring> data{sort_item_count};
+    concurrency::combinable<std::string> format_buffer;
+    concurrency::combinable<std::string> cleaned_format_buffer;
+
+    concurrency::parallel_for(size_t{}, sort_item_count, [&](size_t sort_item_index) {
+        const auto item_index = is_selection_only ? source_indices[sort_item_index] : sort_item_index;
+        auto& format_buffer_ref = format_buffer.local();
+        auto& cleaned_format_buffer_ref = cleaned_format_buffer.local();
+
+        {
+            GlobalVariableList extra_items;
+            DateTitleformatHook tf_hook_date(&st);
+            PlaylistNameTitleformatHook tf_hook_playlist_name;
+
+            if (use_global_variables) {
+                SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
+                tf::SplitterTitleformatHook tf_hook(
+                    &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &null_text_format_tf_hook);
+                pfc::string8 output;
+                m_playlist_api->activeplaylist_item_format_title(
+                    item_index, &tf_hook, output, m_script_global, nullptr, play_control::display_level_basic);
+            }
+
+            SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
+            tf::SplitterTitleformatHook tf_hook(use_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date,
+                &tf_hook_playlist_name, &null_text_format_tf_hook);
+
+            mmh::StringAdaptor adapted_format_buffer(format_buffer_ref);
+            m_playlist_api->activeplaylist_item_format_title(item_index, &tf_hook, adapted_format_buffer,
+                m_column_data[column_index].m_sort_script, nullptr, play_control::display_level_basic);
+        }
+
+        const char* cleaned_text_cstr{};
+
+        if (strchr(format_buffer_ref.c_str(), 3)) {
+            cleaned_format_buffer_ref = uih::text_style::remove_colour_and_font_codes(format_buffer_ref);
+            cleaned_text_cstr = cleaned_format_buffer_ref.data();
+        } else {
+            cleaned_text_cstr = format_buffer_ref.c_str();
+        }
+
+        data[sort_item_index].resize(pfc::stringcvt::estimate_utf8_to_wide_quick(cleaned_text_cstr));
+        pfc::stringcvt::convert_utf8_to_wide_unchecked(data[sort_item_index].data(), cleaned_text_cstr);
+    });
+
+    mmh::Permutation sort_item_order(sort_item_count);
+    sort_get_permutation(
+        data.data(), sort_item_order,
+        [](auto&& left, auto&& right) { return StrCmpLogicalW(left.c_str(), right.c_str()); }, true, is_descending,
+        true);
+
+    m_playlist_api->activeplaylist_undo_backup();
+
+    if (is_selection_only) {
+        mmh::Permutation playlist_item_order(playlist_item_count);
+
+        for (size_t sort_item_index{}; sort_item_index < sort_item_count; sort_item_index++) {
+            playlist_item_order[source_indices[sort_item_index]] = source_indices[sort_item_order[sort_item_index]];
+        }
+
+        m_playlist_api->activeplaylist_reorder_items(playlist_item_order.data(), playlist_item_count);
+    } else {
+        auto _ = suspend_smooth_scrolling();
+        m_playlist_api->activeplaylist_reorder_items(sort_item_order.data(), playlist_item_count);
     }
 }
 
