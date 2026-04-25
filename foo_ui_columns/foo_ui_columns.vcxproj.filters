@@ -668,9 +668,6 @@
     <ClCompile Include="tab_pview_search.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include="live_editing_utils.cpp">
-      <Filter>Layout host</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1018,9 +1015,6 @@
     </ClInclude>
     <ClInclude Include="buttons_config.h">
       <Filter>Buttons toolbar</Filter>
-    </ClInclude>
-    <ClInclude Include="live_editing_utils.h">
-      <Filter>Layout host</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
