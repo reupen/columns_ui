@@ -76,16 +76,6 @@
 
 ### Bug fixes
 
-- During live layout editing, right-clicking on panels that embed Microsoft Edge
-  WebView2 controls now behaves as expected.
-  [[#1705](https://github.com/reupen/columns_ui/pull/1705)]
-
-  The same fix applies to any panel that embeds windows in a different thread or
-  process.
-
-  Showing the live editing context menu using the application key remains
-  unsupported in such panels.
-
 - A bug in the playlist view where, when auto-sizing columns and grouping are
   enabled, columns weren’t resized correctly when changing the items font was
   fixed. [[#1703](https://github.com/reupen/columns_ui/pull/1703)]

@@ -2,7 +2,6 @@
 #include "layout.h"
 
 #include "dark_mode_dialog.h"
-#include "live_editing_utils.h"
 #include "splitter_utils.h"
 #include "main_window.h"
 #include "panel_utils.h"
@@ -366,59 +365,16 @@ void LayoutWindow::enter_layout_editing_mode()
 {
     if (get_wnd()) {
         register_message_hook(uih::MessageHookType::type_get_message, this);
-
-        m_low_level_token = cui::layout::add_low_level_mouse_handler(
-            [this, layout_wnd = get_wnd(), main_thread_id = GetCurrentThreadId(), rbutton_down_handled{false}](
-                WPARAM msg, const MSLLHOOKSTRUCT& mllhs) mutable -> bool {
-                if (msg != WM_RBUTTONDOWN && (msg != WM_RBUTTONUP || !rbutton_down_handled))
-                    return false;
-
-                rbutton_down_handled = false;
-                const auto wnd = WindowFromPoint(mllhs.pt);
-
-                if (!IsChild(layout_wnd, wnd))
-                    return false;
-
-                if (core_api::is_shutting_down())
-                    return false;
-
-                if (GUITHREADINFO gti{sizeof(gti)};
-                    GetGUIThreadInfo(main_thread_id, &gti) && gti.hwndMenuOwner != nullptr) {
-                    PostMessage(gti.hwndMenuOwner, WM_CANCELMODE, 0, 0);
-                }
-
-                if (msg == WM_RBUTTONDOWN) {
-                    rbutton_down_handled = true;
-                    return true;
-                }
-
-                fb2k::inMainThread([this, wnd, pt{mllhs.pt}] {
-                    if (!m_layout_editing_active)
-                        return;
-
-                    uie::splitter_window_v2_ptr splitter_v2;
-                    splitter_v2 &= m_child;
-
-                    pfc::list_t<uie::window::ptr> hierarchy;
-                    if (splitter_v2.is_valid() && !splitter_v2->is_point_ours(wnd, pt, hierarchy))
-                        return;
-
-                    if (!splitter_v2.is_valid() && m_child.is_valid())
-                        hierarchy.add_item(m_child);
-
-                    if (!m_trans_fill.get_wnd())
-                        run_live_edit_base_delayed(wnd, pt, hierarchy);
-                });
-
-                return true;
-            });
+        register_message_hook(uih::MessageHookType::type_mouse, this);
     }
+    //__enter_layout_editing_mode_recur(m_child);
 }
 
 void LayoutWindow::exit_layout_editing_mode()
 {
-    m_low_level_token.reset();
     deregister_message_hook(uih::MessageHookType::type_get_message, this);
+    deregister_message_hook(uih::MessageHookType::type_mouse, this);
+    //__exit_layout_editing_mode_recur(m_child);
 }
 
 bool LayoutWindow::is_menu_focused()
@@ -1117,7 +1073,37 @@ bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPAR
         }
         return false;
     }
+    if (p_type == uih::MessageHookType::type_mouse) {
+        const auto* lpmhs = reinterpret_cast<LPMOUSEHOOKSTRUCT>(lp);
+        if (lpmhs->hwnd != get_wnd() && !IsChild(get_wnd(), lpmhs->hwnd))
+            return false;
 
+        uie::splitter_window_v2_ptr splitter_v2;
+
+        if (m_child.is_valid())
+            m_child->service_query_t(splitter_v2);
+
+        const auto is_rbutton_down = wp == WM_RBUTTONDOWN || wp == WM_NCRBUTTONDOWN;
+        const auto is_rbutton_up = wp == WM_RBUTTONUP || wp == WM_NCRBUTTONUP;
+
+        if (!is_rbutton_down && !is_rbutton_up)
+            return false;
+
+        pfc::list_t<uie::window::ptr> hierarchy;
+        if (splitter_v2.is_valid() && !splitter_v2->is_point_ours(lpmhs->hwnd, lpmhs->pt, hierarchy))
+            return false;
+
+        if (is_rbutton_down) {
+            SendMessage(lpmhs->hwnd, WM_CANCELMODE, NULL, NULL);
+        } else {
+            if (!splitter_v2.is_valid() && m_child.is_valid())
+                hierarchy.add_item(m_child);
+
+            if (!m_trans_fill.get_wnd())
+                run_live_edit_base_delayed(lpmhs->hwnd, lpmhs->pt, hierarchy);
+        }
+        return true;
+    }
     return false;
 }
 
@@ -1180,7 +1166,7 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         const auto cmd = static_cast<unsigned>(TrackPopupMenu(menu.get(),
             TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD | (is_keyboard ? TPM_CENTERALIGN | TPM_VCENTERALIGN : 0),
-            screen_pt.x, screen_pt.y, 0, get_wnd(), nullptr));
+            screen_pt.x, screen_pt.y, 0, wnd, nullptr));
 
         if (cmd >= base_id)
             extension_menu_nodes->execute_by_id(cmd);
@@ -1189,8 +1175,8 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     case WM_DESTROY:
         destroy_child();
-        m_low_level_token.reset();
         deregister_message_hook(uih::MessageHookType::type_get_message, this);
+        deregister_message_hook(uih::MessageHookType::type_mouse, this);
         break;
     }
     return DefWindowProc(wnd, msg, wp, lp);
