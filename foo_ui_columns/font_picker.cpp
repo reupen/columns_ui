@@ -18,12 +18,11 @@ wchar_t narrow_to_wchar_t(uint32_t value)
 
 class ConfigureAxesDialog {
 public:
-    static bool g_create(HWND wnd, uih::direct_write::FontFamily font_family, uih::direct_write::Font font,
+    static bool s_create(HWND wnd, const uih::direct_write::FontFamily& font_family,
         uih::direct_write::AxisValues axis_values,
         std::function<void(const uih::direct_write::AxisValues&)> on_values_change)
     {
-        ConfigureAxesDialog dialog(
-            std::move(font_family), std::move(font), std::move(axis_values), std::move(on_values_change));
+        ConfigureAxesDialog dialog(font_family.axes(), std::move(axis_values), std::move(on_values_change));
 
         const dark::DialogDarkModeConfig dark_mode_config{
             .button_ids = {IDOK, IDCANCEL},
@@ -38,11 +37,9 @@ public:
     }
 
 private:
-    ConfigureAxesDialog(uih::direct_write::FontFamily font_family, uih::direct_write::Font font,
-        uih::direct_write::AxisValues axis_values,
+    ConfigureAxesDialog(std::vector<uih::direct_write::AxisRange> axes, uih::direct_write::AxisValues axis_values,
         std::function<void(const uih::direct_write::AxisValues&)> on_values_change)
-        : m_font_family(std::move(font_family))
-        , m_font(std::move(font))
+        : m_axes(std::move(axes))
         , m_axis_values(axis_values)
         , m_initial_axis_values(std::move(axis_values))
         , m_on_values_change(on_values_change)
@@ -84,7 +81,7 @@ private:
             return;
         }
 
-        m_axis = m_font_family.axes[index];
+        m_axis = m_axes[index];
 
         const auto spin_min = gsl::narrow_cast<int>(std::round(m_axis->min * 10.0f));
         const auto spin_max = gsl::narrow_cast<int>(std::round(m_axis->max * 10.0f));
@@ -145,7 +142,7 @@ private:
 
             uih::enhance_edit_control(m_axis_value_edit);
 
-            for (auto&& axis : m_font_family.axes) {
+            for (auto&& axis : m_axes) {
                 const wchar_t name[5] = {narrow_to_wchar_t(axis.tag), narrow_to_wchar_t(axis.tag >> 8),
                     narrow_to_wchar_t(axis.tag >> 16), narrow_to_wchar_t(axis.tag >> 24), 0};
 
@@ -243,8 +240,7 @@ private:
 
     static constexpr WORD timer_id = 100;
 
-    uih::direct_write::FontFamily m_font_family;
-    uih::direct_write::Font m_font;
+    std::vector<uih::direct_write::AxisRange> m_axes;
     uih::direct_write::AxisValues m_axis_values;
     uih::direct_write::AxisValues m_initial_axis_values;
     std::function<void(const uih::direct_write::AxisValues&)> m_on_values_change;
@@ -317,8 +313,8 @@ void DirectWriteFontPicker::set_font_description(fonts::FontDescription font_des
 
     const auto& [family_name, face_name] = *resolved_names;
 
-    const auto iter = ranges::find_if(
-        m_font_families, [&family_name](auto&& family) { return family.display_name() == family_name; });
+    const auto iter
+        = ranges::find_if(m_font_families, [&family_name](auto&& family) { return family.name == family_name; });
 
     ComboBox_SetCurSel(
         m_font_family_combobox, iter != std::end(m_font_families) ? std::distance(m_font_families.begin(), iter) : -1);
@@ -380,7 +376,7 @@ void DirectWriteFontPicker::handle_wm_init_dialog(HWND wnd)
     m_font_families_text_formats.resize(m_font_families.size());
 
     for (auto&& family : m_font_families)
-        ComboBox_AddString(m_font_family_combobox, family.display_name().c_str());
+        ComboBox_AddString(m_font_family_combobox, family.name.c_str());
 
     if (m_font_families.empty()) {
         dark::modeless_info_box(m_wnd, "Error initialising fonts list",
@@ -397,23 +393,23 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_command(WPARAM wp, LPARA
 
         const auto& axis_values = m_font_description->axis_values.empty() ? m_font_face->get().axis_values
                                                                           : m_font_description->axis_values;
-        const auto axes_configured = ConfigureAxesDialog::g_create(
-            m_wnd, *m_font_family, *m_font_face, axis_values, [this](const auto& new_axis_values) {
-                if (!m_font_description)
-                    return;
+        const auto axes_configured
+            = ConfigureAxesDialog::s_create(m_wnd, *m_font_family, axis_values, [this](const auto& new_axis_values) {
+                  if (!m_font_description)
+                      return;
 
-                m_font_description->axis_values = new_axis_values;
+                  m_font_description->axis_values = new_axis_values;
 
-                const auto wss_and_log_font = m_direct_write_context->get_wss_and_logfont_for_axis_values(
-                    m_font_description->typographic_family_name.c_str(), new_axis_values);
+                  const auto wss_and_log_font = m_direct_write_context->get_wss_and_logfont_for_axis_values(
+                      m_font_description->typographic_family_name.c_str(), new_axis_values);
 
-                if (wss_and_log_font) {
-                    m_font_description->wss = std::get<uih::direct_write::WeightStretchStyle>(*wss_and_log_font);
-                    m_font_description->log_font = std::get<LOGFONT>(*wss_and_log_font);
-                }
+                  if (wss_and_log_font) {
+                      m_font_description->wss = std::get<uih::direct_write::WeightStretchStyle>(*wss_and_log_font);
+                      m_font_description->log_font = std::get<LOGFONT>(*wss_and_log_font);
+                  }
 
-                notify_font_changed();
-            });
+                  notify_font_changed();
+              });
 
         if (axes_configured)
             ComboBox_SetCurSel(m_font_face_combobox, m_font_faces.size());
@@ -427,6 +423,24 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_command(WPARAM wp, LPARA
         handle_family_change();
         store_font_face();
         notify_font_changed();
+        return TRUE;
+    }
+    case IDC_FONT_FAMILY | (CBN_DROPDOWN << 16): {
+        if (m_has_font_family_combobox_been_opened)
+            return TRUE;
+
+        m_has_font_family_combobox_been_opened = true;
+
+        for (auto&& [index, family] : ranges::views::enumerate(m_font_families)) {
+            const auto& text = m_font_families[index].name;
+
+            try {
+                const auto& text_format = get_family_text_format(index);
+                const auto height = text_format.get_minimum_height(text) + get_vertical_combobox_item_padding();
+                ComboBox_SetItemHeight(m_font_family_combobox, index, height);
+            }
+            CATCH_LOG()
+        }
         return TRUE;
     }
     case IDC_FONT_FACE | (CBN_SELCHANGE << 16): {
@@ -496,11 +510,17 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_measure_item(LPMEASUREIT
 
     const auto is_family = mis->CtlID == IDC_FONT_FAMILY;
     const auto index = mis->itemID;
-    const auto& text = is_family ? m_font_families[index].display_name() : get_font_face_combobox_item_text(index);
+
+    if (is_family && !m_has_font_family_combobox_been_opened) {
+        mis->itemHeight = 16_spx;
+        return TRUE;
+    }
+
+    const auto& text = is_family ? m_font_families[index].name : get_font_face_combobox_item_text(index);
 
     try {
         const auto& text_format = is_family ? get_family_text_format(index) : get_face_text_format(index);
-        mis->itemHeight = text_format.get_minimum_height(text) + 4_spx;
+        mis->itemHeight = text_format.get_minimum_height(text) + get_vertical_combobox_item_padding();
     }
     CATCH_LOG()
 
@@ -555,7 +575,7 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_draw_item(LPDRAWITEMSTRU
         return GetTextColor(dis->hDC);
     }();
 
-    auto& text = is_family ? m_font_families[index].display_name() : get_font_face_combobox_item_text(index);
+    const auto& text = is_family ? m_font_families[index].name : get_font_face_combobox_item_text(index);
 
     if (is_edit_box) {
         auto _ = wil::SelectObject(buffered_dc.get(), GetWindowFont(dis->hwndItem));
@@ -604,7 +624,7 @@ wil::com_ptr<IDWriteFontFamily> DirectWriteFontPicker::get_icon_font_family() co
 
 uih::direct_write::TextFormat& DirectWriteFontPicker::get_family_text_format(size_t index)
 {
-    const auto& [family, _wss_name, _typographic_name, is_symbol_font, _axes] = m_font_families.at(index);
+    const auto& [family, _name, _is_typographic_model, is_symbol_font] = m_font_families.at(index);
     auto& text_format = m_font_families_text_formats.at(index);
 
     if (!text_format) {
@@ -618,7 +638,7 @@ uih::direct_write::TextFormat& DirectWriteFontPicker::get_family_text_format(siz
 
 uih::direct_write::TextFormat& DirectWriteFontPicker::get_face_text_format(size_t index)
 {
-    const auto& [family, _wss_name, _typographic_name, is_symbol_font, _axes] = m_font_family->get();
+    const auto& [family, _name, _is_typographic_model, is_symbol_font] = m_font_family->get();
 
     if (index == m_font_faces.size()) {
         if (!m_custom_axis_values_text_format)
@@ -653,8 +673,12 @@ void DirectWriteFontPicker::handle_family_change(bool skip_face_change)
     m_font_faces.clear();
     m_font_faces_text_formats.clear();
 
-    if (m_configure_axes_button)
-        EnableWindow(m_configure_axes_button, m_font_family && !m_font_family->get().axes.empty());
+    std::vector<uih::direct_write::AxisRange> axes;
+
+    if (m_configure_axes_button) {
+        const auto axes = m_font_family->get().axes();
+        EnableWindow(m_configure_axes_button, m_font_family && !axes.empty());
+    }
 
     if (!m_font_family)
         return;
@@ -666,7 +690,7 @@ void DirectWriteFontPicker::handle_family_change(bool skip_face_change)
         for (auto&& font : m_font_faces)
             ComboBox_AddString(m_font_face_combobox, font.localised_name.c_str());
 
-        if (m_configure_axes_button && !m_font_family->get().axes.empty())
+        if (m_configure_axes_button && !axes.empty())
             ComboBox_AddString(m_font_face_combobox, custom_axis_values_label);
     }
     CATCH_LOG()
@@ -709,13 +733,13 @@ void DirectWriteFontPicker::store_font_face()
         return;
 
     uih::direct_write::WeightStretchStyle wss;
-    wss.family_name = m_font_family->get().wss_name;
+    wss.family_name = m_font_family->get().wss_name(*m_font_face);
     wss.weight = m_font_face->get().weight;
     wss.stretch = m_font_face->get().stretch;
     wss.style = m_font_face->get().style;
 
     m_font_description->wss = wss;
-    m_font_description->typographic_family_name = m_font_family->get().typographic_name;
+    m_font_description->typographic_family_name = m_font_family->get().typographic_name();
     m_font_description->axis_values = m_font_face->get().axis_values;
     m_font_description->log_font = m_direct_write_context->create_log_font(m_font_face->get().font);
     m_font_description->recalculate_log_font_height();

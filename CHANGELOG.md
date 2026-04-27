@@ -74,6 +74,10 @@
 - The Buttons toolbar font can now be customised.
   [[#1692](https://github.com/reupen/columns_ui/pull/1692)]
 
+- The initial loading time of the Fonts tab on the Colours and fonts preferences
+  page and of the Format code generator dialogue was improved.
+  [[#1708](https://github.com/reupen/columns_ui/pull/1708)]
+
 ### Bug fixes
 
 - A bug in the playlist view where, when auto-sizing columns and grouping are
@@ -94,6 +98,11 @@
   [[#1687](https://github.com/reupen/columns_ui/pull/1687)]]
 
   (Previously, the menu was opened and the custom command was activated.)
+
+- If a variable font was selected in on the Colours and fonts preferences page
+  on Windows 11, a bug that may have caused the selected font style not to be
+  preserved when using the same configuration on Windows 10 was fixed.
+  [[#1708](https://github.com/reupen/columns_ui/pull/1708)]
 
 ### Removals
 

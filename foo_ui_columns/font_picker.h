@@ -36,9 +36,11 @@ private:
     void store_font_face();
     void update_font_size_edit();
     void update_font_size_spin() const;
+    int get_vertical_combobox_item_padding() const { return 4_spx; }
 
     bool m_is_updating_font_size_edit{};
     bool m_allow_cui_dark_mode_fallback{};
+    bool m_has_font_family_combobox_been_opened{};
     HWND m_wnd{};
     HWND m_configure_axes_button{};
     HWND m_font_family_combobox{};
