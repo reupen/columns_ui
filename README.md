@@ -9,10 +9,14 @@ panels and toolbars.
 Its features include:
 
 - a dark mode on Windows 10 and 11
-- a playlist view with grouping, artwork and in-line metadata editing
+- grouping support in the playlist view with variable grouping levels, artwork
+  and sticky group headings
+- optional smooth scrolling in most built-in panels
+- inline metadata editing
 - [DirectWrite text rendering](https://en.wikipedia.org/wiki/DirectWrite) in
-  most built-in panels, including colour emoji support
-- colour management for artwork
+  most built-in panels with support for colour emojis, variable fonts and
+  dynamic text styling
+- colour management for artwork, and HDR image support in the artwork view panel
 - support for SVG icons in the buttons toolbar via
   [SVG services](https://github.com/reupen/svg-services)
 - item details and properties panels to view detailed track information
@@ -21,8 +25,10 @@ Its features include:
 
 To use Columns UI, you need:
 
-- Windows 7 Service Pack 1 with the Platform Update, or newer
+- Windows 10 or newer
 - foobar2000 1.5 or newer
+
+(Version 3.4.1 is the last version compatible with Windows 7, 8 and 8.1.)
 
 ## Downloads
 
