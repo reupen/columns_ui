@@ -36,9 +36,9 @@ Stable and pre-release versions can be downloaded from the
 If you’re logged into GitHub, you can download the latest development version by
 visiting the
 [list of recent GitHub Actions builds](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amain),
-clicking on the most recent entry with a green tick, and then scrolling down to
-the links named ‘Component package (release, win32)’ and ‘Component package
-(release, x64)’ at the bottom.
+clicking on the most recent entry with a green tick, and then accessing the
+links ending `.x64.fb2k-component` and `.x86.fb2k-component` at the bottom of
+the page.
 
 Development versions may be buggier than formal releases; if you encounter a
 problem, open an issue.
