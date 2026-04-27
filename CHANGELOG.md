@@ -107,9 +107,11 @@
 ### Removals
 
 - Windows 7, 8 and 8.1 are no longer supported.
-  [[#1683](https://github.com/reupen/columns_ui/pull/1683)]
+  [[#1683](https://github.com/reupen/columns_ui/pull/1683), [[#1711](https://github.com/reupen/columns_ui/pull/1711)]]
 
-  Windows 10 is now the minimum required version.
+  Windows 10 is now the minimum required version. Wine users should ensure that
+  they are on the latest version of Wine and the Windows version is set to 10 or
+  11 in `winecfg`.
 
 ### Internal changes
 
