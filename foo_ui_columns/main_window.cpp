@@ -61,14 +61,14 @@ const TCHAR* main_window_class_name = _T("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}
 
 const char* unsupported_os_message
     = "Sorry, your operating system version is not supported by this version "
-      "of Columns UI. Please upgrade to Windows 7 Service Pack 1 or newer and try again.\n\n"
+      "of Columns UI. Please upgrade to Windows 10 or newer and try again.\n\n"
       "Otherwise, uninstall the Columns UI component to return to the Default User Interface.";
 
 HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden)
 {
     fbh::enable_wil_console_logging();
 
-    if (!IsWindows7SP1OrGreater()) {
+    if (!IsWindows10OrGreater()) {
         dark::modal_info_box(nullptr, "Unsupported operating system – Columns UI", unsupported_os_message,
             uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
         return nullptr;
@@ -95,11 +95,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden
         pfc::string8 error_message = "Unknown DirectWrite initialisation error";
         uFormatMessage(ex.GetFailureInfo().hr, error_message);
 
-        const auto message
-            = IsWindows8OrGreater() ? error_message.get_ptr() : "The Platform Update for Windows 7 is required.";
-
-        dark::modal_info_box(nullptr, "Failed to initialise DirectWrite – Columns UI", message, uih::InfoBoxType::Error,
-            uih::InfoBoxModalType::OK);
+        dark::modal_info_box(nullptr, "Failed to initialise DirectWrite – Columns UI", error_message,
+            uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
         return nullptr;
     }
 
