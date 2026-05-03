@@ -1,5 +1,13 @@
 # Change log
 
+## 3.5.0-alpha.2
+
+### Bug fixes
+
+- A bug where keyboard shortcuts were incorrectly triggered when the Filter
+  search toolbar was in the layout or toolbar area was fixed.
+  [[#1716](https://github.com/reupen/columns_ui/pull/1716)]
+
 ## 3.5.0-alpha.1
 
 ### Features
