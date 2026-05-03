@@ -719,11 +719,12 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
             commit_search_results(uGetWindowText(m_search_editbox), true);
             m_ignore_next_wm_char_message = true;
             return 0;
-        }
-    default:
-        if (fb2k_utils::process_edit_keyboard_shortcuts(wp)) {
-            m_ignore_next_wm_char_message = true;
-            return 0;
+        default:
+            if (fb2k_utils::process_edit_keyboard_shortcuts(wp)) {
+                m_ignore_next_wm_char_message = true;
+                return 0;
+            }
+            break;
         }
         break;
     case WM_CHAR:
