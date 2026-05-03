@@ -5,8 +5,8 @@
 ### Bug fixes
 
 - A regression in alpha 1 that caused the Fonts tab on the Colours and fonts
-  preferences to crash when a previously selected font could not be found was
-  fixed. [[#1717](https://github.com/reupen/columns_ui/pull/1717)]
+  preferences page to crash when a previously selected font could not be found
+  was fixed. [[#1718](https://github.com/reupen/columns_ui/pull/1718)]
 
 ## 3.5.0-alpha.2
 
