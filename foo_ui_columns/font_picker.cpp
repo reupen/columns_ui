@@ -673,15 +673,16 @@ void DirectWriteFontPicker::handle_family_change(bool skip_face_change)
     m_font_faces.clear();
     m_font_faces_text_formats.clear();
 
-    std::vector<uih::direct_write::AxisRange> axes;
-
-    if (m_configure_axes_button) {
-        const auto axes = m_font_family->get().axes();
-        EnableWindow(m_configure_axes_button, m_font_family && !axes.empty());
+    if (!m_font_family) {
+        if (m_configure_axes_button)
+            EnableWindow(m_configure_axes_button, FALSE);
+        return;
     }
 
-    if (!m_font_family)
-        return;
+    const auto axes = m_font_family->get().axes();
+
+    if (m_configure_axes_button)
+        EnableWindow(m_configure_axes_button, !axes.empty());
 
     try {
         m_font_faces = m_font_family->get().fonts();
