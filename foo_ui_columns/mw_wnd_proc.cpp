@@ -9,6 +9,7 @@
 #include "rebar.h"
 #include "status_bar.h"
 #include "system_tray.h"
+#include "win32.h"
 
 extern HWND g_status;
 
@@ -543,11 +544,16 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     case WM_KEYDOWN:
-        if (process_keydown(msg, lp, wp))
+        if (uie::window::g_process_keydown_keyboard_shortcuts(wp))
             return 0;
+
+        if (wp == VK_TAB) {
+            win32::handle_tab_key(wnd);
+            return 0;
+        }
         break;
     case WM_SYSKEYDOWN:
-        if ((m_ignore_next_wm_syschar_message = process_keydown(msg, lp, wp)))
+        if ((m_ignore_next_wm_syschar_message = uie::window::g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
         break;
     case WM_SYSCHAR:

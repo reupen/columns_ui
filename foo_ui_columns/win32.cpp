@@ -49,4 +49,10 @@ void remove_window_styles(HWND wnd, DWORD styles_to_remove)
     SetWindowLongPtr(wnd, GWL_STYLE, current_styles & ~static_cast<DWORD_PTR>(styles_to_remove));
 }
 
+void handle_tab_key(HWND wnd)
+{
+    if (const auto focused_wnd = uie::window::g_on_tab(wnd))
+        uih::show_focus_indicator(focused_wnd);
+}
+
 } // namespace cui::win32

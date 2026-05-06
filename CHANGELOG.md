@@ -8,6 +8,12 @@
   Columns UI on Windows 8.1 was improved.
   [[#1722](https://github.com/reupen/columns_ui/pull/1722)]
 
+- Pressing multimedia keys no longer shows hidden focused item indicators.
+  [[#1723](https://github.com/reupen/columns_ui/pull/1723)]
+
+  Additionally, the Tab key unhides hidden focused item indicators in more
+  scenarios.
+
 ## 3.5.0-alpha.3
 
 ### Bug fixes

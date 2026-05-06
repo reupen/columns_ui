@@ -436,25 +436,6 @@ void cui::MainWindow::resize_child_windows()
     }
 }
 
-bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
-{
-    const auto keyboard_api = keyboard_shortcut_manager_v2::get();
-
-    if (msg == WM_SYSKEYDOWN) {
-        if (keyb && uie::window::g_process_keydown_keyboard_shortcuts(wp)) {
-            return true;
-        }
-    } else if (msg == WM_KEYDOWN) {
-        if (keyb && uie::window::g_process_keydown_keyboard_shortcuts(wp)) {
-            return true;
-        }
-        if (wp == VK_TAB) {
-            uie::window::g_on_tab(GetFocus());
-        }
-    }
-    return false;
-}
-
 class MainWindowPlaylistCallback : public playlist_callback_single_static {
 public:
     void on_items_added(

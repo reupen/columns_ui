@@ -8,6 +8,7 @@
 #include "filter_config_var.h"
 #include "filter_utils.h"
 #include "icons.h"
+#include "win32.h"
 
 namespace cui::panels::filter {
 
@@ -703,7 +704,7 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
         m_ignore_next_wm_char_message = false;
         switch (wp) {
         case VK_TAB:
-            g_on_tab(wnd);
+            cui::win32::handle_tab_key(wnd);
             return 0;
         case VK_ESCAPE:
             if (m_wnd_last_focused && IsWindow(m_wnd_last_focused)) {

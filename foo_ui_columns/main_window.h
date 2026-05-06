@@ -17,8 +17,6 @@ enum {
 
 bool remember_window_pos();
 
-bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist = false, bool keyb = true);
-
 void on_show_status_change();
 void on_show_status_pane_change();
 void on_show_toolbars_change();

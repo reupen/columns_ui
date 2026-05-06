@@ -1,5 +1,7 @@
 #pragma once
 
+#include "win32.h"
+
 template <class ToolbarArgs>
 class DropDownListToolbar : public ui_extension::container_uie_window_v3 {
 public:
@@ -374,10 +376,12 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
         if ((m_ignore_next_wm_char_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
 
-        if (wp == VK_TAB)
-            g_on_tab(wnd);
+        if (wp == VK_TAB) {
+            cui::win32::handle_tab_key(wnd);
+            return 0;
+        }
 
-        SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
+        uih::show_focus_indicator_on_keydown(get_wnd(), wp);
         break;
     }
     case WM_SYSKEYDOWN:
