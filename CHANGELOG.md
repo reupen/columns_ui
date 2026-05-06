@@ -1,5 +1,13 @@
 # Change log
 
+## 3.5.0-beta.1
+
+### Features
+
+- The unsupported operating system error message that appears when trying to use
+  Columns UI on Windows 8.1 was improved.
+  [[#1722](https://github.com/reupen/columns_ui/pull/1722)]
+
 ## 3.5.0-alpha.3
 
 ### Bug fixes
