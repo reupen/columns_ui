@@ -59,17 +59,22 @@ bool remember_window_pos()
 
 const TCHAR* main_window_class_name = _T("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}");
 
-const char* unsupported_os_message
-    = "Sorry, your operating system version is not supported by this version "
-      "of Columns UI. Please upgrade to Windows 10 or newer and try again.\n\n"
-      "Otherwise, uninstall the Columns UI component to return to the Default User Interface.";
-
 HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden)
 {
     fbh::enable_wil_console_logging();
 
     if (!IsWindows10OrGreater()) {
-        dark::modal_info_box(nullptr, "Unsupported operating system – Columns UI", unsupported_os_message,
+        pfc::string8 module_path;
+        uGetModuleFileName(wil::GetModuleInstanceHandle(), module_path);
+
+        const auto message = fmt::format(
+            "Your operating system version is not supported by this version "
+            "of Columns UI. Upgrade to Windows 10 or newer and try again.\n\nIf you’re "
+            "already using Windows 10 or newer, check that compatibility mode is not enabled for foobar2000.\n\n"
+            "To return to the Default User Interface, delete the following file:\n\n{}",
+            module_path.c_str());
+
+        dark::modal_info_box(nullptr, "Unsupported operating system – Columns UI", message.c_str(),
             uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
         return nullptr;
     }
