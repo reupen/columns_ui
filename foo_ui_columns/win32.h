@@ -9,4 +9,6 @@ std::wstring get_display_device_key(HMONITOR monitor);
 void add_window_styles(HWND wnd, DWORD styles_to_add);
 void remove_window_styles(HWND wnd, DWORD styles_to_remove);
 
+void handle_tab_key(HWND wnd);
+
 } // namespace cui::win32

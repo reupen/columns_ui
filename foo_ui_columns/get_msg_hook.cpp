@@ -3,6 +3,7 @@
 #include "layout.h"
 #include "rebar.h"
 #include "main_window.h"
+#include "win32.h"
 
 extern cui::rebar::RebarWindow* g_rebar_window;
 
@@ -39,11 +40,10 @@ bool GetMsgHook::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM
 
             const auto flags = SendMessage(lpmsg->hwnd, WM_GETDLGCODE, 0, reinterpret_cast<LPARAM>(lpmsg));
             if (!((flags & DLGC_WANTTAB) || (flags & DLGC_WANTMESSAGE))) {
-                ui_extension::window::g_on_tab(lpmsg->hwnd);
+                cui::win32::handle_tab_key(lpmsg->hwnd);
                 lpmsg->message = WM_NULL;
                 lpmsg->lParam = 0;
                 lpmsg->wParam = 0;
-                SendMessage(lpmsg->hwnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
             }
         }
     } else if (lpmsg->message == WM_MOUSEWHEEL && IsChild(cui::main_window.get_wnd(), lpmsg->hwnd)) {

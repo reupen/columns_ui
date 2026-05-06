@@ -3,6 +3,7 @@
 
 #include "dark_mode.h"
 #include "dark_mode_tabs.h"
+#include "win32.h"
 
 namespace cui::panels::tab_stack {
 
@@ -544,11 +545,13 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_KEYDOWN: {
         if (wp != VK_LEFT && wp != VK_RIGHT && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
+
         if (wp == VK_TAB) {
-            g_on_tab(wnd);
+            win32::handle_tab_key(wnd);
             return 0;
         }
-        SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
+
+        uih::show_focus_indicator_on_keydown(get_wnd(), wp);
         break;
     }
     case WM_SYSKEYDOWN:
@@ -1157,11 +1160,13 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
     case WM_KEYDOWN: {
         if (wp != VK_LEFT && wp != VK_RIGHT && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
+
         if (wp == VK_TAB) {
-            g_on_tab(wnd);
+            win32::handle_tab_key(wnd);
             return 0;
         }
-        SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
+
+        uih::show_focus_indicator_on_keydown(get_wnd(), wp);
         break;
     }
     case WM_SYSKEYDOWN:
