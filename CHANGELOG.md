@@ -90,7 +90,7 @@
 - A subset of keyboard shortcuts configured in Preferences are now processed in
   the Filter search toolbar and in inline editing edit boxes in the playlist
   view, playlist switcher, Filter panel and Item properties.
-  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]]
+  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]
 
   This allows common shortcuts such as Ctrl+P (for Preferences) to work while
   not interfering with typing and manipulating text.
@@ -125,7 +125,7 @@
 - When a custom keyboard shortcut is assigned to a key combination, such as
   Alt+F, that would normally open a main menu, that keyboard shortcut now only
   activates the configured command when used in built-in panels.
-  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]]
+  [[#1687](https://github.com/reupen/columns_ui/pull/1687)]
 
   (Previously, the menu was opened and the custom command was activated.)
 
@@ -137,7 +137,8 @@
 ### Removals
 
 - Windows 7, 8 and 8.1 are no longer supported.
-  [[#1683](https://github.com/reupen/columns_ui/pull/1683), [[#1711](https://github.com/reupen/columns_ui/pull/1711)]]
+  [[#1683](https://github.com/reupen/columns_ui/pull/1683),
+  [#1711](https://github.com/reupen/columns_ui/pull/1711)]
 
   Windows 10 is now the minimum required version. Wine users should ensure that
   they are on the latest version of Wine and the Windows version is set to 10 or
