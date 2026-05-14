@@ -4,6 +4,9 @@
 
 ### Features
 
+- The playlist view search bar font can now be configured independently of the
+  items font. [[#1731](https://github.com/reupen/columns_ui/pull/1731)]
+
 - The unsupported operating system error message that appears when trying to use
   Columns UI on Windows 8.1 was improved.
   [[#1722](https://github.com/reupen/columns_ui/pull/1722)]
@@ -13,6 +16,13 @@
 
   Additionally, the Tab key unhides hidden focused item indicators in more
   scenarios.
+
+### Internal changes
+
+- The component is now compiled with Visual Studio 2026 toolset version 14.51.
+
+- Some dependencies were updated.
+  [[#1730](https://github.com/reupen/columns_ui/pull/1730)]
 
 ## 3.5.0-alpha.3
 

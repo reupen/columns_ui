@@ -508,6 +508,12 @@ void PlaylistView::s_on_group_font_change()
         window->on_group_font_change();
 }
 
+void PlaylistView::s_on_search_bar_font_change()
+{
+    for (auto& window : s_windows)
+        window->recreate_search_bar_text_format();
+}
+
 void PlaylistView::s_update_all_items()
 {
     for (auto& window : s_windows)
@@ -1067,6 +1073,7 @@ void PlaylistView::notify_on_initialisation()
     recreate_items_text_format(item_text_layout_cache_size);
     recreate_header_text_format();
     recreate_group_text_format(group_text_layout_cache_size);
+    recreate_search_bar_text_format();
 
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);
@@ -1814,6 +1821,8 @@ uie::window_factory<PlaylistView> g_pvt;
 
 ColoursClient::factory<ColoursClient> g_appearance_client_ngpv_impl;
 
+namespace {
+
 class PlaylistViewItemFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return items_font_id; }
@@ -1823,6 +1832,8 @@ public:
 
     void on_font_changed() const override { PlaylistView::s_on_font_change(); }
 };
+
+PlaylistViewItemFontClient::factory<PlaylistViewItemFontClient> _font_client_ngpv;
 
 class PlaylistViewHeaderFontClient : public fonts::client {
 public:
@@ -1834,6 +1845,8 @@ public:
     void on_font_changed() const override { PlaylistView::s_on_header_font_change(); }
 };
 
+PlaylistViewHeaderFontClient::factory<PlaylistViewHeaderFontClient> _font_header_client_ngpv;
+
 class PlaylistViewGroupFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return group_font_id; }
@@ -1844,9 +1857,21 @@ public:
     void on_font_changed() const override { PlaylistView::s_on_group_font_change(); }
 };
 
-PlaylistViewItemFontClient::factory<PlaylistViewItemFontClient> g_font_client_ngpv;
-PlaylistViewHeaderFontClient::factory<PlaylistViewHeaderFontClient> g_font_header_client_ngpv;
-PlaylistViewGroupFontClient::factory<PlaylistViewGroupFontClient> g_font_group_header_client_ngpv;
+PlaylistViewGroupFontClient::factory<PlaylistViewGroupFontClient> _font_group_header_client_ngpv;
+
+class PlaylistViewSearchBarFontClient : public fonts::client {
+public:
+    const GUID& get_client_guid() const override { return search_bar_font_id; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Search bar"; }
+
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
+
+    void on_font_changed() const override { PlaylistView::s_on_search_bar_font_change(); }
+};
+
+PlaylistViewSearchBarFontClient::factory<PlaylistViewSearchBarFontClient> _font_search_bar_client_ngpv;
+
+} // namespace
 
 void ColoursClient::on_colour_changed(uint32_t mask) const
 {
