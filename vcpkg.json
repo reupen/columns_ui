@@ -1,7 +1,7 @@
 {
   "name": "columns-ui",
   "version-string": "git",
-  "builtin-baseline": "84bab45d415d22042bd0b9081aea57f362da3f35",
+  "builtin-baseline": "56bb2411609227288b70117ead2c47585ba07713",
   "dependencies": [
     "cppwinrt",
     "fmt",
@@ -25,7 +25,7 @@
     },
     {
       "name": "wil",
-      "version": "1.0.250325.1"
+      "version": "1.0.260126.7"
     }
   ]
 }
