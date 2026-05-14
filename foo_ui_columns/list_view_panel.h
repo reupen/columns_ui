@@ -6,7 +6,7 @@
 namespace cui::utils {
 
 template <GUID ColoursClientId, GUID ItemsFontId, GUID HeaderFontId = GUID{}, GUID GroupFontId = GUID{},
-    typename t_window = uie::window>
+    GUID SearchBarFontId = GUID{}, typename t_window = uie::window>
 class ListViewPanelBase
     : public uih::ListView
     , public t_window {
@@ -102,6 +102,17 @@ protected:
         const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
         const auto group_font = font_api->get_font(GroupFontId);
         set_group_font(fonts::get_text_format(group_font, layout_cache_size));
+    }
+
+    void recreate_search_bar_text_format(size_t layout_cache_size = 32)
+    {
+        if (SearchBarFontId == GUID{})
+            return;
+
+        const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
+        const auto search_bar_font = font_api->get_font(SearchBarFontId);
+        const auto search_bar_log_font = search_bar_font->log_font();
+        set_search_bar_font(fonts::get_text_format(search_bar_font, layout_cache_size), search_bar_log_font);
     }
 
 private:
