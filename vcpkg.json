@@ -20,10 +20,6 @@
       "version": "2025.5.0"
     },
     {
-      "name": "ms-gsl",
-      "version": "4.2.0"
-    },
-    {
       "name": "range-v3",
       "version": "0.12.0#4"
     },
