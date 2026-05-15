@@ -4,6 +4,14 @@
 
 ### Features
 
+- Two new fields, `%is_dark%` and `%is_light%`, are now available in the
+  playlist view display, style, sorting and global variables scripts.
+  [[#1732](https://github.com/reupen/columns_ui/pull/1732)]
+
+  `%is_dark%` is defined when dark mode is active and `%is_light%` is defined
+  when light mode is active. The fields can be used with `$if()` for styling
+  conditional on the current mode.
+
 - The playlist view search bar font can now be configured independently of the
   items font. [[#1731](https://github.com/reupen/columns_ui/pull/1731)]
 

@@ -656,34 +656,35 @@ const char* PlaylistView::PlaylistViewSearchContext::get_item_text(size_t index)
     const auto batch_tracks = pfc::list_partial_ref_t(m_tracks, index, batch_size);
 
     const bool has_global_variables = m_global_script.is_valid();
+    auto extra_fields_provider_tf_hook = create_extra_fields_provider_tf_hook();
 
-    m_metadb->queryMulti_(batch_tracks, [this, index, has_global_variables](size_t offset, const metadb_v2_rec_t& rec) {
-        metadb_handle_v2::ptr track;
-        track &= m_tracks[index + offset];
+    m_metadb->queryMulti_(batch_tracks,
+        [this, index, has_global_variables, &extra_fields_provider_tf_hook](size_t offset, const metadb_v2_rec_t& rec) {
+            metadb_handle_v2::ptr track;
+            track &= m_tracks[index + offset];
 
-        GlobalVariableList global_variables;
-        DateTitleformatHook tf_hook_date(&m_systemtime);
-        PlaylistNameTitleformatHook tf_hook_playlist_name;
+            GlobalVariableList global_variables;
+            DateTitleformatHook tf_hook_date(&m_systemtime);
 
-        if (has_global_variables) {
-            SetGlobalTitleformatHook<true, false> tf_hook_set_global(global_variables);
-            tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
-            pfc::string8 _;
-            track->formatTitle_v2(rec, &tf_hook, _, m_global_script, nullptr);
-        }
+            if (has_global_variables) {
+                SetGlobalTitleformatHook<true, false> tf_hook_set_global(global_variables);
+                tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &extra_fields_provider_tf_hook);
+                pfc::string8 _;
+                track->formatTitle_v2(rec, &tf_hook, _, m_global_script, nullptr);
+            }
 
-        std::string title;
-        mmh::StringAdaptor adapted_title(title);
+            std::string title;
+            mmh::StringAdaptor adapted_title(title);
 
-        SetGlobalTitleformatHook<false, true> tf_hook_get_global(global_variables);
-        tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
+            SetGlobalTitleformatHook<false, true> tf_hook_get_global(global_variables);
+            tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
 
-        tf::SplitterTitleformatHook tf_hook(has_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date,
-            &tf_hook_playlist_name, &null_text_format_tf_hook);
+            tf::SplitterTitleformatHook tf_hook(has_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date,
+                &extra_fields_provider_tf_hook, &null_text_format_tf_hook);
 
-        track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_script, nullptr);
-        m_items[index + offset] = std::move(title);
-    });
+            track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_script, nullptr);
+            m_items[index + offset] = std::move(title);
+        });
 
     return m_items[index]->c_str();
 }
@@ -803,6 +804,7 @@ void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending
         m_playlist_api->activeplaylist_get_selection_mask(mask);
 
     tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
+    auto extra_fields_provider_tf_hook = create_extra_fields_provider_tf_hook();
 
     SYSTEMTIME st;
     GetLocalTime(&st);
@@ -815,12 +817,11 @@ void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending
 
             {
                 DateTitleformatHook tf_hook_date(&st);
-                PlaylistNameTitleformatHook tf_hook_playlist_name;
 
                 if (extra) {
                     SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
                     tf::SplitterTitleformatHook tf_hook(
-                        &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &null_text_format_tf_hook);
+                        &tf_hook_set_global, &tf_hook_date, &extra_fields_provider_tf_hook, &null_text_format_tf_hook);
                     pfc::string8 output;
                     m_playlist_api->activeplaylist_item_format_title(
                         n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
@@ -828,7 +829,7 @@ void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending
 
                 SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
                 tf::SplitterTitleformatHook tf_hook(extra ? &tf_hook_get_global : nullptr, &tf_hook_date,
-                    &tf_hook_playlist_name, &null_text_format_tf_hook);
+                    &extra_fields_provider_tf_hook, &null_text_format_tf_hook);
                 m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
                     m_column_data[column_index].m_sort_script, nullptr, play_control::display_level_none);
             }
@@ -890,20 +891,23 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
     tf::NullTextFormatTitleformatHook null_text_format_tf_hook;
     std::vector<std::wstring> data{tracks.size()};
 
-    metadb_v2::get()->queryMultiParallel_(tracks,
+    struct Context {
+        tf::FieldProviderTitleformatHook extra_fields_provider_tf_hook{create_extra_fields_provider_tf_hook()};
+    };
+
+    metadb_v2::get()->queryMultiParallelEx_<Context>(tracks,
         [this, &tracks, &data, &null_text_format_tf_hook, &st, extra, column_index](
-            size_t index, const metadb_v2::rec_t& rec) {
+            size_t index, const metadb_v2::rec_t& rec, auto& context) {
             metadb_handle_v2::ptr track;
             track &= tracks[index];
 
             GlobalVariableList extra_items;
             DateTitleformatHook tf_hook_date(&st);
-            PlaylistNameTitleformatHook tf_hook_playlist_name;
 
             if (extra) {
                 SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                tf::SplitterTitleformatHook tf_hook(
-                    &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &null_text_format_tf_hook);
+                tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date,
+                    &context.extra_fields_provider_tf_hook, &null_text_format_tf_hook);
                 pfc::string8 output;
                 track->formatTitle_v2(rec, &tf_hook, output, m_script_global, nullptr);
             }
@@ -913,7 +917,7 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
 
             SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
             tf::SplitterTitleformatHook tf_hook(extra ? &tf_hook_get_global : nullptr, &tf_hook_date,
-                &tf_hook_playlist_name, &null_text_format_tf_hook);
+                &context.extra_fields_provider_tf_hook, &null_text_format_tf_hook);
             track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_data[column_index].m_sort_script, nullptr);
 
             const char* ptr = title.c_str();
@@ -985,6 +989,8 @@ void PlaylistView::sort_by_column_fb2k_v2_26(size_t column_index, bool is_descen
     std::vector<std::wstring> data{sort_item_count};
     concurrency::combinable<std::string> format_buffer;
     concurrency::combinable<std::string> cleaned_format_buffer;
+    concurrency::combinable<tf::FieldProviderTitleformatHook> extra_fields_provider_tf_hook(
+        create_extra_fields_provider_tf_hook);
 
     concurrency::parallel_for(size_t{}, sort_item_count, [&](size_t sort_item_index) {
         const auto item_index = is_selection_only ? source_indices[sort_item_index] : sort_item_index;
@@ -994,12 +1000,12 @@ void PlaylistView::sort_by_column_fb2k_v2_26(size_t column_index, bool is_descen
         {
             GlobalVariableList extra_items;
             DateTitleformatHook tf_hook_date(&st);
-            PlaylistNameTitleformatHook tf_hook_playlist_name;
+            auto& local_extra_fields_provider_tf_hook = extra_fields_provider_tf_hook.local();
 
             if (use_global_variables) {
                 SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                tf::SplitterTitleformatHook tf_hook(
-                    &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &null_text_format_tf_hook);
+                tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date,
+                    &local_extra_fields_provider_tf_hook, &null_text_format_tf_hook);
                 pfc::string8 output;
                 m_playlist_api->activeplaylist_item_format_title(
                     item_index, &tf_hook, output, m_script_global, nullptr, play_control::display_level_basic);
@@ -1007,7 +1013,7 @@ void PlaylistView::sort_by_column_fb2k_v2_26(size_t column_index, bool is_descen
 
             SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
             tf::SplitterTitleformatHook tf_hook(use_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date,
-                &tf_hook_playlist_name, &null_text_format_tf_hook);
+                &local_extra_fields_provider_tf_hook, &null_text_format_tf_hook);
 
             mmh::StringAdaptor adapted_format_buffer(format_buffer_ref);
             m_playlist_api->activeplaylist_item_format_title(item_index, &tf_hook, adapted_format_buffer,
@@ -1486,7 +1492,7 @@ void PlaylistView::notify_update_item_data(size_t index)
     GetLocalTime(&st);
 
     DateTitleformatHook tf_hook_date(&st);
-    PlaylistNameTitleformatHook tf_hook_playlist_name;
+    auto extra_fields_provider_tf_hook = create_extra_fields_provider_tf_hook();
 
     const auto items_font_size = get_items_font_size_pt().value_or(0.f);
     const auto group_font_size = get_group_font_size_pt().value_or(0.f);
@@ -1495,7 +1501,7 @@ void PlaylistView::notify_update_item_data(size_t index)
     if (b_global) {
         SetGlobalTitleformatHook<true, false> tf_hook_set_global(globals);
         tf::SplitterTitleformatHook tf_hook(
-            &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name, &text_format_tf_hook);
+            &tf_hook_set_global, &tf_hook_date, &extra_fields_provider_tf_hook, &text_format_tf_hook);
         m_playlist_api->activeplaylist_item_format_title(
             index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
     }
@@ -1529,7 +1535,7 @@ void PlaylistView::notify_update_item_data(size_t index)
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
             StyleTitleformatHook tf_hook_style(style_data_group, group_display_index, true);
             tf::SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date,
-                &tf_hook_playlist_name, &group_style_text_format_tf_hook);
+                &extra_fields_provider_tf_hook, &group_style_text_format_tf_hook);
             ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
         }
 
@@ -1540,8 +1546,8 @@ void PlaylistView::notify_update_item_data(size_t index)
     uih::text_style::FormatProperties global_format_properties;
 
     for (size_t i = 0; i < count; i++) {
-        tf::SplitterTitleformatHook tf_hook(
-            b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name, &text_format_tf_hook);
+        tf::SplitterTitleformatHook tf_hook(b_global ? &tf_hook_get_global : nullptr, &tf_hook_date,
+            &extra_fields_provider_tf_hook, &text_format_tf_hook);
 
         m_playlist_api->activeplaylist_item_format_title(
             index, &tf_hook, temp, m_column_data[i].m_display_script, nullptr, playback_control::display_level_all);
@@ -1557,7 +1563,7 @@ void PlaylistView::notify_update_item_data(size_t index)
                 StyleTitleformatHook tf_hook_style(style_data_item, item_display_index);
                 tf::MergingTextFormatTitleformatHook global_style_text_format_tf_hook(items_font_size, {});
                 tf::SplitterTitleformatHook global_style_tf_hook(&tf_hook_style,
-                    b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name,
+                    b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &extra_fields_provider_tf_hook,
                     &global_style_text_format_tf_hook);
 
                 m_playlist_api->activeplaylist_item_format_title(index, &global_style_tf_hook, temp,
@@ -1576,7 +1582,7 @@ void PlaylistView::notify_update_item_data(size_t index)
             tf::MergingTextFormatTitleformatHook item_style_text_format_tf_hook(
                 items_font_size, global_format_properties);
             tf::SplitterTitleformatHook column_style_tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
-                &tf_hook_date, &tf_hook_playlist_name, &item_style_text_format_tf_hook);
+                &tf_hook_date, &extra_fields_provider_tf_hook, &item_style_text_format_tf_hook);
 
             m_playlist_api->activeplaylist_item_format_title(index, &column_style_tf_hook, temp,
                 m_column_data[i].m_style_script, nullptr, play_control::display_level_all);

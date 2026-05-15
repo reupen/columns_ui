@@ -78,8 +78,10 @@ pfc::string8 format_playlist_title(
     auto length_getter = [&lazy_fields]() { return std::string(pfc::format_time_ex(lazy_fields.total_duration(), 0)); };
 
     tf::FieldProviderTitleformatHook::FieldMap field_map{{"title", name}, {"size", std::string(pfc::format_uint(size))},
-        {"is_locked", is_locked}, {"is_active", is_active}, {"is_playing", is_playing}, {"filesize", file_size_getter},
-        {"filesize_raw", file_size_raw_getter}, {"length", length_getter}};
+        {"is_locked", is_locked}, {"is_active", is_active}, {"is_playing", is_playing},
+        {"filesize", std::function<std::string()>{file_size_getter}},
+        {"filesize_raw", std::function<std::string()>{file_size_raw_getter}},
+        {"length", std::function<std::string()>{length_getter}}};
 
     if (is_locked) {
         pfc::string8 lock_name;

@@ -34,6 +34,8 @@ public:
     }
 
     bool operator()(const std::function<std::string()>& value) const { return (*this)(value()); }
+    bool operator()(const std::function<std::string_view()>& value) const { return (*this)(value()); }
+    bool operator()(const std::function<bool()>& value) const { return (*this)(value()); }
 
 private:
     titleformat_text_out* m_out{};
@@ -47,9 +49,9 @@ bool FieldProviderTitleformatHook::process_field(
     if (iter == m_field_map.end())
         return false;
 
-    p_found_flag = true;
+    p_found_flag = std::visit(ValueVisitor(p_out), iter->second);
 
-    return std::visit(ValueVisitor(p_out), iter->second);
+    return p_found_flag;
 }
 
 } // namespace cui::tf

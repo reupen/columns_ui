@@ -52,20 +52,22 @@ available in Columns UI and not available in the Default User Interface.
 | `%_back%`                   | [Style script](/playlist-view/style-script)         | Style scripts                                         |
 | `%_display_index%`          | [Style script](/playlist-view/style-script)         | Style scripts                                         |
 | `%default_font_size%`       | [Text styling](/other/text-styling)                 | Display, style, grouping and global variables scripts |
+| `%is_dark%`                 | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
 | `%_is_group%`               | [Style script](/playlist-view/style-script)         | Style scripts                                         |
+| `%is_light%`                | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
 | `%_is_themed%`              | [Style script](/playlist-view/style-script)         | Style scripts                                         |
-| `%playlist_name%`           | [Title formatting](/playlist-view/title-formatting) | Display, style and global variables scripts           |
+| `%playlist_name%`           | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
 | `%_text%`                   | [Style script](/playlist-view/style-script)         | Style scripts                                         |
 | `%_selected_back%`          | [Style script](/playlist-view/style-script)         | Style scripts                                         |
 | `%_selected_back_no_focus%` | [Style script](/playlist-view/style-script)         | Style scripts                                         |
 | `%_selected_text%`          | [Style script](/playlist-view/style-script)         | Style scripts                                         |
 | `%_selected_text_no_focus%` | [Style script](/playlist-view/style-script)         | Style scripts                                         |
-| `%_system_day%`             | [Title formatting](/playlist-view/title-formatting) | Display, style and global variables scripts           |
-| `%_system_day_of_week%`     | [Title formatting](/playlist-view/title-formatting) | Display, style and global variables scripts           |
-| `%_system_hour%`            | [Title formatting](/playlist-view/title-formatting) | Display, style and global variables scripts           |
-| `%_system_julian_day%`      | [Title formatting](/playlist-view/title-formatting) | Display, style and global variables scripts           |
-| `%_system_month%`           | [Title formatting](/playlist-view/title-formatting) | Display, style and global variables scripts           |
-| `%_system_year%`            | [Title formatting](/playlist-view/title-formatting) | Display, style and global variables scripts           |
+| `%_system_day%`             | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
+| `%_system_day_of_week%`     | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
+| `%_system_hour%`            | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
+| `%_system_julian_day%`      | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
+| `%_system_month%`           | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
+| `%_system_year%`            | [Title formatting](/playlist-view/title-formatting) | Display, style, sorting and global variables scripts  |
 
 ### Status bar
 

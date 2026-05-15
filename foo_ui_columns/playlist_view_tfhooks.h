@@ -1,4 +1,5 @@
 #pragma once
+#include "tf_field_provider.h"
 
 class GlobalVariable {
 public:
@@ -103,19 +104,8 @@ public:
     explicit DateTitleformatHook(const SYSTEMTIME* st = nullptr) : p_st(st) {}
 };
 
-class PlaylistNameTitleformatHook : public titleformat_hook {
-    bool m_initialised{false};
-    pfc::string8 m_name;
+namespace cui::panels::playlist_view {
 
-public:
-    void initialise();
-    bool process_field(
-        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
+tf::FieldProviderTitleformatHook create_extra_fields_provider_tf_hook();
 
-    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
-        titleformat_hook_function_params* p_params, bool& p_found_flag) override
-    {
-        return false;
-    }
-    PlaylistNameTitleformatHook() = default;
-};
+}
