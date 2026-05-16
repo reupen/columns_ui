@@ -5,7 +5,7 @@ details on functions and fields specific to those scripts.
 
 ## Fields
 
-These fields are available in display scripts, style scripts and global
+These fields are available in display scripts, style scripts, sorting and global
 variables scripts.
 
 | Field                   | Description                                |
@@ -16,4 +16,6 @@ variables scripts.
 | `%_system_day_of_week%` | The current day of the week, as a number   |
 | `%_system_hour%`        | The current hour                           |
 | `%_system_julian_day%`  | The current Julian day                     |
+| `%is_dark%`             | Defined when dark mode is active           |
+| `%is_light%`            | Defined when light mode is active          |
 | `%playlist_name%`       | The name of the active playlist            |

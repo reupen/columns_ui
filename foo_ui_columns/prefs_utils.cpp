@@ -26,16 +26,18 @@ void preview_to_console(const char* spec, bool extra)
         SYSTEMTIME st{};
         GetLocalTime(&st);
 
+        auto extra_fields_provider_tf_hook = cui::panels::playlist_view::create_extra_fields_provider_tf_hook();
+
         GlobalVariableList extra_items;
         if (extra) {
             pfc::string8_fast_aggressive str_dummy;
             service_ptr_t<titleformat_object> to_global;
             titleformat_compiler::get()->compile_safe(to_global, cfg_globalstring);
 
-            PlaylistNameTitleformatHook tf_hook_playlist_name;
             DateTitleformatHook tf_hook_date(&st);
             SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-            cui::tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+            cui::tf::SplitterTitleformatHook tf_hook(
+                &tf_hook_set_global, &tf_hook_date, &extra_fields_provider_tf_hook);
             playlist_api->activeplaylist_item_format_title(
                 idx, &tf_hook, str_dummy, to_global, nullptr, play_control::display_level_all);
         }
@@ -46,7 +48,7 @@ void preview_to_console(const char* spec, bool extra)
         SetGlobalTitleformatHook<false, true> tf_hook_set_global(extra_items);
         DateTitleformatHook tf_hook_date(&st);
 
-        titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, &tf_hook_date);
+        cui::tf::SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &extra_fields_provider_tf_hook);
 
         playlist_api->activeplaylist_item_format_title(
             idx, &tf_hook, temp, to_temp, nullptr, play_control::display_level_all);

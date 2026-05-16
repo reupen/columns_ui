@@ -17,7 +17,8 @@ struct CaseInsensitiveUtf8Comparator {
 
 class FieldProviderTitleformatHook : public titleformat_hook {
 public:
-    using FieldValue = std::variant<std::string, std::string_view, pfc::string8, bool, std::function<std::string()>>;
+    using FieldValue = std::variant<std::string, std::string_view, pfc::string8, bool, std::function<std::string()>,
+        std::function<std::string_view()>, std::function<bool()>>;
     using FieldMap = std::map<std::string_view, FieldValue, internal::CaseInsensitiveUtf8Comparator>;
 
     explicit FieldProviderTitleformatHook(FieldMap field_map) : m_field_map(std::move(field_map)) {}

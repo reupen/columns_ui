@@ -1,29 +1,7 @@
 #include "pch.h"
+
 #include "playlist_view_tfhooks.h"
-
-bool PlaylistNameTitleformatHook::process_field(
-    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
-{
-    if (p_name_length && *p_name == '_') {
-        p_name++;
-        p_name_length--;
-    }
-    if (!stricmp_utf8_ex(p_name, p_name_length, "playlist_name", pfc_infinite)) {
-        initialise();
-        p_out->write(titleformat_inputtypes::unknown, m_name);
-        p_found_flag = true;
-        return true;
-    }
-    return false;
-}
-
-void PlaylistNameTitleformatHook::initialise()
-{
-    if (!m_initialised) {
-        playlist_manager_v3::get()->activeplaylist_get_name(m_name);
-        m_initialised = true;
-    }
-}
+#include "tf_field_provider.h"
 
 int date_to_julian(const SYSTEMTIME* st)
 {
@@ -152,3 +130,42 @@ bool DateTitleformatHook::process_function(titleformat_text_out* p_out, const ch
     p_found_flag = false;
     return false;
 }
+
+namespace cui::panels::playlist_view {
+
+tf::FieldProviderTitleformatHook create_extra_fields_provider_tf_hook()
+{
+    auto playlist_name = std::make_shared<std::optional<std::string>>();
+
+    auto get_playlist_name = [playlist_name] {
+        if (!*playlist_name) {
+            playlist_name->emplace();
+            mmh::StringAdaptor adapted_string(**playlist_name);
+            playlist_manager_v3::get()->activeplaylist_get_name(adapted_string);
+        }
+
+        return std::string_view{**playlist_name};
+    };
+
+    auto is_dark = std::make_shared<std::optional<bool>>();
+
+    auto get_is_dark = [is_dark] {
+        if (!*is_dark)
+            *is_dark = colours::is_dark_mode_active();
+
+        return **is_dark;
+    };
+
+    auto get_is_light = [is_dark] {
+        if (!*is_dark)
+            *is_dark = colours::is_dark_mode_active();
+
+        return !**is_dark;
+    };
+
+    return tf::FieldProviderTitleformatHook(
+        {{"playlist_name", get_playlist_name}, {"_playlist_name", get_playlist_name},
+            {"is_dark", std::move(get_is_dark)}, {"is_light", std::move(get_is_light)}});
+}
+
+} // namespace cui::panels::playlist_view
