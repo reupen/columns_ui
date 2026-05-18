@@ -25,6 +25,17 @@
   Additionally, the Tab key unhides hidden focused item indicators in more
   scenarios.
 
+- If a keyboard shortcut has been assigned to Ctrl+F, pressing Ctrl+F when the
+  playlist view search bar is focused will now trigger the assigned shortcut.
+  [[#1733](https://github.com/reupen/columns_ui/pull/1733)]
+
+### Bug fixes
+
+- The built-in spectrum analyser visualisation frame rate is no longer
+  temporarily reduced if execution was paused (for example, using a debugger)
+  while the visualisation was rendering a frame.
+  [[#1734](https://github.com/reupen/columns_ui/pull/1734)]
+
 ### Internal changes
 
 - The component is now compiled with Visual Studio 2026 toolset version 14.51.

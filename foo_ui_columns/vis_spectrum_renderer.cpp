@@ -269,8 +269,11 @@ void SpectrumAnalyserRenderer::start()
             if (stop_token.stop_requested())
                 return;
 
-            const auto frame_time = (std::chrono::steady_clock::now() - frame_start) / 1.ms;
-            frame_time_averager.add_frame(frame_time);
+            const auto frame_time = std::chrono::steady_clock::now() - frame_start;
+
+            // Ignore excessively large frame times (likely to be a result of e.g. debugger use)
+            if (frame_time < 1.s)
+                frame_time_averager.add_frame(frame_time / 1.ms);
 
             // Will typically sleep for longer in practice (as the usual Windows timer resolution is 15.6ms)
             if (need_to_sleep)
