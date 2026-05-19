@@ -5,6 +5,8 @@ updates:
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 3
     groups:
       actions:
         patterns:
@@ -23,6 +25,8 @@ updates:
     directory: /docs
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 3
     groups:
       docs:
         patterns:
