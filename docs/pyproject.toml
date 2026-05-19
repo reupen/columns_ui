@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 requires-python = ">=3.12"
 dependencies = [
-    "myst-parser>=4.0.1",
+    "myst-parser>=5.1.0",
     "sphinx>=8.2.3",
     "takao>=0.2.2",
 ]
