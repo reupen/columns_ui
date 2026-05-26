@@ -1,7 +1,7 @@
 {
   "name": "columns-ui",
   "version-string": "git",
-  "builtin-baseline": "56bb2411609227288b70117ead2c47585ba07713",
+  "builtin-baseline": "927f62e4b8838bd7e441e9c45103a16ffd75007e",
   "dependencies": [
     "cppwinrt",
     "fmt",
@@ -18,6 +18,10 @@
     {
       "name": "foonathan-lexy",
       "version": "2025.5.0"
+    },
+    {
+      "name": "ms-gsl",
+      "version": "4.2.2"
     },
     {
       "name": "range-v3",
