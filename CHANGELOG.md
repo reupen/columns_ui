@@ -1,5 +1,12 @@
 # Change log
 
+## 3.5.0
+
+### Internal changes
+
+- Some dependencies were updated.
+  [[#1743](https://github.com/reupen/columns_ui/pull/1743)]
+
 ## 3.5.0-beta.1
 
 ### Features

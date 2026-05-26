@@ -60,7 +60,7 @@ jobs:
 
       - name: Set up vcpkg
         run: |
-          git -C C:\vcpkg fetch
+          git -C C:\vcpkg pull
           vcpkg version
           vcpkg integrate install
 
