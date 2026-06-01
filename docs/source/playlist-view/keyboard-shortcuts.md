@@ -11,10 +11,13 @@ following keyboard shortcuts:
 | F3              | Open the search bar or navigate to the next search result     |
 | Shift+F3        | Open the search bar or navigate to the previous search result |
 
-These shortcuts will only work when the playlist view is focused. If ‘Open
-search bar instead of pop-up playlist search when using Ctrl+F or F3’ is
-disabled in on the Search tab on the Playlist view preferences page, Ctrl+F and
-F3 will instead open the pop-up playlist search window.
+These shortcuts will only work when the playlist view is focused. They will not
+work if the relevant key combinations have been assigned to commands on the
+Keyboard Shortcuts preferences page.
+
+If ‘Open search bar instead of pop-up playlist search when using Ctrl+F or F3’
+is disabled in on the Search tab on the Playlist view preferences page, Ctrl+F
+and F3 will instead open the pop-up playlist search window.
 
 When the search box in the search bar is focused, the following keyboard
 shortcuts are available:
