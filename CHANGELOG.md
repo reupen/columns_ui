@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Features
+
+- When adding a new column in on the Playlist view preferences page, inline
+  editing for the column name in the column list is automatically activated.
+  [[#1750](https://github.com/reupen/columns_ui/pull/1750)]
+
 ## 3.5.0
 
 ### Internal changes
