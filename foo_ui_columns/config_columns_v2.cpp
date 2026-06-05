@@ -823,6 +823,7 @@ void TabColumns::add_column(size_t index)
     m_columns_list_view.insert_items(insert_index, insert_items.size(), insert_items.data());
     m_columns_list_view.set_item_selected_single(insert_index);
     m_columns_list_view.ensure_visible(insert_index);
+    m_columns_list_view.activate_inline_editing();
 }
 
 void TabColumns::remove_column(size_t index)
