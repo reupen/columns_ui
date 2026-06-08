@@ -8,207 +8,188 @@ namespace cui::panels::playlist_switcher {
 bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     uie::window_ptr p_this_temp = this;
-    HMENU menu = CreatePopupMenu();
 
-    size_t index = get_focus_item();
+    uih::Menu menu;
+    uih::MenuCommandCollector collector;
 
-    playlist_position_reference_tracker indexTracked(false);
-    indexTracked.m_playlist = index;
+    size_t focused_item = get_focus_item();
 
-    size_t num = m_playlist_api->get_playlist_count();
-    size_t active = m_playlist_api->get_active_playlist();
-    bool b_index_valid = index < num;
+    playlist_position_reference_tracker tracked_focused_item(false);
+    tracked_focused_item.m_playlist = focused_item;
 
-    if (b_index_valid)
-        set_highlight_selected_item(index);
+    size_t playlist_count = m_playlist_api->get_playlist_count();
+    size_t active_playlist_index = m_playlist_api->get_active_playlist();
+
+    const auto is_focused_item_valid = focused_item < playlist_count;
+
+    if (is_focused_item_valid)
+        set_highlight_selected_item(focused_item);
 
     const auto autoplaylist_api = autoplaylist_manager::get();
-    autoplaylist_client_v2::ptr autoplaylist;
+    autoplaylist_client_v2::ptr autoplaylist_v2;
 
     try {
-        autoplaylist_client::ptr ptr = autoplaylist_api->query_client(index);
-        ptr->service_query_t(autoplaylist);
+        autoplaylist_client::ptr autoplaylist_v1 = autoplaylist_api->query_client(focused_item);
+        autoplaylist_v2 &= autoplaylist_v1;
     } catch (pfc::exception const&) {
     }
 
-    metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
+    size_t playlist_item_count{};
 
-    if (b_index_valid) {
-        data.prealloc(m_playlist_api->playlist_get_item_count(index));
-        m_playlist_api->playlist_get_all_items(index, data);
+    if (is_focused_item_valid) {
+        playlist_item_count = m_playlist_api->playlist_get_item_count(focused_item);
 
-        if (data.get_count())
-            AppendMenu(menu, MF_STRING, ID_PLAY, _T("Play"));
-        if (active != index)
-            AppendMenu(menu, MF_STRING, ID_SWITCH, _T("Activate"));
-        AppendMenu(menu, MF_STRING, ID_RENAME, _T("Rename"));
-        AppendMenu(menu, MF_STRING, ID_REMOVE, _T("Remove"));
-        /*if (index>0)
-            AppendMenu(menu,MF_STRING,ID_UP,_T("Move up"));
-        if (index+1<num)
-            AppendMenu(menu,MF_STRING,ID_DOWN,_T("Move down"));*/
-        if (autoplaylist.is_valid() && autoplaylist->show_ui_available()) {
-            AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+        if (playlist_item_count > 0)
+            menu.append_command(collector.add([&] {
+                if (tracked_focused_item.m_playlist == SIZE_MAX)
+                    return;
+
+                m_playlist_api->set_playing_playlist(tracked_focused_item.m_playlist);
+                play_control::get()->start();
+            }),
+                L"Play"_zv, {.is_default = true});
+
+        if (active_playlist_index != focused_item)
+            menu.append_command(collector.add([&] {
+                if (tracked_focused_item.m_playlist != SIZE_MAX)
+                    m_playlist_api->set_active_playlist(tracked_focused_item.m_playlist);
+            }),
+                L"Activate"_zv, {.is_default = playlist_item_count == 0});
+
+        menu.append_command(collector.add([&] {
+            if (tracked_focused_item.m_playlist != SIZE_MAX)
+                activate_inline_editing(tracked_focused_item.m_playlist, 0);
+        }),
+            L"Rename"_zv);
+
+        menu.append_command(collector.add([&] {
+            if (tracked_focused_item.m_playlist != SIZE_MAX)
+                m_playlist_api->remove_playlist_switch(tracked_focused_item.m_playlist);
+        }),
+            L"Remove"_zv);
+
+        if (autoplaylist_v2.is_valid() && autoplaylist_v2->show_ui_available()) {
+            menu.append_separator();
 
             pfc::string8 name;
-            autoplaylist->get_display_name(name);
-            name << " properties";
+            autoplaylist_v2->get_display_name(name);
 
-            uAppendMenu(menu, MF_STRING, ID_AUTOPLAYLIST, name);
+            menu.append_command(collector.add([&] {
+                if (tracked_focused_item.m_playlist != SIZE_MAX)
+                    autoplaylist_v2->show_ui(tracked_focused_item.m_playlist);
+            }),
+                fmt::format(L"{} properties", mmh::to_utf16(name.c_str())));
         }
-        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
-        AppendMenu(menu, MF_STRING, ID_CUT, L"Cut");
-        AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
+        menu.append_separator();
+
+        menu.append_command(collector.add([&] {
+            if (tracked_focused_item.m_playlist != SIZE_MAX)
+                playlist_manager_utils::cut(pfc::list_single_ref_t(tracked_focused_item.m_playlist));
+        }),
+            L"Cut"_zv);
+
+        menu.append_command(collector.add([&] {
+            if (tracked_focused_item.m_playlist != SIZE_MAX)
+                playlist_manager_utils::copy(pfc::list_single_ref_t(tracked_focused_item.m_playlist));
+        }),
+            L"Copy"_zv);
+
         if (playlist_manager_utils::check_clipboard())
-            AppendMenu(menu, MF_STRING, ID_PASTE, L"Paste");
-        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+            menu.append_command(collector.add([&] {
+                playlist_manager_utils::paste(get_wnd(),
+                    tracked_focused_item.m_playlist != SIZE_MAX ? tracked_focused_item.m_playlist + 1 : SIZE_MAX);
+            }),
+                L"Paste"_zv);
+
+        menu.append_separator();
     }
 
-    AppendMenu(menu, MF_STRING, ID_NEW, _T("New"));
-    AppendMenu(menu, MF_STRING, ID_LOAD, _T("Load..."));
-    if (b_index_valid) {
-        AppendMenu(menu, MF_STRING, ID_SAVE, _T("Save as..."));
-    }
+    menu.append_command(collector.add([&] {
+        m_playlist_api->create_playlist(pfc::string8("Untitled"), pfc_infinite, m_playlist_api->get_playlist_count());
+    }),
+        L"New"_zv);
 
-    if (num)
-        AppendMenu(menu, MF_STRING, ID_SAVE_ALL, _T("Save all as..."));
-    pfc::array_t<unsigned> recycler_ids;
+    menu.append_command(collector.add([&] { standard_commands::main_load_playlist(); }), L"Load…"_zv);
+
+    if (is_focused_item_valid)
+        menu.append_command(collector.add([&] {
+            if (tracked_focused_item.m_playlist == SIZE_MAX)
+                return;
+
+            metadb_handle_list_t<pfc::alloc_fast_aggressive> tracks;
+            tracks.prealloc(m_playlist_api->playlist_get_item_count(tracked_focused_item.m_playlist));
+            m_playlist_api->playlist_get_all_items(tracked_focused_item.m_playlist, tracks);
+
+            pfc::string8 name;
+            m_playlist_api->playlist_get_name(tracked_focused_item.m_playlist, name);
+            g_save_playlist(get_wnd(), tracks, name);
+        }),
+            L"Save as…"_zv);
+
+    if (playlist_count > 0)
+        menu.append_command(collector.add([&] { standard_commands::main_save_all_playlists(); }), L"Save all as…"_zv);
+
     {
         const auto recycler_count
             = gsl::narrow<unsigned>(std::min(m_playlist_api->recycler_get_count(), size_t{UINT32_MAX}));
-        if (recycler_count) {
-            recycler_ids.set_count(recycler_count);
-            HMENU recycler_popup = CreatePopupMenu();
+
+        if (recycler_count > 0) {
+            uih::Menu recycler_popup;
             pfc::string8_fast_aggressive temp;
+
             for (size_t i = 0; i < recycler_count; i++) {
                 m_playlist_api->recycler_get_name(i, temp);
-                recycler_ids[i] = m_playlist_api->recycler_get_id(i); // Menu Message Loop !
-                uAppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_BASE + i, temp);
+                const auto recycler_id = m_playlist_api->recycler_get_id(i); // Menu Message Loop !
+
+                recycler_popup.append_command(
+                    collector.add([this, recycler_id] { m_playlist_api->recycler_restore_by_id(recycler_id); }),
+                    mmh::to_utf16(temp.c_str()));
             }
-            AppendMenu(recycler_popup, MF_SEPARATOR, 0, nullptr);
-            AppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_CLEAR, _T("Clear"));
-            AppendMenu(menu, MF_POPUP, (UINT_PTR)recycler_popup, _T("History"));
+
+            recycler_popup.append_separator();
+            recycler_popup.append_command(
+                collector.add([&] { m_playlist_api->recycler_purge(bit_array_true()); }), L"Clear"_zv);
+
+            menu.append_submenu(std::move(recycler_popup), L"History"_zv);
         }
-        m_contextmenu_manager_base = ID_RECYCLER_BASE + recycler_count;
-    }
-    if (b_index_valid) {
-        MENUITEMINFO mi{};
-        mi.cbSize = sizeof(MENUITEMINFO);
-        mi.fMask = MIIM_STATE;
-        mi.fState = MFS_DEFAULT;
-
-        if (data.get_count() || active != index)
-            SetMenuItemInfo(menu, data.get_count() ? ID_PLAY : ID_SWITCH, FALSE, &mi);
     }
 
-    if (data.get_count() > 0) {
-        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+    const auto collector_num_items = collector.size();
+    std::optional<uint32_t> context_manager_base_id;
+    contextmenu_manager::ptr contextmenu_manager;
 
-        HMENU submenu = CreatePopupMenu();
+    if (playlist_item_count > 0) {
+        menu.append_separator();
 
-        contextmenu_manager::g_create(m_contextmenu_manager);
+        uih::Menu items_submenu;
 
-        if (m_contextmenu_manager.is_valid() && submenu) {
-            m_contextmenu_manager->init_context(data, 0);
+        if (collector_num_items < INT32_MAX - 1) {
+            context_manager_base_id = gsl::narrow<uint32_t>(collector_num_items + 1);
 
-            m_contextmenu_manager->win32_build_menu(submenu, m_contextmenu_manager_base, -1);
+            metadb_handle_list_t<pfc::alloc_fast_aggressive> tracks;
+            tracks.prealloc(playlist_item_count);
+            m_playlist_api->playlist_get_all_items(focused_item, tracks);
+
+            contextmenu_manager::g_create(contextmenu_manager);
+            contextmenu_manager->init_context(tracks, 0);
+            contextmenu_manager->win32_build_menu(
+                items_submenu.get(), gsl::narrow<int>(*context_manager_base_id), INT32_MAX);
+
+            menu.append_submenu(std::move(items_submenu), L"Items"_zv);
         }
-        AppendMenu(menu, MF_POPUP, (UINT_PTR)submenu, _T("Items"));
     }
-    menu_helpers::win32_auto_mnemonics(menu);
 
-    const auto cmd = static_cast<unsigned>(
-        TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr));
+    menu_helpers::win32_auto_mnemonics(menu.get());
+    const auto command_id = menu.run(get_wnd(), pt);
+
     m_status_text_override.release();
-
-    DestroyMenu(menu);
-
     remove_highlight_selected_item();
 
-    index = indexTracked.m_playlist;
-
-    if (cmd > 0) {
-        if ((size_t)cmd >= m_contextmenu_manager_base) {
-            if (m_contextmenu_manager.is_valid()) {
-                m_contextmenu_manager->execute_by_id(cmd - m_contextmenu_manager_base);
-            }
-        } else if (cmd >= ID_RECYCLER_BASE) {
-            if (size_t(cmd - ID_RECYCLER_BASE) < recycler_ids.get_count())
-                m_playlist_api->recycler_restore_by_id(recycler_ids[cmd - ID_RECYCLER_BASE]);
-        } else {
-            switch (cmd) {
-            case ID_PLAY:
-                m_playlist_api->set_playing_playlist(index);
-                play_control::get()->start();
-                break;
-            case ID_AUTOPLAYLIST:
-                if (autoplaylist.is_valid())
-                    autoplaylist->show_ui(index);
-                break;
-            case ID_RECYCLER_CLEAR:
-                m_playlist_api->recycler_purge(bit_array_true());
-                break;
-            case ID_CUT:
-                if (b_index_valid)
-                    playlist_manager_utils::cut(pfc::list_single_ref_t<size_t>(index));
-                break;
-            case ID_COPY:
-                if (b_index_valid)
-                    playlist_manager_utils::copy(pfc::list_single_ref_t<size_t>(index));
-                break;
-            case ID_PASTE:
-                if (b_index_valid)
-                    playlist_manager_utils::paste(get_wnd(), index + 1);
-                break;
-            case ID_SWITCH:
-                if (b_index_valid)
-                    m_playlist_api->set_active_playlist(index);
-                break;
-            case ID_REMOVE:
-                if (b_index_valid)
-                    m_playlist_api->remove_playlist_switch(index);
-                break;
-            case ID_RENAME:
-                if (b_index_valid) {
-                    activate_inline_editing(index, 0);
-                }
-                break;
-            case ID_NEW: {
-                m_playlist_api->create_playlist(
-                    pfc::string8("Untitled"), pfc_infinite, m_playlist_api->get_playlist_count());
-            } break;
-            case ID_SAVE: {
-                pfc::string8 name;
-                m_playlist_api->playlist_get_name(index, name);
-                g_save_playlist(get_wnd(), data, name);
-                break;
-            }
-            case ID_LOAD: {
-                standard_commands::main_load_playlist();
-            } break;
-            case ID_SAVE_ALL: {
-                standard_commands::main_save_all_playlists();
-            } break;
-            case ID_UP:
-                if (index > 0) {
-                    order_helper order(num);
-                    order.swap(index, index - 1);
-                    m_playlist_api->reorder(order.get_ptr(), num);
-                }
-                break;
-            case ID_DOWN:
-                if (index + 1 < num) {
-                    order_helper order(num);
-                    order.swap(index, index + 1);
-                    m_playlist_api->reorder(order.get_ptr(), num);
-                }
-                break;
-            }
-        }
-    }
-    m_contextmenu_manager.release();
-    m_contextmenu_manager_base = NULL;
+    if (context_manager_base_id && command_id >= *context_manager_base_id)
+        contextmenu_manager->execute_by_id(command_id - *context_manager_base_id);
+    else
+        collector.execute(command_id);
 
     return true;
 }

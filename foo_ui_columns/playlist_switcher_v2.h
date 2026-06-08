@@ -342,8 +342,6 @@ private:
         pfc::string8 m_playlist_name;
     };
 
-    contextmenu_manager::ptr m_contextmenu_manager;
-    UINT m_contextmenu_manager_base{NULL};
     ui_status_text_override::ptr m_status_text_override;
     ui_selection_holder::ptr m_selection_holder;
 
