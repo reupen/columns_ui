@@ -14,29 +14,46 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
 
     size_t focused_item = get_focus_item();
 
-    playlist_position_reference_tracker tracked_focused_item(false);
-    tracked_focused_item.m_playlist = focused_item;
-
     size_t playlist_count = m_playlist_api->get_playlist_count();
     size_t active_playlist_index = m_playlist_api->get_active_playlist();
 
     const auto is_focused_item_valid = focused_item < playlist_count;
+    const auto is_on_item = [&] {
+        if (!is_focused_item_valid)
+            return false;
 
-    if (is_focused_item_valid)
+        if (from_keyboard)
+            return true;
+
+        POINT client_pt{pt};
+        ScreenToClient(get_wnd(), &client_pt);
+
+        HitTestResult hit_test_result;
+        this->hit_test_ex(client_pt, hit_test_result);
+        return hit_test_result.category == HitTestCategory::OnUnobscuredItem
+            || hit_test_result.category == HitTestCategory::OnItemObscuredAbove
+            || hit_test_result.category == HitTestCategory::OnItemObscuredBelow;
+    }();
+
+    playlist_position_reference_tracker tracked_focused_item(false);
+
+    if (is_on_item) {
+        tracked_focused_item.m_playlist = focused_item;
         set_highlight_selected_item(focused_item);
-
-    const auto autoplaylist_api = autoplaylist_manager::get();
-    autoplaylist_client_v2::ptr autoplaylist_v2;
-
-    try {
-        autoplaylist_client::ptr autoplaylist_v1 = autoplaylist_api->query_client(focused_item);
-        autoplaylist_v2 &= autoplaylist_v1;
-    } catch (pfc::exception const&) {
     }
 
     size_t playlist_item_count{};
 
-    if (is_focused_item_valid) {
+    if (is_on_item) {
+        const auto autoplaylist_api = autoplaylist_manager::get();
+        autoplaylist_client_v2::ptr autoplaylist_v2;
+
+        try {
+            autoplaylist_client::ptr autoplaylist_v1 = autoplaylist_api->query_client(focused_item);
+            autoplaylist_v2 &= autoplaylist_v1;
+        } catch (pfc::exception const&) {
+        }
+
         playlist_item_count = m_playlist_api->playlist_get_item_count(focused_item);
 
         if (playlist_item_count > 0)
@@ -74,7 +91,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             pfc::string8 name;
             autoplaylist_v2->get_display_name(name);
 
-            menu.append_command(collector.add([&] {
+            menu.append_command(collector.add([&tracked_focused_item, autoplaylist_v2] {
                 if (tracked_focused_item.m_playlist != SIZE_MAX)
                     autoplaylist_v2->show_ui(tracked_focused_item.m_playlist);
             }),
@@ -112,7 +129,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
 
     menu.append_command(collector.add([&] { standard_commands::main_load_playlist(); }), L"Load…"_zv);
 
-    if (is_focused_item_valid)
+    if (is_on_item)
         menu.append_command(collector.add([&] {
             if (tracked_focused_item.m_playlist == SIZE_MAX)
                 return;
