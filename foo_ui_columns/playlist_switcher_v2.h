@@ -167,8 +167,15 @@ public:
 
     bool notify_on_doubleleftclick_nowhere() override
     {
-        m_playlist_api->set_active_playlist(
-            m_playlist_api->create_playlist("Untitled", pfc_infinite, m_playlist_api->get_playlist_count()));
+        const auto new_index
+            = m_playlist_api->create_playlist("Untitled", pfc_infinite, m_playlist_api->get_playlist_count());
+
+        if (new_index == SIZE_MAX)
+            return true;
+
+        m_playlist_api->set_active_playlist(new_index);
+        activate_inline_editing(new_index, 0);
+
         return true;
     }
 

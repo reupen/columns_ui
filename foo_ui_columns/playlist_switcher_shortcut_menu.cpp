@@ -123,7 +123,15 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     }
 
     menu.append_command(collector.add([&] {
-        m_playlist_api->create_playlist(pfc::string8("Untitled"), pfc_infinite, m_playlist_api->get_playlist_count());
+        const auto new_index = m_playlist_api->create_playlist("Untitled", SIZE_MAX,
+            tracked_focused_item.m_playlist != SIZE_MAX ? tracked_focused_item.m_playlist + 1 : SIZE_MAX);
+
+        if (new_index != SIZE_MAX) {
+            if (m_playlist_api->get_active_playlist() == SIZE_MAX)
+                m_playlist_api->set_active_playlist(new_index);
+
+            activate_inline_editing(new_index, 0);
+        }
     }),
         L"New"_zv);
 

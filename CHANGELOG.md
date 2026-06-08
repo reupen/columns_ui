@@ -8,6 +8,19 @@
   editing for the column name in the column list is automatically activated.
   [[#1750](https://github.com/reupen/columns_ui/pull/1750)]
 
+- When right-clicking in empty space in the playlist switcher, context menu
+  items relating to the active playlist are no longer shown.
+  [[#1753](https://github.com/reupen/columns_ui/pull/1753)]
+
+- When creating a new playlist via the playlist switcher context menu, the new
+  playlist is now created immediately after the playlist that was right-clicked
+  on, and inline editing for the playlist name is automatically activated.
+  [[#1753](https://github.com/reupen/columns_ui/pull/1753)]
+
+- When creating a new playlist by double-clicking in empty space in the playlist
+  switcher, inline editing for the playlist name is automatically activated.
+  [[#1753](https://github.com/reupen/columns_ui/pull/1753)]
+
 ## 3.5.0
 
 ### Internal changes
