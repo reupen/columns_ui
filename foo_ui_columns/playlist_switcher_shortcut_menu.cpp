@@ -133,7 +133,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             activate_inline_editing(new_index, 0);
         }
     }),
-        L"New"_zv);
+        L"New"_zv, {.is_default = !is_on_item});
 
     menu.append_command(collector.add([&] { standard_commands::main_load_playlist(); }), L"Load…"_zv);
 
