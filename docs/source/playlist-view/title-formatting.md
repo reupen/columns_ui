@@ -19,3 +19,9 @@ variables scripts.
 | `%is_dark%`             | Defined when dark mode is active           |
 | `%is_light%`            | Defined when light mode is active          |
 | `%playlist_name%`       | The name of the active playlist            |
+
+These fields are available in grouping scripts.
+
+| Field             | Description                     |
+| ----------------- | ------------------------------- |
+| `%playlist_name%` | The name of the active playlist |

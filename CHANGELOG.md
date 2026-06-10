@@ -4,6 +4,9 @@
 
 ### Features
 
+- The `%playlist_name%` field is now available in playlist view grouping
+  scripts. [[#1757](https://github.com/reupen/columns_ui/pull/1757)]
+
 - When adding a new column in on the Playlist view preferences page, inline
   editing for the column name in the column list is automatically activated.
   [[#1750](https://github.com/reupen/columns_ui/pull/1750)]
