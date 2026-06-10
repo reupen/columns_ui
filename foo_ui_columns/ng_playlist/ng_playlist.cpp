@@ -1627,11 +1627,16 @@ void PlaylistView::get_insert_items(size_t start, size_t count, InsertItemsConta
     const auto group_count = m_scripts.get_count();
     const auto metadb_v2_api = metadb_v2::tryGet();
 
+    pfc::string8 playlist_name;
+    m_playlist_api->activeplaylist_get_name(playlist_name);
+
+    tf::FieldProviderTitleformatHook playlist_name_tf_hook({{"playlist_name", playlist_name}});
     tf::TextFormatTitleformatHook text_format_tf_hook(get_group_font_size_pt().value_or(0.f));
+    tf::SplitterTitleformatHook combined_tf_hooks(&playlist_name_tf_hook, &text_format_tf_hook);
 
     if (metadb_v2_api.is_valid()) {
         metadb_v2_api->queryMultiParallel_(handles,
-            [this, &handles, &items, &text_format_tf_hook, group_count](size_t index, const metadb_v2::rec_t& rec) {
+            [this, &handles, &items, &combined_tf_hooks, group_count](size_t index, const metadb_v2::rec_t& rec) {
                 metadb_handle_v2::ptr track;
                 track &= handles[index];
 
@@ -1641,7 +1646,7 @@ void PlaylistView::get_insert_items(size_t start, size_t count, InsertItemsConta
                 items[index].m_groups.resize(group_count);
 
                 for (auto&& [script, group] : ranges::views::zip(m_scripts, items[index].m_groups)) {
-                    track->formatTitle_v2(rec, &text_format_tf_hook, adapted_string, script, nullptr);
+                    track->formatTitle_v2(rec, &combined_tf_hooks, adapted_string, script, nullptr);
                     group = title.c_str();
                 }
             });
@@ -1650,12 +1655,12 @@ void PlaylistView::get_insert_items(size_t start, size_t count, InsertItemsConta
     }
 
     concurrency::parallel_for(
-        size_t{0}, count, [this, &items, &handles, &text_format_tf_hook, group_count](size_t index) {
+        size_t{0}, count, [this, &items, &handles, &combined_tf_hooks, group_count](size_t index) {
             pfc::string8_fast temp;
             temp.prealloc(32);
             items[index].m_groups.resize(group_count);
             for (size_t i = 0; i < group_count; i++) {
-                handles[index]->format_title(&text_format_tf_hook, temp, m_scripts[i], nullptr);
+                handles[index]->format_title(&combined_tf_hooks, temp, m_scripts[i], nullptr);
                 items[index].m_groups[i] = temp;
             }
         });
