@@ -24,6 +24,13 @@
   switcher, inline editing for the playlist name is automatically activated.
   [[#1753](https://github.com/reupen/columns_ui/pull/1753)]
 
+### Bug fixes
+
+- When using the Shift key to select multiple items in built-in list views, the
+  starting position for the selection is no longer reset if the Shift key is
+  temporarily released between clicks or key presses.
+  [[#1758](https://github.com/reupen/columns_ui/pull/1758)]
+
 ## 3.5.0
 
 ### Internal changes
