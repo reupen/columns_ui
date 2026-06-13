@@ -756,25 +756,49 @@ void TabColumns::ColumnsListView::notify_save_inline_edit(const char* value)
 
 bool TabColumns::on_column_list_contextmenu(const POINT& pt, bool from_keyboard)
 {
-    const auto item = m_columns_list_view.get_selected_item_single();
-    const auto is_item_selected = item != std::numeric_limits<size_t>::max();
+    auto get_selected_item_index = [&] { return fbh::as_optional(m_columns_list_view.get_selected_item_single()); };
+    const auto initial_item_index = get_selected_item_index();
 
     uih::Menu menu;
     uih::MenuCommandCollector collector;
 
-    menu.append_command(collector.add([this, item] { add_column(item); }), L"New");
+    menu.append_command(collector.add([this, &get_selected_item_index] {
+        const auto updated_index = get_selected_item_index();
+        add_column(updated_index.value_or(SIZE_MAX));
+    }),
+        L"New");
 
-    if (is_item_selected) {
-        menu.append_command(collector.add([this, item] { remove_column(item); }), L"Remove");
+    if (initial_item_index) {
+        menu.append_separator();
+
+        menu.append_command(collector.add([this, &get_selected_item_index, &initial_item_index] {
+            if (const auto updated_index = get_selected_item_index(); updated_index == initial_item_index)
+                m_columns_list_view.activate_inline_editing(*updated_index, 0);
+        }),
+            L"Rename");
+
+        menu.append_command(collector.add([this, &get_selected_item_index, initial_item_index] {
+            if (const auto updated_index = get_selected_item_index(); updated_index == initial_item_index)
+                remove_column(*updated_index);
+        }),
+            L"Remove");
 
         if (m_columns.size() > 1)
             menu.append_separator();
 
-        if (item > 0)
-            menu.append_command(collector.add([this, item] { move_column_up(item); }), L"Move up");
+        if (*initial_item_index > 0)
+            menu.append_command(collector.add([this, &get_selected_item_index, initial_item_index] {
+                if (const auto updated_index = get_selected_item_index(); updated_index == initial_item_index)
+                    move_column_up(*updated_index);
+            }),
+                L"Move up");
 
-        if (item + 1 < m_columns.get_count())
-            menu.append_command(collector.add([this, item] { move_column_down(item); }), L"Move down");
+        if (*initial_item_index + 1 < m_columns.get_count())
+            menu.append_command(collector.add([this, &get_selected_item_index, initial_item_index] {
+                if (const auto updated_index = get_selected_item_index(); updated_index == initial_item_index)
+                    move_column_down(*updated_index);
+            }),
+                L"Move down");
     }
 
     menu_helpers::win32_auto_mnemonics(menu.get());

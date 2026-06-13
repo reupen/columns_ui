@@ -11,6 +11,10 @@
   editing for the column name in the column list is automatically activated.
   [[#1750](https://github.com/reupen/columns_ui/pull/1750)]
 
+- A ‘Rename’ command was added to the column list context menu on the Playlist
+  view preferences page.
+  [[#1759](https://github.com/reupen/columns_ui/pull/1759)]
+
 - When right-clicking in empty space in the playlist switcher, context menu
   items relating to the active playlist are no longer shown.
   [[#1753](https://github.com/reupen/columns_ui/pull/1753)]
