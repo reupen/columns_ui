@@ -28,6 +28,13 @@
   switcher, inline editing for the playlist name is automatically activated.
   [[#1753](https://github.com/reupen/columns_ui/pull/1753)]
 
+- In the ‘Export configuration’ dialogue box, the Target option was renamed
+  Export type and the names of the choices were updated for clarity.
+  [[#1761](https://github.com/reupen/columns_ui/pull/1761)]
+
+  Additionally, the last used export type is now remembered the next time the
+  dialogue is opened.
+
 ### Bug fixes
 
 - When using the Shift key to select multiple items in built-in list views, the
