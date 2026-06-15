@@ -5,6 +5,12 @@
 #include "dark_mode_dialog.h"
 #include "main_window.h"
 
+namespace {
+
+cfg_int last_export_mode({0xea0cd797, 0x9cf2, 0x4da4, {0x8b, 0x69, 0x08, 0x36, 0x90, 0x58, 0x70, 0x7b}}, 1);
+
+}
+
 // {EBD87879-65A7-4242-821B-812AF9F68E8F}
 const GUID cui::fcl::groups::titles_playlist_view
     = {0xebd87879, 0x65a7, 0x4242, {0x82, 0x1b, 0x81, 0x2a, 0xf9, 0xf6, 0x8e, 0x8f}};
@@ -81,9 +87,9 @@ public:
             const HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
 
             if (wnd_combo) {
-                ComboBox_AddString(wnd_combo, L"Any foobar2000 installation");
-                ComboBox_AddString(wnd_combo, L"This foobar2000 installation");
-                ComboBox_SetCurSel(wnd_combo, 0);
+                ComboBox_AddString(wnd_combo, L"For sharing");
+                ComboBox_AddString(wnd_combo, L"For this computer or your own use");
+                ComboBox_SetCurSel(wnd_combo, last_export_mode);
             }
 
             SendMessage(wnd_tree, WM_SETREDRAW, FALSE, 0);
@@ -132,6 +138,7 @@ public:
                 HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
                 if (wnd_combo) {
                     m_mode = ComboBox_GetCurSel(wnd_combo);
+                    last_export_mode = m_mode;
                 }
             }
                 EndDialog(wnd, 1);
@@ -166,7 +173,7 @@ public:
         }
         return false;
     }
-    uint32_t get_mode() const { return m_mode; }
+    int32_t get_mode() const { return m_mode; }
     explicit FCLDialog(bool b_import = false, std::unordered_set<GUID> p_list = {})
         : m_import(b_import)
         , m_filter(std::move(p_list))
@@ -174,7 +181,7 @@ public:
     }
 
 private:
-    uint32_t m_mode{0};
+    int32_t m_mode{0};
     bool m_import;
     std::unordered_set<GUID> m_filter;
 };
