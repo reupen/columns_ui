@@ -4,6 +4,7 @@
 #include "ng_playlist.h"
 #include "ng_playlist_groups.h"
 #include "permutation_utils.h"
+#include "prefs_utils.h"
 
 namespace cui::panels::playlist_view {
 
@@ -94,8 +95,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         ShowWindow(m_groups_list_view.get_wnd(), SW_SHOWNORMAL);
 
         Button_SetCheck(GetDlgItem(wnd, IDC_GROUPING), cfg_grouping ? BST_CHECKED : BST_UNCHECKED);
-        Button_SetCheck(
-            GetDlgItem(wnd, IDC_STICKY_GROUP_HEADERS), cfg_sticky_group_headers ? BST_CHECKED : BST_UNCHECKED);
+        m_event_tokens.emplace_back(prefs::bind_checkbox(wnd, IDC_STICKY_GROUP_HEADERS, cfg_sticky_group_headers));
         Button_SetCheck(GetDlgItem(wnd, IDC_INDENT_GROUPS), cfg_indent_groups ? BST_CHECKED : BST_UNCHECKED);
         Button_SetCheck(GetDlgItem(wnd, IDC_USE_CUSTOM_INDENTATION),
             cfg_use_custom_group_indentation_amount ? BST_CHECKED : BST_UNCHECKED);
@@ -125,7 +125,8 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         }
         case IDC_STICKY_GROUP_HEADERS: {
-            cfg_sticky_group_headers = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+            cfg_sticky_group_headers.set(Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED,
+                WI_EnumValue(config::SourceID::Preferences));
             refresh_enabled_options();
             PlaylistView::s_on_sticky_group_headers_change();
             break;
@@ -216,6 +217,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_DESTROY:
         m_groups_list_view.destroy();
+        m_event_tokens.clear();
         m_wnd = nullptr;
         break;
     }

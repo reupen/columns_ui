@@ -50,4 +50,8 @@ private:
     cui::colours::ColourScheme m_previous_dark_colour_scheme{columns_ui::colours::ColourSchemeThemed};
     bool m_previous_show_artwork{};
     bool m_previous_show_grouping{};
+    bool m_previous_enable_sticky_group_headers{};
+    bool m_previous_enable_sticky_artwork{};
+    bool m_previous_use_smooth_scrolling{};
+    std::vector<mmh::EventToken::Ptr> m_event_tokens;
 };

@@ -699,6 +699,7 @@ private:
     bool m_initialised{};
     GroupsListView m_groups_list_view{this};
     prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}, {IDC_H2_TITLE}};
+    std::vector<mmh::EventToken::Ptr> m_event_tokens;
 };
 } // namespace cui::panels::playlist_view
 

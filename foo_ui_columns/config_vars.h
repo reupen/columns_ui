@@ -4,6 +4,11 @@
 
 namespace cui::config {
 
+enum class SourceID : uint32_t {
+    Preferences,
+    QuickSetup,
+};
+
 constexpr GUID advconfig_branch_columns_ui_id{
     0xd2dd7ffc, 0xf780, 0x4fa3, {0x89, 0x52, 0x38, 0xd8, 0x2c, 0x8c, 0x1e, 0x4b}};
 constexpr GUID advconfig_branch_system_tray_id{

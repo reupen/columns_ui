@@ -28,6 +28,14 @@
   switcher, inline editing for the playlist name is automatically activated.
   [[#1753](https://github.com/reupen/columns_ui/pull/1753)]
 
+- Quick setup was updated to include options for smooth scrolling, sticky
+  playlist view group headings and sticky playlist view artwork.
+  [[#1764](https://github.com/reupen/columns_ui/pull/1764)]
+
+  The option to enable or disable the themed colour scheme was removed from the
+  dialogue. (All options remain available in their existing locations in
+  Preferences.)
+
 - In the ‘Export configuration’ dialogue box, the Target option was renamed
   Export type and the names of the choices were updated for clarity.
   [[#1761](https://github.com/reupen/columns_ui/pull/1761)]
