@@ -257,7 +257,6 @@
 #define IDC_DUPLICATE_PRESET            1130
 #define IDC_COLOURS_SCHEME              1131
 #define IDC_COLOURS_ELEMENT             1132
-#define IDC_THEMING                     1134
 #define IDC_DEST                        1135
 #define IDC_DARK_MODE                   1135
 #define IDC_SORT_STRING                 1143
@@ -347,7 +346,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        210
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1221
+#define _APS_NEXT_CONTROL_VALUE         1222
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

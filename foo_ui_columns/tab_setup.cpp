@@ -3,6 +3,7 @@
 #include "config.h"
 #include "dark_mode.h"
 #include "main_window.h"
+#include "prefs_utils.h"
 
 namespace cui::prefs {
 
@@ -32,8 +33,7 @@ public:
             if (config::use_hardware_acceleration)
                 Button_SetCheck(GetDlgItem(wnd, IDC_HARDWARE_ACCELERATION), BST_CHECKED);
 
-            if (config::use_smooth_scrolling)
-                Button_SetCheck(GetDlgItem(wnd, IDC_USE_SMOOTH_SCROLLING), BST_CHECKED);
+            m_event_tokens.emplace_back(bind_checkbox(wnd, IDC_USE_SMOOTH_SCROLLING, config::use_smooth_scrolling));
 
             if (!main_window.get_wnd())
                 EnableWindow(GetDlgItem(wnd, IDC_QUICKSETUP), FALSE);
@@ -53,6 +53,9 @@ public:
 
             break;
         }
+        case WM_DESTROY:
+            m_event_tokens.clear();
+            break;
         case WM_COMMAND:
             switch (wp) {
             case IDC_QUICKSETUP:
@@ -72,7 +75,8 @@ public:
 
                 break;
             case IDC_USE_SMOOTH_SCROLLING:
-                config::use_smooth_scrolling = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+                config::use_smooth_scrolling.set_value(Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED,
+                    WI_EnumValue(config::SourceID::Preferences));
                 break;
             }
             break;
@@ -106,6 +110,8 @@ public:
     const char* get_name() override { return "Setup"; }
 
     PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2, IDC_TITLE3}};
+
+    std::vector<mmh::EventToken::Ptr> m_event_tokens;
 };
 
 SetupTab setup_tab;

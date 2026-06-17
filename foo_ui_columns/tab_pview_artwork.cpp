@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
+#include "prefs_utils.h"
 
 namespace cui::prefs {
 
@@ -16,10 +17,12 @@ public:
     const char* get_name() override { return "Artwork"; }
 
 private:
-    void initialise_controls() const
+    void initialise_controls()
     {
+        m_event_tokens.emplace_back(
+            bind_checkbox(m_wnd, IDC_STICKY_ARTWORK, panels::playlist_view::cfg_sticky_artwork));
+
         SendDlgItemMessage(m_wnd, IDC_SHOWARTWORK, BM_SETCHECK, panels::playlist_view::cfg_show_artwork, 0);
-        SendDlgItemMessage(m_wnd, IDC_STICKY_ARTWORK, BM_SETCHECK, panels::playlist_view::cfg_sticky_artwork, 0);
         SendDlgItemMessage(m_wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, panels::playlist_view::cfg_artwork_reflection, 0);
         SendDlgItemMessage(m_wnd, IDC_ARTWORK_HEADER_SPACING, BM_SETCHECK,
             panels::playlist_view::cfg_artwork_group_header_spacing_enabled, 0);
@@ -50,6 +53,7 @@ private:
             break;
         case WM_DESTROY:
             m_wnd = nullptr;
+            m_event_tokens.clear();
             m_initialised = false;
             break;
         case WM_COMMAND:
@@ -60,8 +64,9 @@ private:
                 panels::playlist_view::PlaylistView::g_on_show_artwork_change();
                 break;
             case IDC_STICKY_ARTWORK:
-                panels::playlist_view::cfg_sticky_artwork
-                    = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                panels::playlist_view::cfg_sticky_artwork.set(
+                    Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED,
+                    WI_EnumValue(config::SourceID::Preferences));
                 panels::playlist_view::PlaylistView::s_on_sticky_artwork_change();
                 break;
             case IDC_ARTWORKREFLECTION:
@@ -89,6 +94,7 @@ private:
     HWND m_wnd{};
     bool m_initialised{};
     PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    std::vector<mmh::EventToken::Ptr> m_event_tokens;
 };
 
 TabPlaylistViewArtwork g_tab_pview_artwork;

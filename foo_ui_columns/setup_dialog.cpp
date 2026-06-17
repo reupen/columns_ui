@@ -5,6 +5,7 @@
 #include "dark_mode.h"
 #include "ng_playlist/ng_playlist.h"
 #include "main_window.h"
+#include "prefs_utils.h"
 
 INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -19,7 +20,6 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
         m_presets_list_view.set_font_from_log_font(font);
 
         HWND wnd_mode = GetDlgItem(wnd, IDC_DARK_MODE);
-        HWND wnd_theming = GetDlgItem(wnd, IDC_THEMING);
         HWND wnd_grouping = GetDlgItem(wnd, IDC_GROUPING);
 
         const auto monitor = MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST);
@@ -39,9 +39,6 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
 
             SetWindowPos(wnd, nullptr, left, top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
         }
-
-        LVCOLUMN lvc{};
-        lvc.mask = LVCF_TEXT | LVCF_WIDTH;
 
         cfg_layout.get_preset(cfg_layout.get_active(), m_previous_layout);
 
@@ -63,30 +60,29 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
         m_previous_mode = static_cast<cui::colours::DarkModeStatus>(cui::colours::dark_mode_status.get());
         ComboBox_SetCurSel(wnd_mode, cui::colours::dark_mode_status.get());
 
-        ComboBox_InsertString(wnd_theming, 0, L"No");
-        ComboBox_InsertString(wnd_theming, 1, L"Yes");
-
         m_previous_light_colour_scheme = g_get_global_colour_scheme(false);
         m_previous_dark_colour_scheme = g_get_global_colour_scheme(true);
-        const auto active_colour_scheme = g_get_global_colour_scheme();
-
-        size_t select = -1;
-        if (active_colour_scheme == cui::colours::ColourSchemeThemed)
-            select = 1;
-        else if (active_colour_scheme == cui::colours::ColourSchemeSystem)
-            select = 0;
-
-        ComboBox_SetCurSel(wnd_theming, select);
 
         m_previous_show_grouping = cui::panels::playlist_view::cfg_grouping;
         m_previous_show_artwork = cui::panels::playlist_view::cfg_show_artwork;
+        m_previous_enable_sticky_group_headers = cui::panels::playlist_view::cfg_sticky_group_headers;
+        m_previous_enable_sticky_artwork = cui::panels::playlist_view::cfg_sticky_artwork;
+        m_previous_use_smooth_scrolling = cui::config::use_smooth_scrolling;
 
         ComboBox_InsertString(wnd_grouping, 0, L"Disabled");
         ComboBox_InsertString(wnd_grouping, 1, L"Groups (without artwork)");
         ComboBox_InsertString(wnd_grouping, 2, L"Groups (with artwork)");
 
-        select = cui::panels::playlist_view::cfg_grouping ? (cui::panels::playlist_view::cfg_show_artwork ? 2 : 1) : 0;
-        ComboBox_SetCurSel(wnd_grouping, select);
+        const auto active_grouping_index
+            = cui::panels::playlist_view::cfg_grouping ? (cui::panels::playlist_view::cfg_show_artwork ? 2 : 1) : 0;
+        ComboBox_SetCurSel(wnd_grouping, active_grouping_index);
+
+        m_event_tokens.emplace_back(cui::prefs::bind_checkbox(wnd, IDC_STICKY_GROUP_HEADERS,
+            cui::panels::playlist_view::cfg_sticky_group_headers, cui::config::SourceID::QuickSetup));
+        m_event_tokens.emplace_back(cui::prefs::bind_checkbox(wnd, IDC_STICKY_ARTWORK,
+            cui::panels::playlist_view::cfg_sticky_artwork, cui::config::SourceID::QuickSetup));
+        m_event_tokens.emplace_back(cui::prefs::bind_checkbox(
+            wnd, IDC_USE_SMOOTH_SCROLLING, cui::config::use_smooth_scrolling, cui::config::SourceID::QuickSetup));
 
         ShowWindow(m_presets_list_view.get_wnd(), SW_SHOWNORMAL);
         return TRUE;
@@ -99,10 +95,28 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
             cui::colours::dark_mode_status.set(WI_EnumValue(m_previous_mode));
             g_set_global_colour_scheme(m_previous_light_colour_scheme, false);
             g_set_global_colour_scheme(m_previous_dark_colour_scheme, true);
-            cui::panels::playlist_view::cfg_show_artwork = m_previous_show_artwork;
-            cui::panels::playlist_view::cfg_grouping = m_previous_show_grouping;
-            cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
-            cui::panels::playlist_view::PlaylistView::g_on_groups_change();
+
+            if (cui::panels::playlist_view::cfg_show_artwork != m_previous_show_artwork) {
+                cui::panels::playlist_view::cfg_show_artwork = m_previous_show_artwork;
+                cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
+            }
+
+            if (cui::panels::playlist_view::cfg_grouping != m_previous_show_grouping) {
+                cui::panels::playlist_view::cfg_grouping = m_previous_show_grouping;
+                cui::panels::playlist_view::PlaylistView::g_on_groups_change();
+            }
+
+            if (cui::panels::playlist_view::cfg_sticky_group_headers != m_previous_enable_sticky_group_headers) {
+                cui::panels::playlist_view::cfg_sticky_group_headers = m_previous_enable_sticky_group_headers;
+                cui::panels::playlist_view::PlaylistView::s_on_sticky_group_headers_change();
+            }
+
+            if (cui::panels::playlist_view::cfg_sticky_artwork != m_previous_enable_sticky_artwork) {
+                cui::panels::playlist_view::cfg_sticky_artwork = m_previous_enable_sticky_artwork;
+                cui::panels::playlist_view::PlaylistView::s_on_sticky_artwork_change();
+            }
+
+            cui::config::use_smooth_scrolling = m_previous_use_smooth_scrolling;
 
             DestroyWindow(wnd);
             return 0;
@@ -110,14 +124,22 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
         case IDOK:
             DestroyWindow(wnd);
             return 0;
-        case CBN_SELCHANGE << 16 | IDC_THEMING: {
-            const size_t selection = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-            if (selection == 1)
-                g_set_global_colour_scheme(cui::colours::ColourSchemeThemed);
-            else if (selection == 0)
-                g_set_global_colour_scheme(cui::colours::ColourSchemeSystem);
+        case IDC_STICKY_GROUP_HEADERS:
+            cui::panels::playlist_view::cfg_sticky_group_headers.set(
+                Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED,
+                WI_EnumValue(cui::config::SourceID::QuickSetup));
+            cui::panels::playlist_view::PlaylistView::s_on_sticky_group_headers_change();
             break;
-        }
+        case IDC_STICKY_ARTWORK:
+            cui::panels::playlist_view::cfg_sticky_artwork.set(
+                Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED,
+                WI_EnumValue(cui::config::SourceID::QuickSetup));
+            cui::panels::playlist_view::PlaylistView::s_on_sticky_artwork_change();
+            break;
+        case IDC_USE_SMOOTH_SCROLLING:
+            cui::config::use_smooth_scrolling.set_value(Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED,
+                WI_EnumValue(cui::config::SourceID::QuickSetup));
+            break;
         case CBN_SELCHANGE << 16 | IDC_DARK_MODE: {
             const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             cui::colours::dark_mode_status.set(index);
@@ -145,6 +167,7 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
         return 0;
     case WM_DESTROY:
         m_presets_list_view.destroy();
+        m_event_tokens.clear();
         std::erase(s_instances, this);
         break;
     case WM_NCDESTROY:
@@ -169,8 +192,9 @@ void QuickSetupDialog::on_preset_list_selection_change()
 
 void QuickSetupDialog::s_run()
 {
-    const cui::dark::DialogDarkModeConfig dark_mode_config{
-        .button_ids = {IDOK, IDCANCEL}, .combo_box_ids = {IDC_DARK_MODE, IDC_THEMING, IDC_GROUPING}};
+    const cui::dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
+        .checkbox_ids = {IDC_USE_SMOOTH_SCROLLING, IDC_STICKY_GROUP_HEADERS, IDC_STICKY_ARTWORK},
+        .combo_box_ids = {IDC_DARK_MODE, IDC_GROUPING}};
 
     modeless_dialog_box(IDD_QUICK_SETUP, dark_mode_config, cui::main_window.get_wnd(),
         [dialog = std::make_shared<QuickSetupDialog>()](
