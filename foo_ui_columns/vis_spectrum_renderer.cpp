@@ -127,12 +127,13 @@ constexpr int calculate_y_position(audio_sample value, int y_count)
 } // namespace
 
 void SpectrumAnalyserRenderer::configure(
-    Mode mode, Scale horizontal_scale, COLORREF foreground_colour, COLORREF background_colour)
+    Mode mode, Scale horizontal_scale, uint32_t fft_size, COLORREF foreground_colour, COLORREF background_colour)
 {
     assert(!m_render_thread);
 
     m_mode = mode;
     m_horizontal_scale = horizontal_scale;
+    m_fft_size = fft_size;
     m_foreground_colour = foreground_colour;
     m_background_colour = background_colour;
 }
@@ -245,8 +246,7 @@ void SpectrumAnalyserRenderer::start()
             double time{};
             m_stream->get_absolute_time(time);
 
-            constexpr auto fft_size = 4096u;
-            const auto is_active = m_stream->get_spectrum_absolute(m_chunk, time, fft_size);
+            const auto is_active = m_stream->get_spectrum_absolute(m_chunk, time, m_fft_size);
 
             if (!is_active)
                 m_chunk.reset();

@@ -7,6 +7,10 @@
 - The `%playlist_name%` field is now available in playlist view grouping
   scripts. [[#1757](https://github.com/reupen/columns_ui/pull/1757)]
 
+- The fast Fourier transform (FFT) size is now configurable in the built-in
+  spectrum analyser visualisation.
+  [[#1766](https://github.com/reupen/columns_ui/pull/1766)]
+
 - When adding a new column in on the Playlist view preferences page, inline
   editing for the column name in the column list is automatically activated.
   [[#1750](https://github.com/reupen/columns_ui/pull/1750)]

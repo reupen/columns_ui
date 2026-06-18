@@ -10,8 +10,16 @@ namespace cui::toolbars::spectrum_analyser {
 
 namespace {
 
-const dark::DialogDarkModeConfig dark_mode_config{
-    .button_ids = {IDOK, IDCANCEL}, .checkbox_ids = {IDC_BARS}, .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE}};
+const std::unordered_set valid_fft_sizes{1024u, 2048u, 4096u, 8192u, 16'384u};
+
+uint32_t clean_fft_size(uint32_t fft_size)
+{
+    return valid_fft_sizes.contains(fft_size) ? fft_size : default_fft_size;
+}
+
+const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
+    .checkbox_ids = {IDC_BARS},
+    .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE}};
 
 // Legacy settings are no longer used (the values are preserved in case Columns UI is downgraded)
 cfg_int cfg_legacy_vertical_scale(
@@ -58,6 +66,7 @@ cfg_int cfg_vis_edge(GUID{0x57cd2544, 0xd765, 0xef88, {0x30, 0xce, 0xd9, 0x9b, 0
 cfg_uint cfg_vis_mode(
     GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}}, WI_EnumValue(Mode::Bars));
 cfg_uint cfg_scale(scale_config_id, WI_EnumValue(Scale::Logarithmic));
+cfg_uint cfg_fft_size({0x59ad4dd7, 0x5350, 0x4cdf, {0x97, 0xd3, 0x1a, 0x5e, 0x4f, 0x3b, 0xfc, 0x48}}, default_fft_size);
 
 class SpectrumAnalyserVisualisation
     : public uie::container_uie_window_v3
@@ -102,7 +111,7 @@ private:
         colours::helper colours(colour_client_id);
         const auto foreground_colour = colours.get_colour(colours::colour_text);
         const auto background_colour = colours.get_colour(colours::colour_background);
-        m_renderer->configure(m_mode, m_scale, foreground_colour, background_colour);
+        m_renderer->configure(m_mode, m_scale, m_fft_size, foreground_colour, background_colour);
     }
 
     void restart_renderer()
@@ -159,6 +168,7 @@ private:
     bool m_is_active{};
     Mode m_mode{static_cast<Mode>(cfg_vis_mode.get())};
     Scale m_scale{static_cast<Scale>(cfg_scale.get())};
+    uint32_t m_fft_size{clean_fft_size(cfg_fft_size.get())};
     Scale m_vertical_scale{Scale::Logarithmic};
     int m_frame{cfg_vis_edge};
 };
@@ -167,6 +177,7 @@ class SpectrumAnalyserConfigData {
 public:
     Mode mode{};
     Scale scale{};
+    uint32_t fft_size{};
     service_ptr_t<SpectrumAnalyserVisualisation> instance{};
     int frame{};
 };
@@ -218,6 +229,7 @@ void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_s
     try {
         m_scale = static_cast<Scale>(reader->read_lendian_t<int32_t>(p_abort));
         m_vertical_scale = static_cast<Scale>(reader->read_lendian_t<int32_t>(p_abort));
+        m_fft_size = clean_fft_size(reader->read_lendian_t<uint32_t>(p_abort));
     } catch (const exception_io_data_truncation&) {
     }
 }
@@ -236,6 +248,7 @@ void SpectrumAnalyserVisualisation::get_config(stream_writer* writer, abort_call
     data.write_lendian_t(WI_EnumValue(m_mode), p_abort);
     data.write_lendian_t(WI_EnumValue(m_scale), p_abort);
     data.write_lendian_t(WI_EnumValue(m_vertical_scale), p_abort);
+    data.write_lendian_t(m_fft_size, p_abort);
 
     writer->write_lendian_t(gsl::narrow<uint32_t>(data.m_data.get_size()), p_abort);
     writer->write(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
@@ -316,6 +329,24 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
         ComboBox_AddString(wnd_scale_combo, L"Logarithmic");
         ComboBox_SetCurSel(wnd_scale_combo, state.scale);
 
+        const auto fft_size_wnd = GetDlgItem(wnd, IDC_FFT_SIZE);
+
+        std::locale locale("");
+
+        const std::array fft_size_options = {
+            std::make_tuple(1024u, fmt::format(locale, L"{:L} (more responsive)", 1024)),
+            std::make_tuple(2048u, fmt::format(locale, L"{:L}", 2048)),
+            std::make_tuple(4096u, fmt::format(locale, L"{:L}", 4096)),
+            std::make_tuple(8192u, fmt::format(locale, L"{:L}", 8192)),
+            std::make_tuple(16'384u, fmt::format(locale, L"{:L} (more resolution)", 16'384)),
+        };
+
+        for (auto&& [fft_size, text] : fft_size_options) {
+            const auto index = uih::combo_box_add_string_data(fft_size_wnd, text.c_str(), static_cast<int>(fft_size));
+            if (state.fft_size == fft_size && index != CB_ERR)
+                ComboBox_SetCurSel(fft_size_wnd, index);
+        }
+
         return TRUE;
     }
     case WM_COMMAND:
@@ -332,6 +363,13 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
         case IDC_SCALE | (CBN_SELCHANGE << 16):
             state.scale = static_cast<Scale>(ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)));
             break;
+        case IDC_FFT_SIZE | (CBN_SELCHANGE << 16): {
+            const auto combo_wnd = reinterpret_cast<HWND>(lp);
+            const auto index = ComboBox_GetCurSel(combo_wnd);
+            if (index != CB_ERR)
+                state.fft_size = static_cast<uint32_t>(ComboBox_GetItemData(combo_wnd, index));
+            break;
+        }
         case IDOK:
             EndDialog(wnd, 1);
             return TRUE;
@@ -345,7 +383,7 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
 
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
-    SpectrumAnalyserConfigData param{m_mode, m_scale, this, m_frame};
+    SpectrumAnalyserConfigData param{m_mode, m_scale, m_fft_size, this, m_frame};
 
     if (!dark::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
             [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); }))
@@ -355,6 +393,8 @@ bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
     cfg_vis_mode = WI_EnumValue(param.mode);
     m_scale = param.scale;
     cfg_scale = WI_EnumValue(param.scale);
+    m_fft_size = clean_fft_size(param.fft_size);
+    cfg_fft_size = m_fft_size;
     set_frame_style(param.frame);
     cfg_vis_edge = param.frame;
 
