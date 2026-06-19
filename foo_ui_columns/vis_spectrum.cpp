@@ -5,6 +5,7 @@
 
 #include "config_appearance.h"
 #include "dark_mode_dialog.h"
+#include "string.h"
 
 namespace cui::toolbars::spectrum_analyser {
 
@@ -17,9 +18,21 @@ uint32_t clean_fft_size(uint32_t fft_size)
     return valid_fft_sizes.contains(fft_size) ? fft_size : default_fft_size;
 }
 
+int32_t clean_min_frequency(int32_t min_frequency)
+{
+    return std::clamp(min_frequency, min_allowed_frequency, max_allowed_frequency - 1);
+}
+
+int32_t clean_max_frequency(int32_t min_frequency, int32_t max_frequency)
+{
+    return std::clamp(max_frequency, clean_min_frequency(min_frequency) + 1, max_allowed_frequency);
+}
+
 const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
     .checkbox_ids = {IDC_BARS},
-    .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE}};
+    .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE},
+    .edit_ids = {IDC_MIN_FREQUENCY, IDC_MAX_FREQUENCY},
+    .spin_ids = {IDC_MIN_FREQUENCY_SPIN, IDC_MAX_FREQUENCY_SPIN}};
 
 // Legacy settings are no longer used (the values are preserved in case Columns UI is downgraded)
 cfg_int cfg_legacy_vertical_scale(
@@ -67,6 +80,10 @@ cfg_uint cfg_vis_mode(
     GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}}, WI_EnumValue(Mode::Bars));
 cfg_uint cfg_scale(scale_config_id, WI_EnumValue(Scale::Logarithmic));
 cfg_uint cfg_fft_size({0x59ad4dd7, 0x5350, 0x4cdf, {0x97, 0xd3, 0x1a, 0x5e, 0x4f, 0x3b, 0xfc, 0x48}}, default_fft_size);
+cfg_int cfg_min_frequency(
+    {0x17482311, 0xe67b, 0x42cd, {0x98, 0x7f, 0x69, 0xb9, 0x4d, 0x2d, 0x74, 0x3a}}, default_min_frequency);
+cfg_int cfg_max_frequency(
+    {0x6e892c2e, 0xbbf7, 0x4904, {0x9f, 0x6c, 0x4e, 0x4d, 0x00, 0x29, 0xa1, 0xc3}}, default_max_frequency);
 
 class SpectrumAnalyserVisualisation
     : public uie::container_uie_window_v3
@@ -111,7 +128,8 @@ private:
         colours::helper colours(colour_client_id);
         const auto foreground_colour = colours.get_colour(colours::colour_text);
         const auto background_colour = colours.get_colour(colours::colour_background);
-        m_renderer->configure(m_mode, m_scale, m_fft_size, foreground_colour, background_colour);
+        m_renderer->configure(m_mode, m_scale, m_fft_size, static_cast<float>(m_min_frequency),
+            static_cast<float>(m_max_frequency), foreground_colour, background_colour);
     }
 
     void restart_renderer()
@@ -169,6 +187,8 @@ private:
     Mode m_mode{static_cast<Mode>(cfg_vis_mode.get())};
     Scale m_scale{static_cast<Scale>(cfg_scale.get())};
     uint32_t m_fft_size{clean_fft_size(cfg_fft_size.get())};
+    int32_t m_min_frequency{clean_min_frequency(cfg_min_frequency.get())};
+    int32_t m_max_frequency{clean_max_frequency(cfg_min_frequency.get(), cfg_max_frequency.get())};
     Scale m_vertical_scale{Scale::Logarithmic};
     int m_frame{cfg_vis_edge};
 };
@@ -178,6 +198,8 @@ public:
     Mode mode{};
     Scale scale{};
     uint32_t fft_size{};
+    int32_t min_frequency{};
+    int32_t max_frequency{};
     service_ptr_t<SpectrumAnalyserVisualisation> instance{};
     int frame{};
 };
@@ -230,6 +252,8 @@ void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_s
         m_scale = static_cast<Scale>(reader->read_lendian_t<int32_t>(p_abort));
         m_vertical_scale = static_cast<Scale>(reader->read_lendian_t<int32_t>(p_abort));
         m_fft_size = clean_fft_size(reader->read_lendian_t<uint32_t>(p_abort));
+        m_min_frequency = clean_min_frequency(reader->read_lendian_t<int32_t>(p_abort));
+        m_max_frequency = clean_max_frequency(m_min_frequency, reader->read_lendian_t<int32_t>(p_abort));
     } catch (const exception_io_data_truncation&) {
     }
 }
@@ -249,6 +273,8 @@ void SpectrumAnalyserVisualisation::get_config(stream_writer* writer, abort_call
     data.write_lendian_t(WI_EnumValue(m_scale), p_abort);
     data.write_lendian_t(WI_EnumValue(m_vertical_scale), p_abort);
     data.write_lendian_t(m_fft_size, p_abort);
+    data.write_lendian_t(m_min_frequency, p_abort);
+    data.write_lendian_t(m_max_frequency, p_abort);
 
     writer->write_lendian_t(gsl::narrow<uint32_t>(data.m_data.get_size()), p_abort);
     writer->write(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
@@ -347,6 +373,16 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
                 ComboBox_SetCurSel(fft_size_wnd, index);
         }
 
+        uih::enhance_edit_control(wnd, IDC_MIN_FREQUENCY);
+        const auto min_frequency_spin_wnd = GetDlgItem(wnd, IDC_MIN_FREQUENCY_SPIN);
+        SendMessage(min_frequency_spin_wnd, UDM_SETRANGE32, min_allowed_frequency, max_allowed_frequency - 1);
+        SendMessage(min_frequency_spin_wnd, UDM_SETPOS32, 0, state.min_frequency);
+
+        uih::enhance_edit_control(wnd, IDC_MAX_FREQUENCY);
+        const auto max_frequency_spin_wnd = GetDlgItem(wnd, IDC_MAX_FREQUENCY_SPIN);
+        SendMessage(max_frequency_spin_wnd, UDM_SETRANGE32, min_allowed_frequency + 1, max_allowed_frequency);
+        SendMessage(max_frequency_spin_wnd, UDM_SETPOS32, 0, state.max_frequency);
+
         return TRUE;
     }
     case WM_COMMAND:
@@ -370,6 +406,23 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
                 state.fft_size = static_cast<uint32_t>(ComboBox_GetItemData(combo_wnd, index));
             break;
         }
+        case IDC_MIN_FREQUENCY | EN_CHANGE << 16: {
+            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
+
+            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
+                state.min_frequency = *new_value_int;
+
+            break;
+        }
+        case IDC_MAX_FREQUENCY | EN_CHANGE << 16: {
+            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
+
+            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
+                state.max_frequency = *new_value_int;
+
+            break;
+        }
+
         case IDOK:
             EndDialog(wnd, 1);
             return TRUE;
@@ -383,7 +436,7 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
 
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
-    SpectrumAnalyserConfigData param{m_mode, m_scale, m_fft_size, this, m_frame};
+    SpectrumAnalyserConfigData param{m_mode, m_scale, m_fft_size, m_min_frequency, m_max_frequency, this, m_frame};
 
     if (!dark::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
             [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); }))
@@ -391,10 +444,19 @@ bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 
     m_mode = param.mode;
     cfg_vis_mode = WI_EnumValue(param.mode);
+
     m_scale = param.scale;
     cfg_scale = WI_EnumValue(param.scale);
+
     m_fft_size = clean_fft_size(param.fft_size);
     cfg_fft_size = m_fft_size;
+
+    m_min_frequency = clean_min_frequency(param.min_frequency);
+    cfg_min_frequency = m_min_frequency;
+
+    m_max_frequency = clean_max_frequency(m_min_frequency, param.max_frequency);
+    cfg_max_frequency = m_max_frequency;
+
     set_frame_style(param.frame);
     cfg_vis_edge = param.frame;
 

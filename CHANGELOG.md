@@ -11,6 +11,14 @@
   spectrum analyser visualisation.
   [[#1766](https://github.com/reupen/columns_ui/pull/1766)]
 
+- The minimum and maximum frequency shown in the built-in spectrum analyser
+  visualisation is now configurable.
+  [[#1767](https://github.com/reupen/columns_ui/pull/1767)]
+
+  The linear frequency scale behaviour was also updated to respect the
+  configured frequency range, rather than varying the frequency range based on
+  the current sample rate.
+
 - When adding a new column in on the Playlist view preferences page, inline
   editing for the column name in the column list is automatically activated.
   [[#1750](https://github.com/reupen/columns_ui/pull/1750)]

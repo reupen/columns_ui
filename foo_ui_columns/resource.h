@@ -338,6 +338,10 @@
 #define IDC_SEARCH_BAR_SCRIPT           1218
 #define IDC_IGNORE_SYMBOLS              1219
 #define IDC_USE_LEGACY_PANEL_SIZING     1220
+#define IDC_MIN_FREQUENCY               1222
+#define IDC_MAX_FREQUENCY               1223
+#define IDC_MIN_FREQUENCY_SPIN          1224
+#define IDC_MAX_FREQUENCY_SPIN          1225
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -347,7 +351,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        210
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1222
+#define _APS_NEXT_CONTROL_VALUE         1225
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
