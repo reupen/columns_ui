@@ -73,29 +73,29 @@ private:
     size_t m_count{};
 };
 
-constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, unsigned sample_rate, bool is_log)
+constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, unsigned sample_rate, bool is_log,
+    float min_frequency, float max_frequency)
 {
-    float start_bin{};
-    float end_bin{};
+    const auto nyquist_freq = static_cast<float>(sample_rate) / 2.f;
+
+    const auto normalised_x_start = static_cast<float>(x_index) / static_cast<float>(x_count);
+    const auto normalised_x_end = static_cast<float>(x_index + 1) / static_cast<float>(x_count);
+
+    float start{};
+    float end{};
 
     if (is_log) {
-        constexpr auto start_freq = 50.f;
-        constexpr auto end_freq = 22'050.f;
-        constexpr auto freq_ratio = end_freq / start_freq;
-        const auto nyquist_freq = static_cast<float>(sample_rate) / 2.f;
+        const auto freq_ratio = max_frequency / min_frequency;
 
-        const auto normalised_x_start = static_cast<float>(x_index) / static_cast<float>(x_count);
-        const auto normalised_x_end = static_cast<float>(x_index + 1) / static_cast<float>(x_count);
-
-        const auto start = start_freq * std::pow(freq_ratio, normalised_x_start) / nyquist_freq;
-        const auto end = start_freq * std::pow(freq_ratio, normalised_x_end) / nyquist_freq;
-
-        start_bin = start * fft_size;
-        end_bin = end * fft_size;
+        start = min_frequency * std::pow(freq_ratio, normalised_x_start) / nyquist_freq;
+        end = min_frequency * std::pow(freq_ratio, normalised_x_end) / nyquist_freq;
     } else {
-        start_bin = static_cast<float>(fft_size) * (static_cast<float>(x_index) / x_count);
-        end_bin = static_cast<float>(fft_size) * (static_cast<float>(x_index + 1) / x_count);
+        start = (min_frequency + (max_frequency - min_frequency) * normalised_x_start) / nyquist_freq;
+        end = (min_frequency + (max_frequency - min_frequency) * normalised_x_end) / nyquist_freq;
     }
+
+    const auto start_bin = start * fft_size;
+    const auto end_bin = end * fft_size;
 
     const size_t source_start
         = static_cast<size_t>(std::clamp(static_cast<int>(std::lround(start_bin)), 0, static_cast<int>(fft_size) - 1));
@@ -126,14 +126,16 @@ constexpr int calculate_y_position(audio_sample value, int y_count)
 
 } // namespace
 
-void SpectrumAnalyserRenderer::configure(
-    Mode mode, Scale horizontal_scale, uint32_t fft_size, COLORREF foreground_colour, COLORREF background_colour)
+void SpectrumAnalyserRenderer::configure(Mode mode, Scale horizontal_scale, uint32_t fft_size, float min_frequency,
+    float max_frequency, COLORREF foreground_colour, COLORREF background_colour)
 {
     assert(!m_render_thread);
 
     m_mode = mode;
     m_horizontal_scale = horizontal_scale;
     m_fft_size = fft_size;
+    m_min_frequency = min_frequency;
+    m_max_frequency = max_frequency;
     m_foreground_colour = foreground_colour;
     m_background_colour = background_colour;
 }
@@ -496,8 +498,8 @@ void SpectrumAnalyserRenderer::render(HDC dc)
             return;
 
         for (const auto bar_index : std::ranges::views::iota(0, num_bars)) {
-            const auto [start_bin, end_bin] = get_fft_bins(
-                sample_count, bar_index, num_bars, sample_rate, m_horizontal_scale == Scale::Logarithmic);
+            const auto [start_bin, end_bin] = get_fft_bins(sample_count, bar_index, num_bars, sample_rate,
+                m_horizontal_scale == Scale::Logarithmic, m_min_frequency, m_max_frequency);
 
             audio_sample value{};
             for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
@@ -519,8 +521,8 @@ void SpectrumAnalyserRenderer::render(HDC dc)
     }
 
     for (int x = 0; x < m_dib_width; x++) {
-        const auto [start_bin, end_bin]
-            = get_fft_bins(sample_count, x, m_dib_width, sample_rate, m_horizontal_scale == Scale::Logarithmic);
+        const auto [start_bin, end_bin] = get_fft_bins(sample_count, x, m_dib_width, sample_rate,
+            m_horizontal_scale == Scale::Logarithmic, m_min_frequency, m_max_frequency);
 
         audio_sample value{};
 

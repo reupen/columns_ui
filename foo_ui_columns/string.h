@@ -15,5 +15,6 @@ std::basic_string_view<Char> trim(const std::basic_string_view<Char>& value, con
 }
 
 std::optional<float> safe_stof(const std::wstring& value);
+std::optional<int> parse_int_forgiving(std::wstring_view string, const std::locale& loc = std::locale(""));
 
 } // namespace cui::string
