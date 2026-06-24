@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7.0.0
 
       - name: Extract change log
         id: extract
@@ -28,7 +28,7 @@ jobs:
             core.setOutput('changelog', changelog);
 
       - name: Set up Pandoc
-        uses: r-lib/actions/setup-pandoc@v2
+        uses: r-lib/actions/setup-pandoc@v2.12.0
 
       - name: Reformat release notes using Pandoc
         id: pandoc
