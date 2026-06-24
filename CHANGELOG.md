@@ -57,6 +57,10 @@
 
 ### Bug fixes
 
+- Smooth scrolling is no longer suppressed when scrolling very quickly using a
+  mouse wheel that scrolls in fixed steps.
+  [[#1775](https://github.com/reupen/columns_ui/pull/1775)]
+
 - When using the Shift key to select multiple items in built-in list views, the
   starting position for the selection is no longer reset if the Shift key is
   temporarily released between clicks or key presses.
