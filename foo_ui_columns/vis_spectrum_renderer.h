@@ -29,7 +29,7 @@ public:
 private:
     void make_dib(int width, int height);
     void reset_dib();
-    void paint_background() const;
+    void paint_background();
     void fill_rect(int left, int top, int right, int bottom, COLORREF colour) const;
     void render(HDC dc);
     void render_dib(HDC dc);
@@ -58,6 +58,7 @@ private:
     std::atomic<int> m_client_height{};
     int m_dib_width{};
     int m_dib_height{};
+    int m_dib_min_filled_y{};
 
     visualisation_stream_v2::ptr m_stream;
     std::optional<std::jthread> m_render_thread;

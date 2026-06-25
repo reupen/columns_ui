@@ -19,6 +19,9 @@
   configured frequency range, rather than varying the frequency range based on
   the current sample rate.
 
+- CPU usage of the built-in spectrum analyser visualisation was reduced
+  slightly. [[#1776](https://github.com/reupen/columns_ui/pull/1776)]
+
 - When adding a new column in on the Playlist view preferences page, inline
   editing for the column name in the column list is automatically activated.
   [[#1750](https://github.com/reupen/columns_ui/pull/1750)]
