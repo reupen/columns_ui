@@ -29,7 +29,7 @@ int32_t clean_max_frequency(int32_t min_frequency, int32_t max_frequency)
 }
 
 const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
-    .checkbox_ids = {IDC_BARS},
+    .checkbox_ids = {IDC_BARS, IDC_SMOOTH_VALUES},
     .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE},
     .edit_ids = {IDC_MIN_FREQUENCY, IDC_MAX_FREQUENCY},
     .spin_ids = {IDC_MIN_FREQUENCY_SPIN, IDC_MAX_FREQUENCY_SPIN}};
@@ -84,6 +84,7 @@ cfg_int cfg_min_frequency(
     {0x17482311, 0xe67b, 0x42cd, {0x98, 0x7f, 0x69, 0xb9, 0x4d, 0x2d, 0x74, 0x3a}}, default_min_frequency);
 cfg_int cfg_max_frequency(
     {0x6e892c2e, 0xbbf7, 0x4904, {0x9f, 0x6c, 0x4e, 0x4d, 0x00, 0x29, 0xa1, 0xc3}}, default_max_frequency);
+cfg_bool cfg_smooth_values({0x1517997c, 0xbdce, 0x434b, {0xb3, 0x7b, 0xc7, 0xba, 0xd6, 0xc0, 0xba, 0x81}}, false);
 
 class SpectrumAnalyserVisualisation
     : public uie::container_uie_window_v3
@@ -129,7 +130,7 @@ private:
         const auto foreground_colour = colours.get_colour(colours::colour_text);
         const auto background_colour = colours.get_colour(colours::colour_background);
         m_renderer->configure(m_mode, m_scale, m_fft_size, static_cast<float>(m_min_frequency),
-            static_cast<float>(m_max_frequency), foreground_colour, background_colour);
+            static_cast<float>(m_max_frequency), m_smooth_values, foreground_colour, background_colour);
     }
 
     void restart_renderer()
@@ -189,6 +190,7 @@ private:
     uint32_t m_fft_size{clean_fft_size(cfg_fft_size.get())};
     int32_t m_min_frequency{clean_min_frequency(cfg_min_frequency.get())};
     int32_t m_max_frequency{clean_max_frequency(cfg_min_frequency.get(), cfg_max_frequency.get())};
+    bool m_smooth_values{cfg_smooth_values.get()};
     Scale m_vertical_scale{Scale::Logarithmic};
     int m_frame{cfg_vis_edge};
 };
@@ -200,6 +202,7 @@ public:
     uint32_t fft_size{};
     int32_t min_frequency{};
     int32_t max_frequency{};
+    bool smooth_values{};
     service_ptr_t<SpectrumAnalyserVisualisation> instance{};
     int frame{};
 };
@@ -254,6 +257,7 @@ void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_s
         m_fft_size = clean_fft_size(reader->read_lendian_t<uint32_t>(p_abort));
         m_min_frequency = clean_min_frequency(reader->read_lendian_t<int32_t>(p_abort));
         m_max_frequency = clean_max_frequency(m_min_frequency, reader->read_lendian_t<int32_t>(p_abort));
+        m_smooth_values = reader->read_lendian_t<bool>(p_abort);
     } catch (const exception_io_data_truncation&) {
     }
 }
@@ -275,6 +279,7 @@ void SpectrumAnalyserVisualisation::get_config(stream_writer* writer, abort_call
     data.write_lendian_t(m_fft_size, p_abort);
     data.write_lendian_t(m_min_frequency, p_abort);
     data.write_lendian_t(m_max_frequency, p_abort);
+    data.write_lendian_t(m_smooth_values, p_abort);
 
     writer->write_lendian_t(gsl::narrow<uint32_t>(data.m_data.get_size()), p_abort);
     writer->write(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
@@ -383,6 +388,8 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
         SendMessage(max_frequency_spin_wnd, UDM_SETRANGE32, min_allowed_frequency + 1, max_allowed_frequency);
         SendMessage(max_frequency_spin_wnd, UDM_SETPOS32, 0, state.max_frequency);
 
+        SendDlgItemMessage(wnd, IDC_SMOOTH_VALUES, BM_SETCHECK, state.smooth_values ? BST_CHECKED : BST_UNCHECKED, 0);
+
         return TRUE;
     }
     case WM_COMMAND:
@@ -406,6 +413,9 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
                 state.fft_size = static_cast<uint32_t>(ComboBox_GetItemData(combo_wnd, index));
             break;
         }
+        case IDC_SMOOTH_VALUES:
+            state.smooth_values = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+            break;
         case IDC_MIN_FREQUENCY | EN_CHANGE << 16: {
             const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
 
@@ -436,7 +446,8 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
 
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
-    SpectrumAnalyserConfigData param{m_mode, m_scale, m_fft_size, m_min_frequency, m_max_frequency, this, m_frame};
+    SpectrumAnalyserConfigData param{
+        m_mode, m_scale, m_fft_size, m_min_frequency, m_max_frequency, m_smooth_values, this, m_frame};
 
     if (!dark::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
             [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); }))
@@ -456,6 +467,9 @@ bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 
     m_max_frequency = clean_max_frequency(m_min_frequency, param.max_frequency);
     cfg_max_frequency = m_max_frequency;
+
+    m_smooth_values = param.smooth_values;
+    cfg_smooth_values = m_smooth_values;
 
     set_frame_style(param.frame);
     cfg_vis_edge = param.frame;

@@ -244,6 +244,7 @@
 #define IDC_SCALE                       1102
 #define IDC_CHANGE_FRAME                1103
 #define IDC_FFT_SIZE                    1103
+#define IDC_SMOOTH_VALUES               1104
 #define IDC_CHANGE_SEL_FORE             1106
 #define IDC_CHANGE_SEL_INACTIVE_FORE    1110
 #define IDC_CHANGE_TEXT_FORE            1116
