@@ -137,7 +137,11 @@ void SpectrumAnalyserRenderer::configure(Mode mode, Scale horizontal_scale, uint
     m_min_frequency = min_frequency;
     m_max_frequency = max_frequency;
     m_foreground_colour = foreground_colour;
-    m_background_colour = background_colour;
+
+    if (background_colour != m_background_colour) {
+        m_dib_min_filled_y = 0;
+        m_background_colour = background_colour;
+    }
 }
 
 void SpectrumAnalyserRenderer::start()
@@ -356,6 +360,7 @@ void SpectrumAnalyserRenderer::make_dib(int width, int height)
     m_dib_width = width;
     m_dib_height = height;
     m_stride = width * 4;
+    m_dib_min_filled_y = 0;
 
     paint_background();
 }
@@ -369,6 +374,7 @@ void SpectrumAnalyserRenderer::reset_dib()
     m_dib_width = 0;
     m_dib_height = 0;
     m_stride = 0;
+    m_dib_min_filled_y = 0;
 }
 
 void SpectrumAnalyserRenderer::render_dib(HDC dc)
@@ -383,12 +389,13 @@ void SpectrumAnalyserRenderer::render_dib(HDC dc)
     BitBlt(dc, 0, 0, m_dib_width, m_dib_height, m_dib_dc.get(), 0, 0, SRCCOPY);
 }
 
-void SpectrumAnalyserRenderer::paint_background() const
+void SpectrumAnalyserRenderer::paint_background()
 {
     if (!m_dib_bits)
         return;
 
-    fill_rect(0, 0, m_dib_width, m_dib_height, m_background_colour);
+    fill_rect(0, m_dib_min_filled_y, m_dib_width, m_dib_height, m_background_colour);
+    m_dib_min_filled_y = m_dib_height;
 }
 
 void SpectrumAnalyserRenderer::fill_rect(int left, int top, int right, int bottom, COLORREF colour) const
@@ -450,11 +457,16 @@ void SpectrumAnalyserRenderer::fill_rect(int left, int top, int right, int botto
         }
         break;
     default:
-        for (int y = top; y < bottom; ++y) {
-            for (int x{}; x < width; ++x)
-                row[x] = rgb_colour;
+        if (width == m_dib_width) {
+            for (int offset{}; offset < (bottom - top) * width; ++offset)
+                row[offset] = rgb_colour;
+        } else {
+            for (int y = top; y < bottom; ++y) {
+                for (int x{}; x < width; ++x)
+                    row[x] = rgb_colour;
 
-            row += stride_32;
+                row += stride_32;
+            }
         }
         break;
     }
@@ -514,6 +526,8 @@ void SpectrumAnalyserRenderer::render(HDC dc)
             const auto bottom = m_dib_height - 1;
             const auto top = m_dib_height - y_pos * 2;
 
+            m_dib_min_filled_y = std::min(m_dib_min_filled_y, top);
+
             for (int y = bottom; y > top; y -= 2)
                 fill_rect(left, y - 1, right, y, m_foreground_colour);
         }
@@ -537,6 +551,8 @@ void SpectrumAnalyserRenderer::render(HDC dc)
         const auto right = x + 1;
         const auto bottom = m_dib_height;
         const auto top = m_dib_height - y_pos;
+
+        m_dib_min_filled_y = std::min(m_dib_min_filled_y, top);
 
         fill_rect(left, top, right, bottom, m_foreground_colour);
     }
