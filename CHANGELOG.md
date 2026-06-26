@@ -19,6 +19,16 @@
   configured frequency range, rather than varying the frequency range based on
   the current sample rate.
 
+- A smooth sub-bin values option was added to the built-in spectrum analyser.
+  [[#1778](https://github.com/reupen/columns_ui/pull/1778)]
+
+  This will smooth values that span multiple points on the frequency scale. This
+  will mainly affect lower frequencies for larger panel widths when the
+  logarithmic frequency scale is used.
+
+  Some minor tweaks were also made to how bins are mapped to the frequency axis
+  when smoothing is turned off for consistency.
+
 - CPU usage of the built-in spectrum analyser visualisation was reduced
   slightly. [[#1776](https://github.com/reupen/columns_ui/pull/1776)]
 

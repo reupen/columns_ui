@@ -19,7 +19,7 @@ public:
     ~SpectrumAnalyserRenderer() { m_render_thread.reset(); }
 
     void configure(Mode mode, Scale horizontal_scale, uint32_t fft_size, float min_frequency, float max_frequency,
-        COLORREF foreground_colour, COLORREF background_colour);
+        bool smooth_values, COLORREF foreground_colour, COLORREF background_colour);
     void start();
     void request_stop();
     void stop();
@@ -45,6 +45,7 @@ private:
     uint32_t m_fft_size{default_fft_size};
     float m_min_frequency{default_min_frequency};
     float m_max_frequency{default_max_frequency};
+    bool m_smooth_values{};
     COLORREF m_foreground_colour{};
     COLORREF m_background_colour{};
 

@@ -73,7 +73,7 @@ private:
     size_t m_count{};
 };
 
-constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, unsigned sample_rate, bool is_log,
+constexpr auto get_fft_bin_range(size_t num_bins, size_t x_index, size_t x_count, unsigned sample_rate, bool is_log,
     float min_frequency, float max_frequency)
 {
     const auto nyquist_freq = static_cast<float>(sample_rate) / 2.f;
@@ -94,18 +94,52 @@ constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, uns
         end = (min_frequency + (max_frequency - min_frequency) * normalised_x_end) / nyquist_freq;
     }
 
-    const auto start_bin = start * fft_size;
-    const auto end_bin = end * fft_size;
+    return std::make_tuple(start * num_bins, end * num_bins);
+}
 
-    const size_t source_start
-        = static_cast<size_t>(std::clamp(static_cast<int>(std::lround(start_bin)), 0, static_cast<int>(fft_size) - 1));
-    size_t source_end
-        = static_cast<size_t>(std::clamp(static_cast<int>(std::lround(end_bin)), 0, static_cast<int>(fft_size) - 1));
+auto get_value(const audio_chunk_impl& chunk, size_t x_index, size_t x_count, bool is_log, float min_frequency,
+    float max_frequency, bool smooth_values)
+{
+    const auto data = chunk.get_data();
+    const auto sample_count = chunk.get_sample_count();
+    const auto sample_rate = chunk.get_sample_rate();
 
-    if (source_end > source_start)
-        --source_end;
+    const auto [start_bin_f32, end_bin_f32]
+        = get_fft_bin_range(sample_count, x_index, x_count, sample_rate, is_log, min_frequency, max_frequency);
 
-    return std::make_tuple(source_start, source_end);
+    const auto is_sub_bin = end_bin_f32 < start_bin_f32 + 1.f;
+
+    if (smooth_values && is_sub_bin) {
+        const auto mid_point = (end_bin_f32 + start_bin_f32) / 2.f;
+        const auto left_bin_f32 = mid_point - .5f;
+        const auto right_bin_f32 = mid_point + .5f;
+
+        const auto right_weight = right_bin_f32 - std::floor(right_bin_f32);
+        const auto left_weight = 1.f - right_weight;
+
+        const auto get_data = [&](float bin_f32) {
+            const auto bin = std::clamp(static_cast<size_t>(bin_f32), size_t{}, sample_count - 1);
+            return data[bin];
+        };
+
+        return get_data(left_bin_f32) * left_weight + get_data(right_bin_f32) * right_weight;
+    }
+
+    const auto clamp_bin
+        = [&](float bin_f32) { return std::clamp(static_cast<int>(bin_f32), 0, static_cast<int>(sample_count) - 1); };
+
+    const auto left_bin_f32 = is_sub_bin ? std::floor((start_bin_f32 + end_bin_f32) / 2.f) : std::round(start_bin_f32);
+    const auto right_bin_f32 = is_sub_bin ? left_bin_f32 : std::round(end_bin_f32) - 1.f;
+
+    const auto start_bin = static_cast<size_t>(clamp_bin(left_bin_f32));
+    const auto end_bin = static_cast<size_t>(clamp_bin(right_bin_f32));
+
+    audio_sample value{};
+
+    for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1))
+        value = std::max(value, data[bin_index]);
+
+    return value;
 }
 
 constexpr int calculate_y_position(audio_sample value, int y_count)
@@ -127,7 +161,7 @@ constexpr int calculate_y_position(audio_sample value, int y_count)
 } // namespace
 
 void SpectrumAnalyserRenderer::configure(Mode mode, Scale horizontal_scale, uint32_t fft_size, float min_frequency,
-    float max_frequency, COLORREF foreground_colour, COLORREF background_colour)
+    float max_frequency, bool smooth_values, COLORREF foreground_colour, COLORREF background_colour)
 {
     assert(!m_render_thread);
 
@@ -136,6 +170,7 @@ void SpectrumAnalyserRenderer::configure(Mode mode, Scale horizontal_scale, uint
     m_fft_size = fft_size;
     m_min_frequency = min_frequency;
     m_max_frequency = max_frequency;
+    m_smooth_values = smooth_values;
     m_foreground_colour = foreground_colour;
 
     if (background_colour != m_background_colour) {
@@ -499,10 +534,6 @@ void SpectrumAnalyserRenderer::render(HDC dc)
         return;
     }
 
-    const auto data = m_chunk.get_data();
-    const auto sample_count = m_chunk.get_sample_count();
-    const auto sample_rate = m_chunk.get_sample_rate();
-
     if (m_mode == Mode::Bars) {
         const int num_bars = m_dib_width / m_bar_width;
 
@@ -510,14 +541,8 @@ void SpectrumAnalyserRenderer::render(HDC dc)
             return;
 
         for (const auto bar_index : std::ranges::views::iota(0, num_bars)) {
-            const auto [start_bin, end_bin] = get_fft_bins(sample_count, bar_index, num_bars, sample_rate,
-                m_horizontal_scale == Scale::Logarithmic, m_min_frequency, m_max_frequency);
-
-            audio_sample value{};
-            for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
-                const auto bin_value = data[bin_index];
-                value = std::max(value, bin_value);
-            }
+            const auto value = get_value(m_chunk, bar_index, num_bars, m_horizontal_scale == Scale::Logarithmic,
+                m_min_frequency, m_max_frequency, m_smooth_values);
 
             const auto y_pos = calculate_y_position(value, (m_dib_height) / 2);
 
@@ -535,15 +560,8 @@ void SpectrumAnalyserRenderer::render(HDC dc)
     }
 
     for (int x = 0; x < m_dib_width; x++) {
-        const auto [start_bin, end_bin] = get_fft_bins(sample_count, x, m_dib_width, sample_rate,
-            m_horizontal_scale == Scale::Logarithmic, m_min_frequency, m_max_frequency);
-
-        audio_sample value{};
-
-        for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
-            const auto bin_value = data[bin_index];
-            value = std::max(value, bin_value);
-        }
+        const auto value = get_value(m_chunk, x, m_dib_width, m_horizontal_scale == Scale::Logarithmic, m_min_frequency,
+            m_max_frequency, m_smooth_values);
 
         const auto y_pos = calculate_y_position(value, m_dib_height);
 
