@@ -238,7 +238,6 @@
 #define IDC_CUSTOM_FRAME                1088
 #define IDC_CAPTIONSTYLE                1092
 #define IDC_CONFIGURE                   1093
-#define IDC_BARS                        1100
 #define IDC_CHANGE_SEL_INACTIVE_BACK    1100
 #define IDC_FRAME_COMBO                 1101
 #define IDC_SCALE                       1102

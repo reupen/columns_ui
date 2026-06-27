@@ -29,8 +29,8 @@ int32_t clean_max_frequency(int32_t min_frequency, int32_t max_frequency)
 }
 
 const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
-    .checkbox_ids = {IDC_BARS, IDC_SMOOTH_VALUES},
-    .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE},
+    .checkbox_ids = {IDC_SMOOTH_VALUES},
+    .combo_box_ids = {IDC_APPEARANCE, IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE},
     .edit_ids = {IDC_MIN_FREQUENCY, IDC_MAX_FREQUENCY},
     .spin_ids = {IDC_MIN_FREQUENCY_SPIN, IDC_MAX_FREQUENCY_SPIN}};
 
@@ -347,7 +347,10 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, state.mode == Mode::Bars, 0);
+        const auto appearance_combo_wnd = GetDlgItem(wnd, IDC_APPEARANCE);
+        ComboBox_AddString(appearance_combo_wnd, L"Area");
+        ComboBox_AddString(appearance_combo_wnd, L"Bars");
+        ComboBox_SetCurSel(appearance_combo_wnd, WI_EnumValue(state.mode));
 
         const auto wnd_frame_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
         ComboBox_AddString(wnd_frame_combo, L"None");
@@ -397,16 +400,18 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
         case IDCANCEL:
             EndDialog(wnd, 0);
             return TRUE;
-        case IDC_BARS:
-            state.mode = (Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED ? Mode::Bars : Mode::Standard);
+        case IDC_APPEARANCE | CBN_SELCHANGE << 16: {
+            if (const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)); index != CB_ERR)
+                state.mode = static_cast<Mode>(index);
             break;
-        case IDC_FRAME_COMBO | (CBN_SELCHANGE << 16):
+        }
+        case IDC_FRAME_COMBO | CBN_SELCHANGE << 16:
             state.frame = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             break;
-        case IDC_SCALE | (CBN_SELCHANGE << 16):
+        case IDC_SCALE | CBN_SELCHANGE << 16:
             state.scale = static_cast<Scale>(ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)));
             break;
-        case IDC_FFT_SIZE | (CBN_SELCHANGE << 16): {
+        case IDC_FFT_SIZE | CBN_SELCHANGE << 16: {
             const auto combo_wnd = reinterpret_cast<HWND>(lp);
             const auto index = ComboBox_GetCurSel(combo_wnd);
             if (index != CB_ERR)
