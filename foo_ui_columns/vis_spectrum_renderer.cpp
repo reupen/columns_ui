@@ -160,12 +160,14 @@ constexpr int calculate_y_position(audio_sample value, int y_count)
 
 } // namespace
 
-void SpectrumAnalyserRenderer::configure(Mode mode, Scale horizontal_scale, uint32_t fft_size, float min_frequency,
-    float max_frequency, bool smooth_values, COLORREF foreground_colour, COLORREF background_colour)
+void SpectrumAnalyserRenderer::configure(Mode mode, int bar_width, Scale horizontal_scale, uint32_t fft_size,
+    float min_frequency, float max_frequency, bool smooth_values, COLORREF foreground_colour,
+    COLORREF background_colour)
 {
     assert(!m_render_thread);
 
     m_mode = mode;
+    m_bar_width = bar_width;
     m_horizontal_scale = horizontal_scale;
     m_fft_size = fft_size;
     m_min_frequency = min_frequency;
@@ -535,7 +537,19 @@ void SpectrumAnalyserRenderer::render(HDC dc)
     }
 
     if (m_mode == Mode::Bars) {
-        const int num_bars = m_dib_width / m_bar_width;
+        const auto padding = 1_spx;
+        constexpr auto block_height = 1;
+        constexpr auto block_gap = 1;
+        const auto available_width = m_dib_width - 2 * padding;
+        // Don't bother with top padding
+        const auto available_height = m_dib_height - padding;
+
+        if (available_width <= 0)
+            return;
+
+        const auto bar_width = std::min(available_width, m_bar_width);
+        const auto total_width = bar_width + m_bar_gap;
+        const int num_bars = (available_width + m_bar_gap) / total_width;
 
         if (num_bars <= 0)
             return;
@@ -544,17 +558,17 @@ void SpectrumAnalyserRenderer::render(HDC dc)
             const auto value = get_value(m_chunk, bar_index, num_bars, m_horizontal_scale == Scale::Logarithmic,
                 m_min_frequency, m_max_frequency, m_smooth_values);
 
-            const auto y_pos = calculate_y_position(value, (m_dib_height) / 2);
+            const auto y_pos = calculate_y_position(value, (available_height + block_gap) / (block_height + block_gap));
 
-            const auto left = 1 + bar_index * m_bar_width;
-            const auto right = left + m_bar_width - m_bar_gap;
-            const auto bottom = m_dib_height - 1;
-            const auto top = m_dib_height - y_pos * 2;
+            const auto left = padding + bar_index * total_width;
+            const auto right = left + bar_width;
+            const auto bottom = m_dib_height - padding;
+            const auto top = bottom - y_pos * (block_height + block_gap) + block_gap;
 
             m_dib_min_filled_y = std::min(m_dib_min_filled_y, top);
 
-            for (int y = bottom; y > top; y -= 2)
-                fill_rect(left, y - 1, right, y, m_foreground_colour);
+            for (int y = top; y < bottom; y += block_height + block_gap)
+                fill_rect(left, y, right, y + block_height, m_foreground_colour);
         }
         return;
     }

@@ -18,8 +18,8 @@ public:
 
     ~SpectrumAnalyserRenderer() { m_render_thread.reset(); }
 
-    void configure(Mode mode, Scale horizontal_scale, uint32_t fft_size, float min_frequency, float max_frequency,
-        bool smooth_values, COLORREF foreground_colour, COLORREF background_colour);
+    void configure(Mode mode, int bar_width, Scale horizontal_scale, uint32_t fft_size, float min_frequency,
+        float max_frequency, bool smooth_values, COLORREF foreground_colour, COLORREF background_colour);
     void start();
     void request_stop();
     void stop();
@@ -37,7 +37,7 @@ private:
     HWND m_wnd{};
     audio_chunk_impl m_chunk{};
 
-    int m_bar_width{3_spx};
+    int m_bar_width{2_spx};
     int m_bar_gap{1_spx};
 
     Mode m_mode{};
