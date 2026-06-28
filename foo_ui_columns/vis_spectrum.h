@@ -12,7 +12,8 @@ constexpr auto max_allowed_frequency = 96'000;
 
 enum class Mode {
     Standard,
-    Bars,
+    HatchedBars,
+    SolidBars,
 };
 
 enum class Scale {

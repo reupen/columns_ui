@@ -536,7 +536,7 @@ void SpectrumAnalyserRenderer::render(HDC dc)
         return;
     }
 
-    if (m_mode == Mode::Bars) {
+    if (m_mode == Mode::HatchedBars || m_mode == Mode::SolidBars) {
         const auto padding = 1_spx;
         constexpr auto block_height = 1;
         constexpr auto block_gap = 1;
@@ -558,17 +558,27 @@ void SpectrumAnalyserRenderer::render(HDC dc)
             const auto value = get_value(m_chunk, bar_index, num_bars, m_horizontal_scale == Scale::Logarithmic,
                 m_min_frequency, m_max_frequency, m_smooth_values);
 
-            const auto y_pos = calculate_y_position(value, (available_height + block_gap) / (block_height + block_gap));
-
             const auto left = padding + bar_index * total_width;
             const auto right = left + bar_width;
             const auto bottom = m_dib_height - padding;
-            const auto top = bottom - y_pos * (block_height + block_gap) + block_gap;
 
-            m_dib_min_filled_y = std::min(m_dib_min_filled_y, top);
+            if (m_mode == Mode::SolidBars) {
+                const auto y_pos = calculate_y_position(value, available_height);
+                const auto top = bottom - y_pos;
 
-            for (int y = top; y < bottom; y += block_height + block_gap)
-                fill_rect(left, y, right, y + block_height, m_foreground_colour);
+                m_dib_min_filled_y = std::min(m_dib_min_filled_y, top);
+
+                fill_rect(left, top, right, bottom, m_foreground_colour);
+            } else {
+                const auto y_pos
+                    = calculate_y_position(value, (available_height + block_gap) / (block_height + block_gap));
+                const auto top = bottom - y_pos * (block_height + block_gap) + block_gap;
+
+                m_dib_min_filled_y = std::min(m_dib_min_filled_y, top);
+
+                for (int y = top; y < bottom; y += block_height + block_gap)
+                    fill_rect(left, y, right, y + block_height, m_foreground_colour);
+            }
         }
         return;
     }

@@ -76,8 +76,8 @@ void migrate_spectrum_analyser_colours(COLORREF foreground, COLORREF background)
 constexpr GUID scale_config_id = {0xdfa4e08c, 0x325f, 0x4b32, {0x91, 0xeb, 0xcd, 0x9f, 0xd5, 0xd0, 0xad, 0x14}};
 
 cfg_int cfg_vis_edge(GUID{0x57cd2544, 0xd765, 0xef88, {0x30, 0xce, 0xd9, 0x9b, 0x47, 0xe4, 0x09, 0x94}}, 0);
-cfg_uint cfg_vis_mode(
-    GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}}, WI_EnumValue(Mode::Bars));
+cfg_uint cfg_vis_mode(GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}},
+    WI_EnumValue(Mode::HatchedBars));
 cfg_uint cfg_scale(scale_config_id, WI_EnumValue(Scale::Logarithmic));
 cfg_uint cfg_fft_size({0x59ad4dd7, 0x5350, 0x4cdf, {0x97, 0xd3, 0x1a, 0x5e, 0x4f, 0x3b, 0xfc, 0x48}}, default_fft_size);
 cfg_int cfg_min_frequency(
@@ -267,6 +267,8 @@ void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_s
         const auto value = reader->read_lendian_t<int32_t>(p_abort);
         const auto dpi = reader->read_lendian_t<uint32_t>(p_abort);
         m_bar_width.set(value, dpi);
+
+        m_mode = static_cast<Mode>(reader->read_lendian_t<int32_t>(p_abort));
     } catch (const exception_io_data_truncation&) {
     }
 }
@@ -282,7 +284,7 @@ void SpectrumAnalyserVisualisation::get_config(stream_writer* writer, abort_call
     stream_writer_memblock data;
     data.write_lendian_t(colours.get_colour(colours::colour_text), p_abort);
     data.write_lendian_t(colours.get_colour(colours::colour_background), p_abort);
-    data.write_lendian_t(WI_EnumValue(m_mode), p_abort);
+    data.write_lendian_t(WI_EnumValue(m_mode == Mode::SolidBars ? Mode::HatchedBars : m_mode), p_abort);
     data.write_lendian_t(WI_EnumValue(m_scale), p_abort);
     data.write_lendian_t(WI_EnumValue(m_vertical_scale), p_abort);
     data.write_lendian_t(m_fft_size, p_abort);
@@ -291,6 +293,7 @@ void SpectrumAnalyserVisualisation::get_config(stream_writer* writer, abort_call
     data.write_lendian_t(m_smooth_values, p_abort);
     data.write_lendian_t(m_bar_width.value, p_abort);
     data.write_lendian_t(m_bar_width.dpi, p_abort);
+    data.write_lendian_t(WI_EnumValue(m_mode), p_abort);
 
     writer->write_lendian_t(gsl::narrow<uint32_t>(data.m_data.get_size()), p_abort);
     writer->write(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
@@ -360,7 +363,8 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
     case WM_INITDIALOG: {
         const auto appearance_combo_wnd = GetDlgItem(wnd, IDC_APPEARANCE);
         ComboBox_AddString(appearance_combo_wnd, L"Area");
-        ComboBox_AddString(appearance_combo_wnd, L"Bars");
+        ComboBox_AddString(appearance_combo_wnd, L"Hatched bars");
+        ComboBox_AddString(appearance_combo_wnd, L"Solid bars");
         ComboBox_SetCurSel(appearance_combo_wnd, WI_EnumValue(state.mode));
 
         const auto wnd_frame_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
@@ -395,7 +399,7 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
         const auto bar_width_wnd = GetDlgItem(wnd, IDC_BAR_WIDTH);
         const auto bar_width_spin_wnd = GetDlgItem(wnd, IDC_BAR_WIDTH_SPIN);
 
-        const auto enable_bar_width = state.mode == Mode::Bars;
+        const auto enable_bar_width = state.mode == Mode::HatchedBars || state.mode == Mode::SolidBars;
         EnableWindow(bar_width_wnd, enable_bar_width);
         EnableWindow(bar_width_spin_wnd, enable_bar_width);
 
@@ -426,7 +430,7 @@ INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, 
             if (const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)); index != CB_ERR) {
                 state.mode = static_cast<Mode>(index);
 
-                const auto enable_bar_width = state.mode == Mode::Bars;
+                const auto enable_bar_width = state.mode == Mode::HatchedBars || state.mode == Mode::SolidBars;
                 EnableWindow(GetDlgItem(wnd, IDC_BAR_WIDTH), enable_bar_width);
                 EnableWindow(GetDlgItem(wnd, IDC_BAR_WIDTH_SPIN), enable_bar_width);
             }

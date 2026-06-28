@@ -4,22 +4,20 @@
 
 ### Features
 
-- The `%playlist_name%` field is now available in playlist view grouping
-  scripts. [[#1757](https://github.com/reupen/columns_ui/pull/1757)]
+#### Spectrum analyser
 
-- The fast Fourier transform (FFT) size is now configurable in the built-in
-  spectrum analyser visualisation.
-  [[#1766](https://github.com/reupen/columns_ui/pull/1766)]
+Several new features were added to the built-in spectrum analyser visualisation:
 
-- The minimum and maximum frequency shown in the built-in spectrum analyser
-  visualisation is now configurable.
-  [[#1767](https://github.com/reupen/columns_ui/pull/1767)]
+- A new appearance mode with solid (rather than hatched) bars was added.
+  [[#1780](https://github.com/reupen/columns_ui/pull/1781)]
 
-  The linear frequency scale behaviour was also updated to respect the
-  configured frequency range, rather than varying the frequency range based on
-  the current sample rate.
+  The new mode is named ‘Solid bars’, while the previous bars mode is now named
+  ‘Hatched bars’.
 
-- A smooth sub-bin values option was added to the built-in spectrum analyser.
+- The width of bars in the ‘Hatched bars’ and ‘Solid bars’ appearance modes is
+  now configurable. [[#1780](https://github.com/reupen/columns_ui/pull/1781)]
+
+- A smooth sub-bin values option was added.
   [[#1778](https://github.com/reupen/columns_ui/pull/1778)]
 
   This will smooth values that span multiple points on the frequency scale. This
@@ -29,8 +27,23 @@
   Some minor tweaks were also made to how bins are mapped to the frequency axis
   when smoothing is turned off for consistency.
 
-- CPU usage of the built-in spectrum analyser visualisation was reduced
-  slightly. [[#1776](https://github.com/reupen/columns_ui/pull/1776)]
+- The fast Fourier transform (FFT) size is now configurable.
+  [[#1766](https://github.com/reupen/columns_ui/pull/1766)]
+
+- The minimum and maximum frequency shown is now configurable.
+  [[#1767](https://github.com/reupen/columns_ui/pull/1767)]
+
+  The linear frequency scale behaviour was also updated to respect the
+  configured frequency range, rather than varying the frequency range based on
+  the current sample rate.
+
+- CPU usage was reduced slightly.
+  [[#1776](https://github.com/reupen/columns_ui/pull/1776)]
+
+#### Other changes
+
+- The `%playlist_name%` field is now available in playlist view grouping
+  scripts. [[#1757](https://github.com/reupen/columns_ui/pull/1757)]
 
 - When adding a new column in on the Playlist view preferences page, inline
   editing for the column name in the column list is automatically activated.
