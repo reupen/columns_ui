@@ -28,12 +28,6 @@ int32_t clean_max_frequency(int32_t min_frequency, int32_t max_frequency)
     return std::clamp(max_frequency, clean_min_frequency(min_frequency) + 1, max_allowed_frequency);
 }
 
-const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
-    .checkbox_ids = {IDC_SMOOTH_VALUES},
-    .combo_box_ids = {IDC_APPEARANCE, IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE},
-    .edit_ids = {IDC_MIN_FREQUENCY, IDC_MAX_FREQUENCY},
-    .spin_ids = {IDC_BAR_WIDTH_SPIN, IDC_MIN_FREQUENCY_SPIN, IDC_MAX_FREQUENCY_SPIN}};
-
 // Legacy settings are no longer used (the values are preserved in case Columns UI is downgraded)
 cfg_int cfg_legacy_vertical_scale(
     {0x3323c764, 0x875a, 0x4464, {0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c}}, WI_EnumValue(Scale::Logarithmic));
@@ -88,6 +82,64 @@ cfg_bool cfg_smooth_values({0x1517997c, 0xbdce, 0x434b, {0xb3, 0x7b, 0xc7, 0xba,
 fbh::ConfigInt32DpiAware cfg_bar_width(
     {0xb0f63999, 0xea70, 0x4331, {0x8e, 0x93, 0x9c, 0x70, 0x09, 0x52, 0x46, 0x1a}}, 2);
 
+class SpectrumAnalyserConfigData {
+public:
+    Mode mode{};
+    uih::IntegerAndDpi<int32_t> bar_width{};
+    Scale scale{};
+    uint32_t fft_size{};
+    int32_t min_frequency{};
+    int32_t max_frequency{};
+    bool smooth_values{};
+    int frame{};
+};
+
+const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
+    .checkbox_ids = {IDC_SMOOTH_VALUES},
+    .combo_box_ids = {IDC_APPEARANCE, IDC_FRAME_COMBO, IDC_SCALE, IDC_FFT_SIZE},
+    .edit_ids = {IDC_MIN_FREQUENCY, IDC_MAX_FREQUENCY},
+    .spin_ids = {IDC_BAR_WIDTH_SPIN, IDC_MIN_FREQUENCY_SPIN, IDC_MAX_FREQUENCY_SPIN}};
+
+template <bool IsModal>
+class SpectrumAnalyserOptionsDialog {
+public:
+    operator bool() const { return m_wnd != nullptr; }
+
+    bool open(HWND parent_wnd, const SpectrumAnalyserConfigData& initial_state,
+        const service_ptr_t<class SpectrumAnalyserVisualisation>& panel)
+    {
+        m_initial_state = initial_state;
+        m_state = initial_state;
+
+        if constexpr (IsModal) {
+            return dark::modal_dialog_box(
+                IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, parent_wnd, [this, panel](auto&&... args) {
+                    return handle_options_message(panel, std::forward<decltype(args)>(args)...);
+                });
+
+        } else {
+            return dark::modeless_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, parent_wnd,
+                       [this, panel](auto&&... args) {
+                           return handle_options_message(panel, std::forward<decltype(args)>(args)...);
+                       })
+                != nullptr;
+        }
+    }
+
+    HWND get_wnd() const { return m_wnd; }
+
+private:
+    static void set_rendering_options(
+        const service_ptr_t<class SpectrumAnalyserVisualisation>& panel, const SpectrumAnalyserConfigData& state);
+
+    INT_PTR handle_options_message(
+        const service_ptr_t<class SpectrumAnalyserVisualisation>& panel, HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    HWND m_wnd{};
+    SpectrumAnalyserConfigData m_state{};
+    SpectrumAnalyserConfigData m_initial_state{};
+};
+
 class SpectrumAnalyserVisualisation
     : public uie::container_uie_window_v3
     , public play_callback {
@@ -121,11 +173,11 @@ public:
 
     bool show_config_popup(HWND wnd_parent) override;
 
-    friend class SpectrumAnalyserConfigData;
+    void set_frame_style(unsigned value);
+    void set_rendering_options(Mode mode, const uih::IntegerAndDpi<int32_t>& bar_width, Scale scale, uint32_t fft_size,
+        int32_t min_frequency, int32_t max_frequency, bool smooth_values);
 
 private:
-    void set_frame_style(unsigned value);
-
     void configure_renderer()
     {
         colours::helper colours(colour_client_id);
@@ -154,6 +206,7 @@ private:
         if (!m_playback_api->is_paused())
             m_renderer->start();
     }
+
     void on_playback_stop(playback_control::t_stop_reason p_reason) noexcept override
     {
         m_renderer->request_stop();
@@ -161,6 +214,7 @@ private:
         if (p_reason != playback_control::stop_reason_shutting_down)
             RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
     }
+
     void on_playback_seek(double p_time) override {}
     void on_playback_pause(bool p_state) noexcept override
     {
@@ -177,14 +231,19 @@ private:
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override
     {
-        p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_configure(this)));
+        p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node(
+            "Options", "Open spectrum analyser options", 0, [this, self{ptr{this}}] { open_options_modeless(); })));
     }
 
     void set_config(stream_reader* reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* writer, abort_callback& p_abort) const override;
 
+    void open_options_modeless();
+
     inline static std::vector<SpectrumAnalyserVisualisation*> s_instances;
 
+    SpectrumAnalyserOptionsDialog<true> m_modal_options_dialog;
+    SpectrumAnalyserOptionsDialog<false> m_modeless_options_dialog;
     std::optional<SpectrumAnalyserRenderer> m_renderer;
     playback_control::ptr m_playback_api;
     bool m_is_active{};
@@ -199,18 +258,218 @@ private:
     int m_frame{cfg_vis_edge};
 };
 
-class SpectrumAnalyserConfigData {
-public:
-    Mode mode{};
-    uih::IntegerAndDpi<int32_t> bar_width{};
-    Scale scale{};
-    uint32_t fft_size{};
-    int32_t min_frequency{};
-    int32_t max_frequency{};
-    bool smooth_values{};
-    service_ptr_t<SpectrumAnalyserVisualisation> instance{};
-    int frame{};
-};
+template <bool IsModal>
+INT_PTR SpectrumAnalyserOptionsDialog<IsModal>::handle_options_message(
+    const service_ptr_t<class SpectrumAnalyserVisualisation>& panel, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg) {
+    case WM_INITDIALOG: {
+        m_wnd = wnd;
+
+        const auto appearance_combo_wnd = GetDlgItem(wnd, IDC_APPEARANCE);
+        ComboBox_AddString(appearance_combo_wnd, L"Area");
+        ComboBox_AddString(appearance_combo_wnd, L"Hatched bars");
+        ComboBox_AddString(appearance_combo_wnd, L"Solid bars");
+        ComboBox_SetCurSel(appearance_combo_wnd, WI_EnumValue(m_state.mode));
+
+        const auto wnd_frame_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
+        ComboBox_AddString(wnd_frame_combo, L"None");
+        ComboBox_AddString(wnd_frame_combo, L"Sunken");
+        ComboBox_AddString(wnd_frame_combo, L"Grey");
+        ComboBox_SetCurSel(wnd_frame_combo, m_state.frame);
+
+        const auto wnd_scale_combo = GetDlgItem(wnd, IDC_SCALE);
+        ComboBox_AddString(wnd_scale_combo, L"Linear");
+        ComboBox_AddString(wnd_scale_combo, L"Logarithmic");
+        ComboBox_SetCurSel(wnd_scale_combo, m_state.scale);
+
+        const auto fft_size_wnd = GetDlgItem(wnd, IDC_FFT_SIZE);
+
+        std::locale locale("");
+
+        const std::array fft_size_options = {
+            std::make_tuple(1024u, fmt::format(locale, L"{:L} (more responsive)", 1024)),
+            std::make_tuple(2048u, fmt::format(locale, L"{:L}", 2048)),
+            std::make_tuple(4096u, fmt::format(locale, L"{:L}", 4096)),
+            std::make_tuple(8192u, fmt::format(locale, L"{:L}", 8192)),
+            std::make_tuple(16'384u, fmt::format(locale, L"{:L} (more resolution)", 16'384)),
+        };
+
+        for (auto&& [fft_size, text] : fft_size_options) {
+            const auto index = uih::combo_box_add_string_data(fft_size_wnd, text.c_str(), static_cast<int>(fft_size));
+            if (m_state.fft_size == fft_size && index != CB_ERR)
+                ComboBox_SetCurSel(fft_size_wnd, index);
+        }
+
+        const auto bar_width_wnd = GetDlgItem(wnd, IDC_BAR_WIDTH);
+        const auto bar_width_spin_wnd = GetDlgItem(wnd, IDC_BAR_WIDTH_SPIN);
+
+        const auto enable_bar_width = m_state.mode == Mode::HatchedBars || m_state.mode == Mode::SolidBars;
+        EnableWindow(bar_width_wnd, enable_bar_width);
+        EnableWindow(bar_width_spin_wnd, enable_bar_width);
+
+        uih::enhance_edit_control(bar_width_wnd);
+        SendMessage(bar_width_spin_wnd, UDM_SETRANGE32, 1, 9999);
+        SendMessage(bar_width_spin_wnd, UDM_SETPOS32, 0, m_state.bar_width);
+
+        uih::enhance_edit_control(wnd, IDC_MIN_FREQUENCY);
+        const auto min_frequency_spin_wnd = GetDlgItem(wnd, IDC_MIN_FREQUENCY_SPIN);
+        SendMessage(min_frequency_spin_wnd, UDM_SETRANGE32, min_allowed_frequency, max_allowed_frequency - 1);
+        SendMessage(min_frequency_spin_wnd, UDM_SETPOS32, 0, m_state.min_frequency);
+
+        uih::enhance_edit_control(wnd, IDC_MAX_FREQUENCY);
+        const auto max_frequency_spin_wnd = GetDlgItem(wnd, IDC_MAX_FREQUENCY_SPIN);
+        SendMessage(max_frequency_spin_wnd, UDM_SETRANGE32, min_allowed_frequency + 1, max_allowed_frequency);
+        SendMessage(max_frequency_spin_wnd, UDM_SETPOS32, 0, m_state.max_frequency);
+
+        SendDlgItemMessage(wnd, IDC_SMOOTH_VALUES, BM_SETCHECK, m_state.smooth_values ? BST_CHECKED : BST_UNCHECKED, 0);
+
+        return TRUE;
+    }
+    case WM_DESTROY:
+        m_wnd = nullptr;
+        break;
+    case WM_COMMAND:
+        switch (wp) {
+        case IDOK: {
+            if (m_state.mode != m_initial_state.mode)
+                cfg_vis_mode = WI_EnumValue(m_state.mode);
+
+            if (m_state.bar_width != m_initial_state.bar_width)
+                cfg_bar_width = m_state.bar_width;
+
+            if (m_state.scale != m_initial_state.scale)
+                cfg_scale = WI_EnumValue(m_state.scale);
+
+            if (const auto cleaned_fft_size = clean_fft_size(m_state.fft_size);
+                cleaned_fft_size != m_initial_state.fft_size)
+                cfg_fft_size = m_state.fft_size;
+
+            const auto cleaned_min_frequency = clean_min_frequency(m_state.min_frequency);
+            if (cleaned_min_frequency != m_initial_state.min_frequency)
+                cfg_min_frequency = cleaned_min_frequency;
+
+            if (const auto cleaned_max_frequency = clean_max_frequency(cleaned_min_frequency, m_state.max_frequency);
+                cleaned_max_frequency != m_initial_state.max_frequency)
+                cfg_max_frequency = cleaned_max_frequency;
+
+            if (m_state.smooth_values != m_initial_state.smooth_values)
+                cfg_smooth_values = m_state.smooth_values;
+
+            if constexpr (IsModal) {
+                panel->set_frame_style(m_state.frame);
+                set_rendering_options(panel, m_state);
+                EndDialog(wnd, 1);
+            } else {
+                DestroyWindow(wnd);
+            }
+            return TRUE;
+        }
+        case IDCANCEL: {
+            if constexpr (IsModal) {
+                EndDialog(wnd, 0);
+            } else {
+                panel->set_frame_style(m_initial_state.frame);
+                set_rendering_options(panel, m_initial_state);
+
+                DestroyWindow(wnd);
+            }
+            return TRUE;
+        }
+        case IDC_APPEARANCE | CBN_SELCHANGE << 16: {
+            if (const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)); index != CB_ERR) {
+                m_state.mode = static_cast<Mode>(index);
+
+                const auto enable_bar_width = m_state.mode == Mode::HatchedBars || m_state.mode == Mode::SolidBars;
+                EnableWindow(GetDlgItem(wnd, IDC_BAR_WIDTH), enable_bar_width);
+                EnableWindow(GetDlgItem(wnd, IDC_BAR_WIDTH_SPIN), enable_bar_width);
+
+                if constexpr (!IsModal)
+                    set_rendering_options(panel, m_state);
+            }
+            break;
+        }
+        case IDC_FRAME_COMBO | CBN_SELCHANGE << 16:
+            if (const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)); index != CB_ERR) {
+                m_state.frame = index;
+
+                if constexpr (!IsModal)
+                    panel->set_frame_style(m_state.frame);
+            }
+            break;
+        case IDC_SCALE | CBN_SELCHANGE << 16:
+            if (const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)); index != CB_ERR) {
+                m_state.scale = static_cast<Scale>(index);
+
+                if constexpr (!IsModal)
+                    set_rendering_options(panel, m_state);
+            }
+            break;
+        case IDC_FFT_SIZE | CBN_SELCHANGE << 16: {
+            const auto combo_wnd = reinterpret_cast<HWND>(lp);
+            const auto index = ComboBox_GetCurSel(combo_wnd);
+
+            if (index != CB_ERR)
+                m_state.fft_size = static_cast<uint32_t>(ComboBox_GetItemData(combo_wnd, index));
+
+            if constexpr (!IsModal)
+                set_rendering_options(panel, m_state);
+
+            break;
+        }
+        case IDC_SMOOTH_VALUES:
+            m_state.smooth_values = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+
+            if constexpr (!IsModal)
+                set_rendering_options(panel, m_state);
+
+            break;
+        case IDC_BAR_WIDTH | EN_CHANGE << 16: {
+            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
+
+            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
+                m_state.bar_width = std::max(1, *new_value_int);
+
+            if constexpr (!IsModal)
+                set_rendering_options(panel, m_state);
+
+            break;
+        }
+        case IDC_MIN_FREQUENCY | EN_CHANGE << 16: {
+            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
+
+            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
+                m_state.min_frequency = *new_value_int;
+
+            if constexpr (!IsModal)
+                set_rendering_options(panel, m_state);
+
+            break;
+        }
+        case IDC_MAX_FREQUENCY | EN_CHANGE << 16: {
+            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
+
+            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
+                m_state.max_frequency = *new_value_int;
+
+            if constexpr (!IsModal)
+                set_rendering_options(panel, m_state);
+
+            break;
+        }
+        }
+    }
+
+    return FALSE;
+}
+
+template <bool IsModal>
+void SpectrumAnalyserOptionsDialog<IsModal>::set_rendering_options(
+    const service_ptr_t<class SpectrumAnalyserVisualisation>& panel, const SpectrumAnalyserConfigData& state)
+{
+    panel->set_rendering_options(state.mode, state.bar_width, state.scale, state.fft_size, state.min_frequency,
+        state.max_frequency, state.smooth_values);
+}
 
 void SpectrumAnalyserVisualisation::set_frame_style(unsigned value)
 {
@@ -218,6 +477,7 @@ void SpectrumAnalyserVisualisation::set_frame_style(unsigned value)
         return;
 
     m_frame = value;
+    cfg_vis_edge = value;
 
     if (!get_wnd())
         return;
@@ -231,6 +491,30 @@ void SpectrumAnalyserVisualisation::set_frame_style(unsigned value)
     SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, flags);
     SetWindowPos(get_wnd(), nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
+}
+
+void SpectrumAnalyserVisualisation::set_rendering_options(Mode mode, const uih::IntegerAndDpi<int32_t>& bar_width,
+    Scale scale, uint32_t fft_size, int32_t min_frequency, int32_t max_frequency, bool smooth_values)
+{
+    const auto cleaned_fft_size = clean_fft_size(fft_size);
+    const auto cleaned_min_frequency = clean_min_frequency(min_frequency);
+    const auto cleaned_max_frequency = clean_max_frequency(cleaned_min_frequency, max_frequency);
+
+    if (mode == m_mode && bar_width == m_bar_width && scale == m_scale && cleaned_fft_size == m_fft_size
+        && cleaned_min_frequency == m_min_frequency && cleaned_max_frequency == m_max_frequency
+        && smooth_values == m_smooth_values)
+        return;
+
+    m_mode = mode;
+    m_bar_width = bar_width;
+    m_scale = scale;
+    m_fft_size = cleaned_fft_size;
+    m_min_frequency = cleaned_min_frequency;
+    m_max_frequency = cleaned_max_frequency;
+    m_smooth_values = smooth_values;
+
+    if (m_is_active)
+        restart_renderer();
 }
 
 void SpectrumAnalyserVisualisation::set_config(stream_reader* reader, size_t p_size, abort_callback& p_abort)
@@ -357,174 +641,33 @@ LRESULT SpectrumAnalyserVisualisation::on_message(HWND wnd, UINT msg, WPARAM wp,
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_INITDIALOG: {
-        const auto appearance_combo_wnd = GetDlgItem(wnd, IDC_APPEARANCE);
-        ComboBox_AddString(appearance_combo_wnd, L"Area");
-        ComboBox_AddString(appearance_combo_wnd, L"Hatched bars");
-        ComboBox_AddString(appearance_combo_wnd, L"Solid bars");
-        ComboBox_SetCurSel(appearance_combo_wnd, WI_EnumValue(state.mode));
-
-        const auto wnd_frame_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
-        ComboBox_AddString(wnd_frame_combo, L"None");
-        ComboBox_AddString(wnd_frame_combo, L"Sunken");
-        ComboBox_AddString(wnd_frame_combo, L"Grey");
-        ComboBox_SetCurSel(wnd_frame_combo, state.frame);
-
-        const auto wnd_scale_combo = GetDlgItem(wnd, IDC_SCALE);
-        ComboBox_AddString(wnd_scale_combo, L"Linear");
-        ComboBox_AddString(wnd_scale_combo, L"Logarithmic");
-        ComboBox_SetCurSel(wnd_scale_combo, state.scale);
-
-        const auto fft_size_wnd = GetDlgItem(wnd, IDC_FFT_SIZE);
-
-        std::locale locale("");
-
-        const std::array fft_size_options = {
-            std::make_tuple(1024u, fmt::format(locale, L"{:L} (more responsive)", 1024)),
-            std::make_tuple(2048u, fmt::format(locale, L"{:L}", 2048)),
-            std::make_tuple(4096u, fmt::format(locale, L"{:L}", 4096)),
-            std::make_tuple(8192u, fmt::format(locale, L"{:L}", 8192)),
-            std::make_tuple(16'384u, fmt::format(locale, L"{:L} (more resolution)", 16'384)),
-        };
-
-        for (auto&& [fft_size, text] : fft_size_options) {
-            const auto index = uih::combo_box_add_string_data(fft_size_wnd, text.c_str(), static_cast<int>(fft_size));
-            if (state.fft_size == fft_size && index != CB_ERR)
-                ComboBox_SetCurSel(fft_size_wnd, index);
-        }
-
-        const auto bar_width_wnd = GetDlgItem(wnd, IDC_BAR_WIDTH);
-        const auto bar_width_spin_wnd = GetDlgItem(wnd, IDC_BAR_WIDTH_SPIN);
-
-        const auto enable_bar_width = state.mode == Mode::HatchedBars || state.mode == Mode::SolidBars;
-        EnableWindow(bar_width_wnd, enable_bar_width);
-        EnableWindow(bar_width_spin_wnd, enable_bar_width);
-
-        uih::enhance_edit_control(bar_width_wnd);
-        SendMessage(bar_width_spin_wnd, UDM_SETRANGE32, 1, 9999);
-        SendMessage(bar_width_spin_wnd, UDM_SETPOS32, 0, state.bar_width);
-
-        uih::enhance_edit_control(wnd, IDC_MIN_FREQUENCY);
-        const auto min_frequency_spin_wnd = GetDlgItem(wnd, IDC_MIN_FREQUENCY_SPIN);
-        SendMessage(min_frequency_spin_wnd, UDM_SETRANGE32, min_allowed_frequency, max_allowed_frequency - 1);
-        SendMessage(min_frequency_spin_wnd, UDM_SETPOS32, 0, state.min_frequency);
-
-        uih::enhance_edit_control(wnd, IDC_MAX_FREQUENCY);
-        const auto max_frequency_spin_wnd = GetDlgItem(wnd, IDC_MAX_FREQUENCY_SPIN);
-        SendMessage(max_frequency_spin_wnd, UDM_SETRANGE32, min_allowed_frequency + 1, max_allowed_frequency);
-        SendMessage(max_frequency_spin_wnd, UDM_SETPOS32, 0, state.max_frequency);
-
-        SendDlgItemMessage(wnd, IDC_SMOOTH_VALUES, BM_SETCHECK, state.smooth_values ? BST_CHECKED : BST_UNCHECKED, 0);
-
-        return TRUE;
-    }
-    case WM_COMMAND:
-        switch (wp) {
-        case IDCANCEL:
-            EndDialog(wnd, 0);
-            return TRUE;
-        case IDC_APPEARANCE | CBN_SELCHANGE << 16: {
-            if (const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)); index != CB_ERR) {
-                state.mode = static_cast<Mode>(index);
-
-                const auto enable_bar_width = state.mode == Mode::HatchedBars || state.mode == Mode::SolidBars;
-                EnableWindow(GetDlgItem(wnd, IDC_BAR_WIDTH), enable_bar_width);
-                EnableWindow(GetDlgItem(wnd, IDC_BAR_WIDTH_SPIN), enable_bar_width);
-            }
-            break;
-        }
-        case IDC_FRAME_COMBO | CBN_SELCHANGE << 16:
-            state.frame = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-            break;
-        case IDC_SCALE | CBN_SELCHANGE << 16:
-            state.scale = static_cast<Scale>(ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)));
-            break;
-        case IDC_FFT_SIZE | CBN_SELCHANGE << 16: {
-            const auto combo_wnd = reinterpret_cast<HWND>(lp);
-            const auto index = ComboBox_GetCurSel(combo_wnd);
-            if (index != CB_ERR)
-                state.fft_size = static_cast<uint32_t>(ComboBox_GetItemData(combo_wnd, index));
-            break;
-        }
-        case IDC_SMOOTH_VALUES:
-            state.smooth_values = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-            break;
-        case IDC_BAR_WIDTH | EN_CHANGE << 16: {
-            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
-
-            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
-                state.bar_width = std::max(1, *new_value_int);
-
-            break;
-        }
-        case IDC_MIN_FREQUENCY | EN_CHANGE << 16: {
-            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
-
-            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
-                state.min_frequency = *new_value_int;
-
-            break;
-        }
-        case IDC_MAX_FREQUENCY | EN_CHANGE << 16: {
-            const auto new_value_text = uih::get_window_text(reinterpret_cast<HWND>(lp));
-
-            if (const auto new_value_int = string::parse_int_forgiving(new_value_text))
-                state.max_frequency = *new_value_int;
-
-            break;
-        }
-
-        case IDOK:
-            EndDialog(wnd, 1);
-            return TRUE;
-        default:
-            return FALSE;
-        }
-    default:
-        return FALSE;
-    }
-}
-
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
-    SpectrumAnalyserConfigData param{
-        m_mode, m_bar_width, m_scale, m_fft_size, m_min_frequency, m_max_frequency, m_smooth_values, this, m_frame};
-
-    if (!dark::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
-            [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); }))
+    if (m_modeless_options_dialog || m_modal_options_dialog)
         return false;
 
-    m_mode = param.mode;
-    cfg_vis_mode = WI_EnumValue(param.mode);
+    SpectrumAnalyserConfigData param{
+        m_mode, m_bar_width, m_scale, m_fft_size, m_min_frequency, m_max_frequency, m_smooth_values, m_frame};
 
-    m_bar_width = param.bar_width;
-    cfg_bar_width = param.bar_width;
+    return m_modal_options_dialog.open(wnd_parent, param, service_ptr_t{this});
+}
 
-    m_scale = param.scale;
-    cfg_scale = WI_EnumValue(param.scale);
+void SpectrumAnalyserVisualisation::open_options_modeless()
+{
+    if (m_modal_options_dialog) {
+        SetForegroundWindow(m_modal_options_dialog.get_wnd());
+        return;
+    }
 
-    m_fft_size = clean_fft_size(param.fft_size);
-    cfg_fft_size = m_fft_size;
+    if (m_modeless_options_dialog) {
+        SetForegroundWindow(m_modeless_options_dialog.get_wnd());
+        return;
+    }
 
-    m_min_frequency = clean_min_frequency(param.min_frequency);
-    cfg_min_frequency = m_min_frequency;
+    SpectrumAnalyserConfigData param{
+        m_mode, m_bar_width, m_scale, m_fft_size, m_min_frequency, m_max_frequency, m_smooth_values, m_frame};
 
-    m_max_frequency = clean_max_frequency(m_min_frequency, param.max_frequency);
-    cfg_max_frequency = m_max_frequency;
-
-    m_smooth_values = param.smooth_values;
-    cfg_smooth_values = m_smooth_values;
-
-    set_frame_style(param.frame);
-    cfg_vis_edge = param.frame;
-
-    if (m_is_active)
-        restart_renderer();
-
-    return true;
+    m_modeless_options_dialog.open(GetAncestor(get_wnd(), GA_ROOT), param, service_ptr_t{this});
 }
 
 ui_extension::window_factory<SpectrumAnalyserVisualisation> _factory;

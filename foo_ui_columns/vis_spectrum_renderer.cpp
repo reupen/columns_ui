@@ -169,7 +169,19 @@ void SpectrumAnalyserRenderer::configure(Mode mode, int bar_width, Scale horizon
     m_mode = mode;
     m_bar_width = bar_width;
     m_horizontal_scale = horizontal_scale;
-    m_fft_size = fft_size;
+
+    if (m_fft_size != fft_size) {
+        m_fft_size = fft_size;
+
+        if (m_chunk.is_valid()) {
+            double time{};
+            m_stream->get_absolute_time(time);
+
+            if (!m_stream->get_spectrum_absolute(m_chunk, time, m_fft_size))
+                m_chunk.reset();
+        }
+    }
+
     m_min_frequency = min_frequency;
     m_max_frequency = max_frequency;
     m_smooth_values = smooth_values;
@@ -335,6 +347,7 @@ void SpectrumAnalyserRenderer::request_stop()
 
 void SpectrumAnalyserRenderer::stop()
 {
+    request_stop();
     m_render_thread.reset();
 }
 

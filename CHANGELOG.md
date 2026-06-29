@@ -37,6 +37,12 @@ Several new features were added to the built-in spectrum analyser visualisation:
   configured frequency range, rather than varying the frequency range based on
   the current sample rate.
 
+- The options dialogue is now modeless when it’s opened using the panel context
+  menu. [[#1783](https://github.com/reupen/columns_ui/pull/1783)]
+
+  Changes made in the dialogue are also now previewed in the visualisation as
+  the changes are made.
+
 - CPU usage was reduced slightly.
   [[#1776](https://github.com/reupen/columns_ui/pull/1776)]
 
