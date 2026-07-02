@@ -97,6 +97,10 @@ Several new features were added to the built-in spectrum analyser visualisation:
   Additionally, the last used export type is now remembered the next time the
   dialogue is opened.
 
+- 256×256 px versions of built-in icons have been replaced by 128×128 px
+  versions to reduce the file size of the component.
+  [[#1786](https://github.com/reupen/columns_ui/pull/1786)]
+
 ### Bug fixes
 
 - Smooth scrolling is no longer suppressed when scrolling very quickly using a

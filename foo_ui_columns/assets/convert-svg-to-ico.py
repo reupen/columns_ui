@@ -5,7 +5,7 @@ import subprocess
 from itertools import chain
 from pathlib import Path, PurePath
 
-OUTPUT_SIZES = [16, 20, 24, 28, 32, 36, 40, 48, 56, 64, 256]
+OUTPUT_SIZES = [16, 20, 24, 28, 32, 36, 40, 48, 56, 64, 128]
 PARENT_DIR = Path(__file__).parent
 
 parser = argparse.ArgumentParser(
