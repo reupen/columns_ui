@@ -130,6 +130,9 @@
     <Filter Include="Title formatting">
       <UniqueIdentifier>{dfa0e6d2-ef84-4e1f-a5a9-41d7363cca2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\cur">
+      <UniqueIdentifier>{aaec1e58-8177-4047-b4e1-2ebe756c504f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp">
@@ -1109,6 +1112,39 @@
     </None>
     <None Include="assets\vectors\minified\light-up.svg">
       <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-up-right.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-autoscroll-horizontal.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-autoscroll-vertical.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-autoscroll-vertical-horizontal.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-down.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-down-left.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-down-right.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-left.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-right.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-up.cur">
+      <Filter>Resources\cur</Filter>
+    </None>
+    <None Include="assets\cursors\rendered\cursor-scroll-up-left.cur">
+      <Filter>Resources\cur</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

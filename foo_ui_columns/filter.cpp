@@ -835,6 +835,8 @@ void FilterPanel::notify_on_initialisation()
     set_sorting_enabled(cfg_allow_sorting);
     set_show_sort_indicators(cfg_show_sort_indicators);
 
+    set_allow_autoscroll_callback([] { return cfg_middleclickaction == 0; });
+
     recreate_items_text_format(text_layout_cache_size);
     recreate_header_text_format();
 
