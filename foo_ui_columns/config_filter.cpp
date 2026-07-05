@@ -364,7 +364,7 @@ public:
         ComboBox_SetCurSel(wnd_double_click_action, cui::panels::filter::cfg_doubleclickaction);
 
         const auto middle_click_action_options
-            = {L"None", L"Send to autosend playlist", L"Send to autosend playlist and play", L"Send to playlist",
+            = {L"Autoscroll", L"Send to autosend playlist", L"Send to autosend playlist and play", L"Send to playlist",
                 L"Send to playlist and play", L"Add to active playlist"};
 
         const auto wnd_middle_click_action = uGetDlgItem(wnd, IDC_MIDDLE);

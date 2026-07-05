@@ -307,7 +307,7 @@ BEGIN
     LTEXT           "px",IDC_STATIC,39,138,9,8
     LTEXT           "Playlist edge style",IDC_STATIC,7,159,61,8
     COMBOBOX        IDC_PLEDGE,7,170,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Action to perform when middle-clicking on a track",IDC_STATIC,7,194,168,8
+    LTEXT           "Action to perform on middle-click",IDC_STATIC,7,194,116,8
     COMBOBOX        IDC_PLAYLIST_MIDDLE,7,205,313,136,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Use alternative selection model",IDC_SELECTION_MODEL,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,106,125,10
@@ -1333,6 +1333,34 @@ IDV_LIGHT_CLOSE         SVG                     "assets\\vectors\\minified\\ligh
 IDV_LIGHT_DOWN          SVG                     "assets\\vectors\\minified\\light-down.svg"
 
 IDV_LIGHT_UP            SVG                     "assets\\vectors\\minified\\light-up.svg"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_AUTOSCROLL_VERT_HORZ CURSOR                  "assets\\cursors\\rendered\\cursor-autoscroll-vertical-horizontal.cur"
+
+IDC_AUTOSCROLL_VERT     CURSOR                  "assets\\cursors\\rendered\\cursor-autoscroll-vertical.cur"
+
+IDC_AUTOSCROLL_HORZ     CURSOR                  "assets\\cursors\\rendered\\cursor-autoscroll-horizontal.cur"
+
+IDC_SCROLL_UP           CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-up.cur"
+
+IDC_SCROLL_DOWN         CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-down.cur"
+
+IDC_SCROLL_LEFT         CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-left.cur"
+
+IDC_SCROLL_RIGHT        CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-right.cur"
+
+IDC_SCROLL_UP_RIGHT     CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-up-right.cur"
+
+IDC_SCROLL_DOWN_RIGHT   CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-down-right.cur"
+
+IDC_SCROLL_DOWN_LEFT    CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-down-left.cur"
+
+IDC_SCROLL_UP_LEFT      CURSOR                  "assets\\cursors\\rendered\\cursor-scroll-up-left.cur"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -84,14 +84,25 @@
 #define IDD_RESULTS                     209
 #define IDV_LIGHT_UP                    209
 #define IDD_FCL_EXPORT                  210
+#define IDC_AUTOSCROLL_VERT_HORZ        211
+#define IDC_AUTOSCROLL_VERT             212
 #define IDD_EDIT_GROUP                  213
+#define IDC_AUTOSCROLL_HORZ             213
 #define IDD_PREFS_PVIEW_GROUPS          214
+#define IDC_SCROLL_UP                   214
 #define IDD_PREFS_FILTER_FIELDS         215
+#define IDC_SCROLL_DOWN                 215
 #define IDD_PREFS_FONTS                 216
+#define IDC_SCROLL_LEFT                 217
 #define IDD_COLUMN_OPTIONS              218
+#define IDC_SCROLL_RIGHT                218
+#define IDC_SCROLL_UP_RIGHT             219
 #define IDD_PREFS_COLUMNS               220
+#define IDC_SCROLL_DOWN_RIGHT           220
 #define IDD_PREFS_STATUS_BAR            221
+#define IDC_SCROLL_DOWN_LEFT            221
 #define IDD_PREFS_COLOURS               222
+#define IDC_SCROLL_UP_LEFT              222
 #define IDD_PREFS_ARTWORK               223
 #define IDD_ITEM_PROPS_OPTIONS          224
 #define IDD_ITEM_DETAILS_OPTIONS        225
@@ -351,7 +362,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        210
+#define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1225
 #define _APS_NEXT_SYMED_VALUE           101

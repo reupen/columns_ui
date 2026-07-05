@@ -592,6 +592,17 @@
     <None Include="assets\vectors\minified\light-stop-after-current.svg" />
     <None Include="assets\vectors\minified\light-stop.svg" />
     <None Include="assets\vectors\minified\light-up.svg" />
+    <None Include="assets\cursors\rendered\cursor-autoscroll-horizontal.cur" />
+    <None Include="assets\cursors\rendered\cursor-autoscroll-vertical-horizontal.cur" />
+    <None Include="assets\cursors\rendered\cursor-autoscroll-vertical.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-down-left.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-down-right.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-down.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-left.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-right.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-up-left.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-up-right.cur" />
+    <None Include="assets\cursors\rendered\cursor-scroll-up.cur" />
     <None Include="version.h.template" />
   </ItemGroup>
   <ItemGroup>

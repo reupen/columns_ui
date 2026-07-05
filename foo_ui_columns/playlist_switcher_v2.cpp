@@ -140,6 +140,8 @@ void PlaylistSwitcher::notify_on_initialisation()
     set_edge_style(cfg_plistframe);
     set_vertical_item_padding(settings::playlist_switcher_item_padding);
 
+    set_allow_autoscroll_callback([] { return !cfg_mclick; });
+
     recreate_items_text_format();
 }
 

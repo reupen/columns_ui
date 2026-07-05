@@ -25,9 +25,9 @@ void action_add_to_queue(bool on_item, size_t idx)
 void action_none(bool on_on_item, size_t idx) {}
 
 MiddleLickAction MiddleClickActionManager::g_pma_actions[] = {
-    {"(None)", 0, action_none},
+    {"Autoscroll", 0, action_none},
     {"Remove track from playlist", 1, action_remove_track},
-    {"Add to playback queue", 2, action_add_to_queue},
+    {"Add track to playback queue", 2, action_add_to_queue},
 };
 
 size_t MiddleClickActionManager::get_count()

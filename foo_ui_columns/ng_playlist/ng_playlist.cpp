@@ -1088,6 +1088,8 @@ void PlaylistView::notify_on_initialisation()
     set_alternate_selection_model(cfg_alternative_sel != 0);
     set_allow_header_rearrange(true);
 
+    set_allow_autoscroll_callback([] { return cfg_playlist_middle_action == 0; });
+
     m_artwork_manager = std::make_shared<ArtworkReaderManager>();
 
     m_playlist_api = playlist_manager_v4::get();
