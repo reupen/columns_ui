@@ -1,0 +1,9 @@
+#pragma once
+
+namespace cui {
+
+constexpr uih::AutoscrollCursorInfo autoscroll_cursor_info{IDC_AUTOSCROLL_VERT_HORZ, IDC_AUTOSCROLL_VERT,
+    IDC_AUTOSCROLL_HORZ, IDC_SCROLL_UP, IDC_SCROLL_DOWN, IDC_SCROLL_LEFT, IDC_SCROLL_RIGHT, IDC_SCROLL_UP_RIGHT,
+    IDC_SCROLL_UP_LEFT, IDC_SCROLL_DOWN_RIGHT, IDC_SCROLL_DOWN_LEFT};
+
+} // namespace cui

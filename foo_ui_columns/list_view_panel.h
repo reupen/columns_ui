@@ -2,6 +2,7 @@
 
 #include "dark_mode.h"
 #include "font_utils.h"
+#include "scroll.h"
 
 namespace cui::utils {
 
@@ -33,9 +34,7 @@ public:
             set_dark_edit_colours(
                 dark::get_dark_system_colour(COLOR_WINDOWTEXT), dark::get_dark_system_colour(COLOR_WINDOW));
             set_use_smooth_scroll(config::use_smooth_scrolling);
-            configure_autoscroll({IDC_AUTOSCROLL_VERT_HORZ, IDC_AUTOSCROLL_VERT, IDC_AUTOSCROLL_HORZ, IDC_SCROLL_UP,
-                IDC_SCROLL_DOWN, IDC_SCROLL_LEFT, IDC_SCROLL_RIGHT, IDC_SCROLL_UP_RIGHT, IDC_SCROLL_UP_LEFT,
-                IDC_SCROLL_DOWN_RIGHT, IDC_SCROLL_DOWN_LEFT});
+            configure_autoscroll(autoscroll_cursor_info);
             m_use_smooth_scroll_change_token = config::use_smooth_scrolling.on_change(
                 [this](bool new_value, auto) { set_use_smooth_scroll(new_value); });
 
