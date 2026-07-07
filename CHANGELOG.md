@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.6.0-beta.1
 
 ### Features
 
@@ -9,13 +9,13 @@
 Several new features were added to the built-in spectrum analyser visualisation:
 
 - A new appearance mode with solid (rather than hatched) bars was added.
-  [[#1780](https://github.com/reupen/columns_ui/pull/1781)]
+  [[#1780](https://github.com/reupen/columns_ui/pull/1780)]
 
   The new mode is named ‘Solid bars’, while the previous bars mode is now named
   ‘Hatched bars’.
 
 - The width of bars in the ‘Hatched bars’ and ‘Solid bars’ appearance modes is
-  now configurable. [[#1780](https://github.com/reupen/columns_ui/pull/1781)]
+  now configurable. [[#1780](https://github.com/reupen/columns_ui/pull/1780)]
 
 - A smooth sub-bin values option was added.
   [[#1778](https://github.com/reupen/columns_ui/pull/1778)]
@@ -49,8 +49,9 @@ Several new features were added to the built-in spectrum analyser visualisation:
 #### Other changes
 
 - Middle-click autoscroll is now available in the playlist view, the playlist
-  switcher, Filter panel and Item properties.
-  [[#1786](https://github.com/reupen/columns_ui/pull/1786)]
+  switcher, Filter panel, Item details and Item properties.
+  [[#1786](https://github.com/reupen/columns_ui/pull/1786),
+  [#1791](https://github.com/reupen/columns_ui/pull/1791)]
 
   For the playlist view and Filter panel, ‘Autoscroll’ has replaced the ‘None’
   option for the middle-click action in Preferences.
@@ -111,6 +112,10 @@ Several new features were added to the built-in spectrum analyser visualisation:
   starting position for the selection is no longer reset if the Shift key is
   temporarily released between clicks or key presses.
   [[#1758](https://github.com/reupen/columns_ui/pull/1758)]
+
+- The position of the tooltip shown when using the seekbar and volume bar was
+  corrected for some system display scales and pointer sizes.
+  [[#1790](https://github.com/reupen/columns_ui/pull/1790)]
 
 ## 3.5.0
 

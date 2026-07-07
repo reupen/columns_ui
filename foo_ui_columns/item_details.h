@@ -254,6 +254,7 @@ private:
     void create_text_layout();
     void on_font_change();
     void on_colours_change();
+    void on_dark_mode_status_change();
 
     inline static std::vector<ItemDetails*> s_windows;
 
@@ -299,6 +300,7 @@ private:
     int m_vertical_scroll_position{};
     int m_horizontal_scroll_position{};
     std::optional<uih::SmoothScrollHelper> m_smooth_scroll_helper{};
+    std::optional<uih::AutoscrollHelper> m_autoscroll_helper{};
 
     HWND m_wnd_config{};
 };

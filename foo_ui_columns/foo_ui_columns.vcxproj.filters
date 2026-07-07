@@ -1019,6 +1019,9 @@
     <ClInclude Include="buttons_config.h">
       <Filter>Buttons toolbar</Filter>
     </ClInclude>
+    <ClInclude Include="scroll.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

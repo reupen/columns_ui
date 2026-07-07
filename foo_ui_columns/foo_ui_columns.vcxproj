@@ -483,6 +483,7 @@
     <ClInclude Include="panel_utils.h" />
     <ClInclude Include="permutation_utils.h" />
     <ClInclude Include="resource_utils.h" />
+    <ClInclude Include="scroll.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="svg.h" />
     <ClInclude Include="system_appearance_manager.h" />

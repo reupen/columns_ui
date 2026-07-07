@@ -3,6 +3,7 @@
 
 #include "d2d_utils.h"
 #include "item_details_text.h"
+#include "scroll.h"
 #include "tab_setup.h"
 #include "tf_text_format.h"
 
@@ -12,6 +13,7 @@ namespace {
 
 constexpr auto MSG_OCCLUSION_STATUS_CHANGED = WM_USER + 3;
 constexpr auto MSG_SMOOTH_SCROLL = WM_USER + 4;
+constexpr auto MSG_AUTOSCROLL_TICK = WM_USER + 5;
 constexpr auto OCCLUSION_STATUS_TIMER_ID = 700;
 constexpr auto SMOOTH_SCROLL_TIMER_ID = 701;
 
@@ -799,6 +801,9 @@ void ItemDetails::set_window_theme() const
 
 LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (const auto result = m_autoscroll_helper ? m_autoscroll_helper->handle_message(wnd, msg, wp, lp) : std::nullopt)
+        return *result;
+
     switch (msg) {
     case WM_CREATE: {
         m_smooth_scroll_helper.emplace(
@@ -809,6 +814,16 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             [this](
                 uih::ScrollAxis axis, int position) { return uih::clamp_scroll_position(get_wnd(), axis, position); },
             [this](auto axis, auto new_position) { internal_scroll(axis, new_position, false); });
+
+        m_autoscroll_helper.emplace(autoscroll_cursor_info, MSG_AUTOSCROLL_TICK, colours::is_dark_mode_active(),
+            [this](int delta_x, int delta_y) {
+                if (delta_y != 0)
+                    delta_scroll(uih::ScrollAxis::Vertical, delta_y, true);
+
+                if (delta_x != 0)
+                    delta_scroll(uih::ScrollAxis::Horizontal, delta_x, true);
+            });
+
         set_window_theme();
         register_callback();
         play_callback_manager::get()->register_callback(
@@ -877,6 +892,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_d2d_factory.reset();
         m_dxgi_factory.reset();
         m_smooth_scroll_helper->shut_down();
+        m_autoscroll_helper.reset();
         break;
     }
     case WM_NCDESTROY:
@@ -898,6 +914,15 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
+    case WM_MBUTTONDOWN:
+        SendMessage(wnd, WM_CANCELMODE, 0, 0);
+
+        [[fallthrough]];
+    case WM_MBUTTONDBLCLK:
+        if (m_autoscroll_helper)
+            m_autoscroll_helper->start(wnd, true);
+
+        return 0;
     case WM_MOUSEHWHEEL:
     case WM_MOUSEWHEEL: {
         LONG_PTR style = GetWindowLongPtr(get_wnd(), GWL_STYLE);
@@ -1004,6 +1029,10 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case MSG_SMOOTH_SCROLL:
         m_smooth_scroll_helper->on_message();
         return 0;
+    case WM_SETTINGCHANGE:
+        if (wp == uih::SPI_SET_POINTER_SCALE && m_autoscroll_helper)
+            m_autoscroll_helper->reset();
+        break;
     case WM_POWERBROADCAST: {
         if (wp != PBT_POWERSETTINGCHANGE)
             break;
@@ -1054,9 +1083,11 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto background_colour = p_helper.get_colour(colours::colour_background);
         const auto text_colour = p_helper.get_colour(colours::colour_text);
 
-        const auto is_horizontal_scroll_bar_visible
-            = m_hscroll && !m_word_wrapping && (sih.nMax - sih.nMin - 1) > gsl::narrow_cast<int>(sih.nPage);
-        const auto is_vertical_scroll_bar_visible = (siv.nMax - siv.nMin - 1) > gsl::narrow_cast<int>(siv.nPage);
+        const auto is_horizontal_scroll_bar_visible = m_hscroll && !m_word_wrapping && sih.nMax > sih.nMin
+            && std::cmp_greater_equal(sih.nMax - sih.nMin, sih.nPage);
+        const auto is_vertical_scroll_bar_visible
+            = siv.nMax > siv.nMin && std::cmp_greater_equal(siv.nMax - siv.nMin, siv.nPage);
+
         const auto padding = gsl::narrow_cast<float>(s_get_padding());
         const auto x_offset = uih::direct_write::px_to_dip(
             gsl::narrow_cast<float>(is_horizontal_scroll_bar_visible ? -sih.nPos : 0) + padding);
@@ -1125,9 +1156,8 @@ void ItemDetails::s_on_font_change()
 
 void ItemDetails::s_on_dark_mode_status_change()
 {
-    for (auto&& window : s_windows) {
-        window->set_window_theme();
-    }
+    for (auto&& window : s_windows)
+        window->on_dark_mode_status_change();
 }
 
 void ItemDetails::s_on_colours_change()
@@ -1207,6 +1237,16 @@ void ItemDetails::on_colours_change()
 {
     m_d2d_text_brush.reset();
     invalidate_all();
+}
+
+void ItemDetails::on_dark_mode_status_change()
+{
+    const auto is_dark = colours::is_dark_mode_active();
+
+    set_window_theme();
+
+    if (m_autoscroll_helper)
+        m_autoscroll_helper->set_is_dark(is_dark);
 }
 
 ItemDetails::ItemDetails()
