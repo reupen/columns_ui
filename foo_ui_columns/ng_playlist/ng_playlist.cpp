@@ -1363,20 +1363,16 @@ void PlaylistView::notify_on_menu_select(WPARAM wp, LPARAM lp)
 
 bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
-    enum {
-        ID_PLAY = 1,
-        ID_CUT,
-        ID_COPY,
-        ID_PASTE,
-        ID_SELECTION,
-        ID_CUSTOM_BASE = 0x8000,
-    };
+    constexpr auto ID_SELECTION_BASE = 0x1000;
+    constexpr auto ID_CUSTOM_BASE = 0x10000;
 
     playlist_position_reference_tracker selected_item;
     const auto selection_count = m_playlist_api->activeplaylist_get_selection_count(2);
     const auto playlist_selection_exists = selection_count > 0;
     const auto show_shortcuts = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
-    HMENU menu = CreatePopupMenu();
+
+    const uih::Menu menu;
+    uih::MenuCommandCollector collector;
 
     auto mainmenu_api = mainmenu_manager::get();
     const auto mainmenu_flags = show_shortcuts ? mainmenu_manager::flag_show_shortcuts : 0;
@@ -1396,41 +1392,44 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
             }
         }
 
-        constexpr auto play_text = L"Play"sv;
-
-        MENUITEMINFO mii{};
-        mii.cbSize = sizeof(MENUITEMINFO);
-        mii.fMask = MIIM_STRING | MIIM_ID | MIIM_STATE;
-        mii.dwTypeData = const_cast<wchar_t*>(play_text.data());
-        mii.cch = gsl::narrow<UINT>(play_text.size());
-        mii.wID = ID_PLAY;
-        mii.fState = MFS_DEFAULT;
-
-        InsertMenuItem(menu, 0, TRUE, &mii);
-        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+        menu.append_command(collector.add([&] {
+            if (selected_item.m_playlist != std::numeric_limits<size_t>::max()
+                && selected_item.m_item != std::numeric_limits<size_t>::max()) {
+                m_playlist_api->playlist_execute_default_action(selected_item.m_playlist, selected_item.m_item);
+            }
+        }),
+            L"Play"_zv, {.is_default = true});
+        menu.append_separator();
     }
 
     mainmenu_api->instantiate(mainmenu_part);
-    mainmenu_api->generate_menu_win32(menu, ID_SELECTION, ID_CUSTOM_BASE - ID_SELECTION, mainmenu_flags);
+    mainmenu_api->generate_menu_win32(
+        menu.get(), ID_SELECTION_BASE, ID_CUSTOM_BASE - ID_SELECTION_BASE, mainmenu_flags);
 
-    if (GetMenuItemCount(menu) > 0)
-        uAppendMenu(menu, MF_SEPARATOR, 0, "");
+    if (menu.size() > 0)
+        menu.append_separator();
 
     if (playlist_selection_exists) {
-        AppendMenu(menu, MF_STRING, ID_CUT, L"Cut");
-        AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
+        menu.append_command(collector.add([&] { playlist_utils::cut(); }), L"Cut");
+        menu.append_command(collector.add([&] { playlist_utils::copy(); }), L"Copy");
     }
 
     const auto can_paste = playlist_utils::check_clipboard();
-    if (can_paste)
-        AppendMenu(menu, MF_STRING, ID_PASTE, L"Paste");
-    else if (!playlist_selection_exists)
-        AppendMenu(menu, MF_STRING | MF_GRAYED, 0, L"Paste");
+
+    if (can_paste || !playlist_selection_exists)
+        menu.append_command(collector.add([&] {
+            if (playlist_selection_exists || from_keyboard) {
+                playlist_utils::paste_at_focused_item(get_wnd());
+            } else {
+                playlist_utils::paste(get_wnd(), (std::numeric_limits<size_t>::max)());
+            }
+        }),
+            L"Paste", {.is_disabled = !can_paste});
 
     contextmenu_manager::ptr contextmenu_api;
 
     if (playlist_selection_exists) {
-        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+        menu.append_separator();
 
         contextmenu_api = contextmenu_manager::get();
         const auto contextmenu_flags = show_shortcuts ? contextmenu_manager::flag_show_shortcuts : 0;
@@ -1439,44 +1438,30 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
             = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
         contextmenu_api->set_shortcut_preference(shortcuts, gsl::narrow<unsigned>(std::size(shortcuts)));
         contextmenu_api->init_context_playlist(contextmenu_flags);
-        contextmenu_api->win32_build_menu(menu, ID_CUSTOM_BASE, -1);
+        contextmenu_api->win32_build_menu(menu.get(), ID_CUSTOM_BASE, -1);
     }
 
-    menu_helpers::win32_auto_mnemonics(menu);
+    menu_helpers::win32_auto_mnemonics(menu.get());
     m_contextmenu_manager_base = ID_CUSTOM_BASE;
-    m_mainmenu_manager_base = ID_SELECTION;
+    m_mainmenu_manager_base = ID_SELECTION_BASE;
     m_mainmenu_manager = mainmenu_api;
     m_contextmenu_manager = contextmenu_api;
 
     uie::window_ptr self_ptr = this;
-    const auto tpm_flags = TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD;
-    const int cmd = TrackPopupMenu(menu, tpm_flags, pt.x, pt.y, 0, get_wnd(), nullptr);
 
-    DestroyMenu(menu);
+    const auto cmd = menu.run(get_wnd(), pt);
+
     m_status_text_override.release();
     m_mainmenu_manager.release();
     m_contextmenu_manager.release();
 
-    if (cmd == ID_PLAY) {
-        if (selected_item.m_playlist != std::numeric_limits<size_t>::max()
-            && selected_item.m_item != std::numeric_limits<size_t>::max()) {
-            m_playlist_api->playlist_execute_default_action(selected_item.m_playlist, selected_item.m_item);
-        }
-    } else if (cmd == ID_CUT) {
-        playlist_utils::cut();
-    } else if (cmd == ID_COPY) {
-        playlist_utils::copy();
-    } else if (cmd == ID_PASTE) {
-        if (playlist_selection_exists || from_keyboard) {
-            playlist_utils::paste_at_focused_item(get_wnd());
-        } else {
-            playlist_utils::paste(get_wnd(), (std::numeric_limits<size_t>::max)());
-        }
-    } else if (cmd >= ID_SELECTION && cmd < ID_CUSTOM_BASE && mainmenu_api.is_valid()) {
-        mainmenu_api->execute_command(cmd - ID_SELECTION);
-    } else if (cmd >= ID_CUSTOM_BASE && contextmenu_api.is_valid()) {
+    if (cmd >= ID_CUSTOM_BASE && contextmenu_api.is_valid())
         contextmenu_api->execute_by_id(cmd - ID_CUSTOM_BASE);
-    }
+    else if (cmd >= ID_SELECTION_BASE && cmd < ID_CUSTOM_BASE && mainmenu_api.is_valid())
+        mainmenu_api->execute_command(cmd - ID_SELECTION_BASE);
+    else if (cmd > 0 && cmd < ID_SELECTION_BASE)
+        collector.execute(cmd);
+
     return true;
 }
 
