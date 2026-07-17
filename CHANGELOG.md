@@ -1,5 +1,16 @@
 # Change log
 
+## Development version
+
+### Features
+
+- Right-clicking on artwork on the playlist view now shows a context menu with
+  commands to reload that specific image or all artwork in the playlist.
+  [[#1796](https://github.com/reupen/columns_ui/pull/1796)]
+
+- Some minor optimisations to autoscroll were made.
+  [[#1795](https://github.com/reupen/columns_ui/pull/1795)]
+
 ## 3.6.0-beta.1
 
 ### Features
