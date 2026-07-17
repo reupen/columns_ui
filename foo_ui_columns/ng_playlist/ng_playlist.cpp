@@ -1366,7 +1366,6 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     constexpr auto ID_SELECTION_BASE = 0x1000;
     constexpr auto ID_CUSTOM_BASE = 0x10000;
 
-    playlist_position_reference_tracker selected_item;
     const auto selection_count = m_playlist_api->activeplaylist_get_selection_count(2);
     const auto playlist_selection_exists = selection_count > 0;
     const auto show_shortcuts = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
@@ -1374,71 +1373,104 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     const uih::Menu menu;
     uih::MenuCommandCollector collector;
 
-    auto mainmenu_api = mainmenu_manager::get();
-    const auto mainmenu_flags = show_shortcuts ? mainmenu_manager::flag_show_shortcuts : 0;
-    const auto mainmenu_part
-        = playlist_selection_exists ? mainmenu_groups::edit_part2_selection : mainmenu_groups::edit_part1;
-
-    if (selection_count == 1) {
-        selected_item.m_playlist = m_playlist_api->get_active_playlist();
-
-        pfc::bit_array_bittable selection(m_playlist_api->activeplaylist_get_item_count());
-        m_playlist_api->activeplaylist_get_selection_mask(selection);
-
-        for (const auto index : std::ranges::views::iota(size_t{}, selection.size())) {
-            if (selection[index]) {
-                selected_item.m_item = index;
-                break;
-            }
-        }
-
-        menu.append_command(collector.add([&] {
-            if (selected_item.m_playlist != std::numeric_limits<size_t>::max()
-                && selected_item.m_item != std::numeric_limits<size_t>::max()) {
-                m_playlist_api->playlist_execute_default_action(selected_item.m_playlist, selected_item.m_item);
-            }
-        }),
-            L"Play"_zv, {.is_default = true});
-        menu.append_separator();
-    }
-
-    mainmenu_api->instantiate(mainmenu_part);
-    mainmenu_api->generate_menu_win32(
-        menu.get(), ID_SELECTION_BASE, ID_CUSTOM_BASE - ID_SELECTION_BASE, mainmenu_flags);
-
-    if (menu.size() > 0)
-        menu.append_separator();
-
-    if (playlist_selection_exists) {
-        menu.append_command(collector.add([&] { playlist_utils::cut(); }), L"Cut");
-        menu.append_command(collector.add([&] { playlist_utils::copy(); }), L"Copy");
-    }
-
-    const auto can_paste = playlist_utils::check_clipboard();
-
-    if (can_paste || !playlist_selection_exists)
-        menu.append_command(collector.add([&] {
-            if (playlist_selection_exists || from_keyboard) {
-                playlist_utils::paste_at_focused_item(get_wnd());
-            } else {
-                playlist_utils::paste(get_wnd(), (std::numeric_limits<size_t>::max)());
-            }
-        }),
-            L"Paste", {.is_disabled = !can_paste});
-
+    mainmenu_manager::ptr mainmenu_api;
     contextmenu_manager::ptr contextmenu_api;
 
-    if (playlist_selection_exists) {
-        menu.append_separator();
+    playlist_position_reference_tracker tracked_item;
+    tracked_item.m_playlist = m_playlist_api->get_active_playlist();
 
-        contextmenu_api = contextmenu_manager::get();
-        const auto contextmenu_flags = show_shortcuts ? contextmenu_manager::flag_show_shortcuts : 0;
+    auto client_pt = pt;
+    ScreenToClient(get_wnd(), &client_pt);
+    const auto hit_test = hit_test_ex(client_pt);
 
-        const keyboard_shortcut_manager::shortcut_type shortcuts[]
-            = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
-        contextmenu_api->set_shortcut_preference(shortcuts, gsl::narrow<unsigned>(std::size(shortcuts)));
-        contextmenu_api->init_context_playlist(contextmenu_flags);
-        contextmenu_api->win32_build_menu(menu.get(), ID_CUSTOM_BASE, -1);
+    if (hit_test.category == HitTestCategory::OnGroupInfoArea) {
+        tracked_item.m_item = hit_test.index;
+
+        menu.append_command(collector.add([&] {
+            if (tracked_item.m_playlist == SIZE_MAX || tracked_item.m_item == SIZE_MAX
+                || tracked_item.m_playlist != m_playlist_api->get_active_playlist())
+                return;
+
+            const auto item = get_item(tracked_item.m_item);
+            const auto group = item->get_leaf_group();
+
+            if (!group)
+                return;
+
+            group->reset_artwork();
+            m_artwork_manager->cancel_for_group(group);
+            invalidate_item_group_info_area(tracked_item.m_item);
+        }),
+            L"Reload");
+
+        menu.append_command(collector.add([&] {
+            flush_artwork_images();
+            invalidate_all();
+        }),
+            L"Reload all");
+    } else {
+        const auto mainmenu_flags = show_shortcuts ? mainmenu_manager::flag_show_shortcuts : 0;
+        const auto mainmenu_part
+            = playlist_selection_exists ? mainmenu_groups::edit_part2_selection : mainmenu_groups::edit_part1;
+
+        if (selection_count == 1) {
+            pfc::bit_array_bittable selection(m_playlist_api->activeplaylist_get_item_count());
+            m_playlist_api->activeplaylist_get_selection_mask(selection);
+
+            for (const auto index : std::ranges::views::iota(size_t{}, selection.size())) {
+                if (selection[index]) {
+                    tracked_item.m_item = index;
+                    break;
+                }
+            }
+
+            menu.append_command(collector.add([&] {
+                if (tracked_item.m_playlist != std::numeric_limits<size_t>::max()
+                    && tracked_item.m_item != std::numeric_limits<size_t>::max()) {
+                    m_playlist_api->playlist_execute_default_action(tracked_item.m_playlist, tracked_item.m_item);
+                }
+            }),
+                L"Play"_zv, {.is_default = true});
+            menu.append_separator();
+        }
+
+        mainmenu_api = mainmenu_manager::get();
+        mainmenu_api->instantiate(mainmenu_part);
+        mainmenu_api->generate_menu_win32(
+            menu.get(), ID_SELECTION_BASE, ID_CUSTOM_BASE - ID_SELECTION_BASE, mainmenu_flags);
+
+        if (menu.size() > 0)
+            menu.append_separator();
+
+        if (playlist_selection_exists) {
+            menu.append_command(collector.add([&] { playlist_utils::cut(); }), L"Cut");
+            menu.append_command(collector.add([&] { playlist_utils::copy(); }), L"Copy");
+        }
+
+        const auto can_paste = playlist_utils::check_clipboard();
+
+        if (can_paste || !playlist_selection_exists)
+            menu.append_command(collector.add([&] {
+                if (playlist_selection_exists || from_keyboard) {
+                    playlist_utils::paste_at_focused_item(get_wnd());
+                } else {
+                    playlist_utils::paste(get_wnd(), (std::numeric_limits<size_t>::max)());
+                }
+            }),
+                L"Paste", {.is_disabled = !can_paste});
+
+        if (playlist_selection_exists) {
+            menu.append_separator();
+
+            contextmenu_api = contextmenu_manager::get();
+            const auto contextmenu_flags = show_shortcuts ? contextmenu_manager::flag_show_shortcuts : 0;
+
+            const keyboard_shortcut_manager::shortcut_type shortcuts[]
+                = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
+            contextmenu_api->set_shortcut_preference(shortcuts, gsl::narrow<unsigned>(std::size(shortcuts)));
+            contextmenu_api->init_context_playlist(contextmenu_flags);
+            contextmenu_api->win32_build_menu(menu.get(), ID_CUSTOM_BASE, -1);
+        }
     }
 
     menu_helpers::win32_auto_mnemonics(menu.get());
