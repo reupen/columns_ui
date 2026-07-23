@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.6.0
 
 ### Features
 
