@@ -1,9 +1,8 @@
 {
   "name": "columns-ui",
   "version-string": "git",
-  "builtin-baseline": "927f62e4b8838bd7e441e9c45103a16ffd75007e",
+  "builtin-baseline": "40f3c709db80acf154ac4b17a1f83c564ebd022e",
   "dependencies": [
-    "cppwinrt",
     "fmt",
     "foonathan-lexy",
     "ms-gsl",
