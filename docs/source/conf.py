@@ -1,5 +1,6 @@
 import os
-from datetime import date
+from datetime import datetime
+from typing import ClassVar
 
 from pygments.lexer import RegexLexer, bygroups
 from pygments.token import Comment, Name, Punctuation, Text
@@ -7,11 +8,11 @@ from sphinx.highlighting import lexers
 
 
 class TitleFormatting(RegexLexer):
-    name = "foobar2000 title formatting"
-    aliases = ["fb2k"]
-    filenames = []
+    name: ClassVar = "foobar2000 title formatting"
+    aliases: ClassVar = ["fb2k"]
+    filenames: ClassVar = []
 
-    tokens = {
+    tokens: ClassVar = {
         "root": [
             (r"//.*?$", Comment.Single),
             (r"(\$\w+)(\()", bygroups(Name.Function, Punctuation), "function"),
@@ -30,7 +31,6 @@ class TitleFormatting(RegexLexer):
 
 
 lexers["fb2k"] = TitleFormatting()
-
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -54,9 +54,8 @@ read_the_docs_build = os.environ.get("READTHEDOCS", None) == "True"
 # -- Project information -----------------------------------------------------
 
 project = "Columns UI"
-copyright = f"Reupen Shah {date.today().year}"
+copyright = f"Reupen Shah {datetime.now().astimezone().year}"
 author = "Reupen Shah"
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -84,7 +83,6 @@ templates_path = ["_templates"]
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
 
 # -- Options for HTML output -------------------------------------------------
 
