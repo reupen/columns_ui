@@ -46,13 +46,11 @@ def convert_file(input_file, output_dir):
             output_file,
             input_file,
         ]
-        result = subprocess.run(commands)
-        result.check_returncode()
+        subprocess.run(commands, check=True)
 
     output_file_names = [output_file[1] for output_file in output_files]
     commands = ["magick", *output_file_names, output_dir / rf"{name}.ico"]
-    result = subprocess.run(commands)
-    result.check_returncode()
+    subprocess.run(commands, check=True)
 
     for _, output_file in output_files:
         Path(output_file).unlink()

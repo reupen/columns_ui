@@ -47,8 +47,7 @@ def convert_file(input_file, output_dir):
             output_file,
             input_file,
         ]
-        result = subprocess.run(commands)
-        result.check_returncode()
+        subprocess.run(commands, check=True)
 
     output_args = [
         arg
@@ -63,8 +62,7 @@ def convert_file(input_file, output_dir):
         output_dir / rf"{name}.cur",
         *output_args,
     ]
-    result = subprocess.run(commands)
-    result.check_returncode()
+    subprocess.run(commands, check=True)
 
     for _, output_file in output_files:
         Path(output_file).unlink()
