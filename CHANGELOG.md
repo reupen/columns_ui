@@ -1,5 +1,20 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A bug where message box alert sounds may have played with an unexpected
+  spatial effect applied was fixed.
+  [[#1812](https://github.com/reupen/columns_ui/pull/1812)]
+
+### Internal changes
+
+- Some redundant code for supporting old versions of Windows was removed.
+  [[#1804](https://github.com/reupen/columns_ui/pull/1804) (contributed by
+  [@marc2k3](https://github.com/marc2k3)),
+  [#1807](https://github.com/reupen/columns_ui/pull/1807)]
+
 ## 3.6.0
 
 ### Features
