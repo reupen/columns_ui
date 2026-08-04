@@ -11,9 +11,11 @@ C++ code in this repository is formatted using
 consistency throughout the code base. [Prettier](https://prettier.io/) is used
 for Markdown, JSON and YAML files.
 
-A [pre-commit](https://pre-commit.com/) configuration is included to run these
-tools automatically on commit. It’s recommended that you set it up locally.
-(However, a bot will also check and reformat pull requests if needed.)
+A [prek](https://prek.j178.dev/)-compatible pre-commit configuration is included
+to run these tools automatically on commit. It’s recommended that you
+[install prek](https://prek.j178.dev/installation/) and run `prek install`
+within the repository to set up the pre-commit hook. (If you do not set up the
+pre-commit hook, a bot will also check and reformat pull requests if needed.)
 
 ### Spaces and line endings
 
