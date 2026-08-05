@@ -83,6 +83,7 @@ private:
     bool m_shell_hook_registered{};
     bool m_gdiplus_initialised{};
     bool m_is_destroying{};
+    ui_status_text_override::ptr m_status_text_override;
     bool m_last_systray_r_down{};
     bool m_last_systray_x1_down{};
     bool m_last_systray_x2_down{};
