@@ -185,6 +185,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_NCDESTROY:
         m_taskbar_button_images.reset();
         m_buffered_paint_initialiser.reset();
+        m_fallback_menu.reset();
         break;
     case WM_CLOSE:
         if (config::advbool_close_to_system_tray_icon.get()) {
@@ -213,6 +214,12 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_MENUSELECT: {
+        const auto id = LOWORD(wp);
+        const auto flags = HIWORD(wp);
+
+        if (m_fallback_menu && m_fallback_menu->on_menu_select(id, flags))
+            break;
+
         if (!m_status_text_override.is_valid())
             break;
 
@@ -222,12 +229,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 || statusbar_contextmenus::g_main_nowplaying.is_valid()))
             break;
 
-        if (HIWORD(wp) & MF_POPUP) {
+        if (flags & MF_POPUP) {
             m_status_text_override->revert_text();
             break;
         }
-
-        unsigned id = LOWORD(wp);
 
         pfc::string8 item_description;
         if (statusbar_contextmenus::g_main_nowplaying.is_valid()) {
@@ -295,7 +300,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_SYSCOMMAND:
         switch (wp) {
-        case SC_KEYMENU:
+        case SC_KEYMENU: {
             if (lp)
                 break;
 
@@ -303,12 +308,22 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (HIBYTE(GetKeyState(VK_CONTROL)))
                 break;
 
-            if (rebar::g_rebar_window && rebar::g_rebar_window->set_menu_focus())
+            if (rebar::g_rebar_window && rebar::g_rebar_window->set_menu_focus()) {
                 g_layout_window.hide_menu_access_keys();
-            else
-                g_layout_window.set_menu_focus();
+                return 0;
+            }
+
+            if (g_layout_window.set_menu_focus())
+                return 0;
+
+            if (!m_fallback_menu)
+                m_fallback_menu = std::make_shared<FallbackMenu>();
+
+            m_fallback_menu->show(wnd);
 
             return 0;
+        }
+
         case SC_MINIMIZE:
             if (GetForegroundWindow() == wnd)
                 save_focus_state();
@@ -316,15 +331,22 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     case WM_MENUCHAR: {
-        unsigned short chr = LOWORD(wp);
-        bool processed = false;
-        if (rebar::g_rebar_window) {
-            processed = rebar::g_rebar_window->on_menu_char(chr);
-        }
-        if (!processed)
-            g_layout_window.on_menu_char(chr);
-    }
+        const wchar_t chr = static_cast<wchar_t>(uCharLower(LOWORD(wp)));
+
+        [&] {
+            if (rebar::g_rebar_window && rebar::g_rebar_window->on_menu_char(chr))
+                return;
+
+            if (g_layout_window.on_menu_char(chr))
+                return;
+
+            if (!m_fallback_menu)
+                m_fallback_menu = std::make_shared<FallbackMenu>();
+
+            m_fallback_menu->show_for_accelerator(wnd, chr);
+        }();
         return (MNC_CLOSE << 16);
+    }
     case WM_CONTEXTMENU:
         if (g_status && (HWND)wp == g_status) {
             POINT pt = {(short)(LOWORD(lp)), (short)(HIWORD(lp))};
