@@ -213,46 +213,54 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_MENUSELECT: {
-        if (HIWORD(wp) & MF_POPUP) {
-            status_bar::clear_menu_item_description();
-        } else {
-            if (systray_contextmenus::g_menu_file_prefs.is_valid() || systray_contextmenus::g_menu_file_exit.is_valid()
+        if (!m_status_text_override.is_valid())
+            break;
+
+        if (!(systray_contextmenus::g_menu_file_prefs.is_valid() || systray_contextmenus::g_menu_file_exit.is_valid()
                 || systray_contextmenus::g_menu_playback.is_valid()
                 || systray_contextmenus::g_main_nowplaying.is_valid()
-                || statusbar_contextmenus::g_main_nowplaying.is_valid()) {
-                unsigned id = LOWORD(wp);
+                || statusbar_contextmenus::g_main_nowplaying.is_valid()))
+            break;
 
-                pfc::string8 item_description;
-                if (statusbar_contextmenus::g_main_nowplaying.is_valid()) {
-                    contextmenu_node* node
-                        = statusbar_contextmenus::g_main_nowplaying->find_by_id(id - statusbar_contextmenus::ID_BASE);
-                    if (node)
-                        node->get_description(item_description);
-                }
-
-                if (systray_contextmenus::g_main_nowplaying.is_valid() && id < systray_contextmenus::ID_BASE_FILE_PREFS
-                    && id >= systray_contextmenus::ID_NOW_PLAYING_BASE) {
-                    contextmenu_node* node = systray_contextmenus::g_main_nowplaying->find_by_id(
-                        id - systray_contextmenus::ID_NOW_PLAYING_BASE);
-                    if (node)
-                        node->get_description(item_description);
-                } else if (systray_contextmenus::g_menu_file_prefs.is_valid()
-                    && id < systray_contextmenus::ID_BASE_FILE_EXIT) {
-                    systray_contextmenus::g_menu_file_prefs->get_description(
-                        id - systray_contextmenus::ID_BASE_FILE_PREFS, item_description);
-                } else if (systray_contextmenus::g_menu_file_exit.is_valid()
-                    && id < systray_contextmenus::ID_BASE_PLAYBACK) {
-                    systray_contextmenus::g_menu_file_exit->get_description(
-                        id - systray_contextmenus::ID_BASE_FILE_EXIT, item_description);
-                } else if (systray_contextmenus::g_menu_playback.is_valid()) {
-                    systray_contextmenus::g_menu_playback->get_description(
-                        id - systray_contextmenus::ID_BASE_PLAYBACK, item_description);
-                }
-
-                status_bar::set_menu_item_description(item_description.get_ptr());
-            }
+        if (HIWORD(wp) & MF_POPUP) {
+            m_status_text_override->revert_text();
+            break;
         }
-    } break;
+
+        unsigned id = LOWORD(wp);
+
+        pfc::string8 item_description;
+        if (statusbar_contextmenus::g_main_nowplaying.is_valid()) {
+            contextmenu_node* node
+                = statusbar_contextmenus::g_main_nowplaying->find_by_id(id - statusbar_contextmenus::ID_BASE);
+            if (node)
+                node->get_description(item_description);
+        }
+
+        if (systray_contextmenus::g_main_nowplaying.is_valid() && id < systray_contextmenus::ID_BASE_FILE_PREFS
+            && id >= systray_contextmenus::ID_NOW_PLAYING_BASE) {
+            contextmenu_node* node
+                = systray_contextmenus::g_main_nowplaying->find_by_id(id - systray_contextmenus::ID_NOW_PLAYING_BASE);
+            if (node)
+                node->get_description(item_description);
+        } else if (systray_contextmenus::g_menu_file_prefs.is_valid() && id < systray_contextmenus::ID_BASE_FILE_EXIT) {
+            systray_contextmenus::g_menu_file_prefs->get_description(
+                id - systray_contextmenus::ID_BASE_FILE_PREFS, item_description);
+        } else if (systray_contextmenus::g_menu_file_exit.is_valid() && id < systray_contextmenus::ID_BASE_PLAYBACK) {
+            systray_contextmenus::g_menu_file_exit->get_description(
+                id - systray_contextmenus::ID_BASE_FILE_EXIT, item_description);
+        } else if (systray_contextmenus::g_menu_playback.is_valid()) {
+            systray_contextmenus::g_menu_playback->get_description(
+                id - systray_contextmenus::ID_BASE_PLAYBACK, item_description);
+        }
+
+        if (item_description.empty())
+            m_status_text_override->revert_text();
+        else
+            m_status_text_override->override_text(item_description.get_ptr());
+
+        break;
+    }
     case WM_DISPLAYCHANGE:
         RedrawWindow(wnd, nullptr, nullptr, RDW_ALLCHILDREN | RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
         break;
@@ -340,10 +348,13 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
 
                 menu_helpers::win32_auto_mnemonics(menu);
+                ui_control::get()->override_status_text_create(m_status_text_override);
 
                 int cmd
                     = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
                 DestroyMenu(menu);
+
+                m_status_text_override.reset();
                 statusbar_contextmenus::g_main_nowplaying.release();
 
                 if (cmd) {
@@ -698,10 +709,14 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 mi.fState = MFS_DEFAULT;
 
                 SetMenuItemInfo(menu, systray_contextmenus::ID_ACTIVATE, FALSE, &mi);
+
+                ui_control::get()->override_status_text_create(m_status_text_override);
+
                 int cmd
                     = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 
                 DestroyMenu(menu);
+                m_status_text_override.reset();
 
                 systray_contextmenus::g_menu_file_prefs.release();
                 systray_contextmenus::g_menu_playback.release();

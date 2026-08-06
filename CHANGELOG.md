@@ -8,6 +8,10 @@
   spatial effect applied was fixed.
   [[#1812](https://github.com/reupen/columns_ui/pull/1812)]
 
+- A bug where menu item descriptions for the system tray icon context menu were
+  not shown in the status pane was fixed.
+  [[#1815](https://github.com/reupen/columns_ui/pull/1815)]
+
 ### Internal changes
 
 - Some redundant code for supporting old versions of Windows was removed.
