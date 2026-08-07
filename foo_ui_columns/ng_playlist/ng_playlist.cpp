@@ -1364,7 +1364,7 @@ void PlaylistView::notify_on_menu_select(WPARAM wp, LPARAM lp)
 bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     constexpr auto ID_SELECTION_BASE = 0x1000;
-    constexpr auto ID_CUSTOM_BASE = 0x10000;
+    constexpr auto ID_CUSTOM_BASE = 0x2000;
 
     const auto selection_count = m_playlist_api->activeplaylist_get_selection_count(2);
     const auto playlist_selection_exists = selection_count > 0;
