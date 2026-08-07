@@ -2,7 +2,20 @@
 
 ## Development version
 
+### Features
+
+- Pressing Alt now shows the main menu as a pop-up menu in the top-left corner
+  of the main window when there is no menu bar in the toolbar area or in the
+  layout. [[#1816](https://github.com/reupen/columns_ui/pull/1816)]
+
+  This includes being able to directly access each top-level menu using their
+  access keys (e.g. Alt+F for the File menu).
+
 ### Bug fixes
+
+- Pressing main menu access keys with Shift held down (e.g. Alt+Shift+F) now
+  opens the relevant menu (with hidden items shown) as expected.
+  [[#1816](https://github.com/reupen/columns_ui/pull/1816)]
 
 - A bug where message box alert sounds may have played with an unexpected
   spatial effect applied was fixed.

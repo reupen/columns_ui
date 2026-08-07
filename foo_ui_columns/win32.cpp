@@ -55,4 +55,40 @@ void handle_tab_key(HWND wnd)
         uih::show_focus_indicator(focused_wnd);
 }
 
+namespace {
+
+struct EnumThreadWindowsContext {
+    HMENU m_menu{};
+    HWND m_found_menu_wnd{};
+};
+
+} // namespace
+
+HWND find_window_for_menu(HMENU menu)
+{
+    EnumThreadWindowsContext context{.m_menu = menu};
+
+    EnumThreadWindows(
+        0,
+        [](HWND wnd, LPARAM lp) {
+            const auto context = reinterpret_cast<EnumThreadWindowsContext*>(lp);
+
+            std::array<wchar_t, 256> class_name{};
+            if (GetClassName(wnd, class_name.data(), gsl::narrow<int>(class_name.size())) == 0)
+                return TRUE;
+
+            if (wcsncmp(L"#32768", class_name.data(), class_name.size()) != 0)
+                return TRUE;
+
+            if (reinterpret_cast<HMENU>(SendMessage(wnd, MN_GETHMENU, 0, 0)) != context->m_menu)
+                return TRUE;
+
+            context->m_found_menu_wnd = wnd;
+            return FALSE;
+        },
+        reinterpret_cast<LPARAM>(&context));
+
+    return context.m_found_menu_wnd;
+}
+
 } // namespace cui::win32

@@ -671,6 +671,9 @@
     <ClCompile Include="tab_pview_search.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
+    <ClCompile Include="fallback_menu.cpp">
+      <Filter>Main window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1021,6 +1024,9 @@
     </ClInclude>
     <ClInclude Include="scroll.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="fallback_menu.h">
+      <Filter>Main window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

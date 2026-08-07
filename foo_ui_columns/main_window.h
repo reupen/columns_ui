@@ -1,4 +1,6 @@
 #pragma once
+
+#include "fallback_menu.h"
 #include "icons.h"
 
 /** Main window UI control IDs */
@@ -12,7 +14,7 @@ enum {
     MSG_RUN_INITIAL_SETUP,
     MSG_SYSTEM_TRAY_ICON,
     MSG_CREATE_TASKBAR_BUTTONS,
-    MSG_UPDATE_TASKBAR_BUTTONS
+    MSG_UPDATE_TASKBAR_BUTTONS,
 };
 
 bool remember_window_pos();
@@ -88,6 +90,7 @@ private:
     bool m_last_systray_x1_down{};
     bool m_last_systray_x2_down{};
     bool m_ignore_next_wm_syschar_message{};
+    FallbackMenu::Ptr m_fallback_menu;
     ULONG_PTR m_gdiplus_instance{};
     UINT m_wm_taskbarcreated{};
     UINT m_wm_taskbarbuttoncreated{};

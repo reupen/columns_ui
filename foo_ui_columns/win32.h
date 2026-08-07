@@ -11,4 +11,6 @@ void remove_window_styles(HWND wnd, DWORD styles_to_remove);
 
 void handle_tab_key(HWND wnd);
 
+HWND find_window_for_menu(HMENU menu);
+
 } // namespace cui::win32

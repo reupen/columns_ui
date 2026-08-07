@@ -28,11 +28,11 @@
  */
 class MnemonicManager {
     pfc::string8_fast_aggressive used;
-    bool is_used(unsigned c)
+    bool is_used(unsigned c) const
     {
         char temp[8];
         temp[pfc::utf8_encode_char(uCharLower(c), temp)] = 0;
-        return !!strstr(used, temp);
+        return strstr(used, temp) != nullptr;
     }
 
     static bool is_alphanumeric(char c)
@@ -40,54 +40,37 @@ class MnemonicManager {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
     }
 
-    void insert(const char* src, unsigned idx, pfc::string_base& out)
+    char insert(const char* src, unsigned idx, pfc::string_base& out)
     {
         out.reset();
         out.add_string(src, idx);
         out.add_string("&");
         out.add_string(src + idx);
-        used.add_char(uCharLower(src[idx]));
+        const auto lower_char = uCharLower(src[idx]);
+        used.add_char(lower_char);
+        return static_cast<char>(lower_char);
     }
 
 public:
-    bool check_string(const char* src)
-    { // check for existing mnemonics
-        const char* ptr = src;
-        while ((ptr = strchr(ptr, '&'))) {
-            if (ptr[1] == '&')
-                ptr += 2;
-            else {
-                unsigned c = 0;
-                if (pfc::utf8_decode_char(ptr + 1, c) > 0) {
-                    if (!is_used(c))
-                        used.add_char(uCharLower(c));
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-    bool process_string(const char* src, pfc::string_base& out) // returns if changed
+    std::optional<char> process_string(const char* src, pfc::string_base& out) // returns if changed
     {
-        if (check_string(src)) {
-            out = src;
-            return false;
-        }
         unsigned idx = 0;
+
         while (src[idx] == ' ')
-            idx++;
+            ++idx;
+
         while (src[idx]) {
-            if (is_alphanumeric(src[idx]) && !is_used(src[idx])) {
-                insert(src, idx, out);
-                return true;
-            }
+            if (is_alphanumeric(src[idx]) && !is_used(src[idx]))
+                return insert(src, idx, out);
 
             while (src[idx] && src[idx] != ' ' && src[idx] != '\t')
-                idx++;
+                ++idx;
+
             if (src[idx] == '\t')
                 break;
+
             while (src[idx] == ' ')
-                idx++;
+                ++idx;
         }
 
         // no success picking first letter of one of words
@@ -95,15 +78,15 @@ public:
         while (src[idx]) {
             if (src[idx] == '\t')
                 break;
-            if (is_alphanumeric(src[idx]) && !is_used(src[idx])) {
-                insert(src, idx, out);
-                return true;
-            }
-            idx++;
+
+            if (is_alphanumeric(src[idx]) && !is_used(src[idx]))
+                return insert(src, idx, out);
+
+            ++idx;
         }
 
         // giving up
         out = src;
-        return false;
+        return {};
     }
 };
