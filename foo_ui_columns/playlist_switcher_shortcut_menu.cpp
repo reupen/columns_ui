@@ -7,8 +7,6 @@ namespace cui::panels::playlist_switcher {
 
 bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
-    uie::window_ptr p_this_temp = this;
-
     uih::Menu menu;
     uih::MenuCommandCollector collector;
 
@@ -206,9 +204,17 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     }
 
     menu_helpers::win32_auto_mnemonics(menu.get());
+
+    m_contextmenu_base_id = context_manager_base_id;
+    m_contextmenu_manager = contextmenu_manager;
+    get_host()->override_status_text_create(m_status_text_override);
+    ptr self{this};
+
     const auto command_id = menu.run(get_wnd(), pt);
 
-    m_status_text_override.release();
+    m_status_text_override.reset();
+    m_contextmenu_base_id.reset();
+    m_contextmenu_manager.reset();
     remove_highlight_selected_item();
 
     if (context_manager_base_id && command_id >= *context_manager_base_id)
@@ -217,6 +223,33 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
         collector.execute(command_id);
 
     return true;
+}
+
+void PlaylistSwitcher::notify_on_menu_select(WPARAM wp, LPARAM lp)
+{
+    if (!m_status_text_override.is_valid())
+        return;
+
+    if (HIWORD(wp) & MF_POPUP) {
+        m_status_text_override->revert_text();
+        return;
+    }
+
+    if (m_contextmenu_manager.is_valid() && m_contextmenu_base_id) {
+        const auto id = LOWORD(wp);
+
+        if (id >= *m_contextmenu_base_id) {
+            auto* node = m_contextmenu_manager->find_by_id(id - *m_contextmenu_base_id);
+
+            pfc::string8 description;
+            if (node && node->get_description(description)) {
+                m_status_text_override->override_text(description);
+                return;
+            }
+        }
+    }
+
+    m_status_text_override->revert_text();
 }
 
 } // namespace cui::panels::playlist_switcher

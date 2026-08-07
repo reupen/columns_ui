@@ -151,6 +151,8 @@ public:
 
     bool notify_on_contextmenu(const POINT& pt, bool from_keyboard) override;
 
+    void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
+
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override
     {
         return g_process_keydown_keyboard_shortcuts(wp);
@@ -349,6 +351,8 @@ private:
         pfc::string8 m_playlist_name;
     };
 
+    std::optional<uint32_t> m_contextmenu_base_id;
+    contextmenu_manager::ptr m_contextmenu_manager;
     ui_status_text_override::ptr m_status_text_override;
     ui_selection_holder::ptr m_selection_holder;
 
