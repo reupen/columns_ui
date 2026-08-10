@@ -1370,7 +1370,7 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     const auto playlist_selection_exists = selection_count > 0;
     const auto show_shortcuts = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
 
-    const uih::Menu menu;
+    uih::Menu menu;
     uih::MenuCommandCollector collector;
 
     mainmenu_manager::ptr mainmenu_api;
