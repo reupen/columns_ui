@@ -24,7 +24,8 @@
 - Menu item descriptions in various context menus are now more consistently
   shown in the status bar and status pane.
   [[#1815](https://github.com/reupen/columns_ui/pull/1815),
-  [#1818](https://github.com/reupen/columns_ui/pull/1818)]
+  [#1818](https://github.com/reupen/columns_ui/pull/1818),
+  [#1821](https://github.com/reupen/columns_ui/pull/1821)]
 
 ### Internal changes
 

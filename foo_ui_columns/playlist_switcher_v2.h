@@ -353,6 +353,7 @@ private:
 
     std::optional<uint32_t> m_contextmenu_base_id;
     contextmenu_manager::ptr m_contextmenu_manager;
+    std::optional<uih::MenuItemDescriptionGetter> m_menu_item_description_getter;
     ui_status_text_override::ptr m_status_text_override;
     ui_selection_holder::ptr m_selection_holder;
 

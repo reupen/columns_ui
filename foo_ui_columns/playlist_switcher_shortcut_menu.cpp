@@ -62,26 +62,26 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
                 m_playlist_api->set_playing_playlist(tracked_focused_item.m_playlist);
                 play_control::get()->start();
             }),
-                L"Play"_zv, {.is_default = true});
+                L"Play"_zv, {.description = "Plays this playlist."sv, .is_default = true});
 
         if (active_playlist_index != focused_item)
             menu.append_command(collector.add([&] {
                 if (tracked_focused_item.m_playlist != SIZE_MAX)
                     m_playlist_api->set_active_playlist(tracked_focused_item.m_playlist);
             }),
-                L"Activate"_zv, {.is_default = playlist_item_count == 0});
+                L"Activate"_zv, {.description = "Activates this playlist."sv, .is_default = playlist_item_count == 0});
 
         menu.append_command(collector.add([&] {
             if (tracked_focused_item.m_playlist != SIZE_MAX)
                 activate_inline_editing(tracked_focused_item.m_playlist, 0);
         }),
-            L"Rename"_zv);
+            L"Rename"_zv, {.description = "Renames this playlist."sv});
 
         menu.append_command(collector.add([&] {
             if (tracked_focused_item.m_playlist != SIZE_MAX)
                 m_playlist_api->remove_playlist_switch(tracked_focused_item.m_playlist);
         }),
-            L"Remove"_zv);
+            L"Remove"_zv, {.description = "Removes this playlist."sv});
 
         if (autoplaylist_v2.is_valid() && autoplaylist_v2->show_ui_available()) {
             menu.append_separator();
@@ -93,7 +93,8 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
                 if (tracked_focused_item.m_playlist != SIZE_MAX)
                     autoplaylist_v2->show_ui(tracked_focused_item.m_playlist);
             }),
-                fmt::format(L"{} properties", mmh::to_utf16(name.c_str())));
+                fmt::format(L"{} properties", mmh::to_utf16(name.c_str())),
+                {.description = "Shows autoplaylist properties for this playlist."sv});
         }
 
         menu.append_separator();
@@ -102,20 +103,21 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             if (tracked_focused_item.m_playlist != SIZE_MAX)
                 playlist_manager_utils::cut(pfc::list_single_ref_t(tracked_focused_item.m_playlist));
         }),
-            L"Cut"_zv);
+            L"Cut"_zv,
+            {.description = "Copies this playlist to the clipboard and removes it from the list of playlists."sv});
 
         menu.append_command(collector.add([&] {
             if (tracked_focused_item.m_playlist != SIZE_MAX)
                 playlist_manager_utils::copy(pfc::list_single_ref_t(tracked_focused_item.m_playlist));
         }),
-            L"Copy"_zv);
+            L"Copy"_zv, {.description = "Copies this playlist to the clipboard."sv});
 
         if (playlist_manager_utils::check_clipboard())
             menu.append_command(collector.add([&] {
                 playlist_manager_utils::paste(get_wnd(),
                     tracked_focused_item.m_playlist != SIZE_MAX ? tracked_focused_item.m_playlist + 1 : SIZE_MAX);
             }),
-                L"Paste"_zv);
+                L"Paste"_zv, {.description = "Pastes the playlist currently in the clipboard."sv});
 
         menu.append_separator();
     }
@@ -131,9 +133,10 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             activate_inline_editing(new_index, 0);
         }
     }),
-        L"New"_zv, {.is_default = !is_on_item});
+        L"New"_zv, {.description = "Creates a new playlist."sv, .is_default = !is_on_item});
 
-    menu.append_command(collector.add([&] { standard_commands::main_load_playlist(); }), L"Load…"_zv);
+    menu.append_command(collector.add([&] { standard_commands::main_load_playlist(); }), L"Load…"_zv,
+        {.description = "Loads a playlist from a file."sv});
 
     if (is_on_item)
         menu.append_command(collector.add([&] {
@@ -148,10 +151,11 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             m_playlist_api->playlist_get_name(tracked_focused_item.m_playlist, name);
             g_save_playlist(get_wnd(), tracks, name);
         }),
-            L"Save as…"_zv);
+            L"Save as…"_zv, {.description = "Saves this playlist to a file."sv});
 
     if (playlist_count > 0)
-        menu.append_command(collector.add([&] { standard_commands::main_save_all_playlists(); }), L"Save all as…"_zv);
+        menu.append_command(collector.add([&] { standard_commands::main_save_all_playlists(); }), L"Save all as…"_zv,
+            {.description = "Saves all playlists to a set of files."sv});
 
     {
         const auto recycler_count
@@ -167,12 +171,12 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
 
                 recycler_popup.append_command(
                     collector.add([this, recycler_id] { m_playlist_api->recycler_restore_by_id(recycler_id); }),
-                    mmh::to_utf16(temp.c_str()));
+                    mmh::to_utf16(temp.c_str()), {.description = "Restores this previously deleted playlist."});
             }
 
             recycler_popup.append_separator();
-            recycler_popup.append_command(
-                collector.add([&] { m_playlist_api->recycler_purge(bit_array_true()); }), L"Clear"_zv);
+            recycler_popup.append_command(collector.add([&] { m_playlist_api->recycler_purge(bit_array_true()); }),
+                L"Clear"_zv, {.description = "Clears the removed playlist history."});
 
             menu.append_submenu(std::move(recycler_popup), L"History"_zv);
         }
@@ -207,11 +211,13 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
 
     m_contextmenu_base_id = context_manager_base_id;
     m_contextmenu_manager = contextmenu_manager;
+    m_menu_item_description_getter = menu.create_description_getter();
     get_host()->override_status_text_create(m_status_text_override);
     ptr self{this};
 
     const auto command_id = menu.run(get_wnd(), pt);
 
+    m_menu_item_description_getter.reset();
     m_status_text_override.reset();
     m_contextmenu_base_id.reset();
     m_contextmenu_manager.reset();
@@ -235,17 +241,22 @@ void PlaylistSwitcher::notify_on_menu_select(WPARAM wp, LPARAM lp)
         return;
     }
 
-    if (m_contextmenu_manager.is_valid() && m_contextmenu_base_id) {
-        const auto id = LOWORD(wp);
+    const auto id = LOWORD(wp);
 
-        if (id >= *m_contextmenu_base_id) {
-            auto* node = m_contextmenu_manager->find_by_id(id - *m_contextmenu_base_id);
+    if (m_contextmenu_manager.is_valid() && m_contextmenu_base_id && id >= *m_contextmenu_base_id) {
+        auto* node = m_contextmenu_manager->find_by_id(id - *m_contextmenu_base_id);
 
-            pfc::string8 description;
-            if (node && node->get_description(description)) {
-                m_status_text_override->override_text(description);
-                return;
-            }
+        pfc::string8 description;
+        if (node && node->get_description(description)) {
+            m_status_text_override->override_text(description);
+            return;
+        }
+    } else if (m_menu_item_description_getter) {
+        const auto description = (*m_menu_item_description_getter)(LOWORD(wp));
+
+        if (!description.empty()) {
+            m_status_text_override->override_text(description.c_str());
+            return;
         }
     }
 
