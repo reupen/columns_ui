@@ -43,11 +43,10 @@ bool process_edit_keyboard_shortcuts(WPARAM wp)
     if (modifiers == (MOD_CONTROL | MOD_SHIFT) && wp == 'Z')
         return false;
 
-    const auto key_code = get_key_code(wp, modifiers);
-
-    if (keyboard_shortcut_manager::is_typing_key_combo(key_code, modifiers))
+    if (keyboard_shortcut_manager::is_typing_key_combo(static_cast<uint32_t>(wp), modifiers))
         return false;
 
+    const auto key_code = get_key_code(wp, modifiers);
     return keyboard_shortcut_manager_v2::get()->process_keydown_simple(key_code);
 }
 
