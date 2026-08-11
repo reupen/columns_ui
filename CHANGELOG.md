@@ -17,6 +17,11 @@
   opens the relevant menu (with hidden items shown) as expected.
   [[#1816](https://github.com/reupen/columns_ui/pull/1816)]
 
+- Keyboard shortcuts are no longer triggered when typing capital letters or
+  symbols with the shift key in Filter search toolbar and in inline editing edit
+  boxes in the playlist view, playlist switcher, Filter panel and Item
+  properties. [[#1824](https://github.com/reupen/columns_ui/pull/1824)]
+
 - A bug where message box alert sounds may have played with an unexpected
   spatial effect applied was fixed.
   [[#1812](https://github.com/reupen/columns_ui/pull/1812)]
