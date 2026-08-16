@@ -199,6 +199,44 @@ void ButtonsToolbar::ConfigParam::on_selection_change(size_t index)
     EnableWindow(GetDlgItem(m_wnd, IDC_BROWSE_HOVER_ICON), b_enable && has_custom_hover_icon);
 }
 
+void ButtonsToolbar::ConfigParam::show_command_picker()
+{
+    if (!m_selection)
+        return;
+
+    CommandPickerDialog command_picker_dialog(
+        {m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter});
+
+    const auto [succeeded, data] = command_picker_dialog.open_modal(m_wnd);
+
+    if (!succeeded)
+        return;
+
+    m_selection->m_type = static_cast<Type>(data.group);
+    m_selection->m_guid = data.guid;
+    m_selection->m_subcommand = data.subcommand;
+    m_selection->m_filter = static_cast<Filter>(data.filter);
+    m_selection->m_interface.release();
+
+    const auto idx = m_button_list.get_selected_item_single();
+    if (idx != pfc_infinite) {
+        refresh_buttons_list_items(idx, 1);
+    }
+
+    bool b_enable = m_selection->m_type != TYPE_SEPARATOR;
+    EnableWindow(GetDlgItem(m_wnd, IDC_SHOW), m_selection->m_type != TYPE_SEPARATOR);
+    EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_TEXT), b_enable);
+    EnableWindow(GetDlgItem(m_wnd, IDC_TEXT), b_enable && m_selection->m_use_custom_text);
+
+    EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_ICON), b_enable);
+    EnableWindow(GetDlgItem(m_wnd, IDC_ICON_PATH), b_enable && m_selection->m_use_custom);
+    EnableWindow(GetDlgItem(m_wnd, IDC_BROWSE_ICON), b_enable && m_selection->m_use_custom);
+
+    EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_HOVER_ICON), b_enable);
+    EnableWindow(GetDlgItem(m_wnd, IDC_HOVER_ICON_PATH), b_enable && m_selection->m_use_custom_hot);
+    EnableWindow(GetDlgItem(m_wnd, IDC_BROWSE_HOVER_ICON), b_enable && m_selection->m_use_custom_hot);
+}
+
 void ButtonsToolbar::ConfigParam::populate_buttons_list()
 {
     const auto count = m_buttons.size();
@@ -447,40 +485,7 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
             break;
         }
         case IDC_PICK: {
-            if (!m_selection)
-                break;
-
-            CommandPickerDialog command_picker_dialog(
-                {m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter});
-
-            const auto [succeeded, data] = command_picker_dialog.open_modal(wnd);
-
-            if (!succeeded)
-                break;
-
-            m_selection->m_type = static_cast<Type>(data.group);
-            m_selection->m_guid = data.guid;
-            m_selection->m_subcommand = data.subcommand;
-            m_selection->m_filter = static_cast<Filter>(data.filter);
-            m_selection->m_interface.release();
-
-            const auto idx = m_button_list.get_selected_item_single();
-            if (idx != pfc_infinite) {
-                refresh_buttons_list_items(idx, 1);
-            }
-            bool b_enable = m_selection->m_type != TYPE_SEPARATOR;
-            EnableWindow(GetDlgItem(wnd, IDC_SHOW), m_selection->m_type != TYPE_SEPARATOR);
-            EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_TEXT), b_enable);
-            EnableWindow(GetDlgItem(wnd, IDC_TEXT), b_enable && m_selection->m_use_custom_text);
-
-            EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_ICON), b_enable);
-            EnableWindow(GetDlgItem(wnd, IDC_ICON_PATH), b_enable && m_selection->m_use_custom);
-            EnableWindow(GetDlgItem(wnd, IDC_BROWSE_ICON), b_enable && m_selection->m_use_custom);
-
-            EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_HOVER_ICON), b_enable);
-            EnableWindow(GetDlgItem(wnd, IDC_HOVER_ICON_PATH), b_enable && m_selection->m_use_custom_hot);
-            EnableWindow(GetDlgItem(wnd, IDC_BROWSE_HOVER_ICON), b_enable && m_selection->m_use_custom_hot);
-
+            show_command_picker();
             break;
         }
         case IDC_USE_CUSTOM_ICON:
