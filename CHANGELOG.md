@@ -14,8 +14,11 @@
 ### Bug fixes
 
 - Pressing main menu access keys with Shift held down (e.g. Alt+Shift+F) now
-  opens the relevant menu (with hidden items shown) as expected.
+  opens the relevant menu, with hidden items shown, as expected.
   [[#1816](https://github.com/reupen/columns_ui/pull/1816)]
+
+- When opening a menu in the menu toolbar using the keyboard, the first menu
+  item is now focused. [[#1826](https://github.com/reupen/columns_ui/pull/1826)]
 
 - Keyboard shortcuts are no longer triggered when typing capital letters or
   symbols with the shift key in Filter search toolbar and in inline editing edit

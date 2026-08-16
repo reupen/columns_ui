@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "menu_mnemonics.h"
+#include "win32.h"
 
 namespace cui::toolbars::menu {
 
@@ -9,6 +10,9 @@ constexpr auto MSG_HIDE_MENUACC = WM_USER + 3u;
 constexpr auto MSG_SHOW_MENUACC = WM_USER + 4u;
 constexpr auto MSG_CREATE_MENU = WM_USER + 5u;
 constexpr auto MSG_SIZE_LIMIT_CHANGE = WM_USER + 6u;
+
+constexpr auto flag_focus_window = 1 << 0;
+constexpr auto flag_focus_menu_item = 1 << 1;
 
 constexpr GUID font_id{0x6f3b4d11, 0xebe6, 0x4d30, {0x8b, 0x1f, 0xea, 0x2e, 0x2f, 0x16, 0x2b, 0x04}};
 
@@ -82,7 +86,7 @@ public:
     void on_size(int client_width, int client_height) const;
 
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
-    void make_menu(int idx);
+    void make_menu(int idx, bool focus_item);
     void destroy_menu() const { SendMessage(get_wnd(), WM_CANCELMODE, 0, 0); }
     void update_menu_acc() const { PostMessage(get_wnd(), MSG_HIDE_MENUACC, 0, 0); }
     void show_menu_acc() const { PostMessage(get_wnd(), MSG_SHOW_MENUACC, 0, 0); }
@@ -260,11 +264,12 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case MSG_CREATE_MENU: {
-        if (lp)
+        if (lp & flag_focus_window)
             SetFocus(m_toolbar_wnd);
+
         m_wanted_active_item = gsl::narrow_cast<int>(wp);
 
-        make_menu(m_wanted_active_item);
+        make_menu(m_wanted_active_item, (lp & flag_focus_menu_item) != 0);
         break;
     }
     case WM_MENUSELECT: {
@@ -450,7 +455,7 @@ LRESULT WINAPI MenuToolbar::handle_toolbar_message(HWND wnd, UINT msg, WPARAM wp
     return CallWindowProc(m_menu_proc, wnd, msg, wp, lp);
 }
 
-void MenuToolbar::make_menu(int idx)
+void MenuToolbar::make_menu(int idx, bool focus_item)
 {
     if (idx == m_actual_active_item || s_hooked || idx < 1 || idx > gsl::narrow<int>(m_buttons.get_count()))
         return;
@@ -513,6 +518,13 @@ void MenuToolbar::make_menu(int idx)
     if (GetFocus() != m_toolbar_wnd)
         m_previous_focus_wnd = GetFocus();
 
+    if (focus_item) {
+        fb2k::inMainThread([menu] {
+            if (const auto menu_wnd = win32::find_window_for_menu(menu))
+                PostMessage(menu_wnd, WM_KEYDOWN, VK_DOWN, 0);
+        });
+    }
+
     int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON | TPM_RETURNCMD, pt.x, pt.y, get_wnd(), &tpmp);
     m_status_override.release();
 
@@ -571,7 +583,7 @@ bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARA
                         m_wanted_active_item = gsl::narrow<int>(m_buttons.get_count());
                     else
                         --m_wanted_active_item;
-                    PostMessage(get_wnd(), MSG_CREATE_MENU, m_wanted_active_item, 0);
+                    PostMessage(get_wnd(), MSG_CREATE_MENU, m_wanted_active_item, flag_focus_menu_item);
                 }
 
                 break;
@@ -582,7 +594,7 @@ bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARA
                         m_wanted_active_item = 1;
                     else
                         ++m_wanted_active_item;
-                    PostMessage(get_wnd(), MSG_CREATE_MENU, m_wanted_active_item, 0);
+                    PostMessage(get_wnd(), MSG_CREATE_MENU, m_wanted_active_item, flag_focus_menu_item);
                 }
                 break;
             case VK_ESCAPE:
@@ -657,7 +669,7 @@ bool MenuToolbar::on_menuchar(unsigned short chr)
     UINT id{};
 
     if (SendMessage(m_toolbar_wnd, TB_MAPACCELERATOR, chr, (LPARAM)&id)) {
-        PostMessage(get_wnd(), MSG_CREATE_MENU, id, TRUE);
+        PostMessage(get_wnd(), MSG_CREATE_MENU, id, flag_focus_window | flag_focus_menu_item);
         return true;
     }
 
