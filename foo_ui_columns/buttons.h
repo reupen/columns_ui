@@ -76,6 +76,7 @@ public:
             void notify_on_destroy() override;
             void notify_on_selection_change(const bit_array& p_affected, const bit_array& p_status,
                 notification_source_t p_notification_source) override;
+            void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override;
             bool do_drag_drop(WPARAM wp) override;
             void move_selection(int delta) override;
 
@@ -94,6 +95,7 @@ public:
         void update_size_field_status();
 
         void on_selection_change(size_t index);
+        void show_command_picker();
         void populate_buttons_list();
         void refresh_buttons_list_items(size_t index, size_t count, bool b_update_display = true);
 

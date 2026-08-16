@@ -29,6 +29,12 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_selection_change(
     m_param.on_selection_change(index);
 }
 
+void ButtonsToolbar::ConfigParam::ButtonsList::execute_default_action(
+    size_t index, size_t column, bool b_keyboard, bool b_ctrl)
+{
+    m_param.show_command_picker();
+}
+
 bool ButtonsToolbar::ConfigParam::ButtonsList::do_drag_drop(WPARAM wp)
 {
     DWORD drop_effect{DROPEFFECT_NONE};
