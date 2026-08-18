@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "buttons.h"
 #include "dark_mode_dialog.h"
+#include "string.h"
 
 namespace cui::toolbars::buttons {
 
 std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
 {
-    dark::DialogDarkModeConfig dark_mode_config{
-        .button_ids = {IDOK, IDCANCEL}, .list_box_ids = {IDC_GROUP, IDC_ITEM, IDC_COMMAND}};
+    dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
+        .edit_ids = {IDC_SEARCH_EDIT},
+        .list_box_ids = {IDC_GROUP, IDC_ITEM, IDC_COMMAND}};
 
     const auto dialog_result = modal_dialog_box(
         IDD_BUTTON_COMMAND_PICKER, dark_mode_config, wnd,
@@ -187,6 +189,10 @@ void CommandPickerDialog::collect_commands()
     case TYPE_SEPARATOR:
         break;
     }
+
+    std::ranges::sort(m_commands, [](const auto& left, const auto& right) {
+        return StrCmpLogicalW(left->path.c_str(), right->path.c_str()) < 0;
+    });
 }
 
 void CommandPickerDialog::populate_command_list() const
@@ -194,7 +200,16 @@ void CommandPickerDialog::populate_command_list() const
     ListBox_ResetContent(m_command_list_wnd);
     SetWindowRedraw(m_command_list_wnd, FALSE);
 
-    for (const auto& command : m_commands) {
+    auto terms = string::split_into_words(m_search_string) | ranges::to<std::vector<std::wstring_view>>();
+
+    auto filtered_commands = m_commands | ranges::views::filter([&](auto&& command) {
+        return ranges::all_of(
+            terms, [&](auto&& term) { return string::match_string(command->path, term, false, false); });
+    });
+
+    std::optional<int> found_index;
+
+    for (const auto& command : filtered_commands) {
         const auto index = ListBox_AddString(m_command_list_wnd, command->path.c_str());
 
         if (index == LB_ERR || index == LB_ERRSPACE)
@@ -203,10 +218,14 @@ void CommandPickerDialog::populate_command_list() const
         ListBox_SetItemData(m_command_list_wnd, index, reinterpret_cast<LPARAM>(command.get()));
 
         if (m_data.guid != GUID{} && command->id == m_data.guid && command->subcommand_id == m_data.subcommand) {
-            ListBox_SetCurSel(m_command_list_wnd, index);
-            update_description();
+            found_index = index;
         }
     }
+
+    if (found_index)
+        ListBox_SetCurSel(m_command_list_wnd, *found_index);
+
+    update_description();
 
     SetWindowRedraw(m_command_list_wnd, TRUE);
 }
@@ -238,6 +257,7 @@ void CommandPickerDialog::initialise(HWND wnd)
     m_command_group_wnd = GetDlgItem(wnd, IDC_GROUP);
     m_item_group = GetDlgItem(wnd, IDC_ITEM);
     m_command_list_wnd = GetDlgItem(wnd, IDC_COMMAND);
+    m_search_edit = GetDlgItem(wnd, IDC_SEARCH_EDIT);
 
     SendMessage(m_command_group_wnd, LB_ADDSTRING, 0, (LPARAM) _T("Separator"));
     SendMessage(m_command_group_wnd, LB_ADDSTRING, 0, (LPARAM) _T("Buttons"));
@@ -250,6 +270,8 @@ void CommandPickerDialog::initialise(HWND wnd)
     SendMessage(m_item_group, LB_ADDSTRING, 0, (LPARAM) _T("Active selection"));
 
     SendMessage(m_command_group_wnd, LB_SETCURSEL, m_data.group, 0);
+
+    Edit_SetCueBannerTextFocused(m_search_edit, L"Search commands", true);
 }
 
 void CommandPickerDialog::deinitialise(HWND wnd)
@@ -301,6 +323,11 @@ INT_PTR CommandPickerDialog::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             }
             update_description();
             return TRUE;
+        }
+        case IDC_SEARCH_EDIT | (EN_CHANGE << 16): {
+            m_search_string = uih::get_window_text(m_search_edit);
+            populate_command_list();
+            break;
         }
         case IDCANCEL: {
             EndDialog(wnd, 0);

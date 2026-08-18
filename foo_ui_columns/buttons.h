@@ -222,6 +222,8 @@ private:
     HWND m_command_group_wnd{};
     HWND m_item_group{};
     HWND m_command_list_wnd{};
+    HWND m_search_edit{};
+    std::wstring m_search_string;
     CommandPickerData m_data;
 };
 
