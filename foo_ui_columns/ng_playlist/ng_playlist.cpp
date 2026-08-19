@@ -1756,7 +1756,7 @@ bool PlaylistView::notify_on_keyboard_keydown_paste()
     return playlist_utils::paste_at_focused_item(get_wnd());
 }
 
-size_t PlaylistView::storage_get_focus_item()
+size_t PlaylistView::storage_get_focus_item() const
 {
     return playlist_manager::get()->activeplaylist_get_focus_item();
 }
@@ -1765,7 +1765,7 @@ void PlaylistView::storage_set_focus_item(size_t index)
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
     playlist_manager::get()->activeplaylist_set_focus_item(index);
 }
-void PlaylistView::storage_get_selection_state(bit_array_var& out)
+void PlaylistView::storage_get_selection_state(bit_array_var& out) const
 {
     playlist_manager::get()->activeplaylist_get_selection_mask(out);
 }
@@ -1795,11 +1795,11 @@ bool PlaylistView::storage_set_selection_state(
     api->activeplaylist_set_selection(p_affected, p_status);
     return b_changed;
 }
-bool PlaylistView::storage_get_item_selected(size_t index)
+bool PlaylistView::storage_get_item_selected(size_t index) const
 {
     return playlist_manager::get()->activeplaylist_is_item_selected(index);
 }
-size_t PlaylistView::storage_get_selection_count(size_t max)
+size_t PlaylistView::storage_get_selection_count(size_t max) const
 {
     return playlist_manager::get()->activeplaylist_get_selection_count(max);
 }

@@ -14,11 +14,22 @@
 - The list of commands in the Buttons toolbar command picker can now be filtered
   using a search box. [[#1830](https://github.com/reupen/columns_ui/pull/1830)]
 
+- The Buttons toolbar command picker now uses the same list view control used
+  elsewhere in Columns UI for improved consistency.
+  [[#1832](https://github.com/reupen/columns_ui/pull/1832)]
+
+  This change also means that truncated items in the command list now have
+  tooltips.
+
 - Double-clicking on list items in the Buttons toolbar options dialogue now
   opens the command picker.
   [[#1827](https://github.com/reupen/columns_ui/pull/1827)]
 
 ### Bug fixes
+
+- Typing characters in list views on Columns UI preferences pages and in
+  built-in dialogue boxes now jumps to the next matching item as expected.
+  [[#1832](https://github.com/reupen/columns_ui/pull/1832)]
 
 - Pressing main menu access keys with Shift held down (e.g. Alt+Shift+F) now
   opens the relevant menu, with hidden items shown, as expected.

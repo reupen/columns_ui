@@ -188,7 +188,6 @@
 #define IDC_NOWPL                       1036
 #define IDC_INLINE_MODE                 1036
 #define IDC_RESET                       1038
-#define IDC_COMMAND                     1038
 #define IDC_VOL                         1039
 #define IDC_TAB1                        1039
 #define IDC_SORT_ARROWS                 1039
@@ -208,13 +207,11 @@
 #define IDC_DESC                        1049
 #define IDC_SELECTION_MODEL             1049
 #define IDC_DROP_USE_STRING             1050
-#define IDC_ITEM                        1050
 #define IDC_SHOWARTWORK                 1050
 #define IDC_DROP_STRING                 1051
 #define IDC_SHOW                        1051
 #define IDC_STICKY_ARTWORK              1051
 #define IDC_TABS_MULTILINE              1052
-#define IDC_GROUP                       1052
 #define IDC_TEXT_LOCATION               1052
 #define IDC_ARTWORKREFLECTION           1052
 #define IDC_MENU_DBLCLK                 1053

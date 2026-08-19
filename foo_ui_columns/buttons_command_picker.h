@@ -1,6 +1,7 @@
 #pragma once
 
 #include "buttons_button.h"
+#include "core_dark_list_view.h"
 
 namespace cui::toolbars::buttons {
 
@@ -22,8 +23,21 @@ private:
     public:
         GUID id{};
         GUID subcommand_id{};
-        std::wstring path;
         std::string description;
+
+        void set_path(std::string path)
+        {
+            path_utf8 = std::move(path);
+            path_utf16 = mmh::to_utf16(path_utf8);
+        }
+
+        wil::zstring_view get_path_utf8() { return path_utf8; }
+
+        wil::zwstring_view get_path_utf16() { return path_utf16; }
+
+    private:
+        std::string path_utf8;
+        std::wstring path_utf16;
     };
 
     void collect_commands();
@@ -32,7 +46,7 @@ private:
     bool process_dynamic_context_menu_node_commands(
         const GUID& id, std::list<std::string> name_parts, contextmenu_item_node* node);
 
-    void populate_command_list() const;
+    void populate_command_list();
     void collect_commands_and_populate_command_list();
 
     void update_description() const;
@@ -40,11 +54,12 @@ private:
     void deinitialise(HWND wnd);
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-    std::vector<std::unique_ptr<CommandData>> m_commands;
+    std::vector<std::shared_ptr<CommandData>> m_commands;
+    std::vector<std::shared_ptr<CommandData>> m_filtered_commands;
     HWND m_wnd{};
-    HWND m_command_group_wnd{};
-    HWND m_item_group{};
-    HWND m_command_list_wnd{};
+    helpers::CoreDarkListView m_command_group_list_view;
+    helpers::CoreDarkListView m_item_group_list_view;
+    helpers::CoreDarkListView m_commands_list_view;
     HWND m_search_edit{};
     std::wstring m_search_string;
     CommandPickerData m_data;

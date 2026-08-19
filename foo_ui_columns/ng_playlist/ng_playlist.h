@@ -529,13 +529,13 @@ private:
     void sort_by_column_fb2k_v2(size_t index, bool b_descending, bool b_selection_only);
     void sort_by_column_fb2k_v2_26(size_t column_index, bool is_descending, bool is_selection_only);
 
-    size_t storage_get_focus_item() override;
+    size_t storage_get_focus_item() const override;
     void storage_set_focus_item(size_t index) override;
-    void storage_get_selection_state(bit_array_var& out) override;
+    void storage_get_selection_state(bit_array_var& out) const override;
     bool storage_set_selection_state(
         const bit_array& p_affected, const bit_array& p_status, bit_array_var* p_changed = nullptr) override;
-    bool storage_get_item_selected(size_t index) override;
-    size_t storage_get_selection_count(size_t max) override;
+    bool storage_get_item_selected(size_t index) const override;
+    size_t storage_get_selection_count(size_t max) const override;
 
     void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override;
     void move_selection(int delta) override;
