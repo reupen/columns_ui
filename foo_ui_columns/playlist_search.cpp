@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "playlist_search.h"
+#include "string.h"
 
 namespace cui::playlist_search {
 
@@ -9,32 +10,6 @@ fbh::ConfigString cfg_search_bar_script(
     {0xf9892211, 0xc021, 0x4a5b, {0x8c, 0x95, 0x2a, 0x0c, 0x12, 0xc0, 0x05, 0x3f}}, "[%artist%] [%title%] [%album%]");
 fbh::ConfigBool cfg_search_bar_ignore_symbols(
     {0x8dbd88a1, 0x9ec2, 0x4eb0, {0xad, 0x8c, 0xa2, 0x79, 0xbd, 0x75, 0x20, 0x4b}}, true);
-
-namespace {
-
-auto split_into_words(std::wstring_view text)
-{
-    return text | ranges::views::split_when([](auto&& character) { return std::iswspace(character); })
-        | ranges::views::filter([](auto&& word) { return !ranges::empty(word); })
-        | ranges::views::transform([](auto&& word) {
-              const auto size = ranges::distance(word);
-              return size > 0 ? std::wstring_view(&*ranges::begin(word), size) : std::wstring_view{};
-          });
-}
-
-bool match_string(
-    std::wstring_view full_string, std::wstring_view partial_string, bool ignore_symbols, bool starts_with)
-{
-    const auto match_index = FindNLSStringEx(LOCALE_NAME_USER_DEFAULT,
-        (starts_with ? FIND_STARTSWITH : FIND_FROMSTART) | LINGUISTIC_IGNOREDIACRITIC | NORM_IGNORECASE
-            | NORM_IGNOREWIDTH | NORM_LINGUISTIC_CASING | (ignore_symbols ? NORM_IGNORESYMBOLS : 0),
-        full_string.data(), gsl::narrow<int>(full_string.size()), partial_string.data(),
-        gsl::narrow<int>(partial_string.size()), nullptr, nullptr, nullptr, 0);
-
-    return match_index >= 0;
-}
-
-} // namespace
 
 void PlaylistSearch::init()
 {
@@ -191,8 +166,9 @@ void PlaylistSearch::run()
     const auto is_words_match = mode == SearchMode::mode_match_words_beginning_formatted_title
         || mode == SearchMode::mode_match_words_anywhere_formatted_title;
 
-    const auto terms = is_words_match ? split_into_words(m_search_terms) | ranges::to<std::vector<std::wstring_view>>()
-                                      : std::vector<std::wstring_view>{};
+    const auto terms = is_words_match
+        ? string::split_into_words(m_search_terms) | ranges::to<std::vector<std::wstring_view>>()
+        : std::vector<std::wstring_view>{};
 
     if (mode == SearchMode::mode_match_words_beginning_formatted_title) {
         concurrency::parallel_for(size_t{}, m_formatted.size(), [this, &terms](auto&& index) {
@@ -200,11 +176,11 @@ void PlaylistSearch::run()
                 return;
 
             const auto& target_string = m_formatted[index];
-            auto target_words = split_into_words(target_string);
+            auto target_words = string::split_into_words(target_string);
 
             const auto all_terms_match = ranges::all_of(terms, [&](auto&& term) {
                 return ranges::any_of(target_words, [&](auto&& target_word) {
-                    return match_string(target_word, term, cfg_search_bar_ignore_symbols, true);
+                    return string::match_string(target_word, term, cfg_search_bar_ignore_symbols, true);
                 });
             });
 
@@ -217,8 +193,9 @@ void PlaylistSearch::run()
                 return;
 
             const auto& target_string = m_formatted[index];
-            const auto all_terms_match = ranges::all_of(terms,
-                [&](auto&& term) { return match_string(target_string, term, cfg_search_bar_ignore_symbols, false); });
+            const auto all_terms_match = ranges::all_of(terms, [&](auto&& term) {
+                return string::match_string(target_string, term, cfg_search_bar_ignore_symbols, false);
+            });
 
             if (!all_terms_match || terms.empty())
                 m_matches[index] = false;

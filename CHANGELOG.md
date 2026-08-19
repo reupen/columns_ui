@@ -11,6 +11,9 @@
   This includes being able to directly access each top-level menu using their
   access keys (e.g. Alt+F for the File menu).
 
+- The list of commands in the Buttons toolbar command picker can now be filtered
+  using a search box. [[#1830](https://github.com/reupen/columns_ui/pull/1830)]
+
 - Double-clicking on list items in the Buttons toolbar options dialogue now
   opens the command picker.
   [[#1827](https://github.com/reupen/columns_ui/pull/1827)]

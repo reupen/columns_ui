@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "buttons.h"
 #include "dark_mode_dialog.h"
+#include "string.h"
 
 namespace cui::toolbars::buttons {
 
 std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
 {
-    dark::DialogDarkModeConfig dark_mode_config{
-        .button_ids = {IDOK, IDCANCEL}, .list_box_ids = {IDC_GROUP, IDC_ITEM, IDC_COMMAND}};
+    dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
+        .edit_ids = {IDC_SEARCH_EDIT},
+        .list_box_ids = {IDC_GROUP, IDC_ITEM, IDC_COMMAND}};
 
     const auto dialog_result = modal_dialog_box(
         IDD_BUTTON_COMMAND_PICKER, dark_mode_config, wnd,
@@ -16,8 +18,8 @@ std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
     return {dialog_result > 0, m_data};
 }
 
-bool CommandPickerDialog::__populate_mainmenu_dynamic_recur(
-    CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root)
+bool CommandPickerDialog::process_dynamic_main_menu_node_commands(
+    const GUID& id, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root)
 {
     if (ptr_node.is_valid()) {
         pfc::string8 name_part;
@@ -28,15 +30,16 @@ bool CommandPickerDialog::__populate_mainmenu_dynamic_recur(
         case mainmenu_node::type_command: {
             name_parts.emplace_back(name_part);
 
-            auto p_data = std::make_unique<CommandData>(data);
-            p_data->m_subcommand = ptr_node->get_guid();
-            ptr_node->get_description(p_data->m_desc);
+            auto command = std::make_unique<CommandData>();
+            command->id = id;
+            command->subcommand_id = ptr_node->get_guid();
 
-            auto& data_item = m_commands.emplace_back(std::move(p_data));
+            mmh::StringAdaptor adapted_description(command->description);
+            ptr_node->get_description(adapted_description);
 
-            auto path = mmh::join(name_parts, "/");
-            const auto idx = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(path.c_str()));
-            SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
+            command->path = mmh::to_utf16(mmh::join(name_parts, "/"));
+
+            m_commands.emplace_back(std::move(command));
         }
             return true;
         case mainmenu_node::type_group: {
@@ -45,7 +48,7 @@ bool CommandPickerDialog::__populate_mainmenu_dynamic_recur(
 
             for (size_t i = 0, count = ptr_node->get_children_count(); i < count; i++) {
                 mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
-                __populate_mainmenu_dynamic_recur(data, ptr_child, name_parts, false);
+                process_dynamic_main_menu_node_commands(id, ptr_child, name_parts, false);
             }
         }
             return true;
@@ -55,196 +58,227 @@ bool CommandPickerDialog::__populate_mainmenu_dynamic_recur(
     }
     return false;
 }
-bool CommandPickerDialog::__populate_commands_recur(
-    CommandData& data, std::list<std::string> name_parts, contextmenu_item_node* p_node, bool b_root)
+
+bool CommandPickerDialog::process_dynamic_context_menu_node_commands(
+    const GUID& id, std::list<std::string> name_parts, contextmenu_item_node* node)
 {
-    if (!p_node)
+    if (!node)
         return false;
 
-    pfc::string8 name = menu_helpers::get_context_menu_node_name(p_node);
+    pfc::string8 name = menu_helpers::get_context_menu_node_name(node);
 
     if (!name.is_empty())
         name_parts.emplace_back(name);
 
-    if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP) {
-        const auto child_count = p_node->get_children_count();
+    if (node->get_type() == contextmenu_item_node::TYPE_POPUP) {
+        const auto child_count = node->get_children_count();
 
         for (size_t child = 0; child < child_count; child++) {
-            contextmenu_item_node* p_child = p_node->get_child(child);
-            __populate_commands_recur(data, name_parts, p_child, false);
+            contextmenu_item_node* child_node = node->get_child(child);
+            process_dynamic_context_menu_node_commands(id, name_parts, child_node);
         }
         return true;
     }
 
-    if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && p_node->get_guid() != GUID{}) {
-        auto p_data = std::make_unique<CommandData>(data);
-        p_data->m_subcommand = p_node->get_guid();
-        p_node->get_description(p_data->m_desc);
+    if (node->get_type() == contextmenu_item_node::TYPE_COMMAND && node->get_guid() != GUID{}) {
+        auto command = std::make_unique<CommandData>();
+        command->id = id;
+        command->path = mmh::to_utf16(mmh::join(name_parts, "/"));
+        command->subcommand_id = node->get_guid();
 
-        auto& data_item = m_commands.emplace_back(std::move(p_data));
+        mmh::StringAdaptor adapted_description(command->description);
+        node->get_description(adapted_description);
 
-        const auto path = mmh::join(name_parts, "/");
-        const auto idx = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(path.c_str()));
-        SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
+        m_commands.emplace_back(std::move(command));
         return true;
     }
 
     return false;
 }
 
-void CommandPickerDialog::populate_commands()
+void CommandPickerDialog::collect_commands()
 {
-    SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
     m_commands.clear();
-    SendMessage(wnd_command, WM_SETREDRAW, FALSE, 0);
-    if (m_data.group == 2) {
-        service_enum_t<contextmenu_item> e;
-        service_ptr_t<contextmenu_item> ptr;
 
-        while (e.next(ptr)) {
-            {
-                unsigned p_service_item_count = ptr->get_num_items();
-                for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
-                    p_service_item_index++) {
-                    pfc::ptrholder_t<contextmenu_item_node_root> p_node(ptr->instantiate_item(
-                        p_service_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list));
+    switch (m_data.group) {
+    case TYPE_MENU_ITEM_CONTEXT:
+        for (auto&& items : contextmenu_item::enumerate()) {
+            for (const auto item_index : ranges::views::iota(0u, items->get_num_items())) {
+                pfc::ptrholder_t node(items->instantiate_item(
+                    item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list));
 
-                    CommandData data;
-                    data.m_guid = ptr->get_item_guid(p_service_item_index);
+                const auto id = items->get_item_guid(item_index);
 
-                    std::list<std::string> name_parts;
-                    menu_helpers::get_context_menu_item_parent_names(ptr, name_parts);
+                std::list<std::string> name_parts;
+                menu_helpers::get_context_menu_item_parent_names(items, name_parts);
 
-                    if (p_node.is_valid() && __populate_commands_recur(data, name_parts, p_node.get_ptr(), true)) {
-                    } else {
-                        pfc::string8 name;
-                        ptr->get_item_name(p_service_item_index, name);
+                if (node.is_valid() && process_dynamic_context_menu_node_commands(id, name_parts, node.get_ptr()))
+                    continue;
 
-                        name_parts.emplace_back(name);
+                auto command = std::make_unique<CommandData>();
+                command->id = id;
 
-                        auto p_data = std::make_unique<CommandData>(data);
-                        ptr->get_item_description(p_service_item_index, p_data->m_desc);
-                        auto& data_item = m_commands.emplace_back(std::move(p_data));
+                std::string name;
+                mmh::StringAdaptor adapted_name(name);
+                items->get_item_name(item_index, adapted_name);
+                name_parts.emplace_back(name);
+                command->path = mmh::to_utf16(mmh::join(name_parts, "/"));
 
-                        const auto path = mmh::join(name_parts, "/");
-                        const auto idx
-                            = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(path.c_str()));
-                        SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
-                    }
+                mmh::StringAdaptor adapted_description(command->description);
+                items->get_item_description(item_index, adapted_description);
+
+                m_commands.emplace_back(std::move(command));
+            }
+        }
+        break;
+    case TYPE_MENU_ITEM_MAIN:
+        for (auto&& commands_service : mainmenu_commands::enumerate()) {
+            mainmenu_commands_v2::ptr commands_service_v2;
+            commands_service_v2 &= commands_service;
+
+            for (auto item_index : ranges::views::iota(0u, commands_service->get_command_count())) {
+                const auto id = commands_service->get_command(item_index);
+
+                pfc::string8 name;
+                commands_service->get_name(item_index, name);
+                std::list<std::string> name_parts{name.get_ptr()};
+
+                auto parent_id = commands_service->get_parent();
+                while (parent_id != GUID{}) {
+                    pfc::string8 parent_name;
+                    if (menu_helpers::maingroupname_from_guid(parent_id, parent_name, parent_id))
+                        name_parts.emplace_front(parent_name);
+                }
+
+                if (commands_service_v2.is_valid() && commands_service_v2->is_command_dynamic(item_index)) {
+                    mainmenu_node::ptr ptr_node = commands_service_v2->dynamic_instantiate(item_index);
+                    process_dynamic_main_menu_node_commands(id, ptr_node, name_parts, true);
+                } else {
+                    auto command = std::make_unique<CommandData>();
+                    command->id = id;
+                    command->path = mmh::to_utf16(mmh::join(name_parts, "/"));
+
+                    mmh::StringAdaptor adapted_description(command->description);
+                    commands_service->get_description(item_index, adapted_description);
+                    m_commands.emplace_back(std::move(command));
                 }
             }
         }
-    } else if (m_data.group == 3) {
-        service_enum_t<mainmenu_commands> e;
-        service_ptr_t<mainmenu_commands> ptr;
+        break;
+    case TYPE_BUTTON:
+        for (auto&& button_service : uie::button::enumerate()) {
+            uie::custom_button::ptr custom_button_service;
 
-        while (e.next(ptr)) {
-            service_ptr_t<mainmenu_commands_v2> ptr_v2;
-            ptr->service_query_t(ptr_v2);
-            {
-                unsigned p_service_item_count = ptr->get_command_count();
-                for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
-                    p_service_item_index++) {
-                    CommandData data;
-                    data.m_guid = ptr->get_command(p_service_item_index);
+            if (button_service->get_guid_type() == uie::BUTTON_GUID_BUTTON
+                && (custom_button_service &= button_service)) {
+                auto command = std::make_unique<CommandData>();
+                command->id = button_service->get_item_guid();
 
-                    pfc::string8 name;
-                    ptr->get_name(p_service_item_index, name);
-                    std::list<std::string> name_parts{name.get_ptr()};
+                mmh::StringAdaptor adapted_description(command->description);
+                custom_button_service->get_description(adapted_description);
 
-                    {
-                        GUID parent = ptr->get_parent();
-                        while (parent != pfc::guid_null) {
-                            pfc::string8 parentname;
-                            if (menu_helpers::maingroupname_from_guid(parent, parentname, parent))
-                                name_parts.emplace_front(parentname);
-                        }
-                    }
+                std::string name;
+                mmh::StringAdaptor adapted_name(name);
+                custom_button_service->get_name(adapted_name);
+                command->path = mmh::to_utf16(name);
 
-                    if (ptr_v2.is_valid() && ptr_v2->is_command_dynamic(p_service_item_index)) {
-                        mainmenu_node::ptr ptr_node = ptr_v2->dynamic_instantiate(p_service_item_index);
-                        __populate_mainmenu_dynamic_recur(data, ptr_node, name_parts, true);
-                    } else {
-                        auto p_data = std::make_unique<CommandData>(data);
-                        ptr->get_description(p_service_item_index, p_data->m_desc);
-                        auto& data_item = m_commands.emplace_back(std::move(p_data));
-
-                        auto path = mmh::join(name_parts, "/");
-                        const auto idx
-                            = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(path.c_str()));
-                        SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
-                    }
-                }
+                m_commands.emplace_back(std::move(command));
             }
         }
-    } else if (m_data.group == 1) {
-        service_enum_t<uie::button> e;
-        service_ptr_t<uie::button> ptr;
-        while (e.next(ptr)) {
-            service_ptr_t<uie::custom_button> p_button;
-            if (ptr->get_guid_type() == uie::BUTTON_GUID_BUTTON && ptr->service_query_t(p_button)) {
-                auto p_data = std::make_unique<CommandData>();
-                p_data->m_guid = ptr->get_item_guid();
-                p_button->get_description(p_data->m_desc);
-                auto& data_item = m_commands.emplace_back(std::move(p_data));
-                pfc::string8 temp;
-                p_button->get_name(temp);
-                const auto idx = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(temp.c_str()));
-                SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
-            }
-        }
+        break;
+    case TYPE_SEPARATOR:
+        break;
     }
-    const auto count = ListBox_GetCount(wnd_command);
-    for (int n = 0; n < count; n++) {
-        LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, n, 0);
-        CommandData* p_data = ((CommandData*)ret);
 
-        if (ret != LB_ERR && p_data->m_guid == m_data.guid && p_data->m_subcommand == m_data.subcommand) {
-            SendMessage(wnd_command, LB_SETCURSEL, n, 0);
-            update_description();
-            break;
-        }
-    }
-    SendMessage(wnd_command, WM_SETREDRAW, TRUE, 0);
+    std::ranges::sort(m_commands, [](const auto& left, const auto& right) {
+        return StrCmpLogicalW(left->path.c_str(), right->path.c_str()) < 0;
+    });
 }
-void CommandPickerDialog::update_description()
+
+void CommandPickerDialog::populate_command_list() const
 {
-    LRESULT p_command = SendMessage(wnd_command, LB_GETCURSEL, 0, 0);
+    ListBox_ResetContent(m_command_list_wnd);
+    SetWindowRedraw(m_command_list_wnd, FALSE);
+
+    auto terms = string::split_into_words(m_search_string) | ranges::to<std::vector<std::wstring_view>>();
+
+    auto filtered_commands = m_commands | ranges::views::filter([&](auto&& command) {
+        return ranges::all_of(
+            terms, [&](auto&& term) { return string::match_string(command->path, term, false, false); });
+    });
+
+    std::optional<int> found_index;
+
+    for (const auto& command : filtered_commands) {
+        const auto index = ListBox_AddString(m_command_list_wnd, command->path.c_str());
+
+        if (index == LB_ERR || index == LB_ERRSPACE)
+            continue;
+
+        ListBox_SetItemData(m_command_list_wnd, index, reinterpret_cast<LPARAM>(command.get()));
+
+        if (m_data.guid != GUID{} && command->id == m_data.guid && command->subcommand_id == m_data.subcommand) {
+            found_index = index;
+        }
+    }
+
+    if (found_index)
+        ListBox_SetCurSel(m_command_list_wnd, *found_index);
+
+    update_description();
+
+    SetWindowRedraw(m_command_list_wnd, TRUE);
+}
+
+void CommandPickerDialog::collect_commands_and_populate_command_list()
+{
+    collect_commands();
+    populate_command_list();
+}
+
+void CommandPickerDialog::update_description() const
+{
+    LRESULT p_command = SendMessage(m_command_list_wnd, LB_GETCURSEL, 0, 0);
     if (p_command != LB_ERR) {
-        LRESULT p_data = SendMessage(wnd_command, LB_GETITEMDATA, p_command, 0);
+        LRESULT p_data = SendMessage(m_command_list_wnd, LB_GETITEMDATA, p_command, 0);
         if (p_data != LB_ERR)
-            uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, ((CommandData*)p_data)->m_desc);
+            uSendDlgItemMessageText(
+                m_wnd, IDC_DESC, WM_SETTEXT, 0, reinterpret_cast<CommandData*>(p_data)->description.c_str());
         else
-            uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, "");
-    } else
-        uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, "");
+            SetWindowTextW(GetDlgItem(m_wnd, IDC_DESC), L"");
+    } else {
+        SetWindowTextW(GetDlgItem(m_wnd, IDC_DESC), L"");
+    }
 }
 
 void CommandPickerDialog::initialise(HWND wnd)
 {
     m_wnd = wnd;
-    wnd_group = GetDlgItem(wnd, IDC_GROUP);
-    wnd_filter = GetDlgItem(wnd, IDC_ITEM);
-    wnd_command = GetDlgItem(wnd, IDC_COMMAND);
+    m_command_group_wnd = GetDlgItem(wnd, IDC_GROUP);
+    m_item_group = GetDlgItem(wnd, IDC_ITEM);
+    m_command_list_wnd = GetDlgItem(wnd, IDC_COMMAND);
+    m_search_edit = GetDlgItem(wnd, IDC_SEARCH_EDIT);
 
-    SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM) _T("Separator"));
-    SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM) _T("Buttons"));
-    SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM) _T("Context menu items"));
-    SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM) _T("Main menu items"));
+    SendMessage(m_command_group_wnd, LB_ADDSTRING, 0, (LPARAM) _T("Separator"));
+    SendMessage(m_command_group_wnd, LB_ADDSTRING, 0, (LPARAM) _T("Buttons"));
+    SendMessage(m_command_group_wnd, LB_ADDSTRING, 0, (LPARAM) _T("Context menu items"));
+    SendMessage(m_command_group_wnd, LB_ADDSTRING, 0, (LPARAM) _T("Main menu items"));
 
-    SendMessage(wnd_filter, LB_ADDSTRING, 0, (LPARAM) _T("None"));
-    SendMessage(wnd_filter, LB_ADDSTRING, 0, (LPARAM) _T("Now playing item"));
-    SendMessage(wnd_filter, LB_ADDSTRING, 0, (LPARAM) _T("Current playlist selection"));
-    SendMessage(wnd_filter, LB_ADDSTRING, 0, (LPARAM) _T("Active selection"));
+    SendMessage(m_item_group, LB_ADDSTRING, 0, (LPARAM) _T("None"));
+    SendMessage(m_item_group, LB_ADDSTRING, 0, (LPARAM) _T("Now playing item"));
+    SendMessage(m_item_group, LB_ADDSTRING, 0, (LPARAM) _T("Current playlist selection"));
+    SendMessage(m_item_group, LB_ADDSTRING, 0, (LPARAM) _T("Active selection"));
 
-    SendMessage(wnd_group, LB_SETCURSEL, m_data.group, 0);
+    SendMessage(m_command_group_wnd, LB_SETCURSEL, m_data.group, 0);
+
+    Edit_SetCueBannerTextFocused(m_search_edit, L"Search commands", true);
 }
 
 void CommandPickerDialog::deinitialise(HWND wnd)
 {
-    SendMessage(wnd_group, LB_RESETCONTENT, 0, 0);
-    SendMessage(wnd_filter, LB_RESETCONTENT, 0, 0);
-    SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
+    SendMessage(m_command_group_wnd, LB_RESETCONTENT, 0, 0);
+    SendMessage(m_item_group, LB_RESETCONTENT, 0, 0);
+    SendMessage(m_command_list_wnd, LB_RESETCONTENT, 0, 0);
     m_commands.clear();
 }
 
@@ -253,51 +287,56 @@ INT_PTR CommandPickerDialog::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
     switch (msg) {
     case WM_INITDIALOG: {
         initialise(wnd);
-        populate_commands();
-        SendMessage(wnd_filter, LB_SETCURSEL, static_cast<WPARAM>(m_data.filter), 0);
-    }
+        collect_commands_and_populate_command_list();
+        SendMessage(m_item_group, LB_SETCURSEL, static_cast<WPARAM>(m_data.filter), 0);
         return TRUE;
+    }
     case WM_DESTROY:
         deinitialise(wnd);
         return TRUE;
     case WM_COMMAND:
         switch (wp) {
         case IDC_GROUP | (LBN_SELCHANGE << 16):
-            m_data.group = ListBox_GetCurSel(wnd_group);
+            m_data.group = ListBox_GetCurSel(m_command_group_wnd);
             m_data.guid = {};
             m_data.subcommand = {};
-            populate_commands();
+            collect_commands_and_populate_command_list();
             return TRUE;
         case IDC_ITEM | (LBN_SELCHANGE << 16): {
-            const auto p_filter = ListBox_GetCurSel(wnd_filter);
+            const auto p_filter = ListBox_GetCurSel(m_item_group);
             if (p_filter != LB_ERR)
                 m_data.filter = p_filter;
-        }
             return TRUE;
+        }
         case IDC_COMMAND | (LBN_SELCHANGE << 16): {
             m_data.guid = {};
             m_data.subcommand = {};
 
-            const auto p_command = ListBox_GetCurSel(wnd_command);
+            const auto p_command = ListBox_GetCurSel(m_command_list_wnd);
             if (p_command != LB_ERR) {
-                LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, p_command, 0);
+                LRESULT ret = SendMessage(m_command_list_wnd, LB_GETITEMDATA, p_command, 0);
                 auto* p_data = (CommandData*)ret;
                 if (ret != LB_ERR) {
-                    m_data.guid = p_data->m_guid;
-                    m_data.subcommand = p_data->m_subcommand;
+                    m_data.guid = p_data->id;
+                    m_data.subcommand = p_data->subcommand_id;
                 }
             }
             update_description();
-        }
             return TRUE;
+        }
+        case IDC_SEARCH_EDIT | (EN_CHANGE << 16): {
+            m_search_string = uih::get_window_text(m_search_edit);
+            populate_command_list();
+            break;
+        }
         case IDCANCEL: {
             EndDialog(wnd, 0);
-        }
             return TRUE;
+        }
         case IDOK: {
             EndDialog(wnd, 1);
-        }
             return TRUE;
+        }
         }
         break;
     }

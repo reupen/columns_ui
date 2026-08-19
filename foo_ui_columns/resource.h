@@ -353,6 +353,7 @@
 #define IDC_MAX_FREQUENCY               1223
 #define IDC_MIN_FREQUENCY_SPIN          1224
 #define IDC_MAX_FREQUENCY_SPIN          1225
+#define IDC_SEARCH_EDIT                 1225
 #define IDC_BAR_WIDTH                   1226
 #define IDC_BAR_WIDTH_SPIN              1227
 #define IDC_STATIC                      -1
@@ -364,7 +365,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1225
+#define _APS_NEXT_CONTROL_VALUE         1226
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

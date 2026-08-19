@@ -197,26 +197,33 @@ public:
 private:
     class CommandData {
     public:
-        GUID m_guid{};
-        GUID m_subcommand{};
-        pfc::string8 m_desc;
+        GUID id{};
+        GUID subcommand_id{};
+        std::wstring path;
+        std::string description;
     };
 
-    bool __populate_mainmenu_dynamic_recur(
-        CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root);
-    bool __populate_commands_recur(
-        CommandData& data, std::list<std::string> name_parts, contextmenu_item_node* p_node, bool b_root);
-    void populate_commands();
-    void update_description();
+    void collect_commands();
+    bool process_dynamic_main_menu_node_commands(
+        const GUID& id, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root);
+    bool process_dynamic_context_menu_node_commands(
+        const GUID& id, std::list<std::string> name_parts, contextmenu_item_node* node);
+
+    void populate_command_list() const;
+    void collect_commands_and_populate_command_list();
+
+    void update_description() const;
     void initialise(HWND wnd);
     void deinitialise(HWND wnd);
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     std::vector<std::unique_ptr<CommandData>> m_commands;
     HWND m_wnd{};
-    HWND wnd_group{};
-    HWND wnd_filter{};
-    HWND wnd_command{};
+    HWND m_command_group_wnd{};
+    HWND m_item_group{};
+    HWND m_command_list_wnd{};
+    HWND m_search_edit{};
+    std::wstring m_search_string;
     CommandPickerData m_data;
 };
 

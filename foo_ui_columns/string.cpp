@@ -40,4 +40,16 @@ std::optional<int> parse_int_forgiving(std::wstring_view string, const std::loca
     }
 }
 
+bool match_string(
+    std::wstring_view full_string, std::wstring_view partial_string, bool ignore_symbols, bool starts_with)
+{
+    const auto match_index = FindNLSStringEx(LOCALE_NAME_USER_DEFAULT,
+        (starts_with ? FIND_STARTSWITH : FIND_FROMSTART) | LINGUISTIC_IGNOREDIACRITIC | NORM_IGNORECASE
+            | NORM_IGNOREWIDTH | NORM_LINGUISTIC_CASING | (ignore_symbols ? NORM_IGNORESYMBOLS : 0),
+        full_string.data(), gsl::narrow<int>(full_string.size()), partial_string.data(),
+        gsl::narrow<int>(partial_string.size()), nullptr, nullptr, nullptr, 0);
+
+    return match_index >= 0;
+}
+
 } // namespace cui::string
