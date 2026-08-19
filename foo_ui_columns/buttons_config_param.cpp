@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "buttons.h"
+#include "buttons_command_picker.h"
 #include "dark_mode_dialog.h"
 #include "prefs_utils.h"
 #include "svg.h"

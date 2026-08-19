@@ -449,6 +449,7 @@
     <ClInclude Include="buttons.h" />
     <ClInclude Include="buttons_button.h" />
     <ClInclude Include="buttons_button_image.h" />
+    <ClInclude Include="buttons_command_picker.h" />
     <ClInclude Include="buttons_config.h" />
     <ClInclude Include="colour_manager_data.h" />
     <ClInclude Include="colour_utils.h" />

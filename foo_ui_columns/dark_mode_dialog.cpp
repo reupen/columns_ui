@@ -191,10 +191,14 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, 
             break;
 
         if (!m_edit_background_brush)
-            m_edit_background_brush = get_colour_brush(ColourID::EditBackground, true);
+            m_edit_background_brush = m_config.use_dark_edit_background
+                ? get_system_colour_brush(COLOR_WINDOW, true)
+                : get_colour_brush(ColourID::EditBackground, true);
 
         const auto dc = reinterpret_cast<HDC>(wp);
-        SetBkColor(dc, get_colour(ColourID::EditBackground, true));
+        SetBkColor(dc,
+            m_config.use_dark_edit_background ? get_system_colour(COLOR_WINDOW, true)
+                                              : get_colour(ColourID::EditBackground, true));
         SetTextColor(dc, get_system_colour(COLOR_WINDOWTEXT, true));
         return reinterpret_cast<INT_PTR>(m_edit_background_brush.get());
     }

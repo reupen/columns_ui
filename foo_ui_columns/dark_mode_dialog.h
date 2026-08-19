@@ -14,6 +14,7 @@ struct DialogDarkModeConfig {
     std::unordered_set<int> spin_ids;
     std::unordered_set<int> tree_view_ids;
     int last_button_id{IDOK};
+    bool use_dark_edit_background{};
 };
 
 INT_PTR modal_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config, HWND parent_window,

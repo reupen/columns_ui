@@ -1028,6 +1028,9 @@
     <ClInclude Include="fallback_menu.h">
       <Filter>Main window</Filter>
     </ClInclude>
+    <ClInclude Include="buttons_command_picker.h">
+      <Filter>Buttons toolbar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
