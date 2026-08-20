@@ -442,6 +442,7 @@
     <ClCompile Include="wcs.cpp" />
     <ClCompile Include="wic.cpp" />
     <ClCompile Include="win32.cpp" />
+    <ClCompile Include="window_resize_helper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="artwork_decoder.h" />
@@ -563,6 +564,7 @@
     <ClInclude Include="wcs.h" />
     <ClInclude Include="wic.h" />
     <ClInclude Include="win32.h" />
+    <ClInclude Include="window_resize_helper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

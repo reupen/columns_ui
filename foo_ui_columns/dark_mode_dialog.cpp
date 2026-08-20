@@ -180,6 +180,10 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, 
     case WM_PAINT:
         handle_modern_background_paint(wnd, GetDlgItem(wnd, m_config.last_button_id), is_active_ui_dark());
         return TRUE;
+    case WM_WINDOWPOSCHANGED:
+        if ((reinterpret_cast<LPWINDOWPOS>(lp)->flags & SWP_NOSIZE) == 0)
+            RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
+        break;
     case WM_NOTIFY:
         if (const auto result = handle_wm_notify(wnd, reinterpret_cast<LPNMHDR>(lp)))
             return result;

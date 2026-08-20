@@ -674,6 +674,9 @@
     <ClCompile Include="fallback_menu.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
+    <ClCompile Include="window_resize_helper.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1030,6 +1033,9 @@
     </ClInclude>
     <ClInclude Include="buttons_command_picker.h">
       <Filter>Buttons toolbar</Filter>
+    </ClInclude>
+    <ClInclude Include="window_resize_helper.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
