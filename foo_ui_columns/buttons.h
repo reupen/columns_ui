@@ -6,6 +6,8 @@
 
 #include "buttons_button.h"
 
+#include "window_resize_helper.h"
+
 namespace cui::toolbars::buttons {
 
 enum class IconSize : int32_t {
@@ -105,6 +107,7 @@ public:
         bool m_initialising{};
         Button* m_selection{nullptr};
         HWND m_wnd{nullptr};
+        std::optional<utils::WindowResizeHelper> m_resize_helper;
         wil::unique_hfont m_h1_font;
         wil::unique_hfont m_h2_font;
         unsigned m_active{0};

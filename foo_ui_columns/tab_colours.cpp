@@ -47,18 +47,16 @@ INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         constexpr auto x_col_1 = 140;
         constexpr auto x_col_2 = 245;
 
-        g_fill_text.create(wnd, uih::WindowPosition{x_col_1, y_start, 18, 14}, nullptr, true);
-        g_fill_selection_text.create(wnd, uih::WindowPosition{x_col_1, y_start + y_spacing, 18, 14}, nullptr, true);
-        g_fill_selection_text_inactive.create(
-            wnd, uih::WindowPosition{x_col_1, y_start + y_spacing * 2, 18, 14}, nullptr, true);
+        g_fill_text.create(wnd, uih::WindowPosition{x_col_1, y_start, 18, 14}, true);
+        g_fill_selection_text.create(wnd, uih::WindowPosition{x_col_1, y_start + y_spacing, 18, 14}, true);
+        g_fill_selection_text_inactive.create(wnd, uih::WindowPosition{x_col_1, y_start + y_spacing * 2, 18, 14}, true);
 
-        g_fill_active_item_frame.create(wnd, uih::WindowPosition{x_col_1, y_start + 92, 18, 14}, nullptr, true);
+        g_fill_active_item_frame.create(wnd, uih::WindowPosition{x_col_1, y_start + 92, 18, 14}, true);
 
-        g_fill_background.create(wnd, uih::WindowPosition{x_col_2, y_start, 18, 14}, nullptr, true);
-        g_fill_selection_background.create(
-            wnd, uih::WindowPosition{x_col_2, y_start + y_spacing, 18, 14}, nullptr, true);
+        g_fill_background.create(wnd, uih::WindowPosition{x_col_2, y_start, 18, 14}, true);
+        g_fill_selection_background.create(wnd, uih::WindowPosition{x_col_2, y_start + y_spacing, 18, 14}, true);
         g_fill_selection_background_inactive.create(
-            wnd, uih::WindowPosition{x_col_2, y_start + y_spacing * 2, 18, 14}, nullptr, true);
+            wnd, uih::WindowPosition{x_col_2, y_start + y_spacing * 2, 18, 14}, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
 

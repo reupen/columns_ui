@@ -9,6 +9,8 @@ namespace cui::toolbars::buttons {
 
 namespace {
 
+constexpr auto IDC_BUTTONS_LIST = 9000;
+
 constexpr GUID fcb_header_v1 = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 constexpr GUID fcb_header_v2 = {0xa7d77fe1, 0xcee2, 0x4fee, {0xa0, 0x7, 0xe9, 0xfc, 0x97, 0xdd, 0x2b, 0xc7}};
 
@@ -270,6 +272,9 @@ void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(size_t index, size_
 
 INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (m_resize_helper && m_resize_helper->handle_message(wnd, msg, wp, lp))
+        return TRUE;
+
     switch (msg) {
     case WM_INITDIALOG: {
         const auto _ = pfc::vartoggle_t(m_initialising, true);
@@ -324,15 +329,56 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
         SHAutoComplete(GetDlgItem(wnd, IDC_HOVER_ICON_PATH), SHACF_FILESYSTEM);
         uih::enhance_edit_control(wnd, IDC_HOVER_ICON_PATH);
 
-        HWND wnd_button_list = m_button_list.create(wnd, uih::WindowPosition(14, 24, 310, 106), true);
+        HWND wnd_button_list
+            = m_button_list.create(wnd, uih::WindowPosition(14, 24, 310, 106), true, false, IDC_BUTTONS_LIST);
         populate_buttons_list();
         ShowWindow(wnd_button_list, SW_SHOWNORMAL);
+
+        m_resize_helper.emplace(wnd,
+            std::unordered_map<int, uint32_t>{
+                {IDC_BUTTONS_LIST, utils::resize_flags::resize_width_height},
+                {IDC_PICK, utils::resize_flags::move_y},
+                {IDC_ADD, utils::resize_flags::move_x_y},
+                {IDC_REMOVE, utils::resize_flags::move_x_y},
+                {IDC_RESET, utils::resize_flags::move_x_y},
+                {IDC_BUTTON_OPTIONS_H2, utils::resize_flags::move_y},
+                {IDC_DISPLAY_MODE_STATIC, utils::resize_flags::move_y},
+                {IDC_SHOW, utils::resize_flags::move_y},
+                {IDC_USE_CUSTOM_TEXT, utils::resize_flags::move_x_y},
+                {IDC_TEXT, utils::resize_flags::move_x_y},
+                {IDC_USE_CUSTOM_ICON, utils::resize_flags::move_y},
+                {IDC_ICON_PATH, utils::resize_flags::move_y | utils::resize_flags::resize_width},
+                {IDC_BROWSE_ICON, utils::resize_flags::move_x_y},
+                {IDC_USE_CUSTOM_HOVER_ICON, utils::resize_flags::move_y},
+                {IDC_HOVER_ICON_PATH, utils::resize_flags::move_y | utils::resize_flags::resize_width},
+                {IDC_BROWSE_HOVER_ICON, utils::resize_flags::move_x_y},
+                {IDC_TOOLBAR_OPTIONS_H1, utils::resize_flags::move_y},
+                {IDC_TEXT_LOCATION_STATIC, utils::resize_flags::move_y},
+                {IDC_TEXT_LOCATION, utils::resize_flags::move_y},
+                {IDC_APPEARANCE_STATIC, utils::resize_flags::move_y},
+                {IDC_APPEARANCE, utils::resize_flags::move_y},
+                {IDC_ICON_SIZE_STATIC, utils::resize_flags::move_y},
+                {IDC_ICON_SIZE, utils::resize_flags::move_y},
+                {IDC_WIDTH_STATIC, utils::resize_flags::move_y},
+                {IDC_WIDTH, utils::resize_flags::move_y},
+                {IDC_WIDTH_SPIN, utils::resize_flags::move_y},
+                {IDC_WIDTH_PX_STATIC, utils::resize_flags::move_y},
+                {IDC_HEIGHT_STATIC, utils::resize_flags::move_y},
+                {IDC_HEIGHT, utils::resize_flags::move_y},
+                {IDC_HEIGHT_SPIN, utils::resize_flags::move_y},
+                {IDC_HEIGHT_PX_STATIC, utils::resize_flags::move_y},
+                {IDC_TOOLS, utils::resize_flags::move_y},
+                {IDCANCEL, utils::resize_flags::move_x_y},
+                {IDOK, utils::resize_flags::move_x_y},
+            });
+
         return TRUE;
     }
     case WM_DESTROY:
         m_button_list.destroy();
         break;
     case WM_NCDESTROY:
+        m_resize_helper.reset();
         m_h1_font.reset();
         m_h2_font.reset();
         break;
