@@ -2,6 +2,7 @@
 
 #include "buttons_button.h"
 #include "core_dark_list_view.h"
+#include "window_resize_helper.h"
 
 namespace cui::toolbars::buttons {
 
@@ -57,6 +58,7 @@ private:
     std::vector<std::shared_ptr<CommandData>> m_commands;
     std::vector<std::shared_ptr<CommandData>> m_filtered_commands;
     HWND m_wnd{};
+    std::optional<utils::WindowResizeHelper> m_resize_helper;
     helpers::CoreDarkListView m_command_group_list_view;
     helpers::CoreDarkListView m_item_group_list_view;
     helpers::CoreDarkListView m_commands_list_view;

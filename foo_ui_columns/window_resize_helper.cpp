@@ -42,7 +42,7 @@ void WindowResizeHelper::handle_wm_getminmaxinfo(LPMINMAXINFO lpmmi) const
 
 void WindowResizeHelper::handle_wm_windowposchanged(LPWINDOWPOS lpwp)
 {
-    if ((lpwp->flags & (SWP_NOMOVE | SWP_NOSIZE)) != (SWP_NOMOVE | SWP_NOSIZE))
+    if ((lpwp->flags & SWP_NOSIZE) == 0)
         handle_resize();
 }
 
@@ -74,10 +74,30 @@ void WindowResizeHelper::handle_resize()
 
         const RECT& saved_ctrl_rect = saved_ctrl_rect_iter->second;
 
-        const auto new_ctrl_x = saved_ctrl_rect.left + ((resize_mode & resize_flags::move_x) ? width_delta : 0);
+        const auto new_ctrl_x = [&] {
+            if (resize_mode & resize_flags::move_x)
+                return saved_ctrl_rect.left + width_delta;
+
+            if (resize_mode & resize_flags::move_half_x)
+                return saved_ctrl_rect.left + width_delta / 2;
+
+            return saved_ctrl_rect.left;
+        }();
+
         const auto new_ctrl_y = saved_ctrl_rect.top + ((resize_mode & resize_flags::move_y) ? height_delta : 0);
-        const auto new_ctrl_width
-            = wil::rect_width(saved_ctrl_rect) + ((resize_mode & resize_flags::resize_width) ? width_delta : 0);
+
+        const auto new_ctrl_width = [&] {
+            const auto saved_width = wil::rect_width(saved_ctrl_rect);
+
+            if (resize_mode & resize_flags::resize_width)
+                return saved_width + width_delta;
+
+            if (resize_mode & resize_flags::resize_half_width)
+                return saved_width + width_delta / 2;
+
+            return saved_width;
+        }();
+
         const auto new_ctrl_height
             = wil::rect_height(saved_ctrl_rect) + ((resize_mode & resize_flags::resize_height) ? height_delta : 0);
 

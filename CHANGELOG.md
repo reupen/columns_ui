@@ -14,8 +14,13 @@
 - The list of commands in the Buttons toolbar command picker can now be filtered
   using a search box. [[#1830](https://github.com/reupen/columns_ui/pull/1830)]
 
-- The Edit group dialogue is now resizeable.
-  [[#1833](https://github.com/reupen/columns_ui/pull/1833)]
+- The following dialogues are now resizeable
+  [[#1833](https://github.com/reupen/columns_ui/pull/1833),
+  [#1835](https://github.com/reupen/columns_ui/pull/1835)]:
+  - Add new group
+  - Edit group
+  - Options – Buttons
+  - Select a command – Buttons
 
 - The Buttons toolbar command picker now uses the same list view control used
   elsewhere in Columns UI for improved consistency.

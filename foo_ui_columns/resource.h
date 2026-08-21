@@ -354,6 +354,15 @@
 #define IDC_BAR_WIDTH                   1226
 #define IDC_PLAYLIST_FILTERS_STATIC     1226
 #define IDC_BAR_WIDTH_SPIN              1227
+#define IDC_DISPLAY_MODE_STATIC         1227
+#define IDC_TEXT_LOCATION_STATIC        1228
+#define IDC_APPEARANCE_STATIC           1229
+#define IDC_ICON_SIZE_STATIC            1230
+#define IDC_WIDTH_STATIC                1231
+#define IDC_HEIGHT_STATIC               1232
+#define IDC_WIDTH_PX_STATIC             1233
+#define IDC_HEIGHT_PX_STATIC            1234
+#define IDC_ITEM_GROUP_STATIC           1235
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -363,7 +372,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1227
+#define _APS_NEXT_CONTROL_VALUE         1236
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -10,6 +10,11 @@ constexpr auto move_x_y = move_x | move_y;
 constexpr auto resize_width = 1u << 2;
 constexpr auto resize_height = 1u << 3;
 constexpr auto resize_width_height = resize_width | resize_height;
+// Rudimentary handling for proportional resizing
+// If this becomes more complicated, it can be replaced with something else
+// e.g. the ability to specify weights
+constexpr auto move_half_x = 1u << 4;
+constexpr auto resize_half_width = 1u << 5;
 
 } // namespace resize_flags
 
