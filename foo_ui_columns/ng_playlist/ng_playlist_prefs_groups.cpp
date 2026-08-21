@@ -5,16 +5,21 @@
 #include "ng_playlist_groups.h"
 #include "permutation_utils.h"
 #include "prefs_utils.h"
+#include "window_resize_helper.h"
 
 namespace cui::panels::playlist_view {
 
 struct edit_view_param {
+    std::optional<utils::WindowResizeHelper> resize_helper;
     Group value;
     bool b_new{};
 };
 
 static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
+    if (state.resize_helper && state.resize_helper->handle_message(wnd, msg, wp, lp))
+        return TRUE;
+
     switch (msg) {
     case WM_INITDIALOG: {
         SetWindowText(wnd, state.b_new ? L"Add new group" : L"Edit group");
@@ -31,7 +36,18 @@ static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg,
 
         uih::enhance_edit_control(wnd, IDC_VALUE);
         uSetDlgItemText(wnd, IDC_VALUE, state.value.string);
-    } break;
+
+        state.resize_helper.emplace(wnd,
+            std::unordered_map<int, uint32_t>{
+                {IDC_VALUE, utils::resize_flags::resize_width_height},
+                {IDC_PLAYLIST_FILTER_TYPE, utils::resize_flags::move_y},
+                {IDC_PLAYLIST_FILTERS_STATIC, utils::resize_flags::move_y},
+                {IDC_PLAYLIST_FILTER_STRING, utils::resize_flags::move_y | utils::resize_flags::resize_width},
+                {IDCANCEL, utils::resize_flags::move_x_y},
+                {IDOK, utils::resize_flags::move_x_y},
+            });
+        break;
+    }
     case WM_COMMAND:
         switch (wp) {
         case IDCANCEL:
