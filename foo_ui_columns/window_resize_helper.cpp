@@ -42,7 +42,7 @@ void WindowResizeHelper::handle_wm_getminmaxinfo(LPMINMAXINFO lpmmi) const
 
 void WindowResizeHelper::handle_wm_windowposchanged(LPWINDOWPOS lpwp)
 {
-    if ((lpwp->flags & (SWP_NOMOVE | SWP_NOSIZE)) != (SWP_NOMOVE | SWP_NOSIZE))
+    if ((lpwp->flags & SWP_NOSIZE) == 0)
         handle_resize();
 }
 
