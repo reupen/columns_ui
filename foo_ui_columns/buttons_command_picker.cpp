@@ -5,6 +5,14 @@
 
 namespace cui::toolbars::buttons {
 
+namespace {
+
+constexpr auto IDC_COMMAND_GROUP_LIST = 9000;
+constexpr auto IDC_ITEM_GROUP_LIST = 9001;
+constexpr auto IDC_COMMAND_LIST = 9002;
+
+} // namespace
+
 std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
 {
     dark::DialogDarkModeConfig dark_mode_config{
@@ -266,7 +274,7 @@ void CommandPickerDialog::initialise(HWND wnd)
             m_data.subcommand = {};
             collect_commands_and_populate_command_list();
         });
-    m_command_group_list_view.create(wnd, {14, 18, 141, 62}, true, true);
+    m_command_group_list_view.create(wnd, {14, 18, 141, 62}, true, true, IDC_COMMAND_GROUP_LIST);
     SetWindowPos(m_command_group_list_view.get_wnd(), GetDlgItem(wnd, IDCANCEL), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
     m_item_group_list_view.set_columns({uih::ListView::Column{"Item group", 10}});
@@ -279,7 +287,7 @@ void CommandPickerDialog::initialise(HWND wnd)
             m_data.filter = gsl::narrow<int>(m_item_group_list_view.get_selected_item_single());
         });
 
-    m_item_group_list_view.create(wnd, {171, 18, 141, 62}, true, true);
+    m_item_group_list_view.create(wnd, {171, 18, 141, 62}, true, true, IDC_ITEM_GROUP_LIST);
     SetWindowPos(
         m_item_group_list_view.get_wnd(), m_command_group_list_view.get_wnd(), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
@@ -300,12 +308,24 @@ void CommandPickerDialog::initialise(HWND wnd)
             update_description();
         });
 
-    m_commands_list_view.create(wnd, {14, 115, 298, 186}, true, true);
+    m_commands_list_view.create(wnd, {14, 113, 298, 186}, true, true, IDC_COMMAND_LIST);
     SetWindowPos(m_commands_list_view.get_wnd(), GetDlgItem(wnd, IDC_SEARCH_EDIT), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
     m_search_edit = GetDlgItem(wnd, IDC_SEARCH_EDIT);
 
     Edit_SetCueBannerTextFocused(m_search_edit, L"Search commands", true);
+
+    m_resize_helper.emplace(wnd,
+        std::unordered_map<int, uint32_t>{
+            {IDC_COMMAND_GROUP_LIST, utils::resize_flags::resize_half_width},
+            {IDC_ITEM_GROUP_STATIC, utils::resize_flags::move_half_x},
+            {IDC_ITEM_GROUP_LIST, utils::resize_flags::resize_half_width | utils::resize_flags::move_half_x},
+            {IDC_SEARCH_EDIT, utils::resize_flags::resize_width},
+            {IDC_COMMAND_LIST, utils::resize_flags::resize_width_height},
+            {IDC_DESC, utils::resize_flags::move_y | utils::resize_flags::resize_width},
+            {IDCANCEL, utils::resize_flags::move_x_y},
+            {IDOK, utils::resize_flags::move_x_y},
+        });
 }
 
 void CommandPickerDialog::deinitialise(HWND wnd)
@@ -315,10 +335,14 @@ void CommandPickerDialog::deinitialise(HWND wnd)
     m_commands_list_view.destroy();
     m_commands.clear();
     m_filtered_commands.clear();
+    m_resize_helper.reset();
 }
 
 INT_PTR CommandPickerDialog::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (m_resize_helper && m_resize_helper->handle_message(wnd, msg, wp, lp))
+        return TRUE;
+
     switch (msg) {
     case WM_INITDIALOG: {
         initialise(wnd);
