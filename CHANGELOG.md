@@ -23,6 +23,8 @@
   - Select a command – Buttons
   - Options – Item details
   - Options – Item properties
+  - Export settings
+  - Select settings to import
 
 - The Buttons toolbar command picker now uses the same list view control used
   elsewhere in Columns UI for improved consistency.

@@ -4,6 +4,7 @@
 #include "core_dark_list_view.h"
 #include "dark_mode_dialog.h"
 #include "main_window.h"
+#include "window_resize_helper.h"
 
 namespace {
 
@@ -72,6 +73,9 @@ public:
 
     INT_PTR CALLBACK FCLDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
+        if (m_resize_helper && m_resize_helper->handle_message(wnd, msg, wp, lp))
+            return TRUE;
+
         switch (msg) {
         case WM_INITDIALOG: {
             if (m_import)
@@ -124,9 +128,24 @@ public:
             g_populate_tree(wnd_tree, m_groups, filtered);
 
             SendMessage(wnd_tree, WM_SETREDRAW, TRUE, 0);
-            RedrawWindow(wnd_tree, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
-        }
+            RedrawWindow(wnd_tree, nullptr, nullptr, RDW_INVALIDATE);
+
+            std::unordered_map<int, uint32_t> window_resize_config{
+                {IDC_TREE, cui::utils::resize_flags::resize_width_height},
+                {IDOK, cui::utils::resize_flags::move_x_y},
+                {IDCANCEL, cui::utils::resize_flags::move_x_y},
+            };
+
+            if (!m_import) {
+                window_resize_config.emplace(IDC_EXPORT_TYPE_STATIC, cui::utils::resize_flags::move_y);
+                window_resize_config.emplace(
+                    IDC_DEST, cui::utils::resize_flags::move_y | cui::utils::resize_flags::resize_width);
+            }
+
+            m_resize_helper.emplace(wnd, std::move(window_resize_config));
+
             return TRUE;
+        }
         case WM_COMMAND:
             switch (wp) {
             case IDOK: {
@@ -152,12 +171,15 @@ public:
             EndDialog(wnd, 0);
             return 0;
         case WM_DESTROY: {
+            m_resize_helper.reset();
+
             HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
             HIMAGELIST il = TreeView_GetImageList(wnd_tree, TVSIL_STATE);
             TreeView_SetImageList(wnd_tree, NULL, TVSIL_STATE);
             ImageList_Destroy(il);
             DestroyWindow(wnd_tree);
-        } break;
+            break;
+        }
         case WM_NCDESTROY:
             break;
         }
@@ -184,6 +206,7 @@ private:
     int32_t m_mode{0};
     bool m_import;
     std::unordered_set<GUID> m_filter;
+    std::optional<cui::utils::WindowResizeHelper> m_resize_helper;
 };
 
 cui::fcl::group_impl_factory g_group_toolbars(cui::fcl::groups::toolbars, "Toolbar Layout", "The toolbar layout");

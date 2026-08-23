@@ -368,6 +368,7 @@
 #define IDC_VALIGN_STATIC               1238
 #define IDC_EDGESTYLE_STATIC            1239
 #define IDC_INFOSECTIONS_STATIC         1240
+#define IDC_EXPORT_TYPE_STATIC          1241
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -377,7 +378,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1241
+#define _APS_NEXT_CONTROL_VALUE         1242
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
