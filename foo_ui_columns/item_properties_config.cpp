@@ -5,13 +5,22 @@
 
 namespace cui::panels::item_properties {
 
+namespace {
+
+constexpr auto IDC_FIELD_LIST = 9000;
+
+}
+
 INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (m_resize_helper && m_resize_helper->handle_message(wnd, msg, wp, lp))
+        return TRUE;
+
     switch (msg) {
     case WM_INITDIALOG: {
-        pfc::vartoggle_t<bool> init(m_initialising, true);
+        pfc::vartoggle_t init(m_initialising, true);
 
-        HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(14, 17, 240, 150), true);
+        HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(14, 17, 240, 150), true, false, IDC_FIELD_LIST);
         SetWindowPos(wnd_fields, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
         ShowWindow(wnd_fields, SW_SHOWNORMAL);
 
@@ -44,8 +53,29 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
 
         Button_SetCheck(GetDlgItem(wnd, IDC_SHOWCOLUMNS), m_show_columns ? BST_CHECKED : BST_UNCHECKED);
         Button_SetCheck(GetDlgItem(wnd, IDC_SHOWGROUPS), m_show_groups ? BST_CHECKED : BST_UNCHECKED);
-    } break;
+
+        m_resize_helper.emplace(wnd,
+            std::unordered_map<int, uint32_t>{
+                {IDC_FIELD_LIST, utils::resize_flags::resize_width_height},
+                {IDC_NEW, utils::resize_flags::move_y},
+                {IDC_REMOVE, utils::resize_flags::move_y},
+                {IDC_UP, utils::resize_flags::move_x_y},
+                {IDC_DOWN, utils::resize_flags::move_x_y},
+                {IDC_INFOSECTIONS_STATIC, utils::resize_flags::move_y},
+                {IDC_INFOSECTIONS, utils::resize_flags::move_y | utils::resize_flags::resize_width},
+                {IDC_SHOWCOLUMNS, utils::resize_flags::move_y},
+                {IDC_SHOWGROUPS, utils::resize_flags::move_y},
+                {IDC_EDGESTYLE_STATIC, utils::resize_flags::move_y},
+                {IDC_EDGESTYLE, utils::resize_flags::move_y},
+                {IDOK, utils::resize_flags::move_x_y},
+                {IDCANCEL, utils::resize_flags::move_x_y},
+            });
+
+        break;
+    }
     case WM_DESTROY: {
+        m_resize_helper.reset();
+
         const auto wnd_sections_tree = GetDlgItem(wnd, IDC_INFOSECTIONS);
         HIMAGELIST state_image_list = TreeView_GetImageList(wnd_sections_tree, TVSIL_STATE);
         TreeView_SetImageList(wnd_sections_tree, nullptr, TVSIL_STATE);

@@ -2,6 +2,7 @@
 
 #include "core_dark_list_view.h"
 #include "list_view_panel.h"
+#include "window_resize_helper.h"
 
 namespace cui::panels::item_properties {
 
@@ -91,6 +92,7 @@ private:
     INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     FieldsList m_field_list;
+    std::optional<utils::WindowResizeHelper> m_resize_helper{};
 };
 
 class ItemProperties

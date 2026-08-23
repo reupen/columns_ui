@@ -18,6 +18,9 @@ const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR,
 
 INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (m_resize_helper && m_resize_helper->handle_message(wnd, msg, wp, lp))
+        return TRUE;
+
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
@@ -51,6 +54,23 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         uih::enhance_edit_control(wnd, IDC_COLOUR_CODE);
         colour_code_gen(wnd, IDC_COLOUR_CODE, false, true);
 
+        m_resize_helper.emplace(wnd,
+            std::unordered_map<int, uint32_t>{
+                {IDC_SCRIPT, utils::resize_flags::resize_width_height},
+                {IDC_TOOLS, utils::resize_flags::move_y},
+                {IDC_COLOUR_CODE_GEN_STATIC, utils::resize_flags::move_y},
+                {IDC_COLOUR_CODE, utils::resize_flags::move_y},
+                {IDC_GEN_COLOUR, utils::resize_flags::move_y},
+                {IDC_HALIGN_STATIC, utils::resize_flags::move_y},
+                {IDC_HALIGN, utils::resize_flags::move_y},
+                {IDC_VALIGN_STATIC, utils::resize_flags::move_y},
+                {IDC_VALIGN, utils::resize_flags::move_y},
+                {IDC_EDGESTYLE_STATIC, utils::resize_flags::move_y},
+                {IDC_EDGESTYLE, utils::resize_flags::move_y},
+                {IDOK, utils::resize_flags::move_x_y},
+                {IDCANCEL, utils::resize_flags::move_x_y},
+            });
+
         if (!m_modal) {
             SendMessage(wnd, DM_SETDEFID, IDCANCEL, NULL);
             SetFocus(GetDlgItem(wnd, IDCANCEL));
@@ -59,8 +79,11 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         return FALSE;
     }
     case WM_DESTROY:
+        m_resize_helper.reset();
+
         if (m_timer_active)
             on_timer();
+
         if (!m_modal)
             m_this->set_config_wnd(nullptr);
         break;
