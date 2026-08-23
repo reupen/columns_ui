@@ -16,7 +16,8 @@
 
 - The following dialogues are now resizeable
   [[#1833](https://github.com/reupen/columns_ui/pull/1833),
-  [#1835](https://github.com/reupen/columns_ui/pull/1835)]:
+  [#1835](https://github.com/reupen/columns_ui/pull/1835)],
+  [#1836](https://github.com/reupen/columns_ui/pull/1836)]:
   - Add new group
   - Edit group
   - Options – Buttons
@@ -25,6 +26,7 @@
   - Options – Item properties
   - Export settings
   - Select settings to import
+  - FCL import results
 
 - The Buttons toolbar command picker now uses the same list view control used
   elsewhere in Columns UI for improved consistency.
