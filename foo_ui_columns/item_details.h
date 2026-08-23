@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "file_info_reader.h"
 #include "item_details_text.h"
+#include "window_resize_helper.h"
 
 namespace cui::panels::item_details {
 
@@ -334,6 +335,8 @@ private:
     void start_timer();
     void on_timer();
     INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    std::optional<utils::WindowResizeHelper> m_resize_helper{};
 };
 
 } // namespace cui::panels::item_details
