@@ -2,6 +2,7 @@
 #include "item_details.h"
 #include "config.h"
 #include "dark_mode_dialog.h"
+#include "dialog_placement.h"
 #include "font_picker.h"
 #include "format_code_generator.h"
 #include "prefs_utils.h"
@@ -13,6 +14,8 @@ namespace {
 const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR, IDC_TOOLS, IDOK, IDCANCEL},
     .combo_box_ids = {IDC_HALIGN, IDC_VALIGN, IDC_EDGESTYLE},
     .edit_ids = {IDC_SCRIPT, IDC_COLOUR_CODE}};
+
+constexpr GUID dialog_placement_id{0xa5f49d33, 0xac71, 0x4f21, {0x9a, 0x63, 0xf8, 0x03, 0x11, 0x78, 0xce, 0x04}};
 
 } // namespace
 
@@ -74,11 +77,14 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         if (!m_modal) {
             SendMessage(wnd, DM_SETDEFID, IDCANCEL, NULL);
             SetFocus(GetDlgItem(wnd, IDCANCEL));
-            return FALSE;
         }
+
+        config::dialog_placement_manager.register_window(dialog_placement_id, wnd);
+
         return FALSE;
     }
     case WM_DESTROY:
+        config::dialog_placement_manager.deregister_window(wnd);
         m_resize_helper.reset();
 
         if (m_timer_active)

@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "dark_mode_dialog.h"
+#include "dialog_placement.h"
 #include "ng_playlist.h"
 #include "ng_playlist_groups.h"
 #include "permutation_utils.h"
@@ -8,6 +9,8 @@
 #include "window_resize_helper.h"
 
 namespace cui::panels::playlist_view {
+
+constexpr GUID dialog_placement_id{0xcdfbd55b, 0xf664, 0x4de8, {0x86, 0xf7, 0xea, 0x26, 0xf3, 0x06, 0xba, 0x5c}};
 
 struct edit_view_param {
     std::optional<utils::WindowResizeHelper> resize_helper;
@@ -46,8 +49,15 @@ static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg,
                 {IDCANCEL, utils::resize_flags::move_x_y},
                 {IDOK, utils::resize_flags::move_x_y},
             });
+
+        config::dialog_placement_manager.register_window(dialog_placement_id, wnd);
+
         break;
     }
+    case WM_DESTROY:
+        config::dialog_placement_manager.deregister_window(wnd);
+        state.resize_helper.reset();
+        break;
     case WM_COMMAND:
         switch (wp) {
         case IDCANCEL:

@@ -28,6 +28,9 @@
   - Select settings to import
   - FCL import results
 
+  Additionally, they now remember their size and position when next opened.
+  [[#1839](https://github.com/reupen/columns_ui/pull/1839)]]
+
 - The Buttons toolbar command picker now uses the same list view control used
   elsewhere in Columns UI for improved consistency.
   [[#1832](https://github.com/reupen/columns_ui/pull/1832)]

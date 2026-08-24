@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "buttons_command_picker.h"
 #include "dark_mode_dialog.h"
+#include "dialog_placement.h"
 #include "string.h"
 
 namespace cui::toolbars::buttons {
@@ -10,6 +11,8 @@ namespace {
 constexpr auto IDC_COMMAND_GROUP_LIST = 9000;
 constexpr auto IDC_ITEM_GROUP_LIST = 9001;
 constexpr auto IDC_COMMAND_LIST = 9002;
+
+constexpr GUID dialog_placement_id{0x49a4c2ec, 0x3346, 0x4e5d, {0x81, 0xe7, 0xd6, 0x7a, 0xff, 0xf9, 0xd4, 0x62}};
 
 } // namespace
 
@@ -326,10 +329,13 @@ void CommandPickerDialog::initialise(HWND wnd)
             {IDCANCEL, utils::resize_flags::move_x_y},
             {IDOK, utils::resize_flags::move_x_y},
         });
+
+    config::dialog_placement_manager.register_window(dialog_placement_id, wnd);
 }
 
 void CommandPickerDialog::deinitialise(HWND wnd)
 {
+    config::dialog_placement_manager.deregister_window(wnd);
     m_command_group_list_view.destroy();
     m_item_group_list_view.destroy();
     m_commands_list_view.destroy();
