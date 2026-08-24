@@ -6,16 +6,24 @@
 
 namespace cui::toolbars::buttons {
 
+constexpr bool does_group_use_tracks(int group)
+{
+    return group == TYPE_BUTTON || group == TYPE_MENU_ITEM_CONTEXT;
+}
+
 struct CommandPickerData {
     GUID guid{};
     GUID subcommand{};
     int group{TYPE_SEPARATOR};
     int filter{FILTER_ACTIVE_SELECTION};
+
+    int cleaned_filter() const { return does_group_use_tracks(group) ? filter : FILTER_NONE; }
 };
 
 class CommandPickerDialog {
 public:
-    CommandPickerDialog(CommandPickerData data = {}) : m_data(std::move(data)) {}
+    CommandPickerDialog(CommandPickerData data) : m_data(std::move(data)) {}
+    CommandPickerDialog();
 
     std::tuple<bool, CommandPickerData> open_modal(HWND wnd);
 
@@ -49,6 +57,8 @@ private:
 
     void populate_command_list();
     void collect_commands_and_populate_command_list();
+
+    void populate_item_group_list();
 
     void update_description() const;
     void initialise(HWND wnd);

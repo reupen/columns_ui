@@ -11,9 +11,6 @@
   This includes being able to directly access each top-level menu using their
   access keys (e.g. Alt+F for the File menu).
 
-- The list of commands in the Buttons toolbar command picker can now be filtered
-  using a search box. [[#1830](https://github.com/reupen/columns_ui/pull/1830)]
-
 - The following dialogues are now resizeable
   [[#1833](https://github.com/reupen/columns_ui/pull/1833),
   [#1835](https://github.com/reupen/columns_ui/pull/1835)],
@@ -30,6 +27,16 @@
 
   Additionally, they now remember their size and position when next opened.
   [[#1839](https://github.com/reupen/columns_ui/pull/1839)]]
+
+- The list of commands in the Buttons toolbar command picker can now be filtered
+  using a search box. [[#1830](https://github.com/reupen/columns_ui/pull/1830)]
+
+- When adding a new button, the Buttons toolbar command picker now defaults to
+  the last used command and item groups.
+  [[#1840](https://github.com/reupen/columns_ui/pull/1840)]
+
+  Additionally, it no longer shows item groups other than ‘None’ for the ‘Main
+  menu items’ and ‘Separator’ command groups.
 
 - The Buttons toolbar command picker now uses the same list view control used
   elsewhere in Columns UI for improved consistency.
