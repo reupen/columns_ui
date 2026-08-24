@@ -14,7 +14,17 @@ constexpr auto IDC_COMMAND_LIST = 9002;
 
 constexpr GUID dialog_placement_id{0x49a4c2ec, 0x3346, 0x4e5d, {0x81, 0xe7, 0xd6, 0x7a, 0xff, 0xf9, 0xd4, 0x62}};
 
+cfg_int last_used_command_group{
+    {0xd3634ceb, 0x4421, 0x4acb, {0xbe, 0x79, 0xf6, 0xc4, 0x87, 0xbe, 0x36, 0x5e}}, TYPE_MENU_ITEM_MAIN};
+cfg_int last_used_context_item_group{
+    {0xd894d9f0, 0x3654, 0x4a05, {0xa5, 0x55, 0x3d, 0x41, 0x3f, 0x83, 0xdc, 0x8d}}, FILTER_ACTIVE_SELECTION};
+
 } // namespace
+
+CommandPickerDialog::CommandPickerDialog()
+    : m_data{.group = last_used_command_group, .filter = last_used_context_item_group}
+{
+}
 
 std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
 {
@@ -245,6 +255,22 @@ void CommandPickerDialog::collect_commands_and_populate_command_list()
     populate_command_list();
 }
 
+void CommandPickerDialog::populate_item_group_list()
+{
+    m_item_group_list_view.clear_all_items();
+
+    if (does_group_use_tracks(m_data.group)) {
+        std::vector<uih::ListView::InsertItem> insert_items(
+            {"None"sv, "Now playing item"sv, "Current playlist selection"sv, "Active selection"sv});
+        m_item_group_list_view.insert_items(0, insert_items.size(), insert_items.data());
+    } else {
+        std::vector<uih::ListView::InsertItem> insert_items({"None"sv});
+        m_item_group_list_view.insert_items(0, insert_items.size(), insert_items.data());
+    }
+
+    m_item_group_list_view.set_item_selected_single(m_data.cleaned_filter(), false);
+}
+
 void CommandPickerDialog::update_description() const
 {
     const auto index = m_commands_list_view.get_selected_item_single();
@@ -275,22 +301,26 @@ void CommandPickerDialog::initialise(HWND wnd)
             m_data.group = gsl::narrow<int>(m_command_group_list_view.get_selected_item_single());
             m_data.guid = {};
             m_data.subcommand = {};
+            last_used_command_group = m_data.group;
+            populate_item_group_list();
             collect_commands_and_populate_command_list();
         });
     m_command_group_list_view.create(wnd, {14, 18, 141, 62}, true, true, IDC_COMMAND_GROUP_LIST);
-    SetWindowPos(m_command_group_list_view.get_wnd(), GetDlgItem(wnd, IDCANCEL), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    SetWindowPos(m_command_group_list_view.get_wnd(), HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
     m_item_group_list_view.set_columns({uih::ListView::Column{"Item group", 10}});
-    m_item_group_list_view.set_initial_items(
-        {"None"sv, "Now playing item"sv, "Current playlist selection"sv, "Active selection"sv});
-    m_item_group_list_view.set_item_selected_single(m_data.filter, false);
+
+    m_item_group_list_view.create(wnd, {171, 18, 141, 62}, true, true, IDC_ITEM_GROUP_LIST);
+    populate_item_group_list();
     m_item_group_list_view.set_selection_changed_callback(
         [this](const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
             uih::lv::notification_source_t p_notification_source) {
             m_data.filter = gsl::narrow<int>(m_item_group_list_view.get_selected_item_single());
+
+            if (does_group_use_tracks(m_data.group))
+                last_used_context_item_group = m_data.filter;
         });
 
-    m_item_group_list_view.create(wnd, {171, 18, 141, 62}, true, true, IDC_ITEM_GROUP_LIST);
     SetWindowPos(
         m_item_group_list_view.get_wnd(), m_command_group_list_view.get_wnd(), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
@@ -365,14 +395,12 @@ INT_PTR CommandPickerDialog::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             populate_command_list();
             break;
         }
-        case IDCANCEL: {
+        case IDCANCEL:
             EndDialog(wnd, 0);
             return TRUE;
-        }
-        case IDOK: {
+        case IDOK:
             EndDialog(wnd, 1);
             return TRUE;
-        }
         }
         break;
     }

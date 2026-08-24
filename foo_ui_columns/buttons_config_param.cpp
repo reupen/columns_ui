@@ -221,7 +221,7 @@ void ButtonsToolbar::ConfigParam::show_command_picker()
     m_selection->m_type = static_cast<Type>(data.group);
     m_selection->m_guid = data.guid;
     m_selection->m_subcommand = data.subcommand;
-    m_selection->m_filter = static_cast<Filter>(data.filter);
+    m_selection->m_filter = static_cast<Filter>(data.cleaned_filter());
     m_selection->m_interface.release();
 
     const auto idx = m_button_list.get_selected_item_single();
@@ -437,7 +437,7 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
                 button.m_type = static_cast<Type>(data.group);
                 button.m_guid = data.guid;
                 button.m_subcommand = data.subcommand;
-                button.m_filter = static_cast<Filter>(data.filter);
+                button.m_filter = static_cast<Filter>(data.cleaned_filter());
 
                 uih::ListView::InsertItem item;
                 item.m_subitems.resize(2);
