@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "dark_mode_dialog.h"
+#include "dialog_placement.h"
 #include "item_properties.h"
 
 namespace cui::panels::item_properties {
@@ -9,7 +10,9 @@ namespace {
 
 constexpr auto IDC_FIELD_LIST = 9000;
 
-}
+constexpr GUID dialog_placement_id{0xa7fe050a, 0xd266, 0x4656, {0x8c, 0x9a, 0xfa, 0xd3, 0xad, 0x0b, 0xe4, 0x22}};
+
+} // namespace
 
 INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -71,9 +74,12 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
                 {IDCANCEL, utils::resize_flags::move_x_y},
             });
 
+        config::dialog_placement_manager.register_window(dialog_placement_id, wnd);
+
         break;
     }
     case WM_DESTROY: {
+        config::dialog_placement_manager.deregister_window(wnd);
         m_resize_helper.reset();
 
         const auto wnd_sections_tree = GetDlgItem(wnd, IDC_INFOSECTIONS);

@@ -677,6 +677,9 @@
     <ClCompile Include="window_resize_helper.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="dialog_placement.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1036,6 +1039,9 @@
     </ClInclude>
     <ClInclude Include="window_resize_helper.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_placement.h">
+      <Filter>Config storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

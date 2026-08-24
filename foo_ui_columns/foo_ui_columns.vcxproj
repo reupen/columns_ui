@@ -268,6 +268,7 @@
     <ClCompile Include="dark_mode_active_ui.cpp" />
     <ClCompile Include="dark_mode_dialog.cpp" />
     <ClCompile Include="dark_mode_spin.cpp" />
+    <ClCompile Include="dialog_placement.cpp" />
     <ClCompile Include="fallback_menu.cpp" />
     <ClCompile Include="fb2k_callbacks.cpp" />
     <ClCompile Include="fb2k_misc.cpp" />
@@ -465,6 +466,7 @@
     <ClInclude Include="dark_mode_dialog.h" />
     <ClInclude Include="dark_mode_active_ui.h" />
     <ClInclude Include="dark_mode_spin.h" />
+    <ClInclude Include="dialog_placement.h" />
     <ClInclude Include="fallback_menu.h" />
     <ClInclude Include="fb2k_callbacks.h" />
     <ClInclude Include="fb2k_misc.h" />

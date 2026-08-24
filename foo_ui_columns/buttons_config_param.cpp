@@ -2,6 +2,7 @@
 #include "buttons.h"
 #include "buttons_command_picker.h"
 #include "dark_mode_dialog.h"
+#include "dialog_placement.h"
 #include "prefs_utils.h"
 #include "svg.h"
 
@@ -10,6 +11,8 @@ namespace cui::toolbars::buttons {
 namespace {
 
 constexpr auto IDC_BUTTONS_LIST = 9000;
+
+constexpr GUID dialog_placement_id{0xe705522d, 0xfaa9, 0x4827, {0xaf, 0x4a, 0xd7, 0xc2, 0x22, 0x6c, 0x3d, 0x1a}};
 
 constexpr GUID fcb_header_v1 = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 constexpr GUID fcb_header_v2 = {0xa7d77fe1, 0xcee2, 0x4fee, {0xa0, 0x7, 0xe9, 0xfc, 0x97, 0xdd, 0x2b, 0xc7}};
@@ -372,9 +375,12 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
                 {IDOK, utils::resize_flags::move_x_y},
             });
 
+        config::dialog_placement_manager.register_window(dialog_placement_id, wnd);
+
         return TRUE;
     }
     case WM_DESTROY:
+        config::dialog_placement_manager.deregister_window(wnd);
         m_button_list.destroy();
         break;
     case WM_NCDESTROY:

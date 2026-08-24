@@ -3,6 +3,7 @@
 
 #include "core_dark_list_view.h"
 #include "dark_mode_dialog.h"
+#include "dialog_placement.h"
 #include "main_window.h"
 #include "window_resize_helper.h"
 
@@ -11,6 +12,11 @@ namespace {
 cfg_int last_export_mode({0xea0cd797, 0x9cf2, 0x4da4, {0x8b, 0x69, 0x08, 0x36, 0x90, 0x58, 0x70, 0x7b}}, 1);
 
 constexpr auto IDC_RESULTS_LIST = 9000;
+
+constexpr GUID import_dialog_placement_id{0x1c0f0a00, 0x37a9, 0x425e, {0xa4, 0xec, 0x9c, 0x80, 0x4f, 0xc6, 0x74, 0xed}};
+constexpr GUID export_dialog_placement_id{0x74dcea36, 0x7170, 0x4738, {0xaa, 0x6c, 0xb8, 0xec, 0x3c, 0xf7, 0xb3, 0x83}};
+constexpr GUID results_dialog_placement_id{
+    0x72f08eae, 0x4e05, 0x4506, {0x8c, 0xca, 0x7b, 0xe6, 0x86, 0x26, 0xd1, 0x04}};
 
 } // namespace
 
@@ -145,6 +151,8 @@ public:
             }
 
             m_resize_helper.emplace(wnd, std::move(window_resize_config));
+            cui::config::dialog_placement_manager.register_window(
+                m_import ? import_dialog_placement_id : export_dialog_placement_id, wnd);
 
             return TRUE;
         }
@@ -173,6 +181,7 @@ public:
             EndDialog(wnd, 0);
             return 0;
         case WM_DESTROY: {
+            cui::config::dialog_placement_manager.deregister_window(wnd);
             m_resize_helper.reset();
 
             HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
@@ -281,9 +290,12 @@ private:
                     {IDOK, cui::utils::resize_flags::move_x_y},
                 });
 
+            cui::config::dialog_placement_manager.register_window(results_dialog_placement_id, wnd);
+
             break;
         }
         case WM_DESTROY:
+            cui::config::dialog_placement_manager.deregister_window(wnd);
             m_resize_helper.reset();
             break;
         case WM_COMMAND:
