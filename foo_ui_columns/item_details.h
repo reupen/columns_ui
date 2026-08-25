@@ -42,9 +42,13 @@ public:
         track_playing_item,
         track_auto_playing_item_or_active_selection,
         track_active_selection,
+        track_auto_playlist_selection_or_playing_item,
+        track_auto_active_selection_or_playing_item,
     };
 
     bool tracking_prioritises_playing_item() const;
+    bool tracking_falls_back_to_playing_item() const;
+    bool tracking_includes_playing_item() const;
     bool tracking_includes_playlist_selection() const;
     bool tracking_includes_active_selection() const;
 
@@ -213,6 +217,7 @@ private:
     void deregister_callback();
     void on_app_activate(bool b_activated);
 
+    void set_selection_handles(const metadb_handle_list& handles);
     void set_handles(const metadb_handle_list& handles);
     void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false,
         bool force_update = false);
@@ -258,7 +263,9 @@ private:
     bool m_initialised{};
     int m_last_cx{};
     int m_last_cy{};
+    playback_control::ptr m_playback_control;
     ui_selection_holder::ptr m_selection_holder;
+    metadb_handle_ptr m_playing_item;
     metadb_handle_list m_handles;
     metadb_handle_list m_selection_handles;
     std::shared_ptr<file_info_impl> m_full_file_info;
