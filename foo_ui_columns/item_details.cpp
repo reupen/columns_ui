@@ -513,9 +513,9 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason) noexcep
         m_nowplaying_active = false;
 
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        if (m_tracking_mode == track_auto_playlist_playing) {
+        if (m_tracking_mode == track_auto_playing_item_or_playlist_selection) {
             playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-        } else if (m_tracking_mode == track_auto_selection_playing) {
+        } else if (m_tracking_mode == track_auto_playing_item_or_active_selection) {
             handles = m_selection_handles;
         }
         set_handles(handles);
@@ -1365,17 +1365,17 @@ void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
 
 bool ItemDetails::s_track_mode_includes_selection(size_t mode)
 {
-    return mode == track_auto_selection_playing || mode == track_selection;
+    return mode == track_auto_playing_item_or_active_selection || mode == track_active_selection;
 }
 
 bool ItemDetails::s_track_mode_includes_auto(size_t mode)
 {
-    return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
+    return mode == track_auto_playing_item_or_playlist_selection || mode == track_auto_playing_item_or_active_selection;
 }
 
 bool ItemDetails::s_track_mode_includes_playlist(size_t mode)
 {
-    return mode == track_auto_playlist_playing || mode == track_playlist;
+    return mode == track_auto_playing_item_or_playlist_selection || mode == track_playlist_selection;
 }
 
 uie::container_window_v3_config ItemDetails::get_window_config()
@@ -1392,7 +1392,8 @@ uie::container_window_v3_config ItemDetails::get_window_config()
 
 bool ItemDetails::s_track_mode_includes_now_playing(size_t mode)
 {
-    return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
+    return mode == track_auto_playing_item_or_playlist_selection || mode == track_auto_playing_item_or_active_selection
+        || mode == track_playing_item;
 }
 
 uie::window_factory<ItemDetails> g_item_details;
@@ -1567,15 +1568,15 @@ bool ItemDetails::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, u
 
 const char* ItemDetails::MenuNodeTrackMode::get_name(uint32_t source)
 {
-    if (source == track_playing)
+    if (source == track_playing_item)
         return "Playing item";
-    if (source == track_playlist)
+    if (source == track_playlist_selection)
         return "Playlist selection";
-    if (source == track_auto_selection_playing)
-        return "Automatic (current selection/playing item)";
-    if (source == track_selection)
+    if (source == track_auto_playing_item_or_active_selection)
+        return "Automatic (playing item/current selection)";
+    if (source == track_active_selection)
         return "Current selection";
-    return "Automatic (playlist selection/playing item)";
+    return "Automatic (playing item/playlist selection)";
 }
 
 } // namespace cui::panels::item_details

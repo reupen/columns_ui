@@ -37,11 +37,11 @@ class ItemDetails
 
 public:
     enum TrackingMode {
-        track_auto_playlist_playing,
-        track_playlist,
-        track_playing,
-        track_auto_selection_playing,
-        track_selection,
+        track_auto_playing_item_or_playlist_selection,
+        track_playlist_selection,
+        track_playing_item,
+        track_auto_playing_item_or_active_selection,
+        track_active_selection,
     };
 
     bool s_track_mode_includes_now_playing(size_t mode);
