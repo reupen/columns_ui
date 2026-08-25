@@ -44,13 +44,9 @@ public:
         track_active_selection,
     };
 
-    bool s_track_mode_includes_now_playing(size_t mode);
-
-    bool s_track_mode_includes_playlist(size_t mode);
-
-    bool s_track_mode_includes_auto(size_t mode);
-
-    bool s_track_mode_includes_selection(size_t mode);
+    bool tracking_prioritises_playing_item() const;
+    bool tracking_includes_playlist_selection() const;
+    bool tracking_includes_active_selection() const;
 
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;

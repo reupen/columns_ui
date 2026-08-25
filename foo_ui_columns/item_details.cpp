@@ -469,7 +469,7 @@ void ItemDetails::reset_display_info()
 
 void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
-    if (s_track_mode_includes_now_playing(m_tracking_mode)) {
+    if (tracking_prioritises_playing_item()) {
         m_nowplaying_active = true;
         set_handles(pfc::list_single_ref_t<metadb_handle_ptr>(p_track));
     }
@@ -508,7 +508,7 @@ void ItemDetails::on_playback_time(double p_time) noexcept
 
 void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason) noexcept
 {
-    if (s_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
+    if (tracking_prioritises_playing_item() && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
         m_nowplaying_active = false;
 
@@ -524,8 +524,8 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason) noexcep
 
 void ItemDetails::on_playlist_switch() noexcept
 {
-    if (s_track_mode_includes_playlist(m_tracking_mode)
-        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (tracking_includes_playlist_selection()
+        && (!tracking_prioritises_playing_item() || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
@@ -533,8 +533,8 @@ void ItemDetails::on_playlist_switch() noexcept
 }
 void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept
 {
-    if (s_track_mode_includes_playlist(m_tracking_mode)
-        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (tracking_includes_playlist_selection()
+        && (!tracking_prioritises_playing_item() || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
@@ -574,8 +574,8 @@ void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handl
         else
             m_selection_handles = p_selection;
 
-        if (s_track_mode_includes_selection(m_tracking_mode)
-            && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+        if (tracking_includes_active_selection()
+            && (!tracking_prioritises_playing_item() || !play_control::get()->is_playing())) {
             set_handles(m_selection_handles);
         }
     }
@@ -587,14 +587,14 @@ void ItemDetails::on_tracking_mode_change()
 
     m_nowplaying_active = false;
 
-    if (s_track_mode_includes_now_playing(m_tracking_mode) && play_control::get()->is_playing()) {
+    if (tracking_prioritises_playing_item() && play_control::get()->is_playing()) {
         metadb_handle_ptr item;
         if (playback_control::get()->get_now_playing(item))
             handles.add_item(item);
         m_nowplaying_active = true;
-    } else if (s_track_mode_includes_playlist(m_tracking_mode)) {
+    } else if (tracking_includes_playlist_selection()) {
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-    } else if (s_track_mode_includes_selection(m_tracking_mode)) {
+    } else if (tracking_includes_active_selection()) {
         handles = m_selection_handles;
     }
     set_handles(handles);
@@ -1363,19 +1363,15 @@ void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
     update_now();
 }
 
-bool ItemDetails::s_track_mode_includes_selection(size_t mode)
+bool ItemDetails::tracking_includes_active_selection() const
 {
-    return mode == track_auto_playing_item_or_active_selection || mode == track_active_selection;
+    return m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_active_selection;
 }
 
-bool ItemDetails::s_track_mode_includes_auto(size_t mode)
+bool ItemDetails::tracking_includes_playlist_selection() const
 {
-    return mode == track_auto_playing_item_or_playlist_selection || mode == track_auto_playing_item_or_active_selection;
-}
-
-bool ItemDetails::s_track_mode_includes_playlist(size_t mode)
-{
-    return mode == track_auto_playing_item_or_playlist_selection || mode == track_playlist_selection;
+    return m_tracking_mode == track_auto_playing_item_or_playlist_selection
+        || m_tracking_mode == track_playlist_selection;
 }
 
 uie::container_window_v3_config ItemDetails::get_window_config()
@@ -1390,10 +1386,10 @@ uie::container_window_v3_config ItemDetails::get_window_config()
     return config;
 }
 
-bool ItemDetails::s_track_mode_includes_now_playing(size_t mode)
+bool ItemDetails::tracking_prioritises_playing_item() const
 {
-    return mode == track_auto_playing_item_or_playlist_selection || mode == track_auto_playing_item_or_active_selection
-        || mode == track_playing_item;
+    return m_tracking_mode == track_auto_playing_item_or_playlist_selection
+        || m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_playing_item;
 }
 
 uie::window_factory<ItemDetails> g_item_details;
@@ -1516,12 +1512,12 @@ const char* ItemDetails::MenuNodeAlignment::get_name(uint32_t source)
 
 ItemDetails::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemDetails* p_wnd)
 {
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 3));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playing_item_or_active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playing_item_or_playlist_selection));
     m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 4));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_playing_item));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_playlist_selection));
 }
 
 void ItemDetails::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
