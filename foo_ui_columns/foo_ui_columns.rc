@@ -328,9 +328,9 @@ BEGIN
     LTEXT           "Playlist grouping and artwork",IDC_STATIC,14,128,152,8
     COMBOBOX        IDC_GROUPING,14,138,240,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Keep playlist group headings in view when scrolling",IDC_STICKY_GROUP_HEADERS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,161,177,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,161,190,10
     CONTROL         "Keep playlist artwork in view when scrolling",IDC_STICKY_ARTWORK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,181,155,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,181,190,10
     CONTROL         "Use smooth scrolling",IDC_USE_SMOOTH_SCROLLING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,201,86,10
     LTEXT           "Quick setup can be opened from Preferences at any time.",IDC_STATIC,14,221,240,8
     DEFPUSHBUTTON   "OK",IDOK,149,247,50,14,WS_GROUP
