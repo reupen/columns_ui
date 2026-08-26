@@ -17,6 +17,16 @@ constexpr auto MSG_AUTOSCROLL_TICK = WM_USER + 5;
 constexpr auto OCCLUSION_STATUS_TIMER_ID = 700;
 constexpr auto SMOOTH_SCROLL_TIMER_ID = 701;
 
+const std::unordered_map<uint32_t, wil::zstring_view> tracking_mode_labels{
+    {ItemDetails::track_auto_playing_item_or_active_selection, "Playing item or current selection"},
+    {ItemDetails::track_auto_active_selection_or_playing_item, "Current selection or playing item"},
+    {ItemDetails::track_auto_playing_item_or_playlist_selection, "Playing item or playlist selection"},
+    {ItemDetails::track_auto_playlist_selection_or_playing_item, "Playlist selection or playing item"},
+    {ItemDetails::track_active_selection, "Current selection"},
+    {ItemDetails::track_playlist_selection, "Playlist selection"},
+    {ItemDetails::track_playing_item, "Playing item"},
+};
+
 } // namespace
 
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
@@ -177,6 +187,7 @@ void ItemDetails::s_on_app_activate(bool b_activated)
     for (auto& window : s_windows)
         window->on_app_activate(b_activated);
 }
+
 void ItemDetails::on_app_activate(bool b_activated)
 {
     if (b_activated) {
@@ -185,6 +196,24 @@ void ItemDetails::on_app_activate(bool b_activated)
     } else {
         deregister_callback();
     }
+}
+
+void ItemDetails::set_selection_handles(const metadb_handle_list& handles)
+{
+    if (tracking_falls_back_to_playing_item() && handles.size() == 0) {
+        const auto is_playing = m_playback_control->is_playing();
+
+        if (is_playing && !m_nowplaying_active) {
+            m_nowplaying_active = true;
+            set_handles(pfc::list_single_ref_t(m_playing_item));
+        }
+
+        if (m_nowplaying_active)
+            return;
+    }
+
+    m_nowplaying_active = false;
+    set_handles(handles);
 }
 
 const GUID& ItemDetails::get_extension_guid() const
@@ -386,7 +415,7 @@ void ItemDetails::refresh_contents(
         temp.prealloc(2048);
 
         if (m_nowplaying_active) {
-            playback_control::get()->playback_format_title(
+            m_playback_control->playback_format_title(
                 &tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
         } else {
             const auto handle = m_handles[0];
@@ -469,9 +498,13 @@ void ItemDetails::reset_display_info()
 
 void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
-    if (s_track_mode_includes_now_playing(m_tracking_mode)) {
+    if (tracking_includes_playing_item())
+        m_playing_item = p_track;
+
+    if (m_nowplaying_active || tracking_prioritises_playing_item()
+        || (tracking_falls_back_to_playing_item() && m_handles.size() == 0)) {
         m_nowplaying_active = true;
-        set_handles(pfc::list_single_ref_t<metadb_handle_ptr>(p_track));
+        set_handles(pfc::list_single_ref_t(p_track));
     }
 }
 
@@ -508,14 +541,17 @@ void ItemDetails::on_playback_time(double p_time) noexcept
 
 void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason) noexcept
 {
-    if (s_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
+    if (p_reason != play_control::stop_reason_starting_another)
+        m_playing_item.reset();
+
+    if (m_nowplaying_active && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
         m_nowplaying_active = false;
 
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        if (m_tracking_mode == track_auto_playlist_playing) {
+        if (m_tracking_mode == track_auto_playing_item_or_playlist_selection) {
             playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-        } else if (m_tracking_mode == track_auto_selection_playing) {
+        } else if (m_tracking_mode == track_auto_playing_item_or_active_selection) {
             handles = m_selection_handles;
         }
         set_handles(handles);
@@ -524,20 +560,21 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason) noexcep
 
 void ItemDetails::on_playlist_switch() noexcept
 {
-    if (s_track_mode_includes_playlist(m_tracking_mode)
-        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (tracking_includes_playlist_selection()
+        && (!tracking_prioritises_playing_item() || !m_playback_control->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-        set_handles(handles);
+        set_selection_handles(handles);
     }
 }
+
 void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept
 {
-    if (s_track_mode_includes_playlist(m_tracking_mode)
-        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (tracking_includes_playlist_selection()
+        && (!tracking_prioritises_playing_item() || !m_playback_control->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-        set_handles(handles);
+        set_selection_handles(handles);
     }
 }
 
@@ -574,9 +611,9 @@ void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handl
         else
             m_selection_handles = p_selection;
 
-        if (s_track_mode_includes_selection(m_tracking_mode)
-            && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
-            set_handles(m_selection_handles);
+        if (tracking_includes_active_selection()
+            && (!tracking_prioritises_playing_item() || !m_playback_control->is_playing())) {
+            set_selection_handles(m_selection_handles);
         }
     }
 }
@@ -587,16 +624,21 @@ void ItemDetails::on_tracking_mode_change()
 
     m_nowplaying_active = false;
 
-    if (s_track_mode_includes_now_playing(m_tracking_mode) && play_control::get()->is_playing()) {
-        metadb_handle_ptr item;
-        if (playback_control::get()->get_now_playing(item))
-            handles.add_item(item);
-        m_nowplaying_active = true;
-    } else if (s_track_mode_includes_playlist(m_tracking_mode)) {
+    if (tracking_includes_playlist_selection()) {
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-    } else if (s_track_mode_includes_selection(m_tracking_mode)) {
+    } else if (tracking_includes_active_selection()) {
         handles = m_selection_handles;
     }
+
+    if (tracking_includes_playing_item())
+        m_playback_control->get_now_playing(m_playing_item);
+
+    if ((tracking_prioritises_playing_item() || (tracking_falls_back_to_playing_item() && handles.size() == 0))
+        && m_playback_control->is_playing()) {
+        handles.add_item(m_playing_item);
+        m_nowplaying_active = true;
+    }
+
     set_handles(handles);
 }
 
@@ -825,6 +867,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             });
 
         set_window_theme();
+        m_playback_control = playback_control::get();
         register_callback();
         play_callback_manager::get()->register_callback(
             this, flag_on_playback_all & ~(flag_on_volume_change | flag_on_playback_starting), false);
@@ -893,6 +936,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_dxgi_factory.reset();
         m_smooth_scroll_helper->shut_down();
         m_autoscroll_helper.reset();
+        m_playback_control.reset();
         break;
     }
     case WM_NCDESTROY:
@@ -1363,19 +1407,17 @@ void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
     update_now();
 }
 
-bool ItemDetails::s_track_mode_includes_selection(size_t mode)
+bool ItemDetails::tracking_includes_active_selection() const
 {
-    return mode == track_auto_selection_playing || mode == track_selection;
+    return m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_active_selection
+        || m_tracking_mode == track_auto_active_selection_or_playing_item;
 }
 
-bool ItemDetails::s_track_mode_includes_auto(size_t mode)
+bool ItemDetails::tracking_includes_playlist_selection() const
 {
-    return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
-}
-
-bool ItemDetails::s_track_mode_includes_playlist(size_t mode)
-{
-    return mode == track_auto_playlist_playing || mode == track_playlist;
+    return m_tracking_mode == track_auto_playing_item_or_playlist_selection
+        || m_tracking_mode == track_playlist_selection
+        || m_tracking_mode == track_auto_playlist_selection_or_playing_item;
 }
 
 uie::container_window_v3_config ItemDetails::get_window_config()
@@ -1390,9 +1432,24 @@ uie::container_window_v3_config ItemDetails::get_window_config()
     return config;
 }
 
-bool ItemDetails::s_track_mode_includes_now_playing(size_t mode)
+bool ItemDetails::tracking_prioritises_playing_item() const
 {
-    return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
+    return m_tracking_mode == track_auto_playing_item_or_playlist_selection
+        || m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_playing_item;
+}
+
+bool ItemDetails::tracking_falls_back_to_playing_item() const
+{
+    return m_tracking_mode == track_auto_playlist_selection_or_playing_item
+        || m_tracking_mode == track_auto_active_selection_or_playing_item;
+}
+
+bool ItemDetails::tracking_includes_playing_item() const
+{
+    return m_tracking_mode == track_auto_playlist_selection_or_playing_item
+        || m_tracking_mode == track_auto_active_selection_or_playing_item
+        || m_tracking_mode == track_auto_playing_item_or_playlist_selection
+        || m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_playing_item;
 }
 
 uie::window_factory<ItemDetails> g_item_details;
@@ -1515,12 +1572,15 @@ const char* ItemDetails::MenuNodeAlignment::get_name(uint32_t source)
 
 ItemDetails::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemDetails* p_wnd)
 {
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 3));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playing_item_or_active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_active_selection_or_playing_item));
     m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 4));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playing_item_or_playlist_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playlist_selection_or_playing_item));
+    m_items.add_item(new uie::menu_node_separator_t());
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_playing_item));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_playlist_selection));
 }
 
 void ItemDetails::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
@@ -1567,15 +1627,7 @@ bool ItemDetails::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, u
 
 const char* ItemDetails::MenuNodeTrackMode::get_name(uint32_t source)
 {
-    if (source == track_playing)
-        return "Playing item";
-    if (source == track_playlist)
-        return "Playlist selection";
-    if (source == track_auto_selection_playing)
-        return "Automatic (current selection/playing item)";
-    if (source == track_selection)
-        return "Current selection";
-    return "Automatic (playlist selection/playing item)";
+    return tracking_mode_labels.at(source).c_str();
 }
 
 } // namespace cui::panels::item_details
