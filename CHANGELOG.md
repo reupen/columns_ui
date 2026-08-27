@@ -73,6 +73,14 @@
   boxes in the playlist view, playlist switcher, Filter panel and Item
   properties. [[#1824](https://github.com/reupen/columns_ui/pull/1824)]
 
+- A bug where Item details did not correctly track items being added or removed
+  from the playlist in playlist selection tracking modes was fixed.
+  [[#1846](https://github.com/reupen/columns_ui/pull/1846)]
+
+- A bug where some text labels in Quick setup were truncated at some display
+  scales was fixed. [[#1845](https://github.com/reupen/columns_ui/pull/1845)
+  (contributed by [@marc2k3](https://github.com/marc2k3))]
+
 - A bug where message box alert sounds may have played with an unexpected
   spatial effect applied was fixed.
   [[#1812](https://github.com/reupen/columns_ui/pull/1812)]

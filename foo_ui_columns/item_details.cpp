@@ -17,16 +17,6 @@ constexpr auto MSG_AUTOSCROLL_TICK = WM_USER + 5;
 constexpr auto OCCLUSION_STATUS_TIMER_ID = 700;
 constexpr auto SMOOTH_SCROLL_TIMER_ID = 701;
 
-const std::unordered_map<uint32_t, wil::zstring_view> tracking_mode_labels{
-    {ItemDetails::track_auto_playing_item_or_active_selection, "Playing item or current selection"},
-    {ItemDetails::track_auto_active_selection_or_playing_item, "Current selection or playing item"},
-    {ItemDetails::track_auto_playing_item_or_playlist_selection, "Playing item or playlist selection"},
-    {ItemDetails::track_auto_playlist_selection_or_playing_item, "Playlist selection or playing item"},
-    {ItemDetails::track_active_selection, "Current selection"},
-    {ItemDetails::track_playlist_selection, "Playlist selection"},
-    {ItemDetails::track_playing_item, "Playing item"},
-};
-
 } // namespace
 
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
@@ -140,30 +130,36 @@ bool ItemDetails::show_config_popup(HWND wnd_parent)
 
 void ItemDetails::set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
-    if (p_size) {
-        const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
-        if (version <= stream_version_current) {
-            p_reader->read_string(m_script, p_abort);
-            p_reader->read_lendian_t(m_tracking_mode, p_abort);
-            p_reader->read_lendian_t(m_hscroll, p_abort);
-            p_reader->read_lendian_t(m_horizontal_alignment, p_abort);
-            if (version >= 1) {
-                p_reader->read_lendian_t(m_word_wrapping, p_abort);
-                if (version >= 2) {
-                    p_reader->read_lendian_t(m_edge_style, p_abort);
+    if (p_size == 0)
+        return;
 
-                    m_vertical_alignment = static_cast<VerticalAlignment>(p_reader->read_lendian_t<int32_t>(p_abort));
-                }
-            }
-        }
-    }
+    const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
+
+    if (version > stream_version_current)
+        return;
+
+    p_reader->read_string(m_script, p_abort);
+    m_tracking_mode = static_cast<utils::TrackingMode>(p_reader->read_lendian_t<uint32_t>(p_abort));
+    p_reader->read_lendian_t(m_hscroll, p_abort);
+    p_reader->read_lendian_t(m_horizontal_alignment, p_abort);
+
+    if (version < 1)
+        return;
+
+    p_reader->read_lendian_t(m_word_wrapping, p_abort);
+
+    if (version < 2)
+        return;
+
+    p_reader->read_lendian_t(m_edge_style, p_abort);
+    m_vertical_alignment = static_cast<VerticalAlignment>(p_reader->read_lendian_t<int32_t>(p_abort));
 }
 
 void ItemDetails::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
     p_writer->write_string(m_script, p_abort);
-    p_writer->write_lendian_t(m_tracking_mode, p_abort);
+    p_writer->write_lendian_t(WI_EnumValue(m_tracking_mode), p_abort);
     p_writer->write_lendian_t(m_hscroll, p_abort);
     p_writer->write_lendian_t(m_horizontal_alignment, p_abort);
     p_writer->write_lendian_t(m_word_wrapping, p_abort);
@@ -192,28 +188,10 @@ void ItemDetails::on_app_activate(bool b_activated)
 {
     if (b_activated) {
         if (GetFocus() != get_wnd())
-            register_callback();
+            m_context_tracker->activate_ui_selection_tracking();
     } else {
-        deregister_callback();
+        m_context_tracker->deactivate_ui_selection_tracking();
     }
-}
-
-void ItemDetails::set_selection_handles(const metadb_handle_list& handles)
-{
-    if (tracking_falls_back_to_playing_item() && handles.size() == 0) {
-        const auto is_playing = m_playback_control->is_playing();
-
-        if (is_playing && !m_nowplaying_active) {
-            m_nowplaying_active = true;
-            set_handles(pfc::list_single_ref_t(m_playing_item));
-        }
-
-        if (m_nowplaying_active)
-            return;
-    }
-
-    m_nowplaying_active = false;
-    set_handles(handles);
 }
 
 const GUID& ItemDetails::get_extension_guid() const
@@ -231,19 +209,6 @@ void ItemDetails::get_category(pfc::string_base& p_out) const
 unsigned ItemDetails::get_type() const
 {
     return uie::type_panel;
-}
-
-void ItemDetails::register_callback()
-{
-    if (!m_callback_registered)
-        g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
-    m_callback_registered = true;
-}
-void ItemDetails::deregister_callback()
-{
-    if (m_callback_registered)
-        ui_selection_manager::get()->unregister_callback(this);
-    m_callback_registered = false;
 }
 
 void ItemDetails::update_scrollbar(uih::ScrollAxis axis, bool reset_position)
@@ -327,21 +292,6 @@ void ItemDetails::update_scrollbars(bool reset_vertical_position, bool reset_hor
         update_scrollbar(uih::ScrollAxis::Vertical, reset_vertical_position);
 }
 
-void ItemDetails::set_handles(const metadb_handle_list& handles)
-{
-    const auto old_handles = std::move(m_handles);
-    m_handles = handles;
-    if (handles.get_count() == 0 || old_handles.get_count() == 0 || handles[0].get_ptr() != old_handles[0].get_ptr()) {
-        if (m_full_file_info_request) {
-            m_full_file_info_request->abort();
-            m_aborting_full_file_info_requests.emplace_back(std::move(m_full_file_info_request));
-        }
-        m_full_file_info_requested = false;
-        m_full_file_info.reset();
-    }
-    refresh_contents(true, true);
-}
-
 void ItemDetails::request_full_file_info()
 {
     if (m_full_file_info_requested)
@@ -349,10 +299,12 @@ void ItemDetails::request_full_file_info()
 
     m_full_file_info_requested = true;
 
-    if (m_handles.get_count() == 0)
+    const auto& tracks = m_context_tracker->get_tracks();
+
+    if (tracks.get_count() == 0)
         return;
 
-    const auto handle = m_handles[0];
+    const auto handle = tracks[0];
 
     if (const auto info_ref = handle->get_info_ref(); !info_ref->isInfoPartial())
         return;
@@ -403,7 +355,9 @@ void ItemDetails::release_all_full_file_info_requests()
 void ItemDetails::refresh_contents(
     bool reset_vertical_scroll_position, bool reset_horizontal_scroll_position, bool force_update)
 {
-    if (m_handles.get_count()) {
+    const auto& tracks = m_context_tracker->get_tracks();
+
+    if (tracks.size() > 0) {
         const auto font = fonts::get_font(g_guid_item_details_font_client);
         const auto font_size = uih::direct_write::dip_to_pt(font->size());
 
@@ -414,16 +368,16 @@ void ItemDetails::refresh_contents(
         pfc::string8_fast_aggressive temp;
         temp.prealloc(2048);
 
-        if (m_nowplaying_active) {
+        if (m_context_tracker->is_playing_item()) {
             m_playback_control->playback_format_title(
                 &tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
         } else {
-            const auto handle = m_handles[0];
+            const auto handle = tracks[0];
             if (m_full_file_info) {
-                m_handles[0]->format_title_from_external_info(*m_full_file_info, &tf_hook, temp, m_to, nullptr);
+                tracks[0]->format_title_from_external_info(*m_full_file_info, &tf_hook, temp, m_to, nullptr);
             } else {
                 request_full_file_info();
-                m_handles[0]->format_title(&tf_hook, temp, m_to, nullptr);
+                tracks[0]->format_title(&tf_hook, temp, m_to, nullptr);
             }
         }
 
@@ -496,94 +450,48 @@ void ItemDetails::reset_display_info()
     m_text_rect.reset();
 }
 
-void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track) noexcept
-{
-    if (tracking_includes_playing_item())
-        m_playing_item = p_track;
-
-    if (m_nowplaying_active || tracking_prioritises_playing_item()
-        || (tracking_falls_back_to_playing_item() && m_handles.size() == 0)) {
-        m_nowplaying_active = true;
-        set_handles(pfc::list_single_ref_t(p_track));
-    }
-}
-
 void ItemDetails::on_playback_seek(double p_time) noexcept
 {
-    if (m_nowplaying_active)
+    if (m_context_tracker->is_playing_item())
         refresh_contents();
 }
+
 void ItemDetails::on_playback_pause(bool p_state) noexcept
 {
-    if (m_nowplaying_active)
+    if (m_context_tracker->is_playing_item())
         refresh_contents();
 }
+
 void ItemDetails::on_playback_edited(metadb_handle_ptr p_track) noexcept
 {
-    if (m_nowplaying_active)
+    if (m_context_tracker->is_playing_item())
         refresh_contents();
 }
+
 void ItemDetails::on_playback_dynamic_info(const file_info& p_info) noexcept
 {
-    if (m_nowplaying_active)
+    if (m_context_tracker->is_playing_item())
         refresh_contents();
 }
+
 void ItemDetails::on_playback_dynamic_info_track(const file_info& p_info) noexcept
 {
-    if (m_nowplaying_active)
+    if (m_context_tracker->is_playing_item())
         refresh_contents();
 }
+
 void ItemDetails::on_playback_time(double p_time) noexcept
 {
-    if (m_nowplaying_active)
+    if (m_context_tracker->is_playing_item())
         refresh_contents();
-}
-
-void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason) noexcept
-{
-    if (p_reason != play_control::stop_reason_starting_another)
-        m_playing_item.reset();
-
-    if (m_nowplaying_active && p_reason != play_control::stop_reason_starting_another
-        && p_reason != play_control::stop_reason_shutting_down) {
-        m_nowplaying_active = false;
-
-        metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        if (m_tracking_mode == track_auto_playing_item_or_playlist_selection) {
-            playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-        } else if (m_tracking_mode == track_auto_playing_item_or_active_selection) {
-            handles = m_selection_handles;
-        }
-        set_handles(handles);
-    }
-}
-
-void ItemDetails::on_playlist_switch() noexcept
-{
-    if (tracking_includes_playlist_selection()
-        && (!tracking_prioritises_playing_item() || !m_playback_control->is_playing())) {
-        metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-        set_selection_handles(handles);
-    }
-}
-
-void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept
-{
-    if (tracking_includes_playlist_selection()
-        && (!tracking_prioritises_playing_item() || !m_playback_control->is_playing())) {
-        metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-        set_selection_handles(handles);
-    }
 }
 
 void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept
 {
-    if (m_nowplaying_active)
+    if (m_context_tracker->is_playing_item())
         return;
 
-    for (auto&& track : m_handles) {
+    for (auto&& track : m_context_tracker->get_tracks()) {
         if (size_t index{};
             p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, track, index)) {
             refresh_contents();
@@ -592,54 +500,9 @@ void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool
     }
 }
 
-bool ItemDetails::check_process_on_selection_changed()
-{
-    HWND wnd_focus = GetFocus();
-    if (wnd_focus == nullptr)
-        return false;
-
-    DWORD processid = NULL;
-    GetWindowThreadProcessId(wnd_focus, &processid);
-    return processid == GetCurrentProcessId();
-}
-
-void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept
-{
-    if (check_process_on_selection_changed()) {
-        if (g_ui_selection_manager_is_now_playing_fallback())
-            m_selection_handles.remove_all();
-        else
-            m_selection_handles = p_selection;
-
-        if (tracking_includes_active_selection()
-            && (!tracking_prioritises_playing_item() || !m_playback_control->is_playing())) {
-            set_selection_handles(m_selection_handles);
-        }
-    }
-}
-
 void ItemDetails::on_tracking_mode_change()
 {
-    metadb_handle_list handles;
-
-    m_nowplaying_active = false;
-
-    if (tracking_includes_playlist_selection()) {
-        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-    } else if (tracking_includes_active_selection()) {
-        handles = m_selection_handles;
-    }
-
-    if (tracking_includes_playing_item())
-        m_playback_control->get_now_playing(m_playing_item);
-
-    if ((tracking_prioritises_playing_item() || (tracking_falls_back_to_playing_item() && handles.size() == 0))
-        && m_playback_control->is_playing()) {
-        handles.add_item(m_playing_item);
-        m_nowplaying_active = true;
-    }
-
-    set_handles(handles);
+    m_context_tracker->set_tracking_mode(m_tracking_mode);
 }
 
 void ItemDetails::update_now()
@@ -867,11 +730,13 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             });
 
         set_window_theme();
+
         m_playback_control = playback_control::get();
-        register_callback();
-        play_callback_manager::get()->register_callback(
-            this, flag_on_playback_all & ~(flag_on_volume_change | flag_on_playback_starting), false);
-        playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
+        play_callback_manager::get()->register_callback(this,
+            flag_on_playback_all
+                & ~(flag_on_volume_change | flag_on_playback_starting | flag_on_playback_stop
+                    | flag_on_playback_new_track),
+            false);
         metadb_io_v3::get()->register_callback(this);
 
         m_use_hardware_acceleration_change_token = prefs::add_use_hardware_acceleration_changed_handler([this] {
@@ -889,14 +754,24 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (s_windows.empty())
             s_create_message_window();
 
-        s_windows.push_back(this);
-
         titleformat_compiler::get()->compile_safe(m_to, m_script);
+
+        m_context_tracker.emplace(m_tracking_mode, true, [&] {
+            if (m_full_file_info_request) {
+                m_full_file_info_request->abort();
+                m_aborting_full_file_info_requests.emplace_back(std::move(m_full_file_info_request));
+            }
+            m_full_file_info_requested = false;
+            m_full_file_info.reset();
+
+            refresh_contents(true, true);
+        });
+
+        s_windows.push_back(this);
 
         m_initialised = true;
 
         on_size();
-        on_tracking_mode_change();
         refresh_contents(true, true);
 
         m_power_notify_handle.reset(
@@ -912,16 +787,12 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (s_windows.empty())
             s_destroy_message_window();
 
+        m_context_tracker.reset();
         m_power_notify_handle.reset();
         m_use_hardware_acceleration_change_token.reset();
         play_callback_manager::get()->unregister_callback(this);
         metadb_io_v3::get()->unregister_callback(this);
-        playlist_manager_v3::get()->unregister_callback(this);
-        deregister_callback();
         release_all_full_file_info_requests();
-        m_handles.remove_all();
-        m_selection_handles.remove_all();
-        m_selection_holder.release();
         m_to.release();
         m_text_format.reset();
         m_text_layout.reset();
@@ -941,15 +812,6 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     case WM_NCDESTROY:
         m_smooth_scroll_helper.reset();
-        break;
-    case WM_SETFOCUS:
-        deregister_callback();
-        m_selection_holder = ui_selection_manager::get()->acquire();
-        m_selection_holder->set_selection(m_handles);
-        break;
-    case WM_KILLFOCUS:
-        m_selection_holder.release();
-        register_callback();
         break;
     case WM_WINDOWPOSCHANGED: {
         auto lpwp = (LPWINDOWPOS)lp;
@@ -1294,7 +1156,7 @@ void ItemDetails::on_dark_mode_status_change()
 }
 
 ItemDetails::ItemDetails()
-    : m_tracking_mode(cfg_item_details_tracking_mode)
+    : m_tracking_mode(static_cast<utils::TrackingMode>(cfg_item_details_tracking_mode.get_value()))
     , m_script(default_item_details_script.data(), default_item_details_script.size())
     , m_horizontal_alignment(cfg_item_details_horizontal_alignment)
     , m_vertical_alignment(static_cast<VerticalAlignment>(cfg_item_details_vertical_alignment.get_value()))
@@ -1407,19 +1269,6 @@ void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
     update_now();
 }
 
-bool ItemDetails::tracking_includes_active_selection() const
-{
-    return m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_active_selection
-        || m_tracking_mode == track_auto_active_selection_or_playing_item;
-}
-
-bool ItemDetails::tracking_includes_playlist_selection() const
-{
-    return m_tracking_mode == track_auto_playing_item_or_playlist_selection
-        || m_tracking_mode == track_playlist_selection
-        || m_tracking_mode == track_auto_playlist_selection_or_playing_item;
-}
-
 uie::container_window_v3_config ItemDetails::get_window_config()
 {
     uie::container_window_v3_config config(L"columns_ui_item_details_E0D8v091E", false);
@@ -1430,26 +1279,6 @@ uie::container_window_v3_config ItemDetails::get_window_config()
         config.extended_window_styles |= WS_EX_STATICEDGE;
 
     return config;
-}
-
-bool ItemDetails::tracking_prioritises_playing_item() const
-{
-    return m_tracking_mode == track_auto_playing_item_or_playlist_selection
-        || m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_playing_item;
-}
-
-bool ItemDetails::tracking_falls_back_to_playing_item() const
-{
-    return m_tracking_mode == track_auto_playlist_selection_or_playing_item
-        || m_tracking_mode == track_auto_active_selection_or_playing_item;
-}
-
-bool ItemDetails::tracking_includes_playing_item() const
-{
-    return m_tracking_mode == track_auto_playlist_selection_or_playing_item
-        || m_tracking_mode == track_auto_active_selection_or_playing_item
-        || m_tracking_mode == track_auto_playing_item_or_playlist_selection
-        || m_tracking_mode == track_auto_playing_item_or_active_selection || m_tracking_mode == track_playing_item;
 }
 
 uie::window_factory<ItemDetails> g_item_details;
@@ -1572,15 +1401,15 @@ const char* ItemDetails::MenuNodeAlignment::get_name(uint32_t source)
 
 ItemDetails::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemDetails* p_wnd)
 {
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playing_item_or_active_selection));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_active_selection_or_playing_item));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, utils::TrackingMode::playing_item_or_active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, utils::TrackingMode::active_selection_or_playing_item));
     m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playing_item_or_playlist_selection));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_auto_playlist_selection_or_playing_item));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, utils::TrackingMode::playing_item_or_playlist_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, utils::TrackingMode::playlist_selection_or_playing_item));
     m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_playing_item));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_active_selection));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, track_playlist_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, utils::TrackingMode::playing_item));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, utils::TrackingMode::active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, utils::TrackingMode::playlist_selection));
 }
 
 void ItemDetails::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
@@ -1600,16 +1429,16 @@ bool ItemDetails::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out,
     return true;
 }
 
-ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, uint32_t p_value)
+ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, utils::TrackingMode p_value)
     : p_this(p_wnd)
-    , m_source(p_value)
+    , m_tracking_mode(p_value)
 {
 }
 
 void ItemDetails::MenuNodeTrackMode::execute()
 {
-    p_this->m_tracking_mode = m_source;
-    cfg_item_details_tracking_mode = m_source;
+    p_this->m_tracking_mode = m_tracking_mode;
+    cfg_item_details_tracking_mode = WI_EnumValue(m_tracking_mode);
     p_this->on_tracking_mode_change();
 }
 
@@ -1620,14 +1449,9 @@ bool ItemDetails::MenuNodeTrackMode::get_description(pfc::string_base& p_out) co
 
 bool ItemDetails::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
-    p_out = get_name(m_source);
-    p_displayflags = (m_source == p_this->m_tracking_mode) ? state_radiochecked : 0;
+    p_out = utils::get_tracking_mode_name(m_tracking_mode).c_str();
+    p_displayflags = (m_tracking_mode == p_this->m_tracking_mode) ? state_radiochecked : 0;
     return true;
-}
-
-const char* ItemDetails::MenuNodeTrackMode::get_name(uint32_t source)
-{
-    return tracking_mode_labels.at(source).c_str();
 }
 
 } // namespace cui::panels::item_details
