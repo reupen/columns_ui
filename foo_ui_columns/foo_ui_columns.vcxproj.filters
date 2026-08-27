@@ -680,6 +680,9 @@
     <ClCompile Include="dialog_placement.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
+    <ClCompile Include="context_tracker.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1042,6 +1045,9 @@
     </ClInclude>
     <ClInclude Include="dialog_placement.h">
       <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include="context_tracker.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

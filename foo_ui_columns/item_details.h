@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "context_tracker.h"
 #include "file_info_reader.h"
 #include "item_details_text.h"
 #include "window_resize_helper.h"
@@ -27,41 +28,22 @@ extern cfg_bool cfg_item_details_word_wrapping;
 
 class ItemDetails
     : public uie::container_uie_window_v3
-    , public ui_selection_callback
     , public play_callback
-    , public playlist_callback_single
     , public metadb_io_callback_dynamic {
     inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
     uie::container_window_v3_config get_window_config() override;
 
 public:
-    enum TrackingMode {
-        track_auto_playing_item_or_playlist_selection,
-        track_playlist_selection,
-        track_playing_item,
-        track_auto_playing_item_or_active_selection,
-        track_active_selection,
-        track_auto_playlist_selection_or_playing_item,
-        track_auto_active_selection_or_playing_item,
-    };
-
-    bool tracking_prioritises_playing_item() const;
-    bool tracking_falls_back_to_playing_item() const;
-    bool tracking_includes_playing_item() const;
-    bool tracking_includes_playlist_selection() const;
-    bool tracking_includes_active_selection() const;
-
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
-        uint32_t m_source;
+        utils::TrackingMode m_tracking_mode;
 
     public:
-        static const char* get_name(uint32_t source);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeTrackMode(ItemDetails* p_wnd, uint32_t p_value);
+        MenuNodeTrackMode(ItemDetails* p_wnd, utils::TrackingMode p_value);
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
@@ -141,13 +123,10 @@ public:
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;
 
-    // UI SEL API
-    void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
-
     // PC
     void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
-    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override;
-    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override;
+    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override {}
+    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override {}
     void on_playback_seek(double p_time) noexcept override;
     void on_playback_pause(bool p_state) noexcept override;
     void on_playback_edited(metadb_handle_ptr p_track) noexcept override;
@@ -155,35 +134,6 @@ public:
     void on_playback_dynamic_info_track(const file_info& p_info) noexcept override;
     void on_playback_time(double p_time) noexcept override;
     void on_volume_change(float p_new_val) override {}
-
-    // PL
-    enum {
-        playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch
-    };
-    void on_playlist_switch() noexcept override;
-    void on_item_focus_change(size_t p_from, size_t p_to) override {}
-
-    void on_items_added(
-        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
-    {
-    }
-    void on_items_reordered(const size_t* p_order, size_t p_count) override {}
-    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
-    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
-    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept override;
-    void on_items_modified(const bit_array& p_mask) override {}
-    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override {}
-    void on_items_replaced(const bit_array& p_mask,
-        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
-    {
-    }
-    void on_item_ensure_visible(size_t p_idx) override {}
-
-    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
-    void on_playlist_locked(bool p_locked) override {}
-
-    void on_default_format_changed() override {}
-    void on_playback_order_changed(size_t p_new_index) override {}
 
     // ML
     void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept override;
@@ -213,12 +163,8 @@ private:
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
-    void register_callback();
-    void deregister_callback();
     void on_app_activate(bool b_activated);
 
-    void set_selection_handles(const metadb_handle_list& handles);
-    void set_handles(const metadb_handle_list& handles);
     void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false,
         bool force_update = false);
     void request_full_file_info();
@@ -229,7 +175,6 @@ private:
     void update_display_info();
     void reset_display_info();
     void on_tracking_mode_change();
-    bool check_process_on_selection_changed();
 
     void absolute_scroll(
         uih::ScrollAxis axis, int new_position, bool suppress_smooth_scroll = false, bool quick_animation = false);
@@ -263,18 +208,13 @@ private:
     bool m_initialised{};
     int m_last_cx{};
     int m_last_cy{};
+    std::optional<utils::ContextTracker> m_context_tracker;
     playback_control::ptr m_playback_control;
-    ui_selection_holder::ptr m_selection_holder;
-    metadb_handle_ptr m_playing_item;
-    metadb_handle_list m_handles;
-    metadb_handle_list m_selection_handles;
     std::shared_ptr<file_info_impl> m_full_file_info;
     std::shared_ptr<helpers::FullFileInfoRequest> m_full_file_info_request;
     std::vector<std::shared_ptr<helpers::FullFileInfoRequest>> m_aborting_full_file_info_requests;
     bool m_full_file_info_requested{};
-    bool m_callback_registered{};
-    bool m_nowplaying_active{};
-    uint32_t m_tracking_mode;
+    utils::TrackingMode m_tracking_mode;
 
     uih::direct_write::Context::Ptr m_direct_write_context;
     std::optional<uih::direct_write::TextFormat> m_text_format;
