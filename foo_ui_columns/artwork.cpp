@@ -549,7 +549,10 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
     };
 
     append_tracking_mode_item(utils::TrackingMode::playing_item_or_active_selection);
+    append_tracking_mode_item(utils::TrackingMode::active_selection_or_playing_item);
+    tracking_mode_submenu.append_separator();
     append_tracking_mode_item(utils::TrackingMode::playing_item_or_playlist_selection);
+    append_tracking_mode_item(utils::TrackingMode::playlist_selection_or_playing_item);
     tracking_mode_submenu.append_separator();
     append_tracking_mode_item(utils::TrackingMode::playing_item);
     append_tracking_mode_item(utils::TrackingMode::active_selection);
@@ -1451,7 +1454,10 @@ ArtworkPanel::MenuNodeSourcePopup::MenuNodeSourcePopup(service_ptr_t<ArtworkPane
     };
 
     m_items.emplace_back(make_node(utils::TrackingMode::playing_item_or_active_selection));
+    m_items.emplace_back(make_node(utils::TrackingMode::active_selection_or_playing_item));
+    m_items.emplace_back(new uie::menu_node_separator_t());
     m_items.emplace_back(make_node(utils::TrackingMode::playing_item_or_playlist_selection));
+    m_items.emplace_back(make_node(utils::TrackingMode::playlist_selection_or_playing_item));
     m_items.emplace_back(new uie::menu_node_separator_t());
     m_items.emplace_back(make_node(utils::TrackingMode::playing_item));
     m_items.emplace_back(make_node(utils::TrackingMode::active_selection));
