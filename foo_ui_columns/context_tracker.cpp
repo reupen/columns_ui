@@ -36,8 +36,7 @@ void ContextTracker::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 
     if (m_is_tracking_playing || tracking_prioritises_playing_item()
         || (tracking_falls_back_to_playing_item() && m_tracks.size() == 0)) {
-        m_is_tracking_playing = true;
-        set_tracks(pfc::list_single_ref_t(p_track));
+        set_tracks(pfc::list_single_ref_t(p_track), true);
     }
 }
 
@@ -48,15 +47,13 @@ void ContextTracker::on_playback_stop(play_control::t_stop_reason p_reason) noex
 
     if (m_is_tracking_playing && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
-        m_is_tracking_playing = false;
-
         metadb_handle_list tracks;
         if (m_tracking_mode == TrackingMode::playing_item_or_playlist_selection) {
             tracks = get_playlist_selection();
         } else if (m_tracking_mode == TrackingMode::playing_item_or_active_selection) {
             tracks = m_ui_selection_tracks;
         }
-        set_tracks(tracks);
+        set_tracks(tracks, false);
     }
 }
 
@@ -78,7 +75,7 @@ ContextTracker::ContextTracker(TrackingMode tracking_mode, bool track_single_ite
     refresh_tracks();
 }
 
-void ContextTracker::set_tracking_mode(TrackingMode tracking_mode)
+void ContextTracker::set_tracking_mode(TrackingMode tracking_mode, bool notify)
 {
     if (tracking_mode == m_tracking_mode)
         return;
@@ -86,7 +83,9 @@ void ContextTracker::set_tracking_mode(TrackingMode tracking_mode)
     m_tracking_mode = tracking_mode;
 
     refresh_tracks();
-    m_callback();
+
+    if (notify)
+        m_callback();
 }
 
 void ContextTracker::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept
@@ -111,10 +110,10 @@ void ContextTracker::on_items_added(
     size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
 {
     if (!tracking_includes_playlist_selection()
-        || (tracking_prioritises_playing_item() && !m_playback_control->is_playing()))
+        || (tracking_prioritises_playing_item() && m_playback_control->is_playing()))
         return;
 
-    for (const auto index : ranges::views::iota(p_base, p_base + p_data.size())) {
+    for (const auto index : ranges::views::iota(size_t{}, p_data.size())) {
         if (p_selection[index]) {
             set_selection_tracks(get_playlist_selection());
             return;
@@ -127,7 +126,7 @@ void ContextTracker::on_items_removing(const bit_array& p_mask, size_t p_old_cou
     m_process_playlist_items_removed = false;
 
     if (!tracking_includes_playlist_selection()
-        || (tracking_prioritises_playing_item() && !m_playback_control->is_playing()))
+        || (tracking_prioritises_playing_item() && m_playback_control->is_playing()))
         return;
 
     m_playlist_manager->activeplaylist_enum_items(
@@ -146,7 +145,7 @@ void ContextTracker::on_items_removed(const bit_array& p_mask, size_t p_old_coun
     m_process_playlist_items_removed = false;
 
     if (!tracking_includes_playlist_selection()
-        || (tracking_prioritises_playing_item() && !m_playback_control->is_playing()))
+        || (tracking_prioritises_playing_item() && m_playback_control->is_playing()))
         return;
 
     set_selection_tracks(get_playlist_selection());
@@ -185,7 +184,7 @@ void ContextTracker::refresh_tracks()
 
     if ((tracking_prioritises_playing_item() || (tracking_falls_back_to_playing_item() && tracks.size() == 0))
         && m_playback_control->is_playing()) {
-        tracks.add_item(m_playing_item);
+        tracks = pfc::list_single_ref_t(m_playing_item);
         m_is_tracking_playing = true;
     }
 
@@ -254,21 +253,22 @@ void ContextTracker::set_selection_tracks(metadb_handle_list tracks)
         const auto is_playing = m_playback_control->is_playing();
 
         if (is_playing && !m_is_tracking_playing) {
-            m_is_tracking_playing = true;
-            set_tracks(pfc::list_single_ref_t(m_playing_item));
+            set_tracks(pfc::list_single_ref_t(m_playing_item), true);
         }
 
         if (m_is_tracking_playing)
             return;
     }
 
-    m_is_tracking_playing = false;
-    set_tracks(std::move(tracks));
+    set_tracks(std::move(tracks), false);
 }
 
-void ContextTracker::set_tracks(metadb_handle_list tracks)
+void ContextTracker::set_tracks(metadb_handle_list tracks, bool is_tracking_playing)
 {
-    if (!m_is_tracking_playing && m_track_single_item && tracks == m_tracks)
+    const auto old_is_tracking_playing = m_is_tracking_playing;
+    m_is_tracking_playing = is_tracking_playing;
+
+    if (!is_tracking_playing && !old_is_tracking_playing && m_track_single_item && tracks == m_tracks)
         return;
 
     m_tracks = std::move(tracks);

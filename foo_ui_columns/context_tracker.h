@@ -29,7 +29,7 @@ public:
     void activate_ui_selection_tracking() { ui_selection_callback_activate(true); }
     void deactivate_ui_selection_tracking() { ui_selection_callback_activate(false); }
 
-    void set_tracking_mode(TrackingMode tracking_mode);
+    void set_tracking_mode(TrackingMode tracking_mode, bool notify = true);
 
     void on_playback_new_track(metadb_handle_ptr p_track) noexcept override;
     void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override;
@@ -56,7 +56,7 @@ private:
     metadb_handle_list get_playlist_selection() const;
 
     void set_selection_tracks(metadb_handle_list tracks);
-    void set_tracks(metadb_handle_list tracks);
+    void set_tracks(metadb_handle_list tracks, bool is_tracking_playing);
 
     TrackingMode m_tracking_mode;
     bool m_track_single_item{};
