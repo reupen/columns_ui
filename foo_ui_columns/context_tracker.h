@@ -37,6 +37,10 @@ public:
 protected:
     void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
 
+    void on_items_added(
+        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
+    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
+    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
     void on_playlist_switch() noexcept override;
     void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept override;
 
@@ -63,6 +67,7 @@ private:
     metadb_handle_list m_tracks;
     metadb_handle_list m_ui_selection_tracks;
     bool m_is_tracking_playing{};
+    bool m_process_playlist_items_removed{};
 };
 
 } // namespace cui::utils

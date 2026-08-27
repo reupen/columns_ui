@@ -67,7 +67,8 @@ wil::zstring_view get_tracking_mode_name(TrackingMode mode)
 
 ContextTracker::ContextTracker(TrackingMode tracking_mode, bool track_single_item, ContextTrackerCallback callback)
     : play_callback_impl_base(flag_on_playback_new_track | flag_on_playback_stop)
-    , playlist_callback_single_impl_base(flag_on_items_selection_change | flag_on_playlist_switch)
+    , playlist_callback_single_impl_base(flag_on_items_added | flag_on_items_removing | flag_on_items_removed
+          | flag_on_items_selection_change | flag_on_playlist_switch)
     , m_tracking_mode(tracking_mode)
     , m_track_single_item(track_single_item)
     , m_callback(std::move(callback))
@@ -104,6 +105,51 @@ void ContextTracker::on_selection_changed(const pfc::list_base_const_t<metadb_ha
         && (!tracking_prioritises_playing_item() || !m_playback_control->is_playing())) {
         set_selection_tracks(m_ui_selection_tracks);
     }
+}
+
+void ContextTracker::on_items_added(
+    size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
+{
+    if (!tracking_includes_playlist_selection()
+        || (tracking_prioritises_playing_item() && !m_playback_control->is_playing()))
+        return;
+
+    for (const auto index : ranges::views::iota(p_base, p_base + p_data.size())) {
+        if (p_selection[index]) {
+            set_selection_tracks(get_playlist_selection());
+            return;
+        }
+    }
+}
+
+void ContextTracker::on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
+{
+    m_process_playlist_items_removed = false;
+
+    if (!tracking_includes_playlist_selection()
+        || (tracking_prioritises_playing_item() && !m_playback_control->is_playing()))
+        return;
+
+    m_playlist_manager->activeplaylist_enum_items(
+        [&](size_t index, const metadb_handle_ptr& track, bool is_selected) {
+            m_process_playlist_items_removed = true;
+            return !is_selected;
+        },
+        p_mask);
+}
+
+void ContextTracker::on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
+{
+    if (!m_process_playlist_items_removed)
+        return;
+
+    m_process_playlist_items_removed = false;
+
+    if (!tracking_includes_playlist_selection()
+        || (tracking_prioritises_playing_item() && !m_playback_control->is_playing()))
+        return;
+
+    set_selection_tracks(get_playlist_selection());
 }
 
 void ContextTracker::on_playlist_switch() noexcept
