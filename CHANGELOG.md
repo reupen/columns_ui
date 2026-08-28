@@ -11,9 +11,10 @@
   This includes being able to directly access each top-level menu using their
   access keys (e.g. Alt+F for the File menu).
 
-- Item details now has two new automatic tracking modes prioritise the current
-  or playlist selection over the playing item.
-  [[#1842](https://github.com/reupen/columns_ui/pull/1842)]
+- Artwork view and Item details now have two new automatic tracking modes
+  prioritise the current or playlist selection over the playing item.
+  [[#1842](https://github.com/reupen/columns_ui/pull/1842),
+  [#1848](https://github.com/reupen/columns_ui/pull/1848)]
 
   All automatic tracking modes were renamed to make the priority order clearer.
 

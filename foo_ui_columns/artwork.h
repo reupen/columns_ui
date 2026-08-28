@@ -2,6 +2,7 @@
 
 #include "artwork_decoder.h"
 #include "artwork_reader.h"
+#include "context_tracker.h"
 #include "system_appearance_manager.h"
 
 #ifdef _DEBUG
@@ -26,10 +27,7 @@ extern fbh::ConfigInt32 colour_management_mode;
 
 class ArtworkPanel
     : public uie::container_uie_window_v3
-    , public now_playing_album_art_notify
-    , public play_callback
-    , public playlist_callback_single
-    , public ui_selection_callback {
+    , public now_playing_album_art_notify {
 public:
     const GUID& get_extension_guid() const override;
     void get_name(pfc::string_base& out) const override;
@@ -39,48 +37,6 @@ public:
     static void g_on_edge_style_change();
 
     void on_album_art(album_art_data::ptr data) noexcept override;
-
-    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override;
-    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override;
-
-    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
-    void on_playback_seek(double p_time) override {}
-    void on_playback_pause(bool p_state) override {}
-    void on_playback_edited(metadb_handle_ptr p_track) override {}
-    void on_playback_dynamic_info(const file_info& p_info) override {}
-    void on_playback_dynamic_info_track(const file_info& p_info) override {}
-    void on_playback_time(double p_time) override {}
-    void on_volume_change(float p_new_val) override {}
-
-    enum {
-        playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch
-    };
-    void on_playlist_switch() noexcept override;
-    void on_item_focus_change(size_t p_from, size_t p_to) override {}
-
-    void on_items_added(
-        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
-    {
-    }
-    void on_items_reordered(const size_t* p_order, size_t p_count) override {}
-    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
-    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
-    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept override;
-    void on_items_modified(const bit_array& p_mask) override {}
-    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override {}
-    void on_items_replaced(const bit_array& p_mask,
-        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
-    {
-    }
-    void on_item_ensure_visible(size_t p_idx) override {}
-
-    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
-    void on_playlist_locked(bool p_locked) override {}
-
-    void on_default_format_changed() override {}
-    void on_playback_order_changed(size_t p_new_index) override {}
-
-    void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
 
     void on_artwork_loaded(bool artwork_changed);
 
@@ -102,7 +58,7 @@ public:
     void copy_image_path_to_clipboard() const;
     void show_next_artwork_type();
     void set_artwork_type_index(uint32_t index);
-    void set_tracking_mode(uint32_t new_tracking_mode);
+    void set_tracking_mode(utils::TrackingMode new_tracking_mode);
     void toggle_preserve_aspect_ratio();
     void toggle_lock_artwork_type();
 
@@ -189,13 +145,14 @@ private:
     std::optional<std::jthread> m_show_in_explorer_thread;
     uint32_t m_selected_artwork_type_index{};
     std::optional<uint32_t> m_artwork_type_override_index{};
-    uint32_t m_track_mode;
+    utils::TrackingMode m_tracking_mode;
     bool m_preserve_aspect_ratio{true};
     bool m_artwork_type_locked{};
     bool m_dynamic_artwork_pending{};
     bool m_using_flip_model_swap_chain{};
     bool m_transform_effect_needs_updating{};
-    metadb_handle_list m_selection_handles;
+
+    std::optional<utils::ContextTracker> m_context_tracker;
     metadb_handle_ptr m_current_track;
 
     static std::vector<ArtworkPanel*> g_windows;
