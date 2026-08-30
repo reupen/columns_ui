@@ -7,13 +7,13 @@ namespace cui::utils {
 namespace {
 
 const std::unordered_map<TrackingMode, wil::zstring_view> tracking_mode_labels{
-    {TrackingMode::playing_item_or_active_selection, "Playing item or current selection"},
-    {TrackingMode::active_selection_or_playing_item, "Current selection or playing item"},
-    {TrackingMode::playing_item_or_playlist_selection, "Playing item or playlist selection"},
-    {TrackingMode::playlist_selection_or_playing_item, "Playlist selection or playing item"},
-    {TrackingMode::active_selection, "Current selection"},
-    {TrackingMode::playlist_selection, "Playlist selection"},
-    {TrackingMode::playing_item, "Playing item"},
+    {TrackingMode::playing_item_or_active_selection, "Playing item or current selection"_zv},
+    {TrackingMode::active_selection_or_playing_item, "Current selection or playing item"_zv},
+    {TrackingMode::playing_item_or_playlist_selection, "Playing item or playlist selection"_zv},
+    {TrackingMode::playlist_selection_or_playing_item, "Playlist selection or playing item"_zv},
+    {TrackingMode::active_selection, "Current selection"_zv},
+    {TrackingMode::playlist_selection, "Playlist selection"_zv},
+    {TrackingMode::playing_item, "Playing item"_zv},
 };
 
 bool check_process_on_selection_changed()
