@@ -11,6 +11,10 @@ enum class InternalTrackingMode {
     active_selection,
     playing_item,
     playing_item_or_active_selection,
+    playing_item_or_playlist_selection,
+    playlist_selection,
+    playlist_selection_or_playing_item,
+    active_selection_or_playing_item,
 };
 
 struct InfoSection {

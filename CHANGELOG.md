@@ -16,6 +16,10 @@
   [[#1842](https://github.com/reupen/columns_ui/pull/1842),
   [#1848](https://github.com/reupen/columns_ui/pull/1848)]
 
+  Additionally, Item properties now has the same tracking modes as the artwork
+  view and Item details.
+  [[#1850](https://github.com/reupen/columns_ui/pull/1850)]
+
   All automatic tracking modes were renamed to make the priority order clearer.
 
 - The following dialogues are now resizeable

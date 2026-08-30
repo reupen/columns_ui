@@ -12,6 +12,10 @@ const std::unordered_map<InternalTrackingMode, utils::TrackingMode> internal_tra
     {InternalTrackingMode::active_selection, utils::TrackingMode::active_selection},
     {InternalTrackingMode::playing_item, utils::TrackingMode::playing_item},
     {InternalTrackingMode::playing_item_or_active_selection, utils::TrackingMode::playing_item_or_active_selection},
+    {InternalTrackingMode::playing_item_or_playlist_selection, utils::TrackingMode::playing_item_or_playlist_selection},
+    {InternalTrackingMode::playlist_selection, utils::TrackingMode::playlist_selection},
+    {InternalTrackingMode::playlist_selection_or_playing_item, utils::TrackingMode::playlist_selection_or_playing_item},
+    {InternalTrackingMode::active_selection_or_playing_item, utils::TrackingMode::active_selection_or_playing_item},
 };
 
 utils::TrackingMode map_internal_tracking_mode(InternalTrackingMode legacy_tracking_mode)
@@ -21,7 +25,7 @@ utils::TrackingMode map_internal_tracking_mode(InternalTrackingMode legacy_track
         return iter->second;
     }
 
-    return utils::TrackingMode::playing_item_or_active_selection;
+    return utils::TrackingMode::playing_item_or_playlist_selection;
 }
 
 } // namespace
@@ -50,7 +54,8 @@ static const GUID g_guid_selection_poperties_show_column_titles
 static const GUID g_guid_selection_poperties_show_group_titles
     = {0xb84886a5, 0x4510, 0x42d0, {0x83, 0x7a, 0x33, 0xe5, 0x53, 0x60, 0xc2, 0x4e}};
 
-cfg_uint cfg_selection_properties_tracking_mode(g_guid_selection_properties_tracking_mode, 0);
+cfg_uint cfg_selection_properties_tracking_mode(
+    g_guid_selection_properties_tracking_mode, WI_EnumValue(InternalTrackingMode::playing_item_or_playlist_selection));
 cfg_uint cfg_selection_properties_edge_style(g_guid_selection_poperties_edge_style, 0);
 cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_sections, 1 + 2 + 4);
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
@@ -890,8 +895,14 @@ uie::window_factory<ItemProperties> g_selection_properties;
 ItemProperties::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemProperties* p_wnd)
 {
     m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playing_item_or_active_selection));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::active_selection_or_playing_item));
+    m_items.add_item(new uie::menu_node_separator_t());
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playing_item_or_playlist_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playlist_selection_or_playing_item));
+    m_items.add_item(new uie::menu_node_separator_t());
     m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playing_item));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playlist_selection));
 }
 
 void ItemProperties::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
