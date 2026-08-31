@@ -536,8 +536,8 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
     data.set_size(size);
     p_reader->read(data.get_ptr(), size, p_abort);
 
-    p_out.m_guid = guid;
-    p_out.m_name = name;
+    p_out.window_id = guid;
+    p_out.name = name;
 
     if (guid == GUID{})
         return true;
@@ -556,9 +556,9 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
         } else
             return false;
 
-        p_out.m_val = conf;
+        p_out.window_config = conf;
     } else {
-        p_out.m_val = data;
+        p_out.window_config = data;
         uie::window_ptr wnd;
         if (uie::window::create_by_guid(guid, wnd)) {
             try {

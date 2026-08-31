@@ -2,11 +2,10 @@
 
 class ConfigLayout : public cfg_var {
 public:
-    class Preset {
-    public:
-        pfc::array_t<uint8_t> m_val;
-        GUID m_guid{};
-        pfc::string_simple m_name;
+    struct Preset {
+        pfc::string name;
+        GUID window_id{};
+        pfc::array_t<uint8_t> window_config;
 
         void get(uie::splitter_item_ptr& p_out);
         void set(const uie::splitter_item_t* item);

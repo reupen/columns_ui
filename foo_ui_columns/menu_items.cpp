@@ -323,7 +323,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     void get_name(uint32_t p_index, pfc::string_base& p_out) override
     {
         if (p_index < cfg_layout.get_presets().get_count())
-            p_out = cfg_layout.get_presets()[p_index].m_name;
+            p_out = cfg_layout.get_presets()[p_index].name;
     }
     bool get_description(uint32_t p_index, pfc::string_base& p_out) override
     {

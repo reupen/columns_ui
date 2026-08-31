@@ -590,7 +590,7 @@ void LayoutTab::initialise_presets(HWND wnd)
 {
     const auto count = cfg_layout.get_presets().get_count();
     for (size_t n = 0; n < count; n++) {
-        uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].m_name);
+        uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].name);
     }
     ComboBox_SetCurSel(GetDlgItem(wnd, IDC_PRESETS), m_active_preset);
 }
@@ -666,7 +666,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             if (preset_name) {
                 ConfigLayout::Preset preset;
-                preset.m_name = *preset_name;
+                preset.name = *preset_name;
                 preset.set(m_node_root->m_item->get_ptr());
                 auto preset_index = cfg_layout.add_preset(preset);
 

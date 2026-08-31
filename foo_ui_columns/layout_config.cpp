@@ -196,9 +196,9 @@ ConfigLayout::Preset preset_to_config_preset(Preset preset)
     abort_callback_dummy aborter;
 
     ConfigLayout::Preset preset_default;
-    preset_default.m_name.set_string(preset.name.data(), preset.name.size());
-    preset_default.m_guid = preset.node.guid;
-    stream_writer_memblock_ref conf(preset_default.m_val, true);
+    preset_default.name.set_string(preset.name.data(), preset.name.size());
+    preset_default.window_id = preset.node.guid;
+    stream_writer_memblock_ref conf(preset_default.window_config, true);
     window->get_config(&conf, aborter);
     return preset_default;
 }
@@ -212,14 +212,14 @@ ConfigLayout::ConfigLayout(const GUID& p_guid) : cfg_var(p_guid), m_active(0) //
 void ConfigLayout::Preset::get(uie::splitter_item_ptr& p_out)
 {
     p_out = new uie::splitter_item_simple_t;
-    p_out->set_panel_guid(m_guid);
-    p_out->set_panel_config_from_ptr(m_val.get_ptr(), m_val.get_size());
+    p_out->set_panel_guid(window_id);
+    p_out->set_panel_config_from_ptr(window_config.get_ptr(), window_config.get_size());
 }
 
 void ConfigLayout::Preset::set(const uie::splitter_item_t* item)
 {
-    m_guid = item->get_panel_guid();
-    item->get_panel_config_to_array(m_val, true);
+    window_id = item->get_panel_guid();
+    item->get_panel_config_to_array(window_config, true);
 }
 
 void ConfigLayout::get_preset(size_t index, uie::splitter_item_ptr& p_out)
@@ -248,8 +248,8 @@ size_t ConfigLayout::add_preset(const Preset& item)
 size_t ConfigLayout::add_preset(const char* p_name, size_t len)
 {
     Preset temp;
-    temp.m_name.set_string(p_name, len);
-    temp.m_guid = cui::panels::guid_playlist_view_v2;
+    temp.name.set_string(p_name, len);
+    temp.window_id = cui::panels::guid_playlist_view_v2;
     return m_presets.add_item(temp);
 }
 void ConfigLayout::save_active_preset()
@@ -317,13 +317,13 @@ void ConfigLayout::reset_presets()
 void ConfigLayout::get_preset_name(size_t index, pfc::string_base& p_out)
 {
     if (index < m_presets.get_count()) {
-        p_out = m_presets[index].m_name;
+        p_out = m_presets[index].name;
     }
 }
 void ConfigLayout::set_preset_name(size_t index, const char* ptr, size_t len)
 {
     if (index < m_presets.get_count()) {
-        m_presets[index].m_name.set_string(ptr, len);
+        m_presets[index].name.set_string(ptr, len);
     }
 }
 
@@ -342,10 +342,10 @@ void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
     save_active_preset();
 
     for (const auto& preset : m_presets) {
-        out->write_lendian_t(preset.m_guid, p_abort);
-        out->write_string(preset.m_name.get_ptr(), p_abort);
-        out->write_lendian_t(gsl::narrow<uint32_t>(preset.m_val.get_size()), p_abort);
-        out->write(preset.m_val.get_ptr(), preset.m_val.get_size(), p_abort);
+        out->write_lendian_t(preset.window_id, p_abort);
+        out->write_string(preset.name.get_ptr(), p_abort);
+        out->write_lendian_t(gsl::narrow<uint32_t>(preset.window_config.get_size()), p_abort);
+        out->write(preset.window_config.get_ptr(), preset.window_config.get_size(), p_abort);
     }
 }
 
@@ -361,20 +361,21 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abor
 
         for (auto _ : ranges::views::iota(0u, preset_count)) {
             Preset preset;
-            p_reader->read_lendian_t(preset.m_guid, p_abort);
-            preset.m_name = p_reader->read_string(p_abort);
+            p_reader->read_lendian_t(preset.window_id, p_abort);
+            preset.name = p_reader->read_string(p_abort);
 
             const auto size = p_reader->read_lendian_t<uint32_t>(p_abort);
-            preset.m_val.set_size(size);
-            p_reader->read(preset.m_val.get_ptr(), preset.m_val.get_size(), p_abort);
+            preset.window_config.set_size(size);
+            p_reader->read(preset.window_config.get_ptr(), preset.window_config.get_size(), p_abort);
 
             m_presets.add_item(preset);
         }
 
         if (m_active < m_presets.size()) {
             uie::splitter_item_simple_t item;
-            item.set_panel_guid(m_presets[m_active].m_guid);
-            item.set_panel_config_from_ptr(m_presets[m_active].m_val.get_ptr(), m_presets[m_active].m_val.get_size());
+            item.set_panel_guid(m_presets[m_active].window_id);
+            item.set_panel_config_from_ptr(
+                m_presets[m_active].window_config.get_ptr(), m_presets[m_active].window_config.get_size());
             g_layout_window.set_child(&item);
         }
     }
