@@ -209,25 +209,6 @@ ConfigLayout::ConfigLayout(const GUID& p_guid) : cfg_var(p_guid), m_active(0) //
 {
 }
 
-void ConfigLayout::Preset::write(stream_writer* out, abort_callback& p_abort)
-{
-    out->write_lendian_t(m_guid, p_abort);
-    out->write_string(m_name.get_ptr(), p_abort);
-    out->write_lendian_t(gsl::narrow<uint32_t>(m_val.get_size()), p_abort);
-    out->write(m_val.get_ptr(), m_val.get_size(), p_abort);
-}
-void ConfigLayout::Preset::read(stream_reader* stream, abort_callback& p_abort)
-{
-    stream->read_lendian_t(m_guid, p_abort);
-    pfc::string8 temp;
-    stream->read_string(temp, p_abort);
-    m_name = temp;
-    unsigned size;
-    stream->read_lendian_t(size, p_abort);
-    m_val.set_size(size);
-    stream->read(m_val.get_ptr(), m_val.get_size(), p_abort);
-}
-
 void ConfigLayout::Preset::get(uie::splitter_item_ptr& p_out)
 {
     p_out = new uie::splitter_item_simple_t;
@@ -353,22 +334,18 @@ const pfc::list_base_const_t<ConfigLayout::Preset>& ConfigLayout::get_presets() 
 
 void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
-    out->write_lendian_t(uint32_t(stream_version_current), p_abort);
+    out->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
     out->write_lendian_t(gsl::narrow<uint32_t>(m_active), p_abort);
-    const auto count = gsl::narrow<uint32_t>(m_presets.get_count());
-    out->write_lendian_t(count, p_abort);
-    for (unsigned n = 0; n < count; n++) {
-        if (n != m_active || !g_layout_window.get_wnd())
-            m_presets[n].write(out, p_abort);
-        else {
-            const auto item = g_layout_window.get_child();
-            out->write_lendian_t(item->get_panel_guid(), p_abort);
-            stream_writer_memblock conf;
-            item->get_panel_config(&conf);
-            out->write_string(m_presets[n].m_name.get_ptr(), p_abort);
-            out->write_lendian_t(gsl::narrow<uint32_t>(conf.m_data.get_size()), p_abort);
-            out->write(conf.m_data.get_ptr(), conf.m_data.get_size(), p_abort);
-        }
+    const auto preset_count = gsl::narrow<uint32_t>(m_presets.get_count());
+    out->write_lendian_t(preset_count, p_abort);
+
+    save_active_preset();
+
+    for (const auto& preset : m_presets) {
+        out->write_lendian_t(preset.m_guid, p_abort);
+        out->write_string(preset.m_name.get_ptr(), p_abort);
+        out->write_lendian_t(gsl::narrow<uint32_t>(preset.m_val.get_size()), p_abort);
+        out->write(preset.m_val.get_ptr(), preset.m_val.get_size(), p_abort);
     }
 }
 
@@ -379,15 +356,22 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abor
     if (version <= stream_version_current) {
         m_presets.remove_all();
         m_active = p_reader->read_lendian_t<uint32_t>(p_abort);
-        uint32_t count;
-        p_reader->read_lendian_t(count, p_abort);
-        for (unsigned n = 0; n < count; n++) {
-            Preset temp;
-            temp.read(p_reader, p_abort);
-            m_presets.add_item(temp);
+
+        const auto preset_count = p_reader->read_lendian_t<uint32_t>(p_abort);
+
+        for (auto _ : ranges::views::iota(0u, preset_count)) {
+            Preset preset;
+            p_reader->read_lendian_t(preset.m_guid, p_abort);
+            preset.m_name = p_reader->read_string(p_abort);
+
+            const auto size = p_reader->read_lendian_t<uint32_t>(p_abort);
+            preset.m_val.set_size(size);
+            p_reader->read(preset.m_val.get_ptr(), preset.m_val.get_size(), p_abort);
+
+            m_presets.add_item(preset);
         }
 
-        if (m_active < m_presets.get_count()) {
+        if (m_active < m_presets.size()) {
             uie::splitter_item_simple_t item;
             item.set_panel_guid(m_presets[m_active].m_guid);
             item.set_panel_config_from_ptr(m_presets[m_active].m_val.get_ptr(), m_presets[m_active].m_val.get_size());

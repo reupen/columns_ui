@@ -7,8 +7,6 @@ public:
         pfc::array_t<uint8_t> m_val;
         GUID m_guid{};
         pfc::string_simple m_name;
-        void write(stream_writer* out, abort_callback& p_abort);
-        void read(stream_reader* out, abort_callback& p_abort);
 
         void get(uie::splitter_item_ptr& p_out);
         void set(const uie::splitter_item_t* item);
