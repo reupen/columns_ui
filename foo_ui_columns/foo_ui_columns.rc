@@ -844,6 +844,16 @@ BEGIN
     CONTROL         "Ignore symbols",IDC_IGNORE_SYMBOLS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,138,71,10
 END
 
+IDD_LAYOUT_PROPERTIES DIALOGEX 0, 0, 244, 68
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "Segoe UI", 400, 0, 0x0
+BEGIN
+    LTEXT           "Preset name",IDC_STATIC,7,7,39,8
+    EDITTEXT        IDC_EDIT,7,18,230,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,132,47,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,187,47,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1184,6 +1194,14 @@ BEGIN
         RIGHTMARGIN, 320
         TOPMARGIN, 4
         BOTTOMMARGIN, 265
+    END
+
+    IDD_LAYOUT_PROPERTIES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 237
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 61
     END
 END
 #endif    // APSTUDIO_INVOKED

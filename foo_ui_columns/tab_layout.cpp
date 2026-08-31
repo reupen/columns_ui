@@ -11,6 +11,8 @@
 
 namespace cui::prefs {
 
+namespace {
+
 template <class Destination, class Source>
 void merge_maps(Destination& target, Source& source)
 {
@@ -18,6 +20,64 @@ void merge_maps(Destination& target, Source& source)
     assert(target.empty());
     target.swap(source);
 }
+
+class LayoutPropertiesInitialState {
+public:
+    wil::zstring_view name;
+};
+
+class LayoutProperties {
+public:
+    std::string name;
+};
+
+std::optional<LayoutProperties> open_layout_properties(
+    HWND wnd_parent, const std::optional<LayoutPropertiesInitialState>& initial_state = {})
+{
+    const dark::DialogDarkModeConfig dark_mode_config{
+        .button_ids = {IDOK, IDCANCEL},
+        .edit_ids = {IDC_EDIT},
+    };
+
+    LayoutProperties result;
+
+    const auto dialog_result = modal_dialog_box(
+        IDD_LAYOUT_PROPERTIES, dark_mode_config, wnd_parent, [&](HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+            switch (msg) {
+            case WM_INITDIALOG:
+                SetWindowText(wnd, initial_state ? L"Edit preset properties" : L"New layout preset");
+                uih::enhance_edit_control(wnd, IDC_EDIT);
+                SetWindowText(GetDlgItem(wnd, IDC_EDIT),
+                    initial_state ? mmh::to_utf16(initial_state->name).c_str() : L"New preset");
+                return TRUE;
+            case WM_COMMAND:
+                switch (wp) {
+                case IDOK: {
+                    result.name = mmh::to_utf8(uih::get_window_text(GetDlgItem(wnd, IDC_EDIT)));
+                    EndDialog(wnd, 1);
+                    return FALSE;
+                }
+                case IDCANCEL:
+                    EndDialog(wnd, 0);
+                    return FALSE;
+                default:
+                    return FALSE;
+                }
+            case WM_CLOSE:
+                EndDialog(wnd, 0);
+                return FALSE;
+            default:
+                return FALSE;
+            }
+        });
+
+    if (dialog_result > 0)
+        return std::make_optional(std::move(result));
+
+    return {};
+}
+
+} // namespace
 
 void LayoutTabNode::build()
 {
@@ -587,11 +647,11 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             switch_to_preset(wnd, SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
             break;
         case IDC_NEW_PRESET: {
-            const auto preset_name = helpers::show_rename_dialog_box(wnd, "New preset: Enter name", "New preset");
+            const auto preset_properties = open_layout_properties(wnd);
 
-            if (preset_name) {
-                size_t index = cfg_layout.add_preset(*preset_name);
-                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, preset_name->get_ptr());
+            if (preset_properties) {
+                size_t index = cfg_layout.add_preset(preset_properties->name.c_str());
+                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, preset_properties->name.c_str());
                 SendDlgItemMessage(wnd, IDC_PRESETS, CB_SETCURSEL, index, NULL);
                 switch_to_preset(wnd, index);
             }
@@ -618,16 +678,15 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_RENAME_PRESET: {
             pfc::string8 current_name;
             cfg_layout.get_preset_name(m_active_preset, current_name);
-            const auto new_preset_name
-                = helpers::show_rename_dialog_box(wnd, "Rename preset: Enter name", current_name);
+            const auto new_properties = open_layout_properties(wnd, LayoutPropertiesInitialState{current_name});
 
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
             unsigned index = ComboBox_GetCurSel(wnd_combo);
 
-            if (new_preset_name) {
-                cfg_layout.set_preset_name(index, new_preset_name->c_str(), new_preset_name->get_length());
+            if (new_properties) {
+                cfg_layout.set_preset_name(index, new_properties->name.c_str(), new_properties->name.size());
                 ComboBox_DeleteString(wnd_combo, index);
-                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_INSERTSTRING, index, *new_preset_name);
+                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_INSERTSTRING, index, new_properties->name.c_str());
                 ComboBox_SetCurSel(wnd_combo, index);
             }
         } break;

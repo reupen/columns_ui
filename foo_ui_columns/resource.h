@@ -121,6 +121,7 @@
 #define IDD_FORMAT_CODE_GENERATOR       239
 #define IDD_PREFS_SETUP                 240
 #define IDD_PREFS_PVIEW_SEARCH          241
+#define IDD_LAYOUT_PROPERTIES           242
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
