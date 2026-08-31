@@ -311,7 +311,7 @@ service_factory_single_t<MainMenuCommands> _mainmenu_commands_view_mode_modes(gr
     mainmenu_commands::sort_priority_dontcare, use_light_mode, use_dark_mode, use_system_mode);
 
 class MainMenuLayoutPresets : public mainmenu_commands {
-    uint32_t get_command_count() override { return gsl::narrow<uint32_t>(cfg_layout.get_presets().get_count()); }
+    uint32_t get_command_count() override { return gsl::narrow<uint32_t>(cfg_layout.get_presets().size()); }
     GUID get_command(uint32_t p_index) override
     {
         pfc::string8 name;
@@ -322,12 +322,12 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     }
     void get_name(uint32_t p_index, pfc::string_base& p_out) override
     {
-        if (p_index < cfg_layout.get_presets().get_count())
+        if (p_index < cfg_layout.get_presets().size())
             p_out = cfg_layout.get_presets()[p_index].name;
     }
     bool get_description(uint32_t p_index, pfc::string_base& p_out) override
     {
-        if (p_index < cfg_layout.get_presets().get_count()) {
+        if (p_index < cfg_layout.get_presets().size()) {
             pfc::string8 name;
             get_name(p_index, name);
             p_out.reset();
@@ -346,7 +346,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     }
     void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override
     {
-        if (p_index < cfg_layout.get_presets().get_count()) {
+        if (p_index < cfg_layout.get_presets().size()) {
             cfg_layout.save_active_preset();
             cfg_layout.set_active_preset(p_index);
         }

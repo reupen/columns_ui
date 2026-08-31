@@ -588,7 +588,7 @@ void LayoutTab::apply()
 
 void LayoutTab::initialise_presets(HWND wnd)
 {
-    const auto count = cfg_layout.get_presets().get_count();
+    const auto count = cfg_layout.get_presets().size();
     for (size_t n = 0; n < count; n++) {
         uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].name);
     }
@@ -597,7 +597,7 @@ void LayoutTab::initialise_presets(HWND wnd)
 
 void LayoutTab::switch_to_preset(HWND wnd, size_t index)
 {
-    if (index < cfg_layout.get_presets().get_count()) {
+    if (index < cfg_layout.get_presets().size()) {
         if (m_changed)
             cfg_layout.set_preset(m_active_preset, m_node_root->m_item->get_ptr());
         m_changed = true;
@@ -618,11 +618,11 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uih::tree_view_set_explorer_theme(m_wnd_tree);
 
         cfg_layout.save_active_preset();
-        if (!cfg_layout.get_presets().get_count())
+        if (!cfg_layout.get_presets().size())
             cfg_layout.reset_presets();
         m_changed = false;
         m_active_preset = cfg_layout.get_active();
-        if (m_active_preset >= cfg_layout.get_presets().get_count()) {
+        if (m_active_preset >= cfg_layout.get_presets().size()) {
             m_active_preset = 0;
             m_changed = true;
         }

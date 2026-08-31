@@ -7,14 +7,14 @@ public:
         GUID window_id{};
         pfc::array_t<uint8_t> window_config;
 
-        void get(uie::splitter_item_ptr& p_out);
+        void get(uie::splitter_item_ptr& p_out) const;
         void set(const uie::splitter_item_t* item);
     };
 
     size_t get_active() { return m_active; }
 
     /** from configuration, not from ui */
-    const pfc::list_base_const_t<Preset>& get_presets() const;
+    const std::vector<Preset>& get_presets() const;
 
     void get_preset(size_t index, uie::splitter_item_ptr& p_out);
     void set_preset(size_t index, const uie::splitter_item_t* item);
@@ -29,7 +29,7 @@ public:
     void set_active_preset(size_t index);
     void save_active_preset();
 
-    void set_presets(const pfc::list_base_const_t<Preset>& presets, size_t active);
+    void set_presets(std::vector<Preset> presets, size_t active);
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
 
     void set_data_raw(stream_reader*, size_t p_sizehint, abort_callback& p_abort) override;
@@ -43,7 +43,7 @@ private:
         stream_version_current = 0
     };
 
-    pfc::list_t<Preset> m_presets;
+    std::vector<Preset> m_presets;
 
     size_t m_active;
 };
@@ -57,7 +57,7 @@ public:
         MSG_EDIT_PANEL
     };
 
-    static void g_get_default_presets(pfc::list_t<ConfigLayout::Preset>& p_out);
+    static void g_get_default_presets(std::vector<ConfigLayout::Preset>& p_out);
 
     void refresh_child();
     void relinquish_child();

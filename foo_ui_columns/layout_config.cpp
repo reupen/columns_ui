@@ -209,7 +209,7 @@ ConfigLayout::ConfigLayout(const GUID& p_guid) : cfg_var(p_guid), m_active(0) //
 {
 }
 
-void ConfigLayout::Preset::get(uie::splitter_item_ptr& p_out)
+void ConfigLayout::Preset::get(uie::splitter_item_ptr& p_out) const
 {
     p_out = new uie::splitter_item_simple_t;
     p_out->set_panel_guid(window_id);
@@ -226,7 +226,7 @@ void ConfigLayout::get_preset(size_t index, uie::splitter_item_ptr& p_out)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
         p_out = g_layout_window.get_child();
-    } else if (index < m_presets.get_count()) {
+    } else if (index < m_presets.size()) {
         m_presets[index].get(p_out);
     }
 }
@@ -235,7 +235,7 @@ void ConfigLayout::set_preset(size_t index, const uie::splitter_item_t* item)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
         g_layout_window.set_child(item);
-    } else if (index < m_presets.get_count()) // else??
+    } else if (index < m_presets.size()) // else??
     {
         m_presets[index].set(item);
     }
@@ -243,18 +243,22 @@ void ConfigLayout::set_preset(size_t index, const uie::splitter_item_t* item)
 
 size_t ConfigLayout::add_preset(const Preset& item)
 {
-    return m_presets.add_item(item);
+    m_presets.emplace_back(item);
+    return m_presets.size() - 1;
 }
+
 size_t ConfigLayout::add_preset(const char* p_name, size_t len)
 {
     Preset temp;
     temp.name.set_string(p_name, len);
     temp.window_id = cui::panels::guid_playlist_view_v2;
-    return m_presets.add_item(temp);
+    m_presets.emplace_back(std::move(temp));
+    return m_presets.size() - 1;
 }
+
 void ConfigLayout::save_active_preset()
 {
-    if (m_active < m_presets.get_count() && g_layout_window.get_wnd()) {
+    if (m_active < m_presets.size() && g_layout_window.get_wnd()) {
         const auto ptr = g_layout_window.get_child();
         m_presets[m_active].set(ptr.get_ptr());
     }
@@ -262,7 +266,7 @@ void ConfigLayout::save_active_preset()
 
 void ConfigLayout::set_active_preset(size_t index)
 {
-    if (index < m_presets.get_count() && m_active != index) {
+    if (index < m_presets.size() && m_active != index) {
         m_active = index;
         uie::splitter_item_ptr item;
         m_presets[index].get(item);
@@ -273,38 +277,40 @@ void ConfigLayout::set_active_preset(size_t index)
 
 size_t ConfigLayout::delete_preset(size_t index)
 {
-    if (index < m_presets.get_count()) {
+    if (index < m_presets.size()) {
         if (index == m_active)
             m_active = pfc_infinite;
         else if (index < m_active)
             m_active--;
-        m_presets.remove_by_idx(index);
+
+        m_presets.erase(m_presets.begin() + index);
     }
-    return m_presets.get_count();
+    return m_presets.size();
 }
 
-void ConfigLayout::set_presets(const pfc::list_base_const_t<Preset>& presets, size_t active)
+void ConfigLayout::set_presets(std::vector<Preset> presets, size_t active)
 {
-    if (presets.get_count()) {
-        m_presets.remove_all();
-        m_active = pfc_infinite;
-        m_presets.add_items(presets);
-        set_active_preset(active);
-    }
+    if (presets.size() == 0)
+        return;
+
+    m_active = pfc_infinite;
+    m_presets = std::move(presets);
+    set_active_preset(active);
 }
 
-void LayoutWindow::g_get_default_presets(pfc::list_t<ConfigLayout::Preset>& p_out)
+void LayoutWindow::g_get_default_presets(std::vector<ConfigLayout::Preset>& p_out)
 {
     for (auto&& preset : cui::default_presets::quick_setup_presets)
-        p_out.add_item(preset_to_config_preset(preset));
+        p_out.emplace_back(preset_to_config_preset(preset));
 }
 
 void ConfigLayout::reset_presets()
 {
     if (core_api::are_services_available()) {
         const auto preset = preset_to_config_preset(cui::default_presets::default_preset);
-        m_presets.remove_all();
-        m_active = m_presets.add_item(preset);
+        m_presets.clear();
+        m_presets.emplace_back(preset);
+        m_active = m_presets.size() - 1;
 
         if (g_layout_window.get_wnd()) {
             uie::splitter_item_ptr item;
@@ -316,18 +322,18 @@ void ConfigLayout::reset_presets()
 
 void ConfigLayout::get_preset_name(size_t index, pfc::string_base& p_out)
 {
-    if (index < m_presets.get_count()) {
+    if (index < m_presets.size()) {
         p_out = m_presets[index].name;
     }
 }
 void ConfigLayout::set_preset_name(size_t index, const char* ptr, size_t len)
 {
-    if (index < m_presets.get_count()) {
+    if (index < m_presets.size()) {
         m_presets[index].name.set_string(ptr, len);
     }
 }
 
-const pfc::list_base_const_t<ConfigLayout::Preset>& ConfigLayout::get_presets() const
+const std::vector<ConfigLayout::Preset>& ConfigLayout::get_presets() const
 {
     return m_presets;
 }
@@ -336,7 +342,7 @@ void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     out->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
     out->write_lendian_t(gsl::narrow<uint32_t>(m_active), p_abort);
-    const auto preset_count = gsl::narrow<uint32_t>(m_presets.get_count());
+    const auto preset_count = gsl::narrow<uint32_t>(m_presets.size());
     out->write_lendian_t(preset_count, p_abort);
 
     save_active_preset();
@@ -354,7 +360,7 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abor
     uint32_t version;
     p_reader->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
-        m_presets.remove_all();
+        m_presets.clear();
         m_active = p_reader->read_lendian_t<uint32_t>(p_abort);
 
         const auto preset_count = p_reader->read_lendian_t<uint32_t>(p_abort);
@@ -368,7 +374,7 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abor
             preset.window_config.set_size(size);
             p_reader->read(preset.window_config.get_ptr(), preset.window_config.get_size(), p_abort);
 
-            m_presets.add_item(preset);
+            m_presets.push_back(std::move(preset));
         }
 
         if (m_active < m_presets.size()) {
@@ -383,10 +389,10 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abor
 
 void ConfigLayout::get_active_preset_for_use(uie::splitter_item_ptr& p_out)
 {
-    if (!m_presets.get_count())
+    if (!m_presets.size())
         reset_presets();
-    if (m_presets.get_count()) {
-        if (m_active >= m_presets.get_count())
+    if (m_presets.size()) {
+        if (m_active >= m_presets.size())
             m_active = 0;
         m_presets[m_active].get(p_out);
     }

@@ -35,13 +35,15 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         p_reader->read_lendian_t(active, p_abort);
         p_reader->read_lendian_t(pcount, p_abort);
 
-        pfc::list_t<ConfigLayout::Preset> presets;
+        std::vector<ConfigLayout::Preset> presets;
 
         for (uint32_t j = 0; j < pcount; j++) {
             ConfigLayout::Preset pres;
+
             if (!g_layout_window.import_config_to_object(p_reader, size, type, pres, panels, p_abort))
                 missingpanels = true;
-            presets.add_item(pres);
+
+            presets.push_back(std::move(pres));
         }
 
         size_t count = panels.get_count();
@@ -54,7 +56,7 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         }
 
         if (!missingpanels || type == cui::fcl::type_private) {
-            cfg_layout.set_presets(presets, active);
+            cfg_layout.set_presets(std::move(presets), active);
         }
     }
 

@@ -579,7 +579,7 @@ void LayoutWindow::export_config(
         stream_version = 0
     };
     p_out->write_lendian_t((uint32_t)stream_version, p_abort);
-    size_t count = cfg_layout.get_presets().get_count();
+    size_t count = cfg_layout.get_presets().size();
     p_out->write_lendian_t(gsl::narrow<uint32_t>(cfg_layout.get_active()), p_abort);
     p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
     for (size_t i = 0; i < count; i++) {

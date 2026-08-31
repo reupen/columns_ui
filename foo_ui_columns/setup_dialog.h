@@ -43,7 +43,7 @@ private:
     PresetsListView m_presets_list_view{this};
     HWND m_wnd{};
     bool m_preset_changed{};
-    pfc::list_t<ConfigLayout::Preset> m_presets;
+    std::vector<ConfigLayout::Preset> m_presets;
     uie::splitter_item_ptr m_previous_layout;
     cui::colours::DarkModeStatus m_previous_mode{};
     cui::colours::ColourScheme m_previous_light_colour_scheme{columns_ui::colours::ColourSchemeThemed};

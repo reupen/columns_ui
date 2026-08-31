@@ -62,7 +62,7 @@ bool replace_legacy_playlist_in_all_presets()
 {
     auto preset_modified = false;
     auto&& presets = cfg_layout.get_presets();
-    const auto count = presets.get_count();
+    const auto count = presets.size();
     for (size_t i{0}; i < count; ++i) {
         uie::splitter_item_ptr splitter_item;
         presets[i].get(splitter_item);
@@ -195,7 +195,7 @@ void apply_first_run_defaults()
 
     colours::dark_mode_status.set(WI_EnumValue(colours::DarkModeStatus::UseSystemSetting));
 
-    if (!cfg_layout.get_presets().get_count())
+    if (!cfg_layout.get_presets().size())
         cfg_layout.reset_presets();
 
     if (fb2k::imageViewer::ptr api; fb2k::imageViewer::tryGet(api))
