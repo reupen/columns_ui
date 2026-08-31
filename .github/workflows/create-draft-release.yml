@@ -28,7 +28,7 @@ jobs:
             core.setOutput('changelog', changelog);
 
       - name: Set up Pandoc
-        uses: r-lib/actions/setup-pandoc@v2.12.1
+        uses: r-lib/actions/setup-pandoc@v2.13.0
 
       - name: Reformat release notes using Pandoc
         id: pandoc
