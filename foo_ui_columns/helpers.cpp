@@ -4,21 +4,6 @@
 #include "dark_mode_dialog.h"
 #include "resource_utils.h"
 
-void g_ui_selection_manager_register_callback_no_now_playing_fallback(ui_selection_callback* p_callback)
-{
-    if (static_api_test_t<ui_selection_manager_v2>())
-        ui_selection_manager_v2::get()->register_callback(p_callback, ui_selection_manager_v2::flag_no_now_playing);
-    else
-        ui_selection_manager::get()->register_callback(p_callback);
-}
-
-bool g_ui_selection_manager_is_now_playing_fallback()
-{
-    if (static_api_test_t<ui_selection_manager_v2>())
-        return false;
-    return ui_selection_manager::get()->get_selection_type() == contextmenu_item::caller_now_playing;
-}
-
 void g_compare_file_with_bytes(
     const service_ptr_t<file>& p1, const pfc::array_t<uint8_t>& p2, bool& b_same, abort_callback& p_abort)
 {

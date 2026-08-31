@@ -1,10 +1,21 @@
 #pragma once
 
+#include "context_tracker.h"
 #include "core_dark_list_view.h"
 #include "list_view_panel.h"
 #include "window_resize_helper.h"
 
 namespace cui::panels::item_properties {
+
+enum class InternalTrackingMode {
+    active_selection,
+    playing_item,
+    playing_item_or_active_selection,
+    playing_item_or_playlist_selection,
+    playlist_selection,
+    playlist_selection_or_playing_item,
+    active_selection_or_playing_item,
+};
 
 struct InfoSection {
     // The ID is used for settings storage (in case we reorder the sections etc.)
@@ -97,8 +108,6 @@ private:
 
 class ItemProperties
     : public utils::ListViewPanelBase<ItemPropertiesColoursClient::id, items_font_id, header_font_id, group_font_id>
-    , public ui_selection_callback
-    , public play_callback
     , public metadb_io_callback_dynamic {
     inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
@@ -107,11 +116,6 @@ class ItemProperties
     };
 
 public:
-    enum TrackingMode {
-        track_selection,
-        track_nowplaying,
-        track_automatic,
-    };
     // UIE funcs
     const GUID& get_extension_guid() const override;
     void get_name(pfc::string_base& out) const override;
@@ -128,14 +132,13 @@ public:
     bool show_config_popup(HWND wnd_parent) override;
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemProperties> p_this;
-        uint32_t m_source;
+        InternalTrackingMode m_source;
 
     public:
-        static const char* get_name(uint32_t source);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeTrackMode(ItemProperties* p_wnd, uint32_t p_value);
+        MenuNodeTrackMode(ItemProperties* p_wnd, InternalTrackingMode p_value);
     };
     class ModeNodeAutosize : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemProperties> p_this;
@@ -176,21 +179,6 @@ public:
     bool notify_inline_edit_keydown(WPARAM wp) override;
     void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override;
 
-    // UI SEL API
-    void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
-
-    // PC
-    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
-    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override;
-    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override;
-    void on_playback_seek(double p_time) override {}
-    void on_playback_pause(bool p_state) override {}
-    void on_playback_edited(metadb_handle_ptr p_track) override {}
-    void on_playback_dynamic_info(const file_info& p_info) override {}
-    void on_playback_dynamic_info_track(const file_info& p_info) override {}
-    void on_playback_time(double p_time) override {}
-    void on_volume_change(float p_new_val) override {}
-
     void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept override;
 
     static void s_on_app_activate(bool b_activated);
@@ -206,31 +194,28 @@ private:
     static void s_create_message_window();
     static void s_destroy_message_window();
 
-    void register_callback();
-    void deregister_callback();
     void on_app_activate(bool b_activated);
     void refresh_contents();
     void on_tracking_mode_change();
-    bool check_process_on_selection_changed();
 
     static std::vector<ItemProperties*> s_windows;
 
     ui_selection_holder::ptr m_selection_holder;
-    metadb_handle_list m_handles;
-    metadb_handle_list m_selection_handles;
     pfc::list_t<Field> m_fields;
-    bool m_callback_registered{false};
-    uint32_t m_tracking_mode;
+    std::optional<utils::ContextTracker> m_context_tracker;
+    InternalTrackingMode m_tracking_mode{};
 
-    uint32_t m_info_sections_mask;
-    bool m_show_column_titles, m_show_group_titles;
+    uint32_t m_info_sections_mask{};
+    bool m_show_column_titles{};
+    bool m_show_group_titles{};
 
     bool m_autosizing_columns{true};
     uih::IntegerAndDpi<int32_t> m_column_name_width{80};
     uih::IntegerAndDpi<int32_t> m_column_field_width{125};
 
-    uint32_t m_edge_style;
-    size_t m_edit_column, m_edit_index;
+    uint32_t m_edge_style{};
+    size_t m_edit_column{};
+    size_t m_edit_index{};
     pfc::string8 m_edit_field;
     metadb_handle_list m_edit_handles;
 

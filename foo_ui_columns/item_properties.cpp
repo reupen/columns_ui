@@ -6,6 +6,30 @@
 
 namespace cui::panels::item_properties {
 
+namespace {
+
+const std::unordered_map<InternalTrackingMode, utils::TrackingMode> internal_tracking_mode_map{
+    {InternalTrackingMode::active_selection, utils::TrackingMode::active_selection},
+    {InternalTrackingMode::playing_item, utils::TrackingMode::playing_item},
+    {InternalTrackingMode::playing_item_or_active_selection, utils::TrackingMode::playing_item_or_active_selection},
+    {InternalTrackingMode::playing_item_or_playlist_selection, utils::TrackingMode::playing_item_or_playlist_selection},
+    {InternalTrackingMode::playlist_selection, utils::TrackingMode::playlist_selection},
+    {InternalTrackingMode::playlist_selection_or_playing_item, utils::TrackingMode::playlist_selection_or_playing_item},
+    {InternalTrackingMode::active_selection_or_playing_item, utils::TrackingMode::active_selection_or_playing_item},
+};
+
+utils::TrackingMode map_internal_tracking_mode(InternalTrackingMode legacy_tracking_mode)
+{
+    if (const auto iter = internal_tracking_mode_map.find(legacy_tracking_mode);
+        iter != internal_tracking_mode_map.end()) {
+        return iter->second;
+    }
+
+    return utils::TrackingMode::playing_item_or_playlist_selection;
+}
+
+} // namespace
+
 // {8F6069CD-2E36-4ead-B171-93F3DFF0073A}
 static const GUID g_guid_selection_properties
     = {0x8f6069cd, 0x2e36, 0x4ead, {0xb1, 0x71, 0x93, 0xf3, 0xdf, 0xf0, 0x7, 0x3a}};
@@ -30,7 +54,8 @@ static const GUID g_guid_selection_poperties_show_column_titles
 static const GUID g_guid_selection_poperties_show_group_titles
     = {0xb84886a5, 0x4510, 0x42d0, {0x83, 0x7a, 0x33, 0xe5, 0x53, 0x60, 0xc2, 0x4e}};
 
-cfg_uint cfg_selection_properties_tracking_mode(g_guid_selection_properties_tracking_mode, 0);
+cfg_uint cfg_selection_properties_tracking_mode(
+    g_guid_selection_properties_tracking_mode, WI_EnumValue(InternalTrackingMode::playing_item_or_playlist_selection));
 cfg_uint cfg_selection_properties_edge_style(g_guid_selection_poperties_edge_style, 0);
 cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_sections, 1 + 2 + 4);
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
@@ -65,9 +90,9 @@ void ItemProperties::on_app_activate(bool b_activated)
 {
     if (b_activated) {
         if (GetFocus() != get_wnd())
-            register_callback();
+            m_context_tracker->activate_ui_selection_tracking();
     } else {
-        deregister_callback();
+        m_context_tracker->deactivate_ui_selection_tracking();
     }
 }
 
@@ -107,7 +132,8 @@ void ItemProperties::set_config(stream_reader* p_reader, size_t p_size, abort_ca
         p_reader->read_string(m_fields[i].m_name_friendly, p_abort);
         p_reader->read_string(m_fields[i].m_name, p_abort);
     }
-    p_reader->read_lendian_t(m_tracking_mode, p_abort);
+
+    m_tracking_mode = static_cast<InternalTrackingMode>(p_reader->read_lendian_t<uint32_t>(p_abort));
     p_reader->read_lendian_t(m_autosizing_columns, p_abort);
     p_reader->read_lendian_t(m_column_name_width.value, p_abort);
     m_column_name_width.dpi = uih::get_system_dpi_cached().cx;
@@ -142,7 +168,8 @@ void ItemProperties::get_config(stream_writer* p_writer, abort_callback& p_abort
         p_writer->write_string(m_fields[i].m_name_friendly, p_abort);
         p_writer->write_string(m_fields[i].m_name, p_abort);
     }
-    p_writer->write_lendian_t(m_tracking_mode, p_abort);
+
+    p_writer->write_lendian_t(WI_EnumValue(m_tracking_mode), p_abort);
     p_writer->write_lendian_t(m_autosizing_columns, p_abort);
     p_writer->write_lendian_t(m_column_name_width.value, p_abort);
     p_writer->write_lendian_t(m_column_field_width.value, p_abort);
@@ -174,8 +201,13 @@ void ItemProperties::notify_on_create()
     set_columns({{"Field", m_column_name_width, 0}, {"Value", m_column_field_width, 1}});
     set_group_count(m_show_group_titles ? 1 : 0);
 
-    register_callback();
-    play_callback_manager::get()->register_callback(this, flag_on_playback_stop | flag_on_playback_new_track, true);
+    m_context_tracker.emplace(map_internal_tracking_mode(m_tracking_mode), false, [&] {
+        refresh_contents();
+
+        if (m_selection_holder.is_valid())
+            m_selection_holder->set_selection(m_context_tracker->get_tracks());
+    });
+
     metadb_io_v3::get()->register_callback(this);
     refresh_contents();
 
@@ -184,17 +216,17 @@ void ItemProperties::notify_on_create()
 
     s_windows.push_back(this);
 }
+
 void ItemProperties::notify_on_destroy()
 {
     std::erase(s_windows, this);
+
     if (s_windows.empty())
         s_destroy_message_window();
 
-    play_callback_manager::get()->unregister_callback(this);
     metadb_io_v3::get()->unregister_callback(this);
-    deregister_callback();
-    m_handles.remove_all();
-    m_selection_handles.remove_all();
+
+    m_context_tracker.reset();
     m_edit_handles.remove_all();
     m_selection_holder.release();
     m_library_autocomplete_v1.reset();
@@ -203,27 +235,20 @@ void ItemProperties::notify_on_destroy()
 
 void ItemProperties::notify_on_set_focus(HWND wnd_lost)
 {
-    deregister_callback();
+    if (!m_context_tracker)
+        return;
+
+    m_context_tracker->deactivate_ui_selection_tracking();
     m_selection_holder = ui_selection_manager::get()->acquire();
-    m_selection_holder->set_selection(m_handles);
+    m_selection_holder->set_selection(m_context_tracker->get_tracks());
 }
+
 void ItemProperties::notify_on_kill_focus(HWND wnd_receiving)
 {
     m_selection_holder.release();
-    register_callback();
-}
 
-void ItemProperties::register_callback()
-{
-    if (!m_callback_registered)
-        g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
-    m_callback_registered = true;
-}
-void ItemProperties::deregister_callback()
-{
-    if (m_callback_registered)
-        ui_selection_manager::get()->unregister_callback(this);
-    m_callback_registered = false;
+    if (m_context_tracker)
+        m_context_tracker->activate_ui_selection_tracking();
 }
 
 class MetadataFieldValueAggregator {
@@ -474,8 +499,9 @@ void ItemProperties::refresh_contents()
     std::vector<MetadataFieldValueAggregator> metadata_aggregators;
     metadata_aggregators.resize(field_count);
 
+    const auto& tracks = m_context_tracker->get_tracks();
     pfc::list_t<InsertItem> items;
-    size_t count = m_handles.get_count();
+    size_t count = tracks.get_count();
 
     std::vector<metadb_v2_rec_t> recs;
     std::vector<metadb_info_container::ptr> info_refs;
@@ -488,21 +514,22 @@ void ItemProperties::refresh_contents()
         recs.resize(count);
 
         metadb_v2_api->queryMultiParallel_(
-            m_handles, [&recs](size_t index, const metadb_v2_rec_t& rec) { recs[index] = rec; });
+            tracks, [&recs](size_t index, const metadb_v2_rec_t& rec) { recs[index] = rec; });
     } else {
         info_refs.resize(count);
 
         for (size_t i{}; i < count; i++)
-            info_refs[i] = m_handles[i]->get_info_ref();
+            info_refs[i] = tracks[i]->get_info_ref();
     }
 
     file_info_const_impl dummy_file_info;
 
     concurrency::parallel_for(size_t{0}, field_count,
-        [&metadata_aggregators, &info_refs, &recs, &dummy_file_info, has_metadb_v2, this](auto&& field_index) {
+        [&metadata_aggregators, &info_refs, &recs, &dummy_file_info, has_metadb_v2, track_count{tracks.size()}, this](
+            auto&& field_index) {
             auto& metadata_aggregator = metadata_aggregators[field_index];
 
-            for (size_t i = 0; i < m_handles.get_count(); i++) {
+            for (size_t i = 0; i < track_count; i++) {
                 auto& info_ref = has_metadb_v2 ? recs[i].info : info_refs[i];
                 auto& info = info_ref.is_valid() ? info_ref->info() : dummy_file_info;
 
@@ -556,7 +583,7 @@ void ItemProperties::refresh_contents()
         }
     }
 
-    auto track_properties = get_track_properties(recs, info_refs, info_sections, include_unknown_sections, m_handles);
+    auto track_properties = get_track_properties(recs, info_refs, info_sections, include_unknown_sections, tracks);
 
     for (auto&& [section, values] : track_properties) {
         for (auto&& value : values) {
@@ -587,31 +614,9 @@ void ItemProperties::refresh_contents()
         enable_redrawing();
 }
 
-void ItemProperties::on_playback_new_track(metadb_handle_ptr p_track) noexcept
-{
-    if (m_tracking_mode == track_nowplaying || m_tracking_mode == track_automatic) {
-        m_handles.remove_all();
-        m_handles.add_item(p_track);
-        refresh_contents();
-    }
-}
-
-void ItemProperties::on_playback_stop(play_control::t_stop_reason p_reason) noexcept
-{
-    if (p_reason != play_control::stop_reason_starting_another && p_reason != play_control::stop_reason_shutting_down) {
-        if (m_tracking_mode == track_nowplaying || m_tracking_mode == track_automatic) {
-            if (m_tracking_mode == track_automatic)
-                m_handles = m_selection_handles;
-            else
-                m_handles.remove_all();
-            refresh_contents();
-        }
-    }
-}
-
 void ItemProperties::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept
 {
-    for (auto&& track : m_handles) {
+    for (auto&& track : m_context_tracker->get_tracks()) {
         if (size_t index{};
             p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, track, index)) {
             refresh_contents();
@@ -620,47 +625,9 @@ void ItemProperties::on_changed_sorted(metadb_handle_list_cref p_items_sorted, b
     }
 }
 
-bool ItemProperties::check_process_on_selection_changed()
-{
-    HWND wnd_focus = GetFocus();
-    if (wnd_focus == nullptr)
-        return false;
-
-    DWORD processid = NULL;
-    GetWindowThreadProcessId(wnd_focus, &processid);
-    return processid == GetCurrentProcessId();
-}
-
-void ItemProperties::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept
-{
-    if (check_process_on_selection_changed()) {
-        if (g_ui_selection_manager_is_now_playing_fallback())
-            m_selection_handles.remove_all();
-        else
-            m_selection_handles = p_selection;
-
-        if (m_tracking_mode == track_nowplaying
-            || (m_tracking_mode == track_automatic && play_control::get()->is_playing()))
-            return;
-
-        m_handles = m_selection_handles;
-        refresh_contents();
-    }
-}
-
 void ItemProperties::on_tracking_mode_change()
 {
-    m_handles.remove_all();
-    if (m_tracking_mode == track_selection
-        || (m_tracking_mode == track_automatic && !play_control::get()->is_playing())) {
-        m_handles = m_selection_handles;
-    } else if (m_tracking_mode == track_nowplaying
-        || (m_tracking_mode == track_automatic && play_control::get()->is_playing())) {
-        metadb_handle_ptr item;
-        if (playback_control::get()->get_now_playing(item))
-            m_handles.add_item(item);
-    }
-    refresh_contents();
+    m_context_tracker->set_tracking_mode(map_internal_tracking_mode(m_tracking_mode));
 }
 
 class ItemsFontClientItemProperties : public fonts::client {
@@ -711,7 +678,7 @@ void ItemProperties::s_on_font_header_change()
 }
 
 ItemProperties::ItemProperties()
-    : m_tracking_mode(cfg_selection_properties_tracking_mode)
+    : m_tracking_mode(static_cast<InternalTrackingMode>(cfg_selection_properties_tracking_mode.get_value()))
     , m_info_sections_mask(cfg_selection_properties_info_sections)
     , m_show_column_titles(cfg_selection_poperties_show_column_titles)
     , m_show_group_titles(cfg_selection_poperties_show_group_titles)
@@ -787,13 +754,15 @@ bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size
 {
     const size_t indices_count = indices.get_count();
 
-    if (m_handles.get_count() == 0 || column != 1 || indices_count != 1 || indices[0] >= m_fields.get_count())
+    const auto& tracks = m_context_tracker->get_tracks();
+
+    if (tracks.size() == 0 || column != 1 || indices_count != 1 || indices[0] >= m_fields.get_count())
         return false;
 
     m_edit_index = indices[0];
     m_edit_column = column;
     m_edit_field = m_fields[m_edit_index].m_name;
-    m_edit_handles = m_handles;
+    m_edit_handles = tracks;
 
     if (m_library_autocomplete_v2.is_empty() && m_library_autocomplete_v1.is_empty()) {
         if (!library_meta_autocomplete_v2::tryGet(m_library_autocomplete_v2)) {
@@ -845,7 +814,8 @@ void ItemProperties::s_print_field(const char* field, const file_info& p_info, p
 bool ItemProperties::notify_before_create_inline_edit(
     const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse)
 {
-    return m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count();
+    return m_context_tracker->get_tracks().size() > 0 && column == 1 && indices.get_count() == 1
+        && indices[0] < m_fields.get_count();
 }
 
 void ItemProperties::notify_on_column_size_change(size_t index, int new_width)
@@ -919,15 +889,20 @@ ItemsFontClientItemProperties::factory<ItemsFontClientItemProperties> g_font_cli
 HeaderFontClientItemProperties::factory<HeaderFontClientItemProperties> g_font_header_client_selection_properties;
 GroupClientItemProperties::factory<GroupClientItemProperties> g_font_group_client_selection_properties;
 } // namespace
+
 uie::window_factory<ItemProperties> g_selection_properties;
 
 ItemProperties::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemProperties* p_wnd)
 {
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
-    // m_items.add_item(new uie::menu_node_separator_t());
-    // m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playing_item_or_active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::active_selection_or_playing_item));
+    m_items.add_item(new uie::menu_node_separator_t());
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playing_item_or_playlist_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playlist_selection_or_playing_item));
+    m_items.add_item(new uie::menu_node_separator_t());
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playing_item));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::active_selection));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, InternalTrackingMode::playlist_selection));
 }
 
 void ItemProperties::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
@@ -967,7 +942,7 @@ bool ItemProperties::ModeNodeAutosize::get_display_data(pfc::string_base& p_out,
     return true;
 }
 
-ItemProperties::MenuNodeTrackMode::MenuNodeTrackMode(ItemProperties* p_wnd, uint32_t p_value)
+ItemProperties::MenuNodeTrackMode::MenuNodeTrackMode(ItemProperties* p_wnd, InternalTrackingMode p_value)
     : p_this(p_wnd)
     , m_source(p_value)
 {
@@ -976,7 +951,7 @@ ItemProperties::MenuNodeTrackMode::MenuNodeTrackMode(ItemProperties* p_wnd, uint
 void ItemProperties::MenuNodeTrackMode::execute()
 {
     p_this->m_tracking_mode = m_source;
-    cfg_selection_properties_tracking_mode = m_source;
+    cfg_selection_properties_tracking_mode = WI_EnumValue(m_source);
     p_this->on_tracking_mode_change();
 }
 
@@ -987,20 +962,9 @@ bool ItemProperties::MenuNodeTrackMode::get_description(pfc::string_base& p_out)
 
 bool ItemProperties::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
-    p_out = get_name(m_source);
+    p_out = utils::get_tracking_mode_name(map_internal_tracking_mode(m_source)).c_str();
     p_displayflags = (m_source == p_this->m_tracking_mode) ? state_radiochecked : 0;
     return true;
-}
-
-const char* ItemProperties::MenuNodeTrackMode::get_name(uint32_t source)
-{
-    if (source == track_nowplaying)
-        return "Playing item";
-    if (source == track_selection)
-        return "Current selection";
-    if (source == track_automatic)
-        return "Automatic";
-    return "";
 }
 
 void ItemPropertiesColoursClient::on_colour_changed(uint32_t mask) const
