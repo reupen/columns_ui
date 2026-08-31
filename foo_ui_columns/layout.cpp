@@ -471,6 +471,7 @@ uie::splitter_item_ptr LayoutWindow::get_child() const
 
     return item;
 }
+
 void LayoutWindow::set_child(const uie::splitter_item_t* item)
 {
     if (get_wnd()) {
@@ -483,8 +484,7 @@ void LayoutWindow::set_child(const uie::splitter_item_t* item)
         create_child();
         show_window();
         SendMessage(get_wnd(), WM_SETREDRAW, TRUE, 0);
-        RedrawWindow(
-            get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN | RDW_FRAME | RDW_ERASE);
+        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_FRAME | RDW_ERASE);
     }
 }
 

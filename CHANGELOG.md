@@ -4,6 +4,19 @@
 
 ### Features
 
+- Layout presets can optionally now remember their main window size and position
+  independently. [[#1856](https://github.com/reupen/columns_ui/pull/1856)]
+
+  A new option to enable this behaviour for a particular preset is available in
+  the new preset properties dialogue available from the Layout preferences tab.
+
+  The option is disabled by default. If the option is enabled for a layout
+  preset, switching to that preset will restore the window size and position
+  used when that preset was last active.
+
+  Presets with the option disabled share the same main window size and position
+  as previously.
+
 - Pressing Alt now shows the main menu as a pop-up menu in the top-left corner
   of the main window when there is no menu bar in the toolbar area or in the
   layout. [[#1816](https://github.com/reupen/columns_ui/pull/1816)]
@@ -59,6 +72,10 @@
 - Double-clicking on list items in the Buttons toolbar options dialogue now
   opens the command picker.
   [[#1827](https://github.com/reupen/columns_ui/pull/1827)]
+
+- The command to reset all layout presets on the Layout preferences tab was
+  moved from a dedicated button to the context menu for the delete button.
+  [[#1856](https://github.com/reupen/columns_ui/pull/1856)]
 
 ### Bug fixes
 

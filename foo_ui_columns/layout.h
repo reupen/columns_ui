@@ -1,11 +1,15 @@
 #pragma once
 
+#include "config_utils.h"
+
 class ConfigLayout : public cfg_var {
 public:
     struct Preset {
         pfc::string name;
         GUID window_id{};
         pfc::array_t<uint8_t> window_config;
+        bool remember_window_placement{};
+        std::optional<cui::config::WindowPlacementAndDpi> placement_and_dpi;
 
         void get(uie::splitter_item_ptr& p_out) const;
         void set(const uie::splitter_item_t* item);
@@ -20,11 +24,16 @@ public:
     void set_preset(size_t index, const uie::splitter_item_t* item);
     void get_preset_name(size_t index, pfc::string_base& p_out);
     void set_preset_name(size_t index, const char* ptr, size_t len);
+    bool get_remember_window_placement(size_t index) const;
+    void set_remember_window_placement(size_t index, bool value);
+    void set_active_window_placement(cui::config::WindowPlacementAndDpi placement_and_dpi);
+    std::optional<WINDOWPLACEMENT> get_active_window_placement() const;
 
+    bool is_remember_window_placement_active() const;
     void get_active_preset_for_use(uie::splitter_item_ptr& p_out);
     size_t delete_preset(size_t index);
 
-    size_t add_preset(const char* p_name, size_t len = pfc_infinite);
+    size_t add_preset(std::string_view name, bool remember_window_placement);
     size_t add_preset(const Preset& item);
     void set_active_preset(size_t index);
     void save_active_preset();

@@ -1,11 +1,7 @@
 #pragma once
+#include "config_utils.h"
 
 namespace cui::config {
-
-struct DialogPlacement {
-    WINDOWPLACEMENT placement{.length = sizeof(WINDOWPLACEMENT)};
-    int dpi{USER_DEFAULT_SCREEN_DPI};
-};
 
 class DialogPlacementManager : public cfg_var {
 public:
@@ -20,7 +16,7 @@ public:
 private:
     void save_placement(const GUID& id, HWND wnd);
 
-    std::unordered_map<GUID, DialogPlacement, mmh::GUIDHasher> m_dialog_placements{};
+    std::unordered_map<GUID, WindowPlacementAndDpi, mmh::GUIDHasher> m_placements_and_dpis{};
     std::unordered_map<HWND, GUID> m_open_windows{};
 };
 

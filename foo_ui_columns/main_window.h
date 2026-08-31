@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config_utils.h"
 #include "fallback_menu.h"
 #include "icons.h"
 
@@ -16,8 +17,6 @@ enum {
     MSG_CREATE_TASKBAR_BUTTONS,
     MSG_UPDATE_TASKBAR_BUTTONS,
 };
-
-bool remember_window_pos();
 
 void on_show_status_change();
 void on_show_status_pane_change();
@@ -46,6 +45,13 @@ public:
     void update_title();
     void reset_title();
     void set_dark_mode_attributes(bool is_update = false) const;
+    std::optional<config::WindowPlacementAndDpi> get_window_placement() const;
+    void save_window_placement();
+    bool is_window_placement_overridden() const;
+    void override_window_placement(const config::WindowPlacementAndDpi& placement_and_dpi);
+    void restore_window_placement();
+    void mark_window_placement_overridden();
+    void update_window() const;
 
     /*
      * ITaskbarList3::ThumbBarUpdateButtons calls SendMessageTimeout without the SMTO_BLOCK flag.
@@ -74,6 +80,7 @@ private:
     void update_taskbar_buttons(bool update) const;
     void save_focus_state();
     void set_or_restore_focus() const;
+    void set_window_placement(WINDOWPLACEMENT placement, bool is_initial = false, bool is_hidden = false);
 
     pfc::string8 m_window_title;
     wil::com_ptr<ITaskbarList3> m_taskbar_list;
@@ -95,6 +102,7 @@ private:
     UINT m_wm_taskbarcreated{};
     UINT m_wm_taskbarbuttoncreated{};
     UINT m_wm_shellhookmessage{};
+    bool m_is_window_placement_overridden{};
 
     wil::unique_himagelist m_taskbar_button_images;
     std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;

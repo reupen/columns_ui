@@ -262,6 +262,7 @@
     <ClCompile Include="colour_utils.cpp" />
     <ClCompile Include="columns_v2.cpp" />
     <ClCompile Include="colour_manager.cpp" />
+    <ClCompile Include="config_utils.cpp" />
     <ClCompile Include="context_tracker.cpp" />
     <ClCompile Include="core_dark_list_view.cpp" />
     <ClCompile Include="d2d_utils.cpp" />
@@ -460,6 +461,7 @@
     <ClInclude Include="config_appearance.h" />
     <ClInclude Include="config_defaults.h" />
     <ClInclude Include="config_items.h" />
+    <ClInclude Include="config_utils.h" />
     <ClInclude Include="context_tracker.h" />
     <ClInclude Include="core_dark_list_view.h" />
     <ClInclude Include="core_drop_down_list_toolbar.h" />

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "layout.h"
+#include "main_window.h"
 
 namespace cui::default_presets {
 
@@ -235,8 +236,8 @@ void ConfigLayout::set_preset(size_t index, const uie::splitter_item_t* item)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
         g_layout_window.set_child(item);
-    } else if (index < m_presets.size()) // else??
-    {
+        cui::main_window.update_window();
+    } else if (index < m_presets.size()) {
         m_presets[index].set(item);
     }
 }
@@ -247,10 +248,11 @@ size_t ConfigLayout::add_preset(const Preset& item)
     return m_presets.size() - 1;
 }
 
-size_t ConfigLayout::add_preset(const char* p_name, size_t len)
+size_t ConfigLayout::add_preset(std::string_view name, bool remember_window_placement)
 {
     Preset temp;
-    temp.name.set_string(p_name, len);
+    temp.name.set_string(name.data(), name.size());
+    temp.remember_window_placement = remember_window_placement;
     temp.window_id = cui::panels::guid_playlist_view_v2;
     m_presets.emplace_back(std::move(temp));
     return m_presets.size() - 1;
@@ -266,13 +268,36 @@ void ConfigLayout::save_active_preset()
 
 void ConfigLayout::set_active_preset(size_t index)
 {
-    if (index < m_presets.size() && m_active != index) {
-        m_active = index;
+    if (index >= m_presets.size() || m_active == index)
+        return;
+
+    cui::main_window.save_window_placement();
+
+    m_active = index;
+
+    if (!cui::main_window.get_wnd())
+        return;
+
+    const auto& preset = m_presets[index];
+
+    if (g_layout_window.get_wnd()) {
         uie::splitter_item_ptr item;
-        m_presets[index].get(item);
-        if (g_layout_window.get_wnd())
-            g_layout_window.set_child(item.get_ptr());
+        preset.get(item);
+        g_layout_window.set_child(item.get_ptr());
     }
+
+    if (preset.remember_window_placement) {
+        if (preset.placement_and_dpi) {
+            cui::main_window.override_window_placement(*preset.placement_and_dpi);
+        } else {
+            cui::main_window.restore_window_placement();
+            cui::main_window.mark_window_placement_overridden();
+        }
+    } else {
+        cui::main_window.restore_window_placement();
+    }
+
+    cui::main_window.update_window();
 }
 
 size_t ConfigLayout::delete_preset(size_t index)
@@ -317,6 +342,8 @@ void ConfigLayout::reset_presets()
             m_presets[m_active].get(item);
             g_layout_window.set_child(item.get_ptr());
         }
+
+        cui::main_window.restore_window_placement();
     }
 }
 
@@ -333,6 +360,59 @@ void ConfigLayout::set_preset_name(size_t index, const char* ptr, size_t len)
     }
 }
 
+bool ConfigLayout::get_remember_window_placement(size_t index) const
+{
+    return index < m_presets.size() && m_presets[index].remember_window_placement;
+}
+
+void ConfigLayout::set_remember_window_placement(size_t index, bool value)
+{
+    if (index >= m_presets.size())
+        return;
+
+    auto& preset = m_presets[index];
+
+    if (preset.remember_window_placement == value)
+        return;
+
+    preset.remember_window_placement = value;
+
+    if (!value)
+        preset.placement_and_dpi.reset();
+
+    if (index == m_active) {
+        if (value) {
+            cui::main_window.mark_window_placement_overridden();
+        } else {
+            cui::main_window.restore_window_placement();
+        }
+    }
+}
+
+void ConfigLayout::set_active_window_placement(cui::config::WindowPlacementAndDpi placement_and_dpi)
+{
+    if (m_active < m_presets.size())
+        m_presets[m_active].placement_and_dpi = placement_and_dpi;
+}
+
+std::optional<WINDOWPLACEMENT> ConfigLayout::get_active_window_placement() const
+{
+    if (m_active >= m_presets.size())
+        return {};
+
+    const auto& preset = m_presets[m_active];
+
+    if (preset.remember_window_placement && preset.placement_and_dpi)
+        return preset.placement_and_dpi->get_adjusted_placement();
+
+    return {};
+}
+
+bool ConfigLayout::is_remember_window_placement_active() const
+{
+    return cfg_layout.get_remember_window_placement(m_active);
+}
+
 const std::vector<ConfigLayout::Preset>& ConfigLayout::get_presets() const
 {
     return m_presets;
@@ -340,6 +420,9 @@ const std::vector<ConfigLayout::Preset>& ConfigLayout::get_presets() const
 
 void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
+    if (is_remember_window_placement_active())
+        cui::main_window.save_window_placement();
+
     out->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
     out->write_lendian_t(gsl::narrow<uint32_t>(m_active), p_abort);
     const auto preset_count = gsl::narrow<uint32_t>(m_presets.size());
@@ -353,37 +436,68 @@ void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
         out->write_lendian_t(gsl::narrow<uint32_t>(preset.window_config.get_size()), p_abort);
         out->write(preset.window_config.get_ptr(), preset.window_config.get_size(), p_abort);
     }
+
+    for (const auto& preset : m_presets) {
+        stream_writer_memblock extra_writer;
+        extra_writer.write_lendian_t(preset.remember_window_placement, p_abort);
+        const auto has_placement = preset.remember_window_placement && preset.placement_and_dpi;
+        extra_writer.write_lendian_t(has_placement, p_abort);
+        if (has_placement)
+            cui::config::write_window_placement_and_dpi(extra_writer, *preset.placement_and_dpi, p_abort);
+
+        out->write_lendian_t(gsl::narrow<uint32_t>(extra_writer.m_data.get_size()), p_abort);
+        out->write(extra_writer.m_data.get_ptr(), extra_writer.m_data.get_size(), p_abort);
+    }
 }
 
-void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort)
+void ConfigLayout::set_data_raw(stream_reader* base_reader, size_t p_sizehint, abort_callback& p_abort)
 {
-    uint32_t version;
-    p_reader->read_lendian_t(version, p_abort);
-    if (version <= stream_version_current) {
-        m_presets.clear();
-        m_active = p_reader->read_lendian_t<uint32_t>(p_abort);
+    stream_reader_limited_ref reader(base_reader, p_sizehint);
 
-        const auto preset_count = p_reader->read_lendian_t<uint32_t>(p_abort);
+    const auto version = reader.read_lendian_t<uint32_t>(p_abort);
 
-        for (auto _ : ranges::views::iota(0u, preset_count)) {
-            Preset preset;
-            p_reader->read_lendian_t(preset.window_id, p_abort);
-            preset.name = p_reader->read_string(p_abort);
+    if (version > stream_version_current)
+        return;
 
-            const auto size = p_reader->read_lendian_t<uint32_t>(p_abort);
-            preset.window_config.set_size(size);
-            p_reader->read(preset.window_config.get_ptr(), preset.window_config.get_size(), p_abort);
+    std::vector<Preset> presets;
+    m_active = reader.read_lendian_t<uint32_t>(p_abort);
 
-            m_presets.push_back(std::move(preset));
+    const auto preset_count = reader.read_lendian_t<uint32_t>(p_abort);
+
+    for (auto _ : ranges::views::iota(0u, preset_count)) {
+        Preset preset;
+        reader.read_lendian_t(preset.window_id, p_abort);
+        preset.name = reader.read_string(p_abort);
+
+        const auto size = reader.read_lendian_t<uint32_t>(p_abort);
+        preset.window_config.set_size(size);
+        reader.read(preset.window_config.get_ptr(), preset.window_config.get_size(), p_abort);
+
+        presets.push_back(std::move(preset));
+    }
+
+    if (reader.get_remaining() > 0) {
+        for (auto& preset : presets) {
+            const auto extra_size = reader.read_lendian_t<uint32_t>(p_abort);
+            stream_reader_limited_ref extra_reader(&reader, extra_size);
+            extra_reader.read_lendian_t(preset.remember_window_placement, p_abort);
+            const auto has_placement = extra_reader.read_lendian_t<bool>(p_abort);
+
+            if (has_placement)
+                preset.placement_and_dpi = cui::config::read_window_placement_and_dpi(extra_reader, p_abort);
+
+            extra_reader.flush_remaining(p_abort);
         }
+    }
 
-        if (m_active < m_presets.size()) {
-            uie::splitter_item_simple_t item;
-            item.set_panel_guid(m_presets[m_active].window_id);
-            item.set_panel_config_from_ptr(
-                m_presets[m_active].window_config.get_ptr(), m_presets[m_active].window_config.get_size());
-            g_layout_window.set_child(&item);
-        }
+    m_presets = std::move(presets);
+
+    if (m_active < m_presets.size()) {
+        uie::splitter_item_simple_t item;
+        item.set_panel_guid(m_presets[m_active].window_id);
+        item.set_panel_config_from_ptr(
+            m_presets[m_active].window_config.get_ptr(), m_presets[m_active].window_config.get_size());
+        g_layout_window.set_child(&item);
     }
 }
 

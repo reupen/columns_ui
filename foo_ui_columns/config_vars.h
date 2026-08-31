@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config_utils.h"
 #include "menu_helpers.h"
 
 namespace cui::config {
@@ -30,10 +31,10 @@ public:
 
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
-    WINDOWPLACEMENT get_value() const;
+    std::optional<WINDOWPLACEMENT> get_value() const;
+    void set_value(const cui::config::WindowPlacementAndDpi& value);
 
-    WINDOWPLACEMENT m_value{};
-    int32_t m_dpi{USER_DEFAULT_SCREEN_DPI};
+    std::optional<cui::config::WindowPlacementAndDpi> m_value{};
 };
 
 class ConfigMenuItem : public cfg_struct_t<MenuItemIdentifier> {
