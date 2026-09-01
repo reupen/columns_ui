@@ -683,6 +683,9 @@
     <ClCompile Include="context_tracker.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="config_utils.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1048,6 +1051,9 @@
     </ClInclude>
     <ClInclude Include="context_tracker.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="config_utils.h">
+      <Filter>Config storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

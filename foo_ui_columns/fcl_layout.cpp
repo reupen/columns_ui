@@ -15,33 +15,68 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
     void get_data(stream_writer* p_writer, uint32_t type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
+        if (cfg_layout.is_remember_window_placement_active())
+            cui::main_window.save_window_placement();
+
         pfc::list_t<GUID> panels;
         g_layout_window.export_config(p_writer, type, panels, p_abort);
         feedback.add_required_panels(panels);
+
+        for (const auto& preset : cfg_layout.get_presets()) {
+            stream_writer_memblock extra_writer;
+            extra_writer.write_lendian_t(preset.remember_window_placement, p_abort);
+            const auto has_placement = preset.remember_window_placement && preset.placement_and_dpi;
+            extra_writer.write_lendian_t(has_placement, p_abort);
+            if (has_placement)
+                cui::config::write_window_placement_and_dpi(extra_writer, *preset.placement_and_dpi, p_abort);
+
+            p_writer->write_lendian_t(gsl::narrow<uint32_t>(extra_writer.m_data.get_size()), p_abort);
+            p_writer->write(extra_writer.m_data.get_ptr(), extra_writer.m_data.get_size(), p_abort);
+        }
     }
     const GUID& get_group() const override { return cui::fcl::groups::layout; }
-    void set_data(stream_reader* p_reader, size_t size, uint32_t type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* base_reader, size_t size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         pfc::list_t<GUID> panels;
         bool missingpanels = false;
 
+        stream_reader_limited_ref reader(base_reader, size);
+
         uint32_t version;
-        p_reader->read_lendian_t(version, p_abort);
+        reader.read_lendian_t(version, p_abort);
+
         if (version > 0)
-            throw pfc::exception("Need new columns ui");
+            throw pfc::exception("This FCL file requires a newer version of Columns UI.");
+
         uint32_t pcount;
         uint32_t active;
-        p_reader->read_lendian_t(active, p_abort);
-        p_reader->read_lendian_t(pcount, p_abort);
+        reader.read_lendian_t(active, p_abort);
+        reader.read_lendian_t(pcount, p_abort);
 
-        pfc::list_t<ConfigLayout::Preset> presets;
+        std::vector<ConfigLayout::Preset> presets;
 
         for (uint32_t j = 0; j < pcount; j++) {
             ConfigLayout::Preset pres;
-            if (!g_layout_window.import_config_to_object(p_reader, size, type, pres, panels, p_abort))
+
+            if (!g_layout_window.import_config_to_object(&reader, size, type, pres, panels, p_abort))
                 missingpanels = true;
-            presets.add_item(pres);
+
+            presets.push_back(std::move(pres));
+        }
+
+        if (reader.get_remaining() > 0) {
+            for (auto& preset : presets) {
+                const auto extra_size = reader.read_lendian_t<uint32_t>(p_abort);
+                stream_reader_limited_ref extra_reader(&reader, extra_size);
+                extra_reader.read_lendian_t(preset.remember_window_placement, p_abort);
+                const auto has_placement = extra_reader.read_lendian_t<bool>(p_abort);
+
+                if (has_placement)
+                    preset.placement_and_dpi = cui::config::read_window_placement_and_dpi(extra_reader, p_abort);
+
+                extra_reader.flush_remaining(p_abort);
+            }
         }
 
         size_t count = panels.get_count();
@@ -54,7 +89,7 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         }
 
         if (!missingpanels || type == cui::fcl::type_private) {
-            cfg_layout.set_presets(presets, active);
+            cfg_layout.set_presets(std::move(presets), active);
         }
     }
 
@@ -123,6 +158,7 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
         out.write_item(identifier_lock_main_window_size, cui::lock_main_window_size.get());
         out.write_item(identifier_use_legacy_panel_sizing, settings::use_legacy_splitter_child_sizing);
     }
+
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {

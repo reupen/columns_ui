@@ -121,6 +121,7 @@
 #define IDD_FORMAT_CODE_GENERATOR       239
 #define IDD_PREFS_SETUP                 240
 #define IDD_PREFS_PVIEW_SEARCH          241
+#define IDD_LAYOUT_PROPERTIES           242
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
@@ -260,8 +261,7 @@
 #define IDC_PRESETS                     1124
 #define IDC_NEW_PRESET                  1125
 #define IDC_DELETE_PRESET               1126
-#define IDC_RENAME_PRESET               1127
-#define IDC_RESET_PRESETS               1128
+#define IDC_PRESET_PROPERTIES           1127
 #define IDC_CUSTOM_TITLE                1129
 #define IDC_DUPLICATE_PRESET            1130
 #define IDC_COLOURS_SCHEME              1131
@@ -369,6 +369,7 @@
 #define IDC_EDGESTYLE_STATIC            1239
 #define IDC_INFOSECTIONS_STATIC         1240
 #define IDC_EXPORT_TYPE_STATIC          1241
+#define IDC_REMEMBER_WINDOW_POS         1242
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -378,7 +379,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1242
+#define _APS_NEXT_CONTROL_VALUE         1243
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

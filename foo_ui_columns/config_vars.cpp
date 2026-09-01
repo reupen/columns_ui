@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "menu_items.h"
 #include "columns_v2.h"
+#include "layout.h"
 #include "main_window.h"
 
 namespace settings {
@@ -173,40 +174,49 @@ ConfigWindowPlacement::ConfigWindowPlacement(const GUID& p_guid) : cfg_var(p_gui
 
 void ConfigWindowPlacement::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
-    if (cui::main_window.get_wnd() && remember_window_pos()) {
-        WINDOWPLACEMENT wp{};
-        wp.length = sizeof(wp);
-        if (GetWindowPlacement(cui::main_window.get_wnd(), &wp)) {
-            m_value = wp;
-            m_dpi = gsl::narrow<int32_t>(uih::get_system_dpi_cached().cx);
-        }
+    if (!cfg_layout.is_remember_window_placement_active() && !cui::main_window.is_window_placement_overridden()) {
+        if (const auto new_value = cui::main_window.get_window_placement())
+            m_value = new_value;
     }
 
-    out->write(&m_value, sizeof(m_value), p_abort);
-    out->write_lendian_t(m_dpi, p_abort);
+    if (!m_value)
+        return;
+
+    out->write(&m_value->placement, sizeof(m_value->placement), p_abort);
+    out->write_lendian_t(m_value->dpi, p_abort);
 }
 
 void ConfigWindowPlacement::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
-    WINDOWPLACEMENT value{};
-    p_stream->read_object(&value, sizeof(value), p_abort);
-    m_value = value;
+    if (p_sizehint == 0)
+        return;
+
+    cui::config::WindowPlacementAndDpi new_value{};
+    p_stream->read_object(&new_value.placement, sizeof(new_value.placement), p_abort);
 
     try {
-        m_dpi = p_stream->read_lendian_t<int32_t>(p_abort);
+        new_value.dpi = p_stream->read_lendian_t<int32_t>(p_abort);
     } catch (const exception_io_data_truncation&) {
-        m_dpi = gsl::narrow<int32_t>(uih::get_system_dpi_cached().cx);
+        new_value.dpi = gsl::narrow<int32_t>(uih::get_system_dpi_cached().cx);
     }
+
+    if (new_value.placement.length == sizeof(WINDOWPLACEMENT)
+        && !(new_value.placement.flags == 0 && new_value.placement.showCmd == 0
+            && new_value.placement.ptMinPosition.x == 0 && new_value.placement.ptMinPosition.y == 0
+            && new_value.placement.ptMaxPosition.x == 0 && new_value.placement.ptMaxPosition.y == 0
+            && new_value.placement.rcNormalPosition == RECT{}))
+        m_value = new_value;
 }
 
-WINDOWPLACEMENT ConfigWindowPlacement::get_value() const
+std::optional<WINDOWPLACEMENT> ConfigWindowPlacement::get_value() const
 {
-    WINDOWPLACEMENT value{m_value};
+    if (!m_value)
+        return {};
 
-    value.rcNormalPosition.top = uih::scale_dpi_value(m_value.rcNormalPosition.top, m_dpi);
-    value.rcNormalPosition.left = uih::scale_dpi_value(m_value.rcNormalPosition.left, m_dpi);
-    value.rcNormalPosition.bottom = uih::scale_dpi_value(m_value.rcNormalPosition.bottom, m_dpi);
-    value.rcNormalPosition.right = uih::scale_dpi_value(m_value.rcNormalPosition.right, m_dpi);
+    return m_value->get_adjusted_placement();
+}
 
-    return value;
+void ConfigWindowPlacement::set_value(const cui::config::WindowPlacementAndDpi& value)
+{
+    m_value = value;
 }

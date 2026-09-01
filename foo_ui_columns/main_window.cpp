@@ -52,11 +52,6 @@ HWND g_status = nullptr;
 bool ui_initialising{};
 bool g_minimised{};
 
-bool remember_window_pos()
-{
-    return config_object::g_get_data_bool_simple(standard_config_objects::bool_remember_window_positions, false);
-}
-
 const TCHAR* main_window_class_name = _T("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}");
 
 HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden)
@@ -144,25 +139,19 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden
 
     main_window::on_transparency_enabled_change();
 
-    const bool rem_pos = remember_window_pos();
+    std::optional<WINDOWPLACEMENT> placement;
 
-    if (rem_pos && !main_window::config_get_is_first_run()) {
-        auto placement = cfg_window_placement_columns.get_value();
+    if (!main_window::config_get_is_first_run()) {
+        placement = cfg_layout.get_active_window_placement();
 
-        if (((cfg_main_window_is_hidden || is_hidden) && cfg_minimise_to_tray)
-            || (cfg_main_window_is_hidden && config::advbool_close_to_system_tray_icon.get())) {
-            cfg_main_window_is_hidden = true;
-            placement.showCmd = SW_SHOWMINNOACTIVE;
-        } else {
-            cfg_main_window_is_hidden = false;
+        if (placement)
+            m_is_window_placement_overridden = true;
+        else
+            placement = cfg_window_placement_columns.get_value();
+    }
 
-            if (is_hidden)
-                placement.showCmd = SW_SHOWMINNOACTIVE;
-        }
-
-        SetWindowPlacement(m_wnd, &placement);
-        resize_child_windows();
-
+    if (placement) {
+        set_window_placement(*placement, true, is_hidden);
     } else {
         resize_child_windows();
         ShowWindow(m_wnd, is_hidden ? SW_SHOWMINNOACTIVE : SW_SHOWNORMAL);
@@ -315,6 +304,44 @@ void cui::MainWindow::set_or_restore_focus() const
         g_layout_window.set_focus();
 }
 
+void cui::MainWindow::set_window_placement(WINDOWPLACEMENT placement, bool is_initial, bool is_hidden)
+{
+    HWND active_window_to_set{};
+
+    if (is_initial) {
+        if (((cfg_main_window_is_hidden || is_hidden) && cfg_minimise_to_tray)
+            || (cfg_main_window_is_hidden && config::advbool_close_to_system_tray_icon.get())) {
+            cfg_main_window_is_hidden = true;
+            placement.showCmd = SW_SHOWMINNOACTIVE;
+        } else {
+            cfg_main_window_is_hidden = false;
+
+            if (is_hidden)
+                placement.showCmd = SW_SHOWMINNOACTIVE;
+        }
+    } else {
+        cfg_main_window_is_hidden = false;
+
+        const auto active_window = GetActiveWindow();
+
+        if (placement.showCmd == SW_SHOWMINIMIZED)
+            placement.showCmd = (placement.flags & WPF_RESTORETOMAXIMIZED) ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL;
+
+        if (active_window && active_window != m_wnd) {
+            if (placement.showCmd == SW_SHOWNORMAL)
+                placement.showCmd = SW_SHOWNOACTIVATE;
+            else
+                active_window_to_set = active_window;
+        }
+    }
+
+    SetWindowPlacement(m_wnd, &placement);
+    resize_child_windows();
+
+    if (active_window_to_set)
+        SetActiveWindow(active_window_to_set);
+}
+
 void cui::MainWindow::queue_taskbar_button_update(bool update)
 {
     PostMessage(m_wnd, update ? MSG_UPDATE_TASKBAR_BUTTONS : MSG_CREATE_TASKBAR_BUTTONS, 0, 0);
@@ -369,6 +396,71 @@ void cui::MainWindow::set_dark_mode_attributes(bool is_update) const
     update_taskbar_button_images();
 
     dark::force_titlebar_redraw(m_wnd);
+}
+
+std::optional<cui::config::WindowPlacementAndDpi> cui::MainWindow::get_window_placement() const
+{
+    if (!m_wnd)
+        return {};
+
+    config::WindowPlacementAndDpi window_placement_and_dpi;
+    if (!GetWindowPlacement(m_wnd, &window_placement_and_dpi.placement))
+        return {};
+
+    window_placement_and_dpi.dpi = uih::get_system_dpi_cached().cx;
+    return window_placement_and_dpi;
+}
+
+void cui::MainWindow::save_window_placement()
+{
+    auto window_placement_and_dpi = get_window_placement();
+
+    if (!window_placement_and_dpi)
+        return;
+
+    const auto remember_preset_placement = cfg_layout.is_remember_window_placement_active();
+
+    if (remember_preset_placement) {
+        cfg_layout.set_active_window_placement(*window_placement_and_dpi);
+        m_is_window_placement_overridden = true;
+    } else if (!m_is_window_placement_overridden) {
+        cfg_window_placement_columns.set_value(*window_placement_and_dpi);
+    }
+}
+
+bool cui::MainWindow::is_window_placement_overridden() const
+{
+    return m_is_window_placement_overridden;
+}
+
+void cui::MainWindow::override_window_placement(const config::WindowPlacementAndDpi& placement_and_dpi)
+{
+    m_is_window_placement_overridden = true;
+
+    const auto adjusted_placement = placement_and_dpi.get_adjusted_placement();
+    set_window_placement(adjusted_placement);
+}
+
+void cui::MainWindow::restore_window_placement()
+{
+    if (!m_is_window_placement_overridden)
+        return;
+
+    m_is_window_placement_overridden = false;
+
+    if (const auto placement = cfg_window_placement_columns.get_value())
+        set_window_placement(*placement);
+}
+
+void cui::MainWindow::mark_window_placement_overridden()
+{
+    m_is_window_placement_overridden = true;
+}
+
+void cui::MainWindow::update_window() const
+{
+    if (m_wnd)
+        RedrawWindow(m_wnd, nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW);
 }
 
 void cui::MainWindow::create_child_windows()

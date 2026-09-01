@@ -94,7 +94,8 @@ private:
     void switch_to_preset(HWND wnd, size_t index);
 
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    bool handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt);
+    void handle_tree_wm_contextmenu(HWND wnd, POINT pt);
+    void handle_delete_button_wm_contextmenu(HWND wnd, POINT pt);
     void on_tree_selection_change(HTREEITEM tree_item);
 
     HWND m_wnd_tree{};

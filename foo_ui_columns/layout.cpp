@@ -471,6 +471,7 @@ uie::splitter_item_ptr LayoutWindow::get_child() const
 
     return item;
 }
+
 void LayoutWindow::set_child(const uie::splitter_item_t* item)
 {
     if (get_wnd()) {
@@ -483,8 +484,7 @@ void LayoutWindow::set_child(const uie::splitter_item_t* item)
         create_child();
         show_window();
         SendMessage(get_wnd(), WM_SETREDRAW, TRUE, 0);
-        RedrawWindow(
-            get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN | RDW_FRAME | RDW_ERASE);
+        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_FRAME | RDW_ERASE);
     }
 }
 
@@ -536,8 +536,8 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
     data.set_size(size);
     p_reader->read(data.get_ptr(), size, p_abort);
 
-    p_out.m_guid = guid;
-    p_out.m_name = name;
+    p_out.window_id = guid;
+    p_out.name = name;
 
     if (guid == GUID{})
         return true;
@@ -556,9 +556,9 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
         } else
             return false;
 
-        p_out.m_val = conf;
+        p_out.window_config = conf;
     } else {
-        p_out.m_val = data;
+        p_out.window_config = data;
         uie::window_ptr wnd;
         if (uie::window::create_by_guid(guid, wnd)) {
             try {
@@ -579,7 +579,7 @@ void LayoutWindow::export_config(
         stream_version = 0
     };
     p_out->write_lendian_t((uint32_t)stream_version, p_abort);
-    size_t count = cfg_layout.get_presets().get_count();
+    size_t count = cfg_layout.get_presets().size();
     p_out->write_lendian_t(gsl::narrow<uint32_t>(cfg_layout.get_active()), p_abort);
     p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
     for (size_t i = 0; i < count; i++) {

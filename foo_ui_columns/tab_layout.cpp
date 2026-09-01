@@ -11,6 +11,11 @@
 
 namespace cui::prefs {
 
+namespace {
+
+cfg_bool initial_remember_preset_window_placement{
+    {0xdd46c515, 0x530d, 0x4d2f, {0xb9, 0x0d, 0xba, 0x98, 0x7a, 0x6e, 0x88, 0x4f}}, false};
+
 template <class Destination, class Source>
 void merge_maps(Destination& target, Source& source)
 {
@@ -18,6 +23,76 @@ void merge_maps(Destination& target, Source& source)
     assert(target.empty());
     target.swap(source);
 }
+
+template <typename String>
+class LayoutProperties {
+public:
+    String name;
+    bool remember_window_placement{};
+};
+
+using InitialLayoutProperties = LayoutProperties<wil::zstring_view>;
+using PersistedLayoutProperties = LayoutProperties<std::string>;
+
+std::optional<PersistedLayoutProperties> open_layout_properties(
+    HWND wnd_parent, const std::optional<InitialLayoutProperties>& initial_state = {})
+{
+    const dark::DialogDarkModeConfig dark_mode_config{
+        .button_ids = {IDOK, IDCANCEL},
+        .checkbox_ids = {IDC_REMEMBER_WINDOW_POS},
+        .edit_ids = {IDC_EDIT},
+    };
+
+    PersistedLayoutProperties result;
+
+    const auto dialog_result = modal_dialog_box(
+        IDD_LAYOUT_PROPERTIES, dark_mode_config, wnd_parent, [&](HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+            switch (msg) {
+            case WM_INITDIALOG:
+                SetWindowText(wnd, initial_state ? L"Edit preset properties" : L"New layout preset");
+                uih::enhance_edit_control(wnd, IDC_EDIT);
+                SetWindowText(GetDlgItem(wnd, IDC_EDIT),
+                    initial_state ? mmh::to_utf16(initial_state->name).c_str() : L"New preset");
+
+                if ((!initial_state && initial_remember_preset_window_placement)
+                    || (initial_state && initial_state->remember_window_placement))
+                    Button_SetCheck(GetDlgItem(wnd, IDC_REMEMBER_WINDOW_POS), BST_CHECKED);
+
+                return TRUE;
+            case WM_COMMAND:
+                switch (wp) {
+                case IDOK: {
+                    result.name = mmh::to_utf8(uih::get_window_text(GetDlgItem(wnd, IDC_EDIT)));
+                    result.remember_window_placement
+                        = Button_GetCheck(GetDlgItem(wnd, IDC_REMEMBER_WINDOW_POS)) == BST_CHECKED;
+
+                    if (!initial_state)
+                        initial_remember_preset_window_placement = result.remember_window_placement;
+
+                    EndDialog(wnd, 1);
+                    return FALSE;
+                }
+                case IDCANCEL:
+                    EndDialog(wnd, 0);
+                    return FALSE;
+                default:
+                    return FALSE;
+                }
+            case WM_CLOSE:
+                EndDialog(wnd, 0);
+                return FALSE;
+            default:
+                return FALSE;
+            }
+        });
+
+    if (dialog_result > 0)
+        return std::make_optional(std::move(result));
+
+    return {};
+}
+
+} // namespace
 
 void LayoutTabNode::build()
 {
@@ -528,16 +603,16 @@ void LayoutTab::apply()
 
 void LayoutTab::initialise_presets(HWND wnd)
 {
-    const auto count = cfg_layout.get_presets().get_count();
+    const auto count = cfg_layout.get_presets().size();
     for (size_t n = 0; n < count; n++) {
-        uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].m_name);
+        uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].name);
     }
     ComboBox_SetCurSel(GetDlgItem(wnd, IDC_PRESETS), m_active_preset);
 }
 
 void LayoutTab::switch_to_preset(HWND wnd, size_t index)
 {
-    if (index < cfg_layout.get_presets().get_count()) {
+    if (index < cfg_layout.get_presets().size()) {
         if (m_changed)
             cfg_layout.set_preset(m_active_preset, m_node_root->m_item->get_ptr());
         m_changed = true;
@@ -558,11 +633,11 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uih::tree_view_set_explorer_theme(m_wnd_tree);
 
         cfg_layout.save_active_preset();
-        if (!cfg_layout.get_presets().get_count())
+        if (!cfg_layout.get_presets().size())
             cfg_layout.reset_presets();
         m_changed = false;
         m_active_preset = cfg_layout.get_active();
-        if (m_active_preset >= cfg_layout.get_presets().get_count()) {
+        if (m_active_preset >= cfg_layout.get_presets().size()) {
             m_active_preset = 0;
             m_changed = true;
         }
@@ -587,16 +662,24 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             switch_to_preset(wnd, SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
             break;
         case IDC_NEW_PRESET: {
-            const auto preset_name = helpers::show_rename_dialog_box(wnd, "New preset: Enter name", "New preset");
+            const auto preset_properties = open_layout_properties(wnd);
 
-            if (preset_name) {
-                size_t index = cfg_layout.add_preset(*preset_name);
-                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, preset_name->get_ptr());
+            if (preset_properties) {
+                size_t index
+                    = cfg_layout.add_preset(preset_properties->name, preset_properties->remember_window_placement);
+                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, preset_properties->name.c_str());
                 SendDlgItemMessage(wnd, IDC_PRESETS, CB_SETCURSEL, index, NULL);
                 switch_to_preset(wnd, index);
             }
         } break;
         case IDC_DUPLICATE_PRESET: {
+            const auto& presets = cfg_layout.get_presets();
+
+            if (m_active_preset >= presets.size())
+                break;
+
+            const auto& old_preset = presets[m_active_preset];
+
             pfc::string8 suggested_preset_name;
             cfg_layout.get_preset_name(m_active_preset, suggested_preset_name);
             suggested_preset_name << " (copy)";
@@ -606,7 +689,9 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             if (preset_name) {
                 ConfigLayout::Preset preset;
-                preset.m_name = *preset_name;
+                preset.name = *preset_name;
+                preset.remember_window_placement = old_preset.remember_window_placement;
+                preset.placement_and_dpi = old_preset.placement_and_dpi;
                 preset.set(m_node_root->m_item->get_ptr());
                 auto preset_index = cfg_layout.add_preset(preset);
 
@@ -615,19 +700,21 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 switch_to_preset(wnd, preset_index);
             }
         } break;
-        case IDC_RENAME_PRESET: {
+        case IDC_PRESET_PROPERTIES: {
             pfc::string8 current_name;
             cfg_layout.get_preset_name(m_active_preset, current_name);
-            const auto new_preset_name
-                = helpers::show_rename_dialog_box(wnd, "Rename preset: Enter name", current_name);
+            const auto current_remember_window_placement = cfg_layout.get_remember_window_placement(m_active_preset);
+            const auto new_properties
+                = open_layout_properties(wnd, InitialLayoutProperties{current_name, current_remember_window_placement});
 
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
             unsigned index = ComboBox_GetCurSel(wnd_combo);
 
-            if (new_preset_name) {
-                cfg_layout.set_preset_name(index, new_preset_name->c_str(), new_preset_name->get_length());
+            if (new_properties) {
+                cfg_layout.set_preset_name(index, new_properties->name.c_str(), new_properties->name.size());
+                cfg_layout.set_remember_window_placement(index, new_properties->remember_window_placement);
                 ComboBox_DeleteString(wnd_combo, index);
-                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_INSERTSTRING, index, *new_preset_name);
+                uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_INSERTSTRING, index, new_properties->name.c_str());
                 ComboBox_SetCurSel(wnd_combo, index);
             }
         } break;
@@ -663,21 +750,6 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_changed = true;
             break;
         }
-        case IDC_RESET_PRESETS:
-            if (dark::modal_info_box(wnd, "Reset presets",
-                    "This will replace all layout presets with the default preset. Are you sure you wish to so this?",
-                    uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo)) {
-                deinitialise_tree(wnd);
-                HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
-                ComboBox_ResetContent(wnd_combo);
-                cfg_layout.reset_presets();
-                m_active_preset = 0;
-                initialise_presets(wnd);
-                ComboBox_SetCurSel(wnd_combo, m_active_preset);
-                initialise_tree(wnd);
-                m_changed = true;
-            }
-            break;
         case IDC_LOCKED:
             set_item_property(wnd, uie::splitter_window::bool_locked, (bool)(Button_GetCheck(HWND(lp)) != 0));
             break;
@@ -748,20 +820,30 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_CONTEXTMENU: {
-        if (handle_wm_contextmenu(wnd, reinterpret_cast<HWND>(wp), {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)}))
+        const auto context_menu_wnd = reinterpret_cast<HWND>(wp);
+        const POINT pt{GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+
+        if (!context_menu_wnd)
+            break;
+
+        if (context_menu_wnd == m_wnd_tree) {
+            handle_tree_wm_contextmenu(wnd, pt);
             return 0;
+        }
+
+        if (context_menu_wnd == GetDlgItem(wnd, IDC_DELETE_PRESET)) {
+            handle_delete_button_wm_contextmenu(wnd, pt);
+            return 0;
+        }
         break;
     }
     }
     return 0;
 }
 
-bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
+void LayoutTab::handle_tree_wm_contextmenu(HWND wnd, POINT pt)
 {
     TRACK_CALL_TEXT("tab_layout::WM_CONTEXTMENU");
-
-    if (contextmenu_wnd != m_wnd_tree)
-        return false;
 
     HTREEITEM treeitem = TreeView_GetSelection(m_wnd_tree);
 
@@ -933,7 +1015,44 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
             break;
         }
     }
-    return true;
+}
+
+void LayoutTab::handle_delete_button_wm_contextmenu(HWND wnd, POINT pt)
+{
+    uih::Menu menu;
+    uih::MenuCommandCollector collector;
+
+    menu.append_command(collector.add([&] {
+        if (dark::modal_info_box(wnd, "Reset presets",
+                "This will irreversibly delete all layout presets and restore the default preset. Are you sure "
+                "you "
+                "wish to so this?",
+                uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo)) {
+            deinitialise_tree(wnd);
+            HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
+            ComboBox_ResetContent(wnd_combo);
+            cfg_layout.reset_presets();
+            m_active_preset = 0;
+            initialise_presets(wnd);
+            ComboBox_SetCurSel(wnd_combo, m_active_preset);
+            initialise_tree(wnd);
+            m_changed = true;
+        }
+    }),
+        L"&Reset all presets");
+
+    POINT menu_pt{};
+
+    if (pt.x == -1 && pt.y == -1) {
+        RECT rect{};
+        GetWindowRect(GetDlgItem(wnd, IDC_DELETE_PRESET), &rect);
+        menu_pt.x = (rect.left + rect.right) / 2;
+        menu_pt.y = (rect.top + rect.bottom) / 2;
+    } else {
+        menu_pt = pt;
+    }
+
+    collector.execute(menu.run(wnd, menu_pt));
 }
 
 void LayoutTab::on_tree_selection_change(HTREEITEM tree_item)
