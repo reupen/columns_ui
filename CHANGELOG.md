@@ -19,7 +19,8 @@
 
 - Pressing Alt now shows the main menu as a pop-up menu in the top-left corner
   of the main window when there is no menu bar in the toolbar area or in the
-  layout. [[#1816](https://github.com/reupen/columns_ui/pull/1816)]
+  layout. [[#1816](https://github.com/reupen/columns_ui/pull/1816),
+  [#1860](https://github.com/reupen/columns_ui/pull/1860)]
 
   This includes being able to directly access each top-level menu using their
   access keys (e.g. Alt+F for the File menu).
