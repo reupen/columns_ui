@@ -26,6 +26,26 @@ extern cfg_uint cfg_item_details_horizontal_alignment;
 extern cfg_uint cfg_item_details_vertical_alignment;
 extern cfg_bool cfg_item_details_word_wrapping;
 
+class PlaylistItemModifiedCallback : public playlist_callback_single_impl_base {
+public:
+    PlaylistItemModifiedCallback(std::function<void(const bit_array& p_mask)> callback)
+        : playlist_callback_single_impl_base(flag_on_items_modified | flag_on_items_modified_fromplayback)
+        , m_callback(callback)
+    {
+    }
+
+protected:
+    void on_items_modified(const bit_array& p_mask) override { m_callback(p_mask); }
+
+    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override
+    {
+        m_callback(p_mask);
+    }
+
+private:
+    std::function<void(const bit_array& p_mask)> m_callback;
+};
+
 class ItemDetails
     : public uie::container_uie_window_v3
     , public play_callback
@@ -209,7 +229,9 @@ private:
     int m_last_cx{};
     int m_last_cy{};
     std::optional<utils::ContextTracker> m_context_tracker;
+    std::optional<PlaylistItemModifiedCallback> m_playlist_item_modified_callback;
     playback_control::ptr m_playback_control;
+    playlist_manager_v4::ptr m_playlist_manager;
     std::shared_ptr<file_info_impl> m_full_file_info;
     std::shared_ptr<helpers::FullFileInfoRequest> m_full_file_info_request;
     std::vector<std::shared_ptr<helpers::FullFileInfoRequest>> m_aborting_full_file_info_requests;

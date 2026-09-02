@@ -21,10 +21,12 @@ class ContextTracker
     , public play_callback_impl_base
     , public playlist_callback_single_impl_base {
 public:
-    ContextTracker(TrackingMode tracking_mode, bool track_single_item, ContextTrackerCallback callback);
+    ContextTracker(TrackingMode tracking_mode, bool track_single_item, ContextTrackerCallback tracks_change_callback,
+        ContextTrackerCallback playlist_index_change_callback = {});
 
     bool is_playing_item() const { return m_is_tracking_playing; }
     const metadb_handle_list& get_tracks() const { return m_tracks; }
+    std::optional<size_t> get_playlist_selection_index() const;
 
     void activate_ui_selection_tracking() { ui_selection_callback_activate(true); }
     void deactivate_ui_selection_tracking() { ui_selection_callback_activate(false); }
@@ -41,8 +43,11 @@ protected:
         size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
     void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
     void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
-    void on_playlist_switch() noexcept override;
+    void on_items_reordered(const t_size* p_order, t_size p_count) override;
+    void on_items_replaced(const bit_array& p_mask,
+        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override;
     void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept override;
+    void on_playlist_switch() noexcept override;
 
     void refresh_tracks();
 
@@ -53,19 +58,25 @@ private:
     bool tracking_includes_playlist_selection() const;
     bool tracking_includes_active_selection() const;
 
-    metadb_handle_list get_playlist_selection() const;
+    std::tuple<std::optional<size_t>, metadb_handle_list> get_playlist_selection(bool index_only = false) const;
 
-    void set_selection_tracks(metadb_handle_list tracks);
-    void set_tracks(metadb_handle_list tracks, bool is_tracking_playing);
+    void set_selection_tracks(metadb_handle_list tracks, std::optional<size_t> playlist_selection_index = {},
+        bool is_playlist_modification = false);
+    void set_tracks(metadb_handle_list tracks, bool is_tracking_playing,
+        std::optional<size_t> playlist_selection_index = {}, bool is_playlist_modification = false);
+    void set_playlist_selection_index(
+        std::optional<size_t> playlist_selection_index, bool is_playlist_modification = false);
 
     TrackingMode m_tracking_mode;
     bool m_track_single_item{};
-    ContextTrackerCallback m_callback;
+    ContextTrackerCallback m_tracks_change_callback;
+    ContextTrackerCallback m_playlist_index_change_callback;
     playback_control_v3::ptr m_playback_control;
     playlist_manager_v4::ptr m_playlist_manager;
     metadb_handle_ptr m_playing_item;
     metadb_handle_list m_tracks;
     metadb_handle_list m_ui_selection_tracks;
+    std::optional<size_t> m_playlist_selection_index{};
     bool m_is_tracking_playing{};
     bool m_process_playlist_items_removed{};
 };

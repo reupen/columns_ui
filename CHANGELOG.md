@@ -29,13 +29,18 @@
   prioritise the current or playlist selection over the playing item.
   [[#1842](https://github.com/reupen/columns_ui/pull/1842),
   [#1848](https://github.com/reupen/columns_ui/pull/1848),
-  [#1857](https://github.com/reupen/columns_ui/pull/1857)]
+  [#1857](https://github.com/reupen/columns_ui/pull/1857),
+  [#1861](https://github.com/reupen/columns_ui/pull/1861)]
 
   Additionally, Item properties now has the same tracking modes as the artwork
   view and Item details.
   [[#1850](https://github.com/reupen/columns_ui/pull/1850)]
 
   All automatic tracking modes were renamed to make the priority order clearer.
+
+- Playlist-specific fields and dynamic track info are now available in playlist
+  selection tracking modes in Item details.
+  [[#1861](https://github.com/reupen/columns_ui/pull/1861)]
 
 - The following dialogues are now resizeable
   [[#1833](https://github.com/reupen/columns_ui/pull/1833),
