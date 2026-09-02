@@ -182,8 +182,7 @@ BEGIN
     EDITTEXT        IDC_STRING,7,59,313,64,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "Toolbars",IDC_TITLE2,7,145,313,14
     CONTROL         "Show toolbars",IDC_TOOLBARS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,169,64,10
-    LTEXT           "Before hiding the toolbars, ensure you have an alternative way of accessing preferences.",IDC_STATIC,7,185,299,8
-    PUSHBUTTON      "Reset toolbars",IDC_RESET_TOOLBARS,7,205,107,14
+    PUSHBUTTON      "Reset toolbars",IDC_RESET_TOOLBARS,7,190,107,14
 END
 
 IDD_SPECTRUM_ANALYSER_OPTIONS DIALOGEX 0, 0, 152, 280
