@@ -5,6 +5,7 @@
 #include "item_details_text.h"
 #include "scroll.h"
 #include "tab_setup.h"
+#include "tf_splitter_hook.h"
 #include "tf_text_format.h"
 
 namespace cui::panels::item_details {
@@ -356,28 +357,40 @@ void ItemDetails::refresh_contents(
     bool reset_vertical_scroll_position, bool reset_horizontal_scroll_position, bool force_update)
 {
     const auto& tracks = m_context_tracker->get_tracks();
+    auto playlist_selection_index = m_context_tracker->get_playlist_selection_index();
 
     if (tracks.size() > 0) {
+        const auto& track = tracks[0];
         const auto font = fonts::get_font(g_guid_item_details_font_client);
         const auto font_size = uih::direct_write::dip_to_pt(font->size());
 
         const auto font_face = mmh::to_utf8({font->log_font().lfFaceName,
             wcsnlen_s(font->log_font().lfFaceName, std::size(font->log_font().lfFaceName))});
 
-        tf::TextFormatTitleformatHook tf_hook(font_size, font_face, true);
+        tf::TextFormatTitleformatHook text_format_tf_hook(font_size, font_face, true);
         pfc::string8_fast_aggressive temp;
         temp.prealloc(2048);
 
         if (m_context_tracker->is_playing_item()) {
             m_playback_control->playback_format_title(
-                &tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
-        } else {
-            const auto handle = tracks[0];
+                &text_format_tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
+        } else if (playlist_selection_index) {
             if (m_full_file_info) {
-                tracks[0]->format_title_from_external_info(*m_full_file_info, &tf_hook, temp, m_to, nullptr);
+                titleformat_hook_impl_file_info tf_file_info_hook(track->get_location(), &*m_full_file_info);
+                tf::SplitterTitleformatHook joined_tf_hook(&tf_file_info_hook, &text_format_tf_hook);
+                m_playlist_manager->activeplaylist_item_format_title(*playlist_selection_index, &joined_tf_hook, temp,
+                    m_to, nullptr, playback_control::display_level_all);
             } else {
                 request_full_file_info();
-                tracks[0]->format_title(&tf_hook, temp, m_to, nullptr);
+                m_playlist_manager->activeplaylist_item_format_title(*playlist_selection_index, &text_format_tf_hook,
+                    temp, m_to, nullptr, playback_control::display_level_all);
+            }
+        } else {
+            if (m_full_file_info) {
+                track->format_title_from_external_info(*m_full_file_info, &text_format_tf_hook, temp, m_to, nullptr);
+            } else {
+                request_full_file_info();
+                track->format_title(&text_format_tf_hook, temp, m_to, nullptr);
             }
         }
 
@@ -732,6 +745,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         set_window_theme();
 
         m_playback_control = playback_control::get();
+        m_playlist_manager = playlist_manager_v4::get();
         play_callback_manager::get()->register_callback(this,
             flag_on_playback_all
                 & ~(flag_on_volume_change | flag_on_playback_starting | flag_on_playback_stop
@@ -756,15 +770,24 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         titleformat_compiler::get()->compile_safe(m_to, m_script);
 
-        m_context_tracker.emplace(m_tracking_mode, true, [&] {
-            if (m_full_file_info_request) {
-                m_full_file_info_request->abort();
-                m_aborting_full_file_info_requests.emplace_back(std::move(m_full_file_info_request));
-            }
-            m_full_file_info_requested = false;
-            m_full_file_info.reset();
+        m_context_tracker.emplace(
+            m_tracking_mode, true,
+            [&] {
+                if (m_full_file_info_request) {
+                    m_full_file_info_request->abort();
+                    m_aborting_full_file_info_requests.emplace_back(std::move(m_full_file_info_request));
+                }
+                m_full_file_info_requested = false;
+                m_full_file_info.reset();
 
-            refresh_contents(true, true);
+                refresh_contents(true, true);
+            },
+            [&] { refresh_contents(); });
+
+        m_playlist_item_modified_callback.emplace([this](const bit_array& mask) {
+            const auto index = m_context_tracker->get_playlist_selection_index();
+            if (index && mask[*index])
+                refresh_contents();
         });
 
         s_windows.push_back(this);
@@ -788,6 +811,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             s_destroy_message_window();
 
         m_context_tracker.reset();
+        m_playlist_item_modified_callback.reset();
         m_power_notify_handle.reset();
         m_use_hardware_acceleration_change_token.reset();
         play_callback_manager::get()->unregister_callback(this);
@@ -807,6 +831,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_dxgi_factory.reset();
         m_smooth_scroll_helper->shut_down();
         m_autoscroll_helper.reset();
+        m_playlist_manager.reset();
         m_playback_control.reset();
         break;
     }
