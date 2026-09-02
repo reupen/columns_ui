@@ -27,7 +27,8 @@
 - Artwork view and Item details now have two new automatic tracking modes
   prioritise the current or playlist selection over the playing item.
   [[#1842](https://github.com/reupen/columns_ui/pull/1842),
-  [#1848](https://github.com/reupen/columns_ui/pull/1848)]
+  [#1848](https://github.com/reupen/columns_ui/pull/1848),
+  [#1857](https://github.com/reupen/columns_ui/pull/1857)]
 
   Additionally, Item properties now has the same tracking modes as the artwork
   view and Item details.

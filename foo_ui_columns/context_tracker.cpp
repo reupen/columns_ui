@@ -72,6 +72,7 @@ ContextTracker::ContextTracker(TrackingMode tracking_mode, bool track_single_ite
     , m_playback_control(playback_control_v3::get())
     , m_playlist_manager(playlist_manager_v4::get())
 {
+    ui_selection_manager_v2::get()->get_selection(m_ui_selection_tracks, ui_selection_manager_v2::flag_no_now_playing);
     refresh_tracks();
 }
 
