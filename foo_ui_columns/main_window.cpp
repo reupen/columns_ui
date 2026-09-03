@@ -457,6 +457,19 @@ void cui::MainWindow::mark_window_placement_overridden()
     m_is_window_placement_overridden = true;
 }
 
+void cui::MainWindow::on_window_placement_imported()
+{
+    if (!m_wnd || is_window_placement_overridden() || cfg_layout.is_remember_window_placement_active())
+        return;
+
+    const auto placement = cfg_window_placement_columns.get_value();
+
+    if (!placement)
+        return;
+
+    set_window_placement(*placement);
+}
+
 void cui::MainWindow::update_window() const
 {
     if (m_wnd)

@@ -3,6 +3,8 @@
 #include "dark_mode_dialog.h"
 #include "fcl.h"
 
+namespace cui {
+
 static const char* g_help_text
     = "Available commands:\n\n"
       "/columnsui:help, /columnsui:?\t\tdisplay this command-line help\n"
@@ -25,8 +27,7 @@ public:
     {
         HWND parent = core_api::get_main_window();
         ui_control::get()->activate();
-        cui::dark::modeless_info_box(
-            parent, "Columns UI command-line help", g_help_text, uih::InfoBoxType::Neutral, true);
+        dark::modeless_info_box(parent, "Columns UI command-line help", g_help_text, uih::InfoBoxType::Neutral, true);
     }
 };
 
@@ -45,12 +46,12 @@ public:
         const auto main_window = core_api::get_main_window();
         if (m_files.empty()) {
             ui_control::get()->activate();
-            cui::dark::modeless_info_box(main_window, m_error_title, m_no_files_error, uih::InfoBoxType::Error);
+            dark::modeless_info_box(main_window, m_error_title, m_no_files_error, uih::InfoBoxType::Error);
             return false;
         }
         if (m_files.size() > 1) {
             ui_control::get()->activate();
-            cui::dark::modeless_info_box(main_window, m_error_title, m_too_many_files_error, uih::InfoBoxType::Error);
+            dark::modeless_info_box(main_window, m_error_title, m_too_many_files_error, uih::InfoBoxType::Error);
             return false;
         }
         return true;
@@ -108,11 +109,11 @@ public:
                 = fmt::format("Are you sure you want to import {}? Your current Columns UI configuration will be lost.",
                     pfc::string_filename_ext(path).c_str());
 
-            if (!cui::dark::modal_info_box(main_window, "Import configuration", message.c_str(),
-                    uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo))
+            if (!dark::modal_info_box(main_window, "Import configuration", message.c_str(), uih::InfoBoxType::Neutral,
+                    uih::InfoBoxModalType::YesNo))
                 return;
         }
-        g_import_layout(core_api::get_main_window(), path, is_quiet);
+        fcl::g_import_layout(core_api::get_main_window(), path, is_quiet);
     }
 };
 
@@ -154,10 +155,12 @@ public:
         if (!is_quiet) {
             ui_control::get()->activate();
         }
-        g_export_layout(core_api::get_main_window(), path, is_quiet);
+        fcl::g_export_layout(core_api::get_main_window(), path, is_quiet);
     }
 };
 
 static commandline_handler_factory_t<HelpCommandLineHandler> help_cli_handler;
 static commandline_handler_factory_t<ImportCommandLineHandler> import_cli_handler;
 static commandline_handler_factory_t<ExportCommandLineHandler> export_cli_handler;
+
+} // namespace cui

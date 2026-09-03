@@ -62,10 +62,10 @@ public:
                 SendMessage(main_window.get_wnd(), MSG_RUN_INITIAL_SETUP, NULL, NULL);
                 break;
             case IDC_FCL_EXPORT:
-                g_export_layout(wnd);
+                fcl::g_export_layout(wnd);
                 break;
             case IDC_FCL_IMPORT:
-                g_import_layout(wnd);
+                fcl::g_import_layout(wnd);
                 break;
             case IDC_HARDWARE_ACCELERATION:
                 config::use_hardware_acceleration = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;

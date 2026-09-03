@@ -1,15 +1,24 @@
 #include "pch.h"
-#include "fcl.h"
-#include "ng_playlist/ng_playlist_groups.h"
 #include "ng_playlist/ng_playlist.h"
 #include "status_pane.h"
+
+namespace cui::fcl::groups {
+
+namespace {
+
+constexpr GUID titles_playlist_view_id{0xebd87879, 0x65a7, 0x4242, {0x82, 0x1b, 0x81, 0x2a, 0xf9, 0xf6, 0x8e, 0x8f}};
+constexpr GUID titles_other_id{0xf17dddf4, 0xbb3e, 0x4f36, {0xb9, 0xe1, 0xd6, 0x26, 0x62, 0x9f, 0x2c, 0x76}};
+
+} // namespace
+
+} // namespace cui::fcl::groups
 
 namespace cui::panels::playlist_view {
 
 fcl::group_impl_factory fclgroupcolumns(
-    fcl::groups::titles_playlist_view, "Playlist Scripts", "Playlist Scripts", fcl::groups::title_scripts);
+    fcl::groups::titles_playlist_view_id, "Playlist view scripts", "Playlist view scripts", fcl::groups::title_scripts);
 fcl::group_impl_factory fclgroupcommon(
-    fcl::groups::titles_common, "Common Scripts", "Common Scripts", fcl::groups::title_scripts);
+    fcl::groups::titles_other_id, "Other scripts", "Other scripts", fcl::groups::title_scripts);
 
 class PlaylistViewColumnsDataSet : public fcl::dataset {
     enum ItemID {
@@ -32,7 +41,7 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
         identifier_width_dpi
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Columns"; }
-    const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }
+    const GUID& get_group() const override { return fcl::groups::titles_playlist_view_id; }
     const GUID& get_guid() const override
     {
         // {2415AAE7-7F5E-4ad8-94E2-1E730A2139EF}
@@ -178,7 +187,7 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
         identifier_playlist_filter_string,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Groups"; }
-    const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }
+    const GUID& get_group() const override { return fcl::groups::titles_playlist_view_id; }
     const GUID& get_guid() const override
     {
         // {A89F68C6-B40A-4200-BA2A-68999F704FFD}
@@ -302,7 +311,7 @@ class PlaylistViewMiscDataSet : public fcl::dataset {
         identifier_use_globals,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours"; }
-    const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }
+    const GUID& get_group() const override { return fcl::groups::titles_playlist_view_id; }
     const GUID& get_guid() const override
     {
         // {190F4811-899A-4366-A181-FF5161FC1C77}
@@ -377,7 +386,7 @@ class TitlesDataSet : public fcl::dataset {
         identifier_status_pane,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Titles"; }
-    const GUID& get_group() const override { return fcl::groups::titles_common; }
+    const GUID& get_group() const override { return fcl::groups::titles_other_id; }
     const GUID& get_guid() const override
     {
         // {9AF6A28B-3EFF-4d1a-AD81-FA1759F1D66C}
