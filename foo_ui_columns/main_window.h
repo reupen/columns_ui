@@ -51,6 +51,7 @@ public:
     void override_window_placement(const config::WindowPlacementAndDpi& placement_and_dpi);
     void restore_window_placement();
     void mark_window_placement_overridden();
+    void on_window_placement_imported();
     void update_window() const;
 
     /*

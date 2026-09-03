@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.7.0-beta.1
 
 ### Features
 
@@ -17,6 +17,13 @@
   Presets with the option disabled share the same main window size and position
   as previously.
 
+  Layout preset-specific window sizes and positions are included with the preset
+  when exporting the current configuration to an FCL file.
+
+- The standard main window size and position can now be included in FCL
+  configuration exports.
+  [[#1862](https://github.com/reupen/columns_ui/pull/1862)]
+
 - Pressing Alt now shows the main menu as a pop-up menu in the top-left corner
   of the main window when there is no menu bar in the toolbar area or in the
   layout. [[#1816](https://github.com/reupen/columns_ui/pull/1816),
@@ -25,8 +32,8 @@
   This includes being able to directly access each top-level menu using their
   access keys (e.g. Alt+F for the File menu).
 
-- Artwork view and Item details now have two new automatic tracking modes
-  prioritise the current or playlist selection over the playing item.
+- Artwork view and Item details have two new automatic tracking modes prioritise
+  the current or playlist selection over the playing item.
   [[#1842](https://github.com/reupen/columns_ui/pull/1842),
   [#1848](https://github.com/reupen/columns_ui/pull/1848),
   [#1857](https://github.com/reupen/columns_ui/pull/1857),
@@ -44,7 +51,7 @@
 
 - The following dialogues are now resizeable
   [[#1833](https://github.com/reupen/columns_ui/pull/1833),
-  [#1835](https://github.com/reupen/columns_ui/pull/1835)],
+  [#1835](https://github.com/reupen/columns_ui/pull/1835),
   [#1836](https://github.com/reupen/columns_ui/pull/1836)]:
   - Add new group
   - Edit group
@@ -57,7 +64,7 @@
   - FCL import results
 
   Additionally, they now remember their size and position when next opened.
-  [[#1839](https://github.com/reupen/columns_ui/pull/1839)]]
+  [[#1839](https://github.com/reupen/columns_ui/pull/1839)]
 
 - The list of commands in the Buttons toolbar command picker can now be filtered
   using a search box. [[#1830](https://github.com/reupen/columns_ui/pull/1830)]
@@ -97,20 +104,22 @@
 - When opening a menu in the menu toolbar using the keyboard, the first menu
   item is now focused. [[#1826](https://github.com/reupen/columns_ui/pull/1826)]
 
-- Keyboard shortcuts are no longer triggered when typing capital letters or
-  symbols with the shift key in Filter search toolbar and in inline editing edit
-  boxes in the playlist view, playlist switcher, Filter panel and Item
-  properties. [[#1824](https://github.com/reupen/columns_ui/pull/1824)]
+- Keyboard shortcuts are no longer triggered when pressing character keys with
+  the shift key down in Filter search toolbar and in inline editing edit boxes
+  in the playlist view, playlist switcher, Filter panel and Item properties.
+  [[#1824](https://github.com/reupen/columns_ui/pull/1824)]
 
-- A bug where Item details did not correctly track items being added or removed
-  from the playlist in playlist selection tracking modes was fixed.
-  [[#1846](https://github.com/reupen/columns_ui/pull/1846)]
+- A bug where the Artwork view and Item details did not correctly track items
+  being added or removed from the playlist in playlist selection tracking modes
+  was fixed. [[#1846](https://github.com/reupen/columns_ui/pull/1846),
+  [#1848](https://github.com/reupen/columns_ui/pull/1848),
+  [#1861](https://github.com/reupen/columns_ui/pull/1861)]
 
 - A bug where some text labels in Quick setup were truncated at some display
   scales was fixed. [[#1845](https://github.com/reupen/columns_ui/pull/1845)
   (contributed by [@marc2k3](https://github.com/marc2k3))]
 
-- A bug where message box alert sounds may have played with an unexpected
+- A problem where message box alert sounds may have played with an unexpected
   spatial effect applied was fixed.
   [[#1812](https://github.com/reupen/columns_ui/pull/1812)]
 
