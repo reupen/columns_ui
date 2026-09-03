@@ -7,6 +7,8 @@
 #include "main_window.h"
 #include "window_resize_helper.h"
 
+namespace cui::fcl {
+
 namespace {
 
 cfg_int last_export_mode({0xea0cd797, 0x9cf2, 0x4da4, {0x8b, 0x69, 0x08, 0x36, 0x90, 0x58, 0x70, 0x7b}}, 1);
@@ -19,14 +21,6 @@ constexpr GUID results_dialog_placement_id{
     0x72f08eae, 0x4e05, 0x4506, {0x8c, 0xca, 0x7b, 0xe6, 0x86, 0x26, 0xd1, 0x04}};
 
 } // namespace
-
-// {EBD87879-65A7-4242-821B-812AF9F68E8F}
-const GUID cui::fcl::groups::titles_playlist_view
-    = {0xebd87879, 0x65a7, 0x4242, {0x82, 0x1b, 0x81, 0x2a, 0xf9, 0xf6, 0x8e, 0x8f}};
-
-// {F17DDDF4-BB3E-4f36-B9E1-D626629F2C76}
-const GUID cui::fcl::groups::titles_common
-    = {0xf17dddf4, 0xbb3e, 0x4f36, {0xb9, 0xe1, 0xd6, 0x26, 0x62, 0x9f, 0x2c, 0x76}};
 
 enum {
     fcl_stream_version = 2
@@ -220,12 +214,13 @@ private:
     std::optional<cui::utils::WindowResizeHelper> m_resize_helper;
 };
 
-cui::fcl::group_impl_factory g_group_toolbars(cui::fcl::groups::toolbars, "Toolbar Layout", "The toolbar layout");
-cui::fcl::group_impl_factory g_group_layout(cui::fcl::groups::layout, "Main Layout", "The main layout");
+cui::fcl::group_impl_factory g_group_toolbars(cui::fcl::groups::toolbars, "Toolbar layout", "The toolbar layout");
+cui::fcl::group_impl_factory g_group_layout(
+    cui::fcl::groups::layout, "Layout presets", "The main layout including all layout presets");
 cui::fcl::group_impl_factory g_group_colours(
-    cui::fcl::groups::colours_and_fonts, "Colours and Fonts", "The colours and fonts");
+    cui::fcl::groups::colours_and_fonts, "Colours and fonts", "The colours and fonts");
 cui::fcl::group_impl_factory g_group_titles(
-    cui::fcl::groups::title_scripts, "Title Scripts", "The titleformatting scripts");
+    cui::fcl::groups::title_scripts, "Title formatting scripts", "The title formatting scripts");
 
 class PanelInfo {
 public:
@@ -571,3 +566,5 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
         popup_message::g_show(ex.what(), "Error");
     }
 }
+
+} // namespace cui::fcl
