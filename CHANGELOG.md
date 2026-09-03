@@ -22,7 +22,8 @@
 
 - The standard main window size and position can now be included in FCL
   configuration exports.
-  [[#1862](https://github.com/reupen/columns_ui/pull/1862)]
+  [[#1862](https://github.com/reupen/columns_ui/pull/1862),
+  [#1863](https://github.com/reupen/columns_ui/pull/1863)]
 
 - Pressing Alt now shows the main menu as a pop-up menu in the top-left corner
   of the main window when there is no menu bar in the toolbar area or in the
