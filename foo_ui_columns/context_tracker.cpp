@@ -237,6 +237,7 @@ void ContextTracker::refresh_tracks()
     metadb_handle_list tracks;
 
     m_is_tracking_playing = false;
+    m_playing_item.reset();
     m_playlist_selection_index.reset();
     std::optional<size_t> playlist_selection_index;
 
@@ -250,7 +251,7 @@ void ContextTracker::refresh_tracks()
         m_playback_control->get_now_playing(m_playing_item);
 
     if ((tracking_prioritises_playing_item() || (tracking_falls_back_to_playing_item() && tracks.size() == 0))
-        && m_playback_control->is_playing()) {
+        && m_playing_item.is_valid()) {
         tracks = pfc::list_single_ref_t(m_playing_item);
         m_is_tracking_playing = true;
     }
@@ -324,11 +325,8 @@ void ContextTracker::set_selection_tracks(
     metadb_handle_list tracks, std::optional<size_t> playlist_selection_index, bool is_playlist_modification)
 {
     if (tracking_falls_back_to_playing_item() && tracks.size() == 0) {
-        const auto is_playing = m_playback_control->is_playing();
-
-        if (is_playing && !m_is_tracking_playing) {
+        if (m_playing_item.is_valid() && !m_is_tracking_playing)
             set_tracks(pfc::list_single_ref_t(m_playing_item), true, {}, is_playlist_modification);
-        }
 
         if (m_is_tracking_playing)
             return;

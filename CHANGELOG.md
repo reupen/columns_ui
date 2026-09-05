@@ -1,5 +1,13 @@
 # Change log
 
+## 3.7.0-beta.2
+
+### Bug fixes
+
+- The playing item tracking logic was tweaked in the Artwork view, Item details
+  and Item properties panels to avoid a crash during unusual playback states.
+  [[#1867](https://github.com/reupen/columns_ui/pull/1867)]
+
 ## 3.7.0-beta.1
 
 ### Features
