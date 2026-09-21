@@ -694,14 +694,19 @@ void FilterSearchToolbar::s_update_font()
 LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
-    case WM_SYSKEYDOWN:
+    case WM_SYSKEYDOWN: {
+        ptr self = this;
+
         if (fb2k_utils::process_edit_keyboard_shortcuts(wp)) {
             m_ignore_next_wm_syschar_message = true;
             return 0;
         }
         break;
-    case WM_KEYDOWN:
+    }
+    case WM_KEYDOWN: {
+        ptr self = this;
         m_ignore_next_wm_char_message = false;
+
         switch (wp) {
         case VK_TAB:
             cui::win32::handle_tab_key(wnd);
@@ -728,6 +733,7 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
             break;
         }
         break;
+    }
     case WM_CHAR:
         if (m_ignore_next_wm_char_message) {
             m_ignore_next_wm_char_message = false;

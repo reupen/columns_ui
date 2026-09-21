@@ -346,10 +346,13 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     }
     void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override
     {
-        if (p_index < cfg_layout.get_presets().size()) {
+        fb2k::inMainThread([p_index] {
+            if (!g_layout_window.get_wnd() || p_index >= cfg_layout.get_presets().size())
+                return;
+
             cfg_layout.save_active_preset();
             cfg_layout.set_active_preset(p_index);
-        }
+        });
     }
 
     GUID get_parent() override { return groups::view_layout_presets; }

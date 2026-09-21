@@ -373,6 +373,8 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {
+        ptr self = this;
+
         if ((m_ignore_next_wm_char_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
 
@@ -384,10 +386,13 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
         uih::show_focus_indicator_on_keydown(get_wnd(), wp);
         break;
     }
-    case WM_SYSKEYDOWN:
+    case WM_SYSKEYDOWN: {
+        ptr self = this;
+
         if ((m_ignore_next_wm_syschar_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
         break;
+    }
     case WM_CHAR:
         if (m_ignore_next_wm_char_message) {
             m_ignore_next_wm_char_message = false;
