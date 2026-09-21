@@ -297,10 +297,13 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uih::show_focus_indicator_on_keydown(get_wnd(), wp);
         break;
     }
-    case WM_SYSKEYDOWN:
+    case WM_SYSKEYDOWN: {
+        ptr self = this;
+
         if ((m_ignore_next_wm_syschar_message = g_process_keydown_keyboard_shortcuts(wp)))
             return 0;
         break;
+    }
     case WM_SYSCHAR:
         if (m_ignore_next_wm_syschar_message) {
             m_ignore_next_wm_syschar_message = false;

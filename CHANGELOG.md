@@ -1,5 +1,12 @@
 # Change log
 
+## 3.7.0
+
+### Bug fixes
+
+- A bug causing a crash when switching layouts using a keyboard shortcut was
+  fixed. [[#1877](https://github.com/reupen/columns_ui/pull/1877)]
+
 ## 3.7.0-beta.2
 
 ### Bug fixes
