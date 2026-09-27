@@ -1,5 +1,18 @@
 # Change log
 
+## Development version
+
+### Features
+
+- Compatibility with the foobar2000 low-memory mode was improved on 64-bit
+  versions of foobar2000 that support it.
+  [[#1886](https://github.com/reupen/columns_ui/pull/1886)]
+
+### Internal changes
+
+- The component is now compiled using foobar2000 SDK 2026-09-17.
+  [[#1886](https://github.com/reupen/columns_ui/pull/1886)]
+
 ## 3.7.0
 
 ### Bug fixes
