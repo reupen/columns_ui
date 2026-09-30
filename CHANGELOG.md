@@ -4733,10 +4733,8 @@ private release
 - Compiled with MSVC 7.1 toolkit
 - Updated to 0.9 alpah 19 SDK
 - Playlist view no longer uses BeginPaint/EndPaint in WM_PAINT handler
-- Global variables now use new functions
-  $set_global(var, val) and
-  $get_global(var). (Former in global string, latter
-  in other strings).
+- Global variables now use new functions $set_global(var, val) and
+  $get_global(var). (Former in global string, latter in other strings).
 
 ## 0.1.2
 
