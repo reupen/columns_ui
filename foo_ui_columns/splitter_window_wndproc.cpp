@@ -1,12 +1,14 @@
 #include "pch.h"
 
-#include "dark_mode.h"
 #include "splitter.h"
 
 namespace cui::panels::splitter {
 
 LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (const auto result = m_keyboard_shortcut_processor.handle_message(wnd, msg, wp); result)
+        return *result;
+
     switch (msg) {
     case WM_NCCREATE:
         m_wnd = wnd;

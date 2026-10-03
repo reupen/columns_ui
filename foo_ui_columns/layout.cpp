@@ -223,7 +223,21 @@ ui_extension::window_host_factory_single<LayoutWindowHost> g_window_host_layout_
 
 bool LayoutWindow::set_focus()
 {
-    return __set_focus_recur(m_child);
+    if (__set_focus_recur(m_child))
+        return true;
+
+    if (!m_child)
+        return false;
+
+    const auto focus_candidate_wnd = GetNextDlgTabItem(get_wnd(), get_wnd(), FALSE);
+
+    if (focus_candidate_wnd && IsChild(get_wnd(), focus_candidate_wnd)
+        && (GetWindowLongPtr(focus_candidate_wnd, GWL_STYLE) & WS_TABSTOP)) {
+        SetFocus(focus_candidate_wnd);
+        return true;
+    }
+
+    return false;
 }
 
 void LayoutWindow::show_window()
@@ -480,6 +494,7 @@ void LayoutWindow::set_child(const uie::splitter_item_t* item)
     }
     m_child_guid = item->get_panel_guid();
     item->get_panel_config_to_array(m_child_data, true);
+
     if (get_wnd()) {
         create_child();
         show_window();
@@ -1109,6 +1124,9 @@ bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPAR
 
 LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (const auto result = m_keyboard_shortcut_processor.handle_message(wnd, msg, wp); result)
+        return *result;
+
     switch (msg) {
     case WM_CREATE:
         refresh_child();
@@ -1130,7 +1148,8 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         run_live_edit_base(std::move(m_live_edit_data));
         break;
     case MSG_LAYOUT_SET_FOCUS:
-        set_focus();
+        if (GetFocus() == wnd)
+            set_focus();
         break;
     case WM_CONTEXTMENU: {
         constexpr auto base_id = 1u;

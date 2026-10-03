@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config_utils.h"
+#include "fb2k_keyboard.h"
 
 class ConfigLayout : public cfg_var {
 public:
@@ -131,6 +132,7 @@ private:
     HWND m_child_wnd{nullptr};
     bool m_layout_editing_active{false};
     LiveEditData m_live_edit_data;
+    cui::fb2k_utils::SimpleKeyboardShortcutProcessor m_keyboard_shortcut_processor;
 };
 
 extern LayoutWindow g_layout_window;

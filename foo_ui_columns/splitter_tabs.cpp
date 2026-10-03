@@ -497,6 +497,9 @@ void TabStackPanel::set_up_down_window_theme() const
 
 LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (const auto result = m_keyboard_shortcut_processor.handle_message(wnd, msg, wp); result)
+        return *result;
+
     switch (msg) {
     case WM_CREATE: {
         m_buffered_paint_initialiser.emplace();
@@ -542,30 +545,11 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         break;
     }
-    case WM_KEYDOWN: {
-        if (wp != VK_LEFT && wp != VK_RIGHT && g_process_keydown_keyboard_shortcuts(wp))
-            return 0;
-
-        if (wp == VK_TAB) {
-            win32::handle_tab_key(wnd);
-            return 0;
-        }
-
-        uih::show_focus_indicator_on_keydown(get_wnd(), wp);
-        break;
-    }
-    case WM_SYSKEYDOWN: {
-        ptr self = this;
-
-        if ((m_ignore_next_wm_syschar_message = g_process_keydown_keyboard_shortcuts(wp)))
-            return 0;
-        break;
-    }
-    case WM_SYSCHAR:
-        if (m_ignore_next_wm_syschar_message) {
-            m_ignore_next_wm_syschar_message = false;
-            return 0;
-        }
+    case WM_SETFOCUS:
+        if (m_active_child_wnd && (GetWindowLongPtr(m_active_child_wnd, GWL_STYLE) & WS_TABSTOP))
+            SetFocus(m_active_child_wnd);
+        else if (m_wnd_tabs)
+            SetFocus(m_wnd_tabs);
         break;
     case WM_DESTROY:
         m_get_message_hook_token.reset();

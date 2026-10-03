@@ -27,6 +27,9 @@ enum {
 
 LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (const auto result = m_keyboard_shortcut_processor.handle_message(wnd, msg, wp); result)
+        return *result;
+
     switch (msg) {
     case WM_NCCREATE: {
         m_host_wnd = wnd;
@@ -74,6 +77,12 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
+    case WM_SETFOCUS:
+        if (m_child_wnd && (GetWindowLongPtr(m_child_wnd, GWL_STYLE) & WS_TABSTOP))
+            SetFocus(m_child_wnd);
+        else if (wnd_tabs)
+            SetFocus(wnd_tabs);
+        break;
     case MSG_RESET_SIZE_LIMITS:
         on_child_position_change();
         break;

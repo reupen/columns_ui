@@ -297,6 +297,7 @@ void ConfigLayout::set_active_preset(size_t index)
         cui::main_window.restore_window_placement();
     }
 
+    cui::main_window.check_focus();
     cui::main_window.update_window();
 }
 

@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.7.1
 
 ### Features
 
@@ -8,10 +8,17 @@
   versions of foobar2000 that support it.
   [[#1886](https://github.com/reupen/columns_ui/pull/1886)]
 
+### Bug fixes
+
+- Focusing and keyboard shortcut processing behaviour was improved when
+  switching to a layout that doesn’t contain a playlist view.
+  [[#1894](https://github.com/reupen/columns_ui/pull/1894)]
+
 ### Internal changes
 
-- The component is now compiled using foobar2000 SDK 2026-09-17.
-  [[#1886](https://github.com/reupen/columns_ui/pull/1886)]
+- The component is now compiled using foobar2000 SDK 2026-10-01.
+  [[#1886](https://github.com/reupen/columns_ui/pull/1886),
+  [#1893](https://github.com/reupen/columns_ui/pull/1893)]
 
 ## 3.7.0
 
