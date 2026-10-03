@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fb2k_keyboard.h"
 #include "pch.h"
 
 namespace cui::panels::playlist_tabs {
@@ -199,6 +200,7 @@ private:
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
     mmh::EventToken::Ptr m_get_message_hook_token;
     std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;
+    fb2k_utils::SimpleKeyboardShortcutProcessor m_keyboard_shortcut_processor;
 };
 
 extern ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;

@@ -298,10 +298,12 @@ void cui::MainWindow::set_or_restore_focus() const
     if (m_is_destroying)
         return;
 
-    if (m_last_focused_wnd && IsWindow(m_last_focused_wnd))
+    if (m_last_focused_wnd && IsWindow(m_last_focused_wnd)) {
         SetFocus(m_last_focused_wnd);
-    else
-        g_layout_window.set_focus();
+        return;
+    }
+
+    set_focus();
 }
 
 void cui::MainWindow::set_window_placement(WINDOWPLACEMENT placement, bool is_initial, bool is_hidden)
@@ -474,6 +476,28 @@ void cui::MainWindow::update_window() const
 {
     if (m_wnd)
         RedrawWindow(m_wnd, nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW);
+}
+
+void cui::MainWindow::check_focus() const
+{
+    if (!get_wnd())
+        return;
+
+    const auto focus_wnd = GetFocus();
+
+    if (focus_wnd == nullptr || focus_wnd == get_wnd() || focus_wnd == g_layout_window.get_wnd())
+        set_focus();
+}
+
+void cui::MainWindow::set_focus() const
+{
+    if (g_layout_window.set_focus())
+        return;
+
+    const auto focus_candidate_wnd = GetNextDlgTabItem(get_wnd(), get_wnd(), FALSE);
+
+    if (focus_candidate_wnd && (GetWindowLongPtr(focus_candidate_wnd, GWL_STYLE) & WS_TABSTOP))
+        SetFocus(focus_candidate_wnd);
 }
 
 void cui::MainWindow::create_child_windows()

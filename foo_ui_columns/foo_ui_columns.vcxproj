@@ -273,6 +273,7 @@
     <ClCompile Include="dialog_placement.cpp" />
     <ClCompile Include="fallback_menu.cpp" />
     <ClCompile Include="fb2k_callbacks.cpp" />
+    <ClCompile Include="fb2k_keyboard.cpp" />
     <ClCompile Include="fb2k_misc.cpp" />
     <ClCompile Include="fcl_window_placement.cpp" />
     <ClCompile Include="file_info_utils.cpp" />
@@ -474,6 +475,7 @@
     <ClInclude Include="dialog_placement.h" />
     <ClInclude Include="fallback_menu.h" />
     <ClInclude Include="fb2k_callbacks.h" />
+    <ClInclude Include="fb2k_keyboard.h" />
     <ClInclude Include="fb2k_misc.h" />
     <ClInclude Include="file_info_utils.h" />
     <ClInclude Include="font_manager_data.h" />

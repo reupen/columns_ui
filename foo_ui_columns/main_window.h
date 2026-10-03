@@ -2,6 +2,7 @@
 
 #include "config_utils.h"
 #include "fallback_menu.h"
+#include "fb2k_keyboard.h"
 #include "icons.h"
 
 /** Main window UI control IDs */
@@ -53,6 +54,8 @@ public:
     void mark_window_placement_overridden();
     void on_window_placement_imported();
     void update_window() const;
+    void check_focus() const;
+    void set_focus() const;
 
     /*
      * ITaskbarList3::ThumbBarUpdateButtons calls SendMessageTimeout without the SMTO_BLOCK flag.
@@ -97,7 +100,7 @@ private:
     bool m_last_systray_r_down{};
     bool m_last_systray_x1_down{};
     bool m_last_systray_x2_down{};
-    bool m_ignore_next_wm_syschar_message{};
+    fb2k_utils::SimpleKeyboardShortcutProcessor m_keyboard_shortcut_processor;
     FallbackMenu::Ptr m_fallback_menu;
     ULONG_PTR m_gdiplus_instance{};
     UINT m_wm_taskbarcreated{};

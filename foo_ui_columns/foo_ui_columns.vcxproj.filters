@@ -689,6 +689,9 @@
     <ClCompile Include="fcl_window_placement.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
+    <ClCompile Include="fb2k_keyboard.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -1057,6 +1060,9 @@
     </ClInclude>
     <ClInclude Include="config_utils.h">
       <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include="fb2k_keyboard.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

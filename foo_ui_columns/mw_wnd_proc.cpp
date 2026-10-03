@@ -65,6 +65,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     }
 
+    if (const auto result = m_keyboard_shortcut_processor.handle_message(wnd, msg, wp); result)
+        return *result;
+
     if (m_wm_taskbarcreated && msg == m_wm_taskbarcreated) {
         if (systray::is_system_tray_icon_created) {
             systray::is_system_tray_icon_created = false;
@@ -157,7 +160,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 class_name.data())
                     .c_str());
 
-            g_layout_window.set_focus();
+            set_focus();
         }
 
         g_get_msg_hook.register_hook();
@@ -574,25 +577,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             rebar::g_rebar_window->on_themechanged();
         if (g_status) {
             set_part_sizes(status_bar::t_parts_none);
-        }
-        break;
-    case WM_KEYDOWN:
-        if (uie::window::g_process_keydown_keyboard_shortcuts(wp))
-            return 0;
-
-        if (wp == VK_TAB) {
-            win32::handle_tab_key(wnd);
-            return 0;
-        }
-        break;
-    case WM_SYSKEYDOWN:
-        if ((m_ignore_next_wm_syschar_message = uie::window::g_process_keydown_keyboard_shortcuts(wp)))
-            return 0;
-        break;
-    case WM_SYSCHAR:
-        if (m_ignore_next_wm_syschar_message) {
-            m_ignore_next_wm_syschar_message = false;
-            return 0;
         }
         break;
     case MSG_SYSTEM_TRAY_ICON:

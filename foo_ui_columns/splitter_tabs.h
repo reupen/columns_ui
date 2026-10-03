@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dark_mode_spin.h"
+#include "fb2k_keyboard.h"
 
 namespace cui::panels::tab_stack {
 
@@ -155,6 +156,7 @@ private:
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
     mmh::EventToken::Ptr m_get_message_hook_token;
     std::optional<uih::BufferedPaintInitialiser> m_buffered_paint_initialiser;
+    fb2k_utils::SimpleKeyboardShortcutProcessor m_keyboard_shortcut_processor;
 };
 
 } // namespace cui::panels::tab_stack
