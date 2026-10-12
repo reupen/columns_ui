@@ -4,14 +4,24 @@
 
 namespace cui::prefs {
 
-class LayoutTabNode {
+class LayoutTabNode : public std::enable_shared_from_this<LayoutTabNode> {
 public:
     using ptr = std::shared_ptr<LayoutTabNode>;
+
+    static ptr s_make(const std::shared_ptr<LayoutTabNode>& parent)
+    {
+        auto node = std::make_shared<LayoutTabNode>();
+        node->m_parent = parent;
+        return node;
+    }
+
+    ptr make_child() { return s_make(shared_from_this()); }
 
     bool empty() const;
     bool have_item(const GUID& p_guid);
     void build();
 
+    std::weak_ptr<LayoutTabNode> m_parent;
     pfc::string8 m_name;
     bool m_expanded{true};
     uie::window_ptr m_window;
@@ -66,7 +76,8 @@ private:
     void move_item(HWND wnd, HTREEITEM ti, bool up);
     void switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid);
     void change_base(HWND wnd, const GUID& p_guid);
-    void save_item(HWND wnd, HTREEITEM ti);
+    void save_item(HTREEITEM ti);
+    void save_item(const LayoutTabNode::ptr& node);
 
     template <typename T>
     void set_item_property(HWND wnd, HTREEITEM ti, const GUID& guid, const T& val)
@@ -88,6 +99,7 @@ private:
     void run_configure(HWND wnd);
     void initialise_tree(HWND wnd);
     void deinitialise_tree(HWND wnd);
+    bool is_treeitem_stale(HTREEITEM ti, const LayoutTabNode::ptr& p_node);
 
     void apply();
     void initialise_presets(HWND wnd);
