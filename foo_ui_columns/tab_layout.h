@@ -48,11 +48,10 @@ private:
     static void print_index_out_of_range();
 
     void build_node_and_populate_tree(
-        HWND wnd, LayoutTabNode::ptr node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
-    void populate_tree(
-        HWND wnd, const LayoutTabNode::ptr& node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
-    void remove_node(HWND wnd, HTREEITEM ti);
-    void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);
+        LayoutTabNode::ptr node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
+    void populate_tree(const LayoutTabNode::ptr& node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
+    void remove_node(HTREEITEM ti);
+    void insert_item(HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);
     void copy_item(HWND wnd, HTREEITEM ti) const;
     void cut_item(HWND wnd, HTREEITEM ti);
     bool _fix_single_instance_recur(uie::splitter_window_ptr& p_window);
@@ -73,37 +72,37 @@ private:
     bool fix_paste_item(uie::splitter_item_full_v3_impl_t& item);
 
     void paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
-    void move_item(HWND wnd, HTREEITEM ti, bool up);
+    void move_item(HTREEITEM ti, bool up);
     void switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid);
-    void change_base(HWND wnd, const GUID& p_guid);
+    void change_base(const GUID& p_guid);
     void save_item(HTREEITEM ti);
     void save_item(const LayoutTabNode::ptr& node);
 
     template <typename T>
-    void set_item_property(HWND wnd, HTREEITEM ti, const GUID& guid, const T& val)
+    void set_item_property(HTREEITEM ti, const GUID& guid, const T& val)
     {
         stream_reader_memblock_ref reader(&val, sizeof(T));
-        set_item_property_stream(wnd, ti, guid, &reader);
+        set_item_property_stream(ti, guid, &reader);
     }
 
-    void set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& guid, stream_reader* val);
+    void set_item_property_stream(HTREEITEM ti, const GUID& guid, stream_reader* val);
 
     template <typename T>
     void set_item_property(HWND wnd, const GUID& guid, const T& val)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-        set_item_property(wnd, TreeView_GetSelection(wnd_tv), guid, val);
+        set_item_property(TreeView_GetSelection(wnd_tv), guid, val);
     }
 
-    void set_item_property_stream(HWND wnd, const GUID& guid, stream_reader* val);
+    void set_item_property_stream(const GUID& guid, stream_reader* val);
     void run_configure(HWND wnd);
-    void initialise_tree(HWND wnd);
-    void deinitialise_tree(HWND wnd);
+    void initialise_tree();
+    void deinitialise_tree();
     bool is_treeitem_stale(HTREEITEM ti, const LayoutTabNode::ptr& p_node);
 
     void apply();
     void initialise_presets(HWND wnd);
-    void switch_to_preset(HWND wnd, size_t index);
+    void switch_to_preset(size_t index);
 
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void handle_tree_wm_contextmenu(HWND wnd, POINT pt);

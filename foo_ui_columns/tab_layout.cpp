@@ -167,7 +167,7 @@ unsigned LayoutTab::tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti)
     return n;
 }
 
-void LayoutTab::populate_tree(HWND wnd, const LayoutTabNode::ptr& node, HTREEITEM ti_parent, HTREEITEM ti_after)
+void LayoutTab::populate_tree(const LayoutTabNode::ptr& node, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
     SendMessage(m_wnd_tree, WM_SETREDRAW, FALSE, NULL);
     auto node_map = __populate_tree(m_wnd_tree, node, ti_parent, ti_after);
@@ -196,7 +196,7 @@ std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
     return node_map;
 }
 
-void LayoutTab::remove_node(HWND wnd, HTREEITEM ti)
+void LayoutTab::remove_node(HTREEITEM ti)
 {
     HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
 
@@ -220,7 +220,7 @@ void LayoutTab::remove_node(HWND wnd, HTREEITEM ti)
     }
 }
 
-void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after)
+void LayoutTab::insert_item(HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after)
 {
     auto p_parent = m_node_map.at(ti_parent);
     auto p_node = p_parent->make_child();
@@ -236,7 +236,7 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
         if (index <= parent_children.size()) {
             p_splitter->insert_panel(index, p_node->m_item->get_ptr());
             parent_children.insert(parent_children.begin() + index, p_node);
-            build_node_and_populate_tree(wnd, p_node, ti_parent, ti_after);
+            build_node_and_populate_tree(p_node, ti_parent, ti_after);
             save_item(p_parent);
         }
     }
@@ -253,7 +253,7 @@ void LayoutTab::cut_item(HWND wnd, HTREEITEM ti)
     const auto node = m_node_map.at(ti);
 
     if (splitter_utils::copy_splitter_item_to_clipboard_safe(wnd, node->m_item->get_ptr(), true))
-        remove_node(wnd, ti);
+        remove_node(ti);
 }
 
 bool LayoutTab::_fix_single_instance_recur(uie::splitter_window_ptr& p_window)
@@ -348,7 +348,7 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
 
     if (!ti_parent) {
         m_node_root = p_node;
-        build_node_and_populate_tree(wnd, m_node_root);
+        build_node_and_populate_tree(m_node_root);
         m_changed = true;
         return;
     }
@@ -369,13 +369,13 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
         if (index <= parent_children.size()) {
             p_splitter->insert_panel(index, p_node->m_item->get_ptr());
             parent_children.insert(parent_children.begin() + index, p_node);
-            build_node_and_populate_tree(wnd, p_node, ti_parent, ti_after);
+            build_node_and_populate_tree(p_node, ti_parent, ti_after);
             save_item(p_parent);
         }
     }
 }
 
-void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
+void LayoutTab::move_item(HTREEITEM ti, bool up)
 {
     HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
 
@@ -390,7 +390,7 @@ void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
             TreeView_DeleteItem(m_wnd_tree, ti_prev);
 
             const auto child_node = parent_children[index];
-            populate_tree(wnd, child_node, ti_parent, ti);
+            populate_tree(child_node, ti_parent, ti);
 
             save_item(p_parent_node);
         }
@@ -406,7 +406,7 @@ void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
             TreeView_DeleteItem(m_wnd_tree, ti_next);
 
             const auto child_node = parent_children[index];
-            populate_tree(wnd, child_node, ti_parent, ti_prev);
+            populate_tree(child_node, ti_parent, ti_prev);
 
             save_item(p_parent_node);
         }
@@ -418,10 +418,10 @@ void LayoutTab::print_index_out_of_range()
     console::print("layout editor: internal error: index out of range");
 }
 
-void LayoutTab::build_node_and_populate_tree(HWND wnd, LayoutTabNode::ptr node, HTREEITEM ti_parent, HTREEITEM ti_after)
+void LayoutTab::build_node_and_populate_tree(LayoutTabNode::ptr node, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
     node->build();
-    populate_tree(wnd, node, ti_parent, ti_after);
+    populate_tree(node, ti_parent, ti_after);
 }
 
 void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
@@ -486,18 +486,18 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
             previous_ti = TVI_FIRST;
 
         TreeView_DeleteItem(m_wnd_tree, ti);
-        build_node_and_populate_tree(wnd, new_node, parent_ti, previous_ti);
+        build_node_and_populate_tree(new_node, parent_ti, previous_ti);
         save_item(parent_node);
     } else {
         TreeView_DeleteAllItems(m_wnd_tree);
         m_node_map.clear();
         m_node_root = std::move(new_node);
-        build_node_and_populate_tree(wnd, m_node_root);
+        build_node_and_populate_tree(m_node_root);
         m_changed = true;
     }
 }
 
-void LayoutTab::change_base(HWND wnd, const GUID& p_guid)
+void LayoutTab::change_base(const GUID& p_guid)
 {
     m_node_map.clear();
     // Note: This sends TVN_DELETED notifications
@@ -507,7 +507,7 @@ void LayoutTab::change_base(HWND wnd, const GUID& p_guid)
     m_node_root->m_item->get_ptr()->set_panel_guid(p_guid);
     m_node_root->m_window.release();
     m_node_root->m_splitter.release();
-    build_node_and_populate_tree(wnd, m_node_root);
+    build_node_and_populate_tree(m_node_root);
     m_changed = true;
 }
 
@@ -548,7 +548,7 @@ void LayoutTab::save_item(const LayoutTabNode::ptr& node)
     m_changed = true;
 }
 
-void LayoutTab::set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& guid, stream_reader* val)
+void LayoutTab::set_item_property_stream(HTREEITEM ti, const GUID& guid, stream_reader* val)
 {
     if (!ti)
         return;
@@ -568,9 +568,9 @@ void LayoutTab::set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& gui
     }
 }
 
-void LayoutTab::set_item_property_stream(HWND wnd, const GUID& guid, stream_reader* val)
+void LayoutTab::set_item_property_stream(const GUID& guid, stream_reader* val)
 {
-    set_item_property_stream(wnd, TreeView_GetSelection(m_wnd_tree), guid, val);
+    set_item_property_stream(TreeView_GetSelection(m_wnd_tree), guid, val);
 }
 
 void LayoutTab::run_configure(HWND wnd)
@@ -592,14 +592,14 @@ void LayoutTab::run_configure(HWND wnd)
         save_item(locked_node);
 }
 
-void LayoutTab::initialise_tree(HWND wnd)
+void LayoutTab::initialise_tree()
 {
     m_node_root = std::make_shared<LayoutTabNode>();
     cfg_layout.get_preset(m_active_preset, *m_node_root->m_item);
-    build_node_and_populate_tree(wnd, m_node_root);
+    build_node_and_populate_tree(m_node_root);
 }
 
-void LayoutTab::deinitialise_tree(HWND wnd)
+void LayoutTab::deinitialise_tree()
 {
     m_node_map.clear();
     // Note: This sends TVN_DELETED notifications
@@ -642,15 +642,15 @@ void LayoutTab::initialise_presets(HWND wnd)
     ComboBox_SetCurSel(GetDlgItem(wnd, IDC_PRESETS), m_active_preset);
 }
 
-void LayoutTab::switch_to_preset(HWND wnd, size_t index)
+void LayoutTab::switch_to_preset(size_t index)
 {
     if (index < cfg_layout.get_presets().size()) {
         if (m_changed)
             cfg_layout.set_preset(m_active_preset, m_node_root->m_item->get_ptr());
         m_changed = true;
-        deinitialise_tree(wnd);
+        deinitialise_tree();
         m_active_preset = index;
-        initialise_tree(wnd);
+        initialise_tree();
     }
 }
 
@@ -675,7 +675,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
 
         initialise_presets(wnd);
-        initialise_tree(wnd);
+        initialise_tree();
 
         uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Horizontal");
         uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Vertical");
@@ -686,12 +686,12 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_initialised = false;
         apply();
         m_wnd_tree = nullptr;
-        deinitialise_tree(wnd);
+        deinitialise_tree();
         break;
     case WM_COMMAND:
         switch (wp) {
         case (CBN_SELCHANGE << 16) | IDC_PRESETS:
-            switch_to_preset(wnd, SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
+            switch_to_preset(SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
             break;
         case IDC_NEW_PRESET: {
             const auto preset_properties = open_layout_properties(wnd);
@@ -701,7 +701,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     = cfg_layout.add_preset(preset_properties->name, preset_properties->remember_window_placement);
                 uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, preset_properties->name.c_str());
                 SendDlgItemMessage(wnd, IDC_PRESETS, CB_SETCURSEL, index, NULL);
-                switch_to_preset(wnd, index);
+                switch_to_preset(index);
             }
         } break;
         case IDC_DUPLICATE_PRESET: {
@@ -729,7 +729,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, *preset_name);
                 SendDlgItemMessage(wnd, IDC_PRESETS, CB_SETCURSEL, preset_index, NULL);
-                switch_to_preset(wnd, preset_index);
+                switch_to_preset(preset_index);
             }
         } break;
         case IDC_PRESET_PROPERTIES: {
@@ -772,13 +772,13 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     break;
             }
 
-            deinitialise_tree(wnd);
+            deinitialise_tree();
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
             cfg_layout.delete_preset(m_active_preset);
             ComboBox_DeleteString(wnd_combo, m_active_preset);
             ComboBox_SetCurSel(
                 wnd_combo, m_active_preset < ComboBox_GetCount(wnd_combo) ? m_active_preset : --m_active_preset);
-            initialise_tree(wnd);
+            initialise_tree();
             m_changed = true;
             break;
         }
@@ -797,7 +797,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 abort_callback_impl p_abort;
                 str.write_string(text, p_abort);
                 stream_reader_memblock_ref reader(str.m_data.get_ptr(), str.m_data.get_size());
-                set_item_property_stream(wnd, uie::splitter_window::string_custom_title, &reader);
+                set_item_property_stream(uie::splitter_window::string_custom_title, &reader);
             }
             break;
         case IDC_AUTOHIDE:
@@ -1025,13 +1025,13 @@ void LayoutTab::handle_tree_wm_contextmenu(HWND wnd, POINT pt)
                         "This will remove the root panel, including all children. Do you want to continue?",
                         uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo)
                     && !is_treeitem_stale(ti.hItem, p_node)))
-                remove_node(wnd, ti.hItem);
+                remove_node(ti.hItem);
             break;
         case ID_MOVE_UP:
-            move_item(wnd, ti.hItem, true);
+            move_item(ti.hItem, true);
             break;
         case ID_MOVE_DOWN:
-            move_item(wnd, ti.hItem, false);
+            move_item(ti.hItem, false);
             break;
         case ID_CUT:
             cut_item(wnd, ti.hItem);
@@ -1046,9 +1046,9 @@ void LayoutTab::handle_tree_wm_contextmenu(HWND wnd, POINT pt)
             if (cmd >= id_splitter_type_base)
                 switch_splitter(wnd, ti.hItem, panels[cmd - id_splitter_type_base].id);
             else if (cmd >= id_add_child_base)
-                insert_item(wnd, ti.hItem, panels[cmd - id_add_child_base].id);
+                insert_item(ti.hItem, panels[cmd - id_add_child_base].id);
             else if (cmd >= ID_REPLACE_ROOT_BASE)
-                change_base(wnd, panels[cmd - ID_REPLACE_ROOT_BASE].id);
+                change_base(panels[cmd - ID_REPLACE_ROOT_BASE].id);
             break;
         }
     }
@@ -1065,14 +1065,14 @@ void LayoutTab::handle_delete_button_wm_contextmenu(HWND wnd, POINT pt)
                 "you "
                 "wish to so this?",
                 uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo)) {
-            deinitialise_tree(wnd);
+            deinitialise_tree();
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
             ComboBox_ResetContent(wnd_combo);
             cfg_layout.reset_presets();
             m_active_preset = 0;
             initialise_presets(wnd);
             ComboBox_SetCurSel(wnd_combo, m_active_preset);
-            initialise_tree(wnd);
+            initialise_tree();
             m_changed = true;
         }
     }),
