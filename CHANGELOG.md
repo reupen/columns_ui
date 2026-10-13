@@ -14,6 +14,10 @@
   switching to a layout that doesn’t contain a playlist view.
   [[#1894](https://github.com/reupen/columns_ui/pull/1894)]
 
+- Some logic in the Layout preferences tab was updated to protect against
+  unexpected changes to the tree state during some operations.
+  [[#1900](https://github.com/reupen/columns_ui/pull/1900)]
+
 ### Internal changes
 
 - The component is now compiled using foobar2000 SDK 2026-10-01.
