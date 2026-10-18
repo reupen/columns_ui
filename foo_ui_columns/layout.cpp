@@ -995,8 +995,8 @@ void LayoutWindow::run_live_edit_base(LiveEditData p_data)
                         parent_splitter->insert_panel(*index + offset, clipboard_splitter_item.get());
                 };
 
-                paste_submenu.append_command(commands.add([&] { paste_item(0); }), L"Before");
-                paste_submenu.append_command(commands.add([&] { paste_item(1); }), L"After");
+                paste_submenu.append_command(commands.add([paste_item] { paste_item(0); }), L"Before");
+                paste_submenu.append_command(commands.add([paste_item] { paste_item(1); }), L"After");
             }
         }
 

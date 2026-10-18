@@ -14,6 +14,9 @@
   switching to a layout that doesn’t contain a playlist view.
   [[#1894](https://github.com/reupen/columns_ui/pull/1894)]
 
+- A crash when pasting panels using live editing was fixed.
+  [[#1902](https://github.com/reupen/columns_ui/pull/1902)]
+
 - Some logic in the Layout preferences tab was updated to protect against
   unexpected changes to the tree state during some operations.
   [[#1900](https://github.com/reupen/columns_ui/pull/1900)]
