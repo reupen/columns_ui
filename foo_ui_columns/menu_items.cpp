@@ -242,8 +242,10 @@ public:
         if (command.is_radio_selected_callback && command.is_radio_selected_callback())
             p_flags |= mainmenu_commands::flag_radiochecked;
 
-        const bool shift_down = GetKeyState(VK_SHIFT) < 0;
-        return !command.hide_without_shift_key || shift_down;
+        if (command.hide_without_shift_key)
+            p_flags |= mainmenu_commands::flag_defaulthidden;
+
+        return true;
     }
 
     void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override
