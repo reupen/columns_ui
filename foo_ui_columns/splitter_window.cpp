@@ -281,8 +281,7 @@ void FlatSplitterPanel::get_panels_sizes(
     int available_size = get_orientation() == horizontal ? client_width : client_height;
     int available_parts{};
 
-    for (auto&& [index, panel, size_info] :
-        ranges::views::zip(ranges::views::iota(size_t{}, count), m_panels, size_infos)) {
+    for (auto&& [index, panel, size_info] : ranges::views::zip(ranges::views::iota(0uz, count), m_panels, size_infos)) {
         const auto panel_divider_size = get_panel_divider_size(index);
 
         const auto size
@@ -308,7 +307,7 @@ void FlatSplitterPanel::get_panels_sizes(
         auto this_pass_available_size = available_size;
 
         for (auto&& [index, panel, size_info] :
-            ranges::views::zip(ranges::views::iota(size_t{}, count), m_panels, size_infos)) {
+            ranges::views::zip(ranges::views::iota(0uz, count), m_panels, size_infos)) {
             if (size_info.is_sized)
                 continue;
 

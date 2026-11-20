@@ -290,7 +290,7 @@ void GroupsPreferencesTab::on_group_list_reorder(size_t old_index, size_t new_in
     const auto& groups = g_groups.get_groups();
     std::vector<uih::ListView::InsertItem> insert_items(affected_count);
 
-    for (const auto index : ranges::views::iota(size_t{}, affected_count)) {
+    for (const auto index : ranges::views::iota(0uz, affected_count)) {
         insert_items[index].m_subitems.emplace_back(groups[first_affected + index].string);
     }
 

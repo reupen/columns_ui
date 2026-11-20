@@ -324,7 +324,7 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
 
     DataEntry* p_data = p_out.data();
     concurrency::combinable<size_t> counts;
-    concurrency::parallel_for(size_t{0}, data_entries_count, [&counts, p_data, data_entries_count](size_t i) {
+    concurrency::parallel_for(0uz, data_entries_count, [&counts, p_data, data_entries_count](size_t i) {
         if (i + 1 == data_entries_count) {
             p_data[i].m_same_as_next = false;
         } else {
@@ -381,8 +381,8 @@ std::vector<DataEntry> FilterPanel::make_data_entries_using_script_fb2k_v1(
     tf::TextFormatTitleformatHook text_format_tf_hook(get_items_font_size_pt().value_or(0.f));
     std::atomic<size_t> node_count{0};
 
-    concurrency::parallel_for(size_t{0}, track_count,
-        [&data_entries, &tracks, &node_count, &text_format_tf_hook, &to, b_show_empty](size_t index) {
+    concurrency::parallel_for(
+        0uz, track_count, [&data_entries, &tracks, &node_count, &text_format_tf_hook, &to, b_show_empty](size_t index) {
             pfc::string8_fastalloc buffer;
             buffer.prealloc(32);
             tracks[index]->format_title(&text_format_tf_hook, buffer, to, nullptr);
@@ -486,7 +486,7 @@ std::vector<DataEntry> FilterPanel::make_data_entries_using_metadata_fb2k_v1(
     std::atomic<size_t> out_counter{0};
 
     concurrency::parallel_for(
-        size_t{0}, track_count, [&tracks, &data_entries, &out_counter, &infos, b_show_empty](size_t track_index) {
+        0uz, track_count, [&tracks, &data_entries, &out_counter, &infos, b_show_empty](size_t track_index) {
             for (size_t value_index{0}; value_index < infos[track_index].m_value_count; value_index++) {
                 const char* str
                     = infos[track_index].m_info->info().meta_enum_value(infos[track_index].m_field_index, value_index);

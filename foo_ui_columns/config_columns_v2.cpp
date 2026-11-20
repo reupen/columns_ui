@@ -828,7 +828,7 @@ void TabColumns::on_column_list_reorder(size_t old_index, size_t new_index)
 
     std::vector<uih::ListView::InsertItem> insert_items(affected_count);
 
-    for (const auto index : ranges::views::iota(size_t{}, affected_count)) {
+    for (const auto index : ranges::views::iota(0uz, affected_count)) {
         insert_items[index].m_subitems.emplace_back(m_columns[first_affected + index]->def.title);
     }
 

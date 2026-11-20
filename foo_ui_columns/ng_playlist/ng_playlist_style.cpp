@@ -274,7 +274,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
             int colour = mmh::strtoul_n(p_val, p_val_length, 0x10);
             p_params->get_param(1, p_val2, p_val2_length);
             int target = mmh::strtoul_n(p_val2, p_val2_length, 0x10);
-            int amount = gsl::narrow_cast<int>(std::min(p_params->get_param_uint(2), size_t{255u}));
+            int amount = gsl::narrow_cast<int>(std::min(p_params->get_param_uint(2), 255uz));
 
             int rdiff = (target & 0xff) - (colour & 0xff);
             int gdiff = ((target & 0xff00) >> 8) - ((colour & 0xff00) >> 8);

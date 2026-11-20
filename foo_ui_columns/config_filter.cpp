@@ -13,7 +13,7 @@ void get_list_view_insert_items(size_t base, size_t count, pfc::list_t<uih::List
 {
     items.set_count(count);
 
-    for (auto index : ranges::views::iota(size_t{}, count)) {
+    for (auto index : ranges::views::iota(0uz, count)) {
         items[index].m_subitems.resize(2);
         items[index].m_subitems[0] = cui::panels::filter::cfg_field_list[base + index].m_name;
         items[index].m_subitems[1] = cui::panels::filter::cfg_field_list[base + index].m_field;

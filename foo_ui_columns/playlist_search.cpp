@@ -45,7 +45,7 @@ void PlaylistSearch::init()
                 });
         } else {
             concurrency::combinable<std::string> buffer;
-            concurrency::parallel_for(size_t{}, count, [&](auto&& n) {
+            concurrency::parallel_for(0uz, count, [&](auto&& n) {
                 auto& buffer_ref = buffer.local();
                 mmh::StringAdaptor adapted_string(buffer_ref);
                 m_tracks[n]->format_title(nullptr, adapted_string, m_titleformat_object, nullptr);
@@ -171,7 +171,7 @@ void PlaylistSearch::run()
         : std::vector<std::wstring_view>{};
 
     if (mode == SearchMode::mode_match_words_beginning_formatted_title) {
-        concurrency::parallel_for(size_t{}, m_formatted.size(), [this, &terms](auto&& index) {
+        concurrency::parallel_for(0uz, m_formatted.size(), [this, &terms](auto&& index) {
             if (!m_matches[index])
                 return;
 
@@ -188,7 +188,7 @@ void PlaylistSearch::run()
                 m_matches[index] = false;
         });
     } else if (mode == SearchMode::mode_match_words_anywhere_formatted_title) {
-        concurrency::parallel_for(size_t{}, m_formatted.size(), [this, &terms](auto&& index) {
+        concurrency::parallel_for(0uz, m_formatted.size(), [this, &terms](auto&& index) {
             if (!m_matches[index])
                 return;
 
@@ -219,7 +219,7 @@ void PlaylistSearch::run()
         if (m_matches[existing_focus])
             return existing_focus;
 
-        auto matches_views = ranges::views::iota(size_t{1}, total_items) | ranges::views::transform([&](auto index) {
+        auto matches_views = ranges::views::iota(1uz, total_items) | ranges::views::transform([&](auto index) {
             return index < (total_items - existing_focus) ? existing_focus + index
                                                           : index - (total_items - existing_focus);
         }) | ranges::views::filter([&](auto index) { return m_matches[index]; });
@@ -274,7 +274,7 @@ void PlaylistSearch::handle_next_or_previous(NavigationType navigation_type)
         return;
 
     const auto focus = m_playlist_api->playlist_get_focus_item(m_playlist_index);
-    auto matches_views = ranges::views::iota(size_t{1}, total_items) | ranges::views::transform([&](auto index) {
+    auto matches_views = ranges::views::iota(1uz, total_items) | ranges::views::transform([&](auto index) {
         if (navigation_type == NavigationType::Next)
             return index < (total_items - focus) ? focus + index : index - (total_items - focus);
 

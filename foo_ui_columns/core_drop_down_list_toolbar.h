@@ -32,7 +32,7 @@ struct CoreDropDownToolbarArgs : BaseArgs {
         if (api.is_empty())
             return items;
 
-        for (const auto index : std::ranges::views::iota(size_t{0}, api->getNumValues())) {
+        for (const auto index : std::ranges::views::iota(0uz, api->getNumValues())) {
             pfc::string8 value;
             api->getValue(index, value);
 

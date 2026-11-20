@@ -250,7 +250,7 @@ void FontManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_ab
     uint32_t counter = 0;
     mask.set_count(count);
 
-    for (auto&& i : ranges::views::iota(size_t{0}, count))
+    for (auto&& i : ranges::views::iota(0uz, count))
         if ((mask[i] = clients.have_item(m_entries[i]->guid)))
             counter++;
 
@@ -259,21 +259,21 @@ void FontManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_ab
     m_common_labels_entry->write(p_stream, p_abort);
     p_stream->write_lendian_t(counter, p_abort);
 
-    for (auto&& i : ranges::views::iota(size_t{0}, count))
+    for (auto&& i : ranges::views::iota(0uz, count))
         if (mask[i])
             m_entries[i]->write(p_stream, p_abort);
 
     m_common_items_entry->write_extra_data(p_stream, p_abort);
     m_common_labels_entry->write_extra_data(p_stream, p_abort);
 
-    for (auto&& i : ranges::views::iota(size_t{0}, count))
+    for (auto&& i : ranges::views::iota(0uz, count))
         if (mask[i])
             m_entries[i]->write_extra_data(p_stream, p_abort);
 
     m_common_items_entry->write_extra_data_v2(p_stream, p_abort);
     m_common_labels_entry->write_extra_data_v2(p_stream, p_abort);
 
-    for (auto&& i : ranges::views::iota(size_t{0}, count))
+    for (auto&& i : ranges::views::iota(0uz, count))
         if (mask[i])
             m_entries[i]->write_extra_data_v2(p_stream, p_abort);
 }

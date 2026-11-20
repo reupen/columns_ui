@@ -413,7 +413,7 @@ void PlaylistView::invalidate_styles(size_t index, size_t count)
         const auto item = get_item(item_index);
         const auto group_count = item->get_group_count();
 
-        for (const auto group_index : ranges::views::iota(size_t{}, group_count))
+        for (const auto group_index : ranges::views::iota(0uz, group_count))
             item->get_group(group_index)->m_style_data.release();
 
         item->m_style_data.set_count(0);
@@ -947,14 +947,14 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
         std::vector<size_t> source_indices;
         source_indices.reserve(tracks.size());
 
-        for (auto index : std::ranges::views::iota(size_t{}, playlist_size)) {
+        for (auto index : std::ranges::views::iota(0uz, playlist_size)) {
             if (mask[index])
                 source_indices.emplace_back(index);
         }
 
         mmh::Permutation all_items_order(playlist_size);
 
-        for (auto index : std::ranges::views::iota(size_t{}, tracks.size())) {
+        for (auto index : std::ranges::views::iota(0uz, tracks.size())) {
             all_items_order[source_indices[index]] = source_indices[sorted_items_order[index]];
         }
         m_playlist_api->activeplaylist_reorder_items(all_items_order.data(), playlist_size);
@@ -981,7 +981,7 @@ void PlaylistView::sort_by_column_fb2k_v2_26(size_t column_index, bool is_descen
     std::vector<size_t> source_indices;
 
     if (is_selection_only) {
-        source_indices = ranges::views::iota(size_t{}, playlist_item_count)
+        source_indices = ranges::views::iota(0uz, playlist_item_count)
             | ranges::views::filter([&](auto index) { return mask[index]; }) | ranges::to<std::vector>;
     }
 
@@ -992,7 +992,7 @@ void PlaylistView::sort_by_column_fb2k_v2_26(size_t column_index, bool is_descen
     concurrency::combinable<tf::FieldProviderTitleformatHook> extra_fields_provider_tf_hook(
         create_extra_fields_provider_tf_hook);
 
-    concurrency::parallel_for(size_t{}, sort_item_count, [&](size_t sort_item_index) {
+    concurrency::parallel_for(0uz, sort_item_count, [&](size_t sort_item_index) {
         const auto item_index = is_selection_only ? source_indices[sort_item_index] : sort_item_index;
         auto& format_buffer_ref = format_buffer.local();
         auto& cleaned_format_buffer_ref = cleaned_format_buffer.local();
@@ -1417,7 +1417,7 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
             pfc::bit_array_bittable selection(m_playlist_api->activeplaylist_get_item_count());
             m_playlist_api->activeplaylist_get_selection_mask(selection);
 
-            for (const auto index : std::ranges::views::iota(size_t{}, selection.size())) {
+            for (const auto index : std::ranges::views::iota(0uz, selection.size())) {
                 if (selection[index]) {
                     tracked_item.m_item = index;
                     break;
@@ -1541,7 +1541,7 @@ void PlaylistView::notify_update_item_data(size_t index)
     const auto group_count = p_item->get_group_count();
     size_t group_display_index{item_display_index};
 
-    for (auto group_index : ranges::views::iota(size_t{}, group_count) | ranges::views::reverse) {
+    for (auto group_index : ranges::views::iota(0uz, group_count) | ranges::views::reverse) {
         if (!is_group_visible(index, group_index))
             continue;
 
@@ -1673,16 +1673,15 @@ void PlaylistView::get_insert_items(size_t start, size_t count, InsertItemsConta
         return;
     }
 
-    concurrency::parallel_for(
-        size_t{0}, count, [this, &items, &handles, &combined_tf_hooks, group_count](size_t index) {
-            pfc::string8_fast temp;
-            temp.prealloc(32);
-            items[index].m_groups.resize(group_count);
-            for (size_t i = 0; i < group_count; i++) {
-                handles[index]->format_title(&combined_tf_hooks, temp, m_scripts[i], nullptr);
-                items[index].m_groups[i] = temp;
-            }
-        });
+    concurrency::parallel_for(0uz, count, [this, &items, &handles, &combined_tf_hooks, group_count](size_t index) {
+        pfc::string8_fast temp;
+        temp.prealloc(32);
+        items[index].m_groups.resize(group_count);
+        for (size_t i = 0; i < group_count; i++) {
+            handles[index]->format_title(&combined_tf_hooks, temp, m_scripts[i], nullptr);
+            items[index].m_groups[i] = temp;
+        }
+    });
 }
 
 void PlaylistView::flush_items()

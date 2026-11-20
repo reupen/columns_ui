@@ -13,6 +13,9 @@
 
 - The component is now compiled with Visual Studio 2026 toolset version 14.52.
 
+- The component now uses C++23.
+  [[#1926](https://github.com/reupen/columns_ui/pull/1926)]
+
 ## 3.7.1
 
 ### Features

@@ -32,7 +32,7 @@ wil::unique_hbitmap render_to_hbitmap(int width, int height, const void* data, s
 {
     const svg_services::svg_services::ptr svg_api = get_api();
 
-    std::vector<uint8_t> bitmap_data(static_cast<size_t>(width) * static_cast<size_t>(height) * size_t{4});
+    std::vector<uint8_t> bitmap_data(static_cast<size_t>(width) * static_cast<size_t>(height) * 4uz);
 
     const auto svg_document = svg_api->open(data, size);
     svg_document->render(width, height, svg_services::Position::Centred, scaling_mode, pixel_format, bitmap_data.data(),
