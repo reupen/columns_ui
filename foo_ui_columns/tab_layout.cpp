@@ -115,7 +115,7 @@ void LayoutTabNode::build()
         m_name = "<unknown>";
 
     if (m_window.is_valid() && m_window->service_query_t(m_splitter)) {
-        for (auto i : ranges::views::iota(size_t{0}, m_splitter->get_panel_count())) {
+        for (auto i : ranges::views::iota(0uz, m_splitter->get_panel_count())) {
             auto& child = m_children.emplace_back(make_child());
             m_splitter->get_panel(i, *child->m_item);
 

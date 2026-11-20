@@ -42,7 +42,7 @@ void FilterPanel::notify_save_inline_edit(const char* value)
 
             size_t value_count = info.meta_enum_value_count(field_index);
 
-            for (auto value_index : std::ranges::views::iota(size_t{}, value_count)) {
+            for (auto value_index : std::ranges::views::iota(0uz, value_count)) {
                 auto field_value = info.meta_enum_value(field_index, value_index);
 
                 if (!stricmp_utf8(edit_previous_value, field_value) && strcmp(value.c_str(), field_value) != 0) {

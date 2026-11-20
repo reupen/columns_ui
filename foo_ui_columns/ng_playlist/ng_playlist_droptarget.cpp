@@ -238,7 +238,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
             pfc::bit_array_var_table bitsel(selection.get_ptr(), selection.get_count());
             playlist_api->playlist_get_selection_mask(p_playlist->m_dragging_initial_playlist, bitsel);
             permutation_move.resize(selection.get_count());
-            ranges::iota(permutation_move, size_t{});
+            ranges::iota(permutation_move, 0uz);
 
             if (p_playlist->m_dragging_initial_playlist == active_playlist) {
                 if (*pdwEffect == DROPEFFECT_MOVE) {

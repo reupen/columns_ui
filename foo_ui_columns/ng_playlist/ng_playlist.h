@@ -50,7 +50,7 @@ public:
 
         playlist_manager_v5::ptr api_v5;
         if (api->service_query_t(api_v5)) {
-            for (const auto playlist_index : std::ranges::views::iota(size_t{}, playlist_count)) {
+            for (const auto playlist_index : std::ranges::views::iota(0uz, playlist_count)) {
                 auto playlist_id = api_v5->playlist_get_guid(playlist_index);
                 m_items[playlist_index].playlist_id = playlist_id;
 

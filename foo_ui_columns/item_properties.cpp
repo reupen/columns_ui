@@ -267,7 +267,7 @@ public:
 
         const size_t value_count = info->meta_enum_value_count(field_index);
 
-        for (auto value_index : ranges::views::iota(size_t{0}, value_count)) {
+        for (auto value_index : ranges::views::iota(0uz, value_count)) {
             const auto value = info->meta_enum_value(field_index, value_index);
             add_value(value);
         }
@@ -469,7 +469,7 @@ decltype(std::declval<TrackPropertyCallback>().to_sorted_vector()) get_track_pro
         }
     }
 
-    concurrency::parallel_for(size_t{0}, thread_safe_providers.size(),
+    concurrency::parallel_for(0uz, thread_safe_providers.size(),
         [&thread_safe_providers, &props, &info_source_v3, &info_source_v5, &tracks, has_recs{!recs.empty()}](
             auto&& index) {
             auto&& provider = thread_safe_providers[index];
@@ -524,7 +524,7 @@ void ItemProperties::refresh_contents()
 
     file_info_const_impl dummy_file_info;
 
-    concurrency::parallel_for(size_t{0}, field_count,
+    concurrency::parallel_for(0uz, field_count,
         [&metadata_aggregators, &info_refs, &recs, &dummy_file_info, has_metadb_v2, track_count{tracks.size()}, this](
             auto&& field_index) {
             auto& metadata_aggregator = metadata_aggregators[field_index];

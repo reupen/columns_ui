@@ -31,7 +31,7 @@ std::vector<std::string_view> get_meta_field_values(const file_info& info, std::
 {
     std::vector<std::string_view> values;
 
-    for (const auto index : ranges::views::iota(size_t{}, info.meta_get_count_by_name(field.data()))) {
+    for (const auto index : ranges::views::iota(0uz, info.meta_get_count_by_name(field.data()))) {
         values.emplace_back(info.meta_get(field.data(), index));
     }
 

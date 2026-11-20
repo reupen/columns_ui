@@ -123,7 +123,7 @@ void ContextTracker::on_items_added(
     if (!tracking_includes_playlist_selection() || (tracking_prioritises_playing_item() && m_is_tracking_playing))
         return;
 
-    for (const auto index : ranges::views::iota(size_t{}, p_data.size())) {
+    for (const auto index : ranges::views::iota(0uz, p_data.size())) {
         if (p_selection[index]) {
             auto [playlist_index, tracks] = get_playlist_selection();
             set_selection_tracks(std::move(tracks), playlist_index, true);
@@ -184,7 +184,7 @@ void ContextTracker::on_items_removed(const bit_array& p_mask, size_t p_old_coun
 
     auto new_playlist_selection_index = m_playlist_selection_index;
 
-    for (const auto index : ranges::views::iota(size_t{}, *new_playlist_selection_index)) {
+    for (const auto index : ranges::views::iota(0uz, *new_playlist_selection_index)) {
         if (p_mask[index])
             --*new_playlist_selection_index;
     }

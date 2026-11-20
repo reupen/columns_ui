@@ -118,7 +118,7 @@ auto get_value(const audio_chunk_impl& chunk, size_t x_index, size_t x_count, bo
         const auto left_weight = 1.f - right_weight;
 
         const auto get_data = [&](float bin_f32) {
-            const auto bin = std::clamp(static_cast<size_t>(bin_f32), size_t{}, sample_count - 1);
+            const auto bin = std::clamp(static_cast<size_t>(bin_f32), 0uz, sample_count - 1);
             return data[bin];
         };
 

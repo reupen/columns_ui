@@ -10,7 +10,7 @@ namespace {
 
 bool does_splitter_have_panel(const uie::splitter_window::ptr& splitter, GUID id)
 {
-    return ranges::any_of(ranges::views::iota(size_t{}, splitter->get_panel_count()), [&](auto&& index) {
+    return ranges::any_of(ranges::views::iota(0uz, splitter->get_panel_count()), [&](auto&& index) {
         uie::splitter_item_ptr item;
         splitter->get_panel(index, item);
         return item->get_panel_guid() == id;
@@ -66,7 +66,7 @@ std::optional<pfc::array_t<uint8_t>> convert_splitter_and_get_config(
             uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo))
         return {};
 
-    for (auto index : std::views::iota(size_t{}, panel_count)) {
+    for (auto index : std::views::iota(0uz, panel_count)) {
         uie::splitter_item_ptr ptr;
         old_splitter->get_panel(index, ptr);
         new_splitter->add_panel(ptr.get_ptr());

@@ -135,6 +135,9 @@ msbuild /m "/p:Platform=Win32;Configuration=Release" "/t:Rebuild" vc18\columns_u
 
 <summary>Instructions for building with Clang</summary>
 
+> [!WARNING] Compiling with Clang using these instructions currently does not
+> work due to https://github.com/llvm/llvm-project/issues/244531.
+
 Columns UI can be also compiled using the version of Clang distributed with
 Visual Studio.
 
