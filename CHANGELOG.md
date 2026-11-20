@@ -1,5 +1,18 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- Columns UI main menu commands that are hidden unless the Shift key is held
+  down now indicate to foobar2000 that they should be hidden by default, instead
+  of directly checking the Shift key state and managing the hidden state
+  themselves. [[#1925](https://github.com/reupen/columns_ui/pull/1925)]
+
+### Internal changes
+
+- The component is now compiled with Visual Studio 2026 toolset version 14.52.
+
 ## 3.7.1
 
 ### Features
