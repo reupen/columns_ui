@@ -216,6 +216,14 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         }
     } break;
+    case WM_INITMENUPOPUP: {
+        const auto popup_menu = reinterpret_cast<HMENU>(wp);
+
+        if (m_fallback_menu)
+            m_fallback_menu->on_init_menu_popup(popup_menu);
+
+        break;
+    }
     case WM_MENUSELECT: {
         const auto id = LOWORD(wp);
         const auto flags = HIWORD(wp);
