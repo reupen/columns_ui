@@ -7,6 +7,7 @@ struct FallbackMenuRootItem {
     std::optional<wchar_t> accelerator;
     uint32_t sort_priority{};
     mainmenu_manager::ptr manager;
+    HMENU menu{};
 };
 
 class FallbackMenu : public std::enable_shared_from_this<FallbackMenu> {
@@ -16,6 +17,7 @@ public:
     void show(HWND wnd);
     void show_for_accelerator(HWND wnd, wchar_t accelerator);
     bool on_menu_select(uint32_t id, uint32_t flags) const;
+    void on_init_menu_popup(HMENU popup_menu);
 
 private:
     void initialise();
@@ -25,6 +27,7 @@ private:
     std::vector<FallbackMenuRootItem> m_root_items;
     ui_status_text_override::ptr m_status_text_override;
     uint32_t m_base_id_increment{};
+    bool m_initial_show_all_items{};
 };
 
 } // namespace cui

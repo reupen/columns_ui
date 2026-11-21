@@ -55,6 +55,29 @@ bool FallbackMenu::on_menu_select(uint32_t id, uint32_t flags) const
     return true;
 }
 
+void FallbackMenu::on_init_menu_popup(HMENU popup_menu)
+{
+    const auto iter = ranges::find_if(m_root_items, [&](const auto& item) { return item.menu == popup_menu; });
+
+    if (iter == m_root_items.end())
+        return;
+
+    const auto existing_item_count = GetMenuItemCount(popup_menu);
+
+    if (existing_item_count > 0) {
+        for (const auto index : std::views::iota(0, existing_item_count))
+            DeleteMenu(popup_menu, existing_item_count - index - 1, MF_BYPOSITION);
+    }
+
+    const auto show_shortcuts = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
+    const auto show_all_items = m_initial_show_all_items || (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+    const auto menu_flags = (show_shortcuts ? mainmenu_manager::flag_show_shortcuts : 0)
+        | (show_all_items ? mainmenu_manager::flag_view_full : mainmenu_manager::flag_view_reduced);
+    iter->manager->generate_menu_win32(popup_menu,
+        1 + m_base_id_increment * gsl::narrow<uint32_t>(iter - m_root_items.begin()), m_base_id_increment, menu_flags);
+    menu_helpers::win32_auto_mnemonics(popup_menu);
+}
+
 void FallbackMenu::initialise()
 {
     if (m_initialised)
@@ -103,9 +126,6 @@ void FallbackMenu::show_internal(HWND wnd, std::optional<wchar_t> accelerator)
     if (m_root_items.empty() || m_base_id_increment == 0)
         return;
 
-    const auto menu_flags
-        = standard_config_objects::query_show_keyboard_shortcuts_in_menus() ? mainmenu_manager::flag_show_shortcuts : 0;
-
     uih::Menu menu;
     HMENU accelerator_menu{};
 
@@ -115,8 +135,8 @@ void FallbackMenu::show_internal(HWND wnd, std::optional<wchar_t> accelerator)
         if (accelerator && root_item.accelerator == accelerator)
             accelerator_menu = submenu.get();
 
-        root_item.manager->generate_menu_win32(
-            submenu.get(), 1 + m_base_id_increment * gsl::narrow<uint32_t>(index), m_base_id_increment, menu_flags);
+        root_item.menu = submenu.get();
+
         menu.append_submenu(std::move(submenu), mmh::to_utf16(root_item.name_with_accelerator.c_str()));
     }
 
@@ -141,12 +161,17 @@ void FallbackMenu::show_internal(HWND wnd, std::optional<wchar_t> accelerator)
     const auto self = shared_from_this();
 
     ui_control::get()->override_status_text_create(m_status_text_override);
+    m_initial_show_all_items = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
 
     POINT pt{};
     ClientToScreen(wnd, &pt);
-    const auto id = menu.run(wnd, pt, {.is_right_button = false});
+    const auto id = menu.run(wnd, pt, {.enable_notifications = true, .is_right_button = false});
 
     m_status_text_override.reset();
+    m_initial_show_all_items = false;
+
+    for (auto& root_item : m_root_items)
+        root_item.menu = nullptr;
 
     if (id == 0)
         return;

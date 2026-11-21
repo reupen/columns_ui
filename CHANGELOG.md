@@ -2,6 +2,27 @@
 
 ## Development version
 
+### Features
+
+- Some improvements were made to the fallback main menu (shown when pressing Alt
+  without the menu toolbar enabled)
+  [[#1928](https://github.com/reupen/columns_ui/pull/1928)]:
+
+  - Top-level menus are now generated at the moment they’re shown.
+
+    This ensures things like the playback status is current when switching
+    between menus.
+
+  - If the menu was opened without holding the Shift key, you can now hold Shift
+    when opening each top-level menu to show the extended version of that menu.
+
+    There’s no change to the behaviour when holding Shift key while initially
+    pressing Alt. (This also causes the extended versions of menus to be shown.)
+
+- The ‘Use alternative emoji font selection logic’ text rendering option was
+  updated to be aware of Unicode 18 emojis.
+  [[#1927](https://github.com/reupen/columns_ui/pull/1927)]
+
 ### Bug fixes
 
 - Columns UI main menu commands that are hidden unless the Shift key is held
